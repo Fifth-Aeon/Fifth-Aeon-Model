@@ -9,17 +9,16 @@ import { remove } from 'lodash';
 
 
 export abstract class Card {
-    
-    @serialize @deserialize public name: string;
-    @serialize @deserialize protected id: string;
-    @serialize @deserialize protected set: string;
-    @serialize @deserialize protected rarity: number;
-    @serializeAs(Mechanic) protected mechanics: Mechanic[] = [];
+    public name: string;
+    protected id: string;
+    protected set: string;
+    protected rarity: number;
+    protected mechanics: Mechanic[] = [];
 
-    @serializeAs(Resource) protected cost: Resource;
-    @serialize @deserialize protected unit = false;
-    @serialize @deserialize protected owner: number;
-    @serialize @deserialize abstract dataId: string;
+    protected cost: Resource;
+    protected unit = false;
+    protected owner: number;
+    abstract dataId: string;
 
     protected targeter: Targeter<any> = new Untargeted();
 
@@ -27,18 +26,32 @@ export abstract class Card {
         this.id = Math.random().toString(16)
     }
 
+    public isPlayable(game: Game): boolean {
+        let owner = game.getPlayer(this.owner);
+        // Todo, check resource and target
+        return game.isPlayerTurn(this.owner);
+    }
+
+    public getPrototype() {
+        return {
+            id: this.getId(),
+            data: this.getDataId()
+        }
+    }
+
     public getDataId() {
         return this.dataId;
     }
+
     public getId() {
         return this.id;
     }
 
     public play(game: Game) {
-        //this.owner.mana -= this.cost;
+        game.getPlayer(this.owner).reduceResource(this.cost);
     }
 
-    public getText():string {
+    public getText(): string {
         return this.mechanics.map(mechanic => mechanic.getText(this)).join(' ');
     }
 
@@ -47,10 +60,12 @@ export abstract class Card {
     }
 
     public setOwner(owner: number) {
+        if (owner === undefined)
+            throw Error();
         this.owner = owner;
     }
 
-    public setId(id:string) {
+    public setId(id: string) {
         this.id = id;
     }
 
@@ -68,13 +83,5 @@ export abstract class Card {
 
     public toString(): string {
         return `${this.name}: (${this.cost})`
-    }
-
-
-
-    public getActions(battle: Game) {
-        let entities = battle.getCurrentPlayerEntities();
-        let targets = [];
-        return [];
     }
 }

@@ -8,7 +8,7 @@ export class GameFormat {
     public boardSize: number = 16;
     public playerCount: number = 2; // Number of players in format
     public rarityNames: string[] = ["Common", "Rare", "Epic", "Legendary"];
-    public resourceNames: string[] = ["Astral", "Primeval", "Necrotic", "Radiant"];
+    public resourceNames: string[] = ["Synthesis", "Growth", "Necrosis", "Renewal"];
     public basicResources: Map<string, Resource> = new Map<string, Resource>();
 
     // Starting Values

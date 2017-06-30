@@ -32,7 +32,7 @@ export interface GameAction {
 }
 
 export class SyncGameEvent {
-    constructor(public type: GameEventType, public params: object) { }
+    constructor(public type: GameEventType, public params: any) { }
 }
 
 type actionCb = (act: GameAction) => boolean;
@@ -85,9 +85,9 @@ export class Game {
 
         this.addActionHandeler(GameActionType.pass, this.pass);
         this.addActionHandeler(GameActionType.playResource, this.playResource);
-        this.addActionHandeler(GameActionType.playCard, this.playCard);
+        this.addActionHandeler(GameActionType.playCard, this.playCardAction);
         this.addActionHandeler(GameActionType.declareAttackers, this.declareAttackers);
-        this.addActionHandeler(GameActionType.declareBlockers, this.declareBlockers);
+        //this.addActionHandeler(GameActionType.declareBlockers, this.declareBlockers);
     }
 
     // Syncronization --------------------------------------------------------
@@ -100,7 +100,14 @@ export class Game {
      * @memberof Game
      */
     public syncServerEvent(playerNumber: number, event: SyncGameEvent) {
-        // TODO
+        let params = event.params;
+        switch (event.type) {
+            case GameEventType.playCard:
+                if (params.playerNo != playerNumber)
+                    this.playCard(this.players[params.plyerNo], this.getCardById(params.plyerNo, params.id));
+                break;
+
+        }
     }
 
     /**
@@ -127,7 +134,6 @@ export class Game {
 
 
     // Game Logic --------------------------------------------------------
-
     public startGame() {
         this.turn = 0;
         for (let i = 0; i < this.players.length; i++) {
@@ -144,25 +150,28 @@ export class Game {
         }));
     }
 
-    private resolveCard(query: string, player: Player): Card | null {
-        return player.queryHand(query);
+    private getCardById(player: Player, id: string): Card {
+        return player.getHand().find(card => card.getId() == id);
     }
 
-    private resolvePlayerUnit(query: string, player: Player): Unit {
-        let options = this.board.getPlayerEntities(player.getPlayerNumber());
-        return player.queryCards(query, options) as Unit;
+    private getUnitById(playerNo: number, id: string): Unit {
+        return this.board.getPlayerEntities(playerNo).find(unit => unit.getId() == id);
     }
 
-    private playCard(act: GameAction): boolean {
+    private playCardAction(act: GameAction): boolean {
         let player = this.players[act.player];
         if (!this.isPlayerTurn(act.player))
             return false;
-        let card = this.resolveCard(act.params.toPlay, player);
+        let card = this.getCardById(player, act.params.id);
         if (!card)
             return false;
-        this.addGameEvent(new SyncGameEvent(GameEventType.playCard, { played: Serialize(card) }));
-        player.playCard(this, card);
+        this.playCard(player, card);
+        this.addGameEvent(new SyncGameEvent(GameEventType.playCard, { playerNo: act.player, played: card.getPrototype() }));
         return true;
+    }
+
+    public playCard(player: Player, card: Card) {
+        player.playCard(this, card);
     }
 
     private declareAttackers(act: GameAction): boolean {
@@ -170,13 +179,14 @@ export class Game {
         if (!this.isPlayerTurn(act.player) || this.phase !== GamePhase.play1)
             return false;
         this.attackers = act.params['attackers']
-            .map((query: string) => this.resolvePlayerUnit(query, player))
+            .map((unitId: string) => this.getUnitById(act.player, unitId))
             .filter((unit: Unit) => unit);
         this.phase = GamePhase.combat
         this.addGameEvent(new SyncGameEvent(GameEventType.attack, { attacking: this.attackers.map(e => e.toString()) }));
         return true;
     }
 
+    /*
     private declareBlockers(act: GameAction) {
         let player = this.players[act.player];
         let op = this.players[this.getOtherPlayerNumber(act.player)];
@@ -192,6 +202,7 @@ export class Game {
         this.resolveCombat();
         return true;
     }
+    */
 
     private playResource(act: GameAction): boolean {
         let player = this.players[act.player];
@@ -247,7 +258,7 @@ export class Game {
     }
 
     public addUnit(unit: Unit, owner: number) {
-        unit.getEvents().addEvent(null, new GameEvent(EventType.onDamaged, (params) => {
+        unit.getEvents().addEvent(null, new GameEvent(EventType.onDeath, (params) => {
             this.removeUnit(unit);
             return params;
         }));

@@ -34,7 +34,7 @@ export abstract class Unit extends Card {
 
     public play(game: Game) {
         super.play(game);
-        game.playUnit(this, 0);
+        game.playUnit(this, this.owner);
     }
 
     public refresh() {

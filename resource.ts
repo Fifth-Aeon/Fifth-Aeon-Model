@@ -16,8 +16,13 @@ export class Resource {
         this.types = types || new Map<string, number>();
     }
 
-    toString(): string {
+    public toString(): string {
         return this.numeric.toString();
+    }
+
+    public subtract(other: Resource) {
+        this.maxNumeric -= other.maxNumeric;
+        this.numeric -= other.numeric;
     }
 
     public meetsReq(req: Resource): boolean {

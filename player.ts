@@ -15,14 +15,23 @@ export class Player {
 
     constructor(cards: Array<Card>, private playerNumber: number, initResource: Resource, life: number) {
         this.deck = cards;
-        this.deck.forEach(card => card.setOwner(this.playerNumber));
+        this.deck.forEach(card => card.setOwner(playerNumber));
         this.hand = [];
         this.life = life;
-        this.resource = initResource; // Todo, fix by ref
+        this.resource = initResource; // Todo, fix by ref 
+    }
+
+    public reduceResource(resource:Resource) {
+        this.resource.subtract(resource);
     }
 
     public getHand() {
         return this.hand;
+    }
+
+    public addToHand(card:Card) {
+        card.setOwner(this.playerNumber);
+        this.hand.push(card);
     }
 
     public getPlayerNumber() {
