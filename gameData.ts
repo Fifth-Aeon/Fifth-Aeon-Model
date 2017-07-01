@@ -30,6 +30,7 @@ class GameData {
         }
         return deck;
     }
+
 }
 
 export const data = new GameData();
