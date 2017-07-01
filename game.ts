@@ -61,6 +61,8 @@ export class Game {
     private attackers: Unit[];
     // A list of blocks by the defending player
     private blockers: [Unit, Unit][];
+    // A map of cards loaded from the server so far
+    private cardPool: Map<string, Card>;
 
     /**
      * Constructs a game given a format. The format
@@ -73,6 +75,7 @@ export class Game {
     constructor(format = new GameFormat()) {
         this.format = format;
         this.board = new Board(this.format.playerCount, this.format.boardSize);
+        this.cardPool = new Map<string, Card>();
         this.turnNum = 1;
         this.actionHandelers = new Map<GameActionType, actionCb>();
         this.players = [
@@ -101,13 +104,35 @@ export class Game {
      */
     public syncServerEvent(playerNumber: number, event: SyncGameEvent) {
         let params = event.params;
+        console.log('sync', GameEventType[event.type], event.params);
         switch (event.type) {
             case GameEventType.playCard:
-                if (params.playerNo != playerNumber)
-                    this.playCard(this.players[params.plyerNo], this.getCardById(params.plyerNo, params.id));
+                if (params.playerNo != playerNumber) {
+                    let player = this.players[params.playerNo];
+                    this.playCard(player, this.unpackCard(params.played, params.playerNo));
+                }
+                break;
+            case GameEventType.draw:
+                if (params.playerNo == playerNumber) {
+                    this.players[params.playerNo].addToHand(this.unpackCard(params.card, params.playerNo))
+                }
+                break;
+            case GameEventType.turnStart:
+                this.turn = params.turn;
+                this.turnNum = params.turnNum;
                 break;
 
         }
+    }
+
+    public unpackCard(proto: { id: string, data: string }, owner: number) {
+        if (this.cardPool.has(proto.id))
+            return this.cardPool.get(proto.id);
+        let card = data.getCard(proto.data);
+        card.setId(proto.id);
+        card.setOwner(owner);
+        this.cardPool.set(proto.id, card);
+        return card;
     }
 
     /**
