@@ -30,7 +30,7 @@ export class Untargeted extends Targeter<null> {
 
 export class SingleUnit extends Targeter<Unit> {
     public getValidTargets(game: Game) {
-        return game.getBoard().getAllEntities();
+        return game.getBoard().getAllUnits();
     }
     public getText() {
         return 'target unit';

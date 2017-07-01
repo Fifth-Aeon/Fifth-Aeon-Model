@@ -1,7 +1,7 @@
 import { Card } from './card';
 import { sample, remove } from 'lodash';
 import { GameFormat } from './gameFormat';
-import { Game } from './game';
+import { Game, SyncGameEvent, GameEventType } from './game';
 import { Resource } from './resource';
 
 
@@ -13,7 +13,7 @@ export class Player {
     private life: number;
     private hasPlayedResource: boolean;
 
-    constructor(cards: Array<Card>, private playerNumber: number, initResource: Resource, life: number) {
+    constructor(private parent: Game, cards: Array<Card>, private playerNumber: number, initResource: Resource, life: number) {
         this.deck = cards;
         this.deck.forEach(card => card.setOwner(playerNumber));
         this.hand = [];
@@ -21,7 +21,8 @@ export class Player {
         this.resource = initResource; // Todo, fix by ref 
     }
 
-    public reduceResource(resource:Resource) {
+
+    public reduceResource(resource: Resource) {
         this.resource.subtract(resource);
     }
 
@@ -29,7 +30,7 @@ export class Player {
         return this.hand;
     }
 
-    public addToHand(card:Card) {
+    public addToHand(card: Card) {
         card.setOwner(this.playerNumber);
         this.hand.push(card);
     }
@@ -46,7 +47,6 @@ export class Player {
         this.resource.addRes(played);
     }
 
-
     public getLife() {
         return this.life;
     }
@@ -56,7 +56,6 @@ export class Player {
     }
 
     public startTurn() {
-        this.resource
         this.drawCard();
     }
 
@@ -95,7 +94,7 @@ export class Player {
         remove(this.deck, drawn);
         if (!drawn)
             return;
-        //drawn.owner = this;
+        this.parent.addGameEvent(new SyncGameEvent(GameEventType.draw, { playerNo: this.playerNumber, card: drawn.getPrototype() }));
         this.hand.push(drawn);
     }
 }

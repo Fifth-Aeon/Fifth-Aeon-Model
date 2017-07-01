@@ -22,7 +22,7 @@ export enum GameActionType {
 }
 
 export enum GameEventType {
-    start, attack, turnStart, phaseChange, playResource, mulligan, playCard, block
+    start, attack, turnStart, phaseChange, playResource, mulligan, playCard, block, draw
 }
 
 export interface GameAction {
@@ -76,8 +76,8 @@ export class Game {
         this.turnNum = 1;
         this.actionHandelers = new Map<GameActionType, actionCb>();
         this.players = [
-            new Player(data.getRandomDeck(format.minDeckSize), 0, this.format.initalResource[0], this.format.initialLife[0]),
-            new Player(data.getRandomDeck(format.minDeckSize), 1, this.format.initalResource[1], this.format.initialLife[1])
+            new Player(this, data.getRandomDeck(format.minDeckSize), 0, this.format.initalResource[0], this.format.initialLife[0]),
+            new Player(this, data.getRandomDeck(format.minDeckSize), 1, this.format.initalResource[1], this.format.initialLife[1])
         ];
         this.events = [];
         this.attackers = [];
@@ -143,19 +143,16 @@ export class Game {
         this.getCurrentPlayerEntities().forEach(unit => unit.refresh());
         this.phase = GamePhase.play1;
 
-        this.addGameEvent(new SyncGameEvent(GameEventType.start, {
-            initialHands: this.players.map(player => {
-                return player.getHand().map(card => Serialize(card));
-            })
-        }));
+        this.addGameEvent(new SyncGameEvent(GameEventType.turnStart, { turn: this.turn, turnNum: this.turnNum }));
+        return this.events;
     }
 
-    private getCardById(player: Player, id: string): Card {
+    private getCardById(player: Player, id: string): Card | undefined {
         return player.getHand().find(card => card.getId() == id);
     }
 
-    private getUnitById(playerNo: number, id: string): Unit {
-        return this.board.getPlayerEntities(playerNo).find(unit => unit.getId() == id);
+    private getUnitById(playerNo: number, id: string): Unit | undefined {
+        return this.board.getPlayerUnits(playerNo).find(unit => unit.getId() == id);
     }
 
     private playCardAction(act: GameAction): boolean {
@@ -270,9 +267,10 @@ export class Game {
         this.turnNum++;
         let currentPlayerEntities = this.getCurrentPlayerEntities();
         currentPlayerEntities.forEach(unit => unit.refresh());
-        this.addGameEvent(new SyncGameEvent(GameEventType.turnStart, { player: this.turn, turnNum: this.turnNum }));
         this.attackers = [];
         this.blockers = [];
+        this.addGameEvent(new SyncGameEvent(GameEventType.turnStart, { turn: this.turn, turnNum: this.turnNum }));
+        this.players[this.turn].startTurn();
     }
 
     // Getters and setters ---------------------------------------------------
@@ -286,7 +284,7 @@ export class Game {
     }
 
     public getCurrentPlayerEntities() {
-        return this.board.getAllEntities().filter(unit => this.isPlayerTurn(unit.getOwner()));
+        return this.board.getAllUnits().filter(unit => this.isPlayerTurn(unit.getOwner()));
     }
 
     public getOtherPlayerNumber(playerNum: number): number {

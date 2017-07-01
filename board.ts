@@ -20,7 +20,7 @@ export class Board {
         this.spaces[unit.getOwner()].push(unit);
     }
 
-    public getAllEntities(): Array<Unit> {
+    public getAllUnits(): Array<Unit> {
         let res = [];
         for (let i = 0; i < this.spaces.length; i++) {
             for (let j = 0; j < this.spaces[i].length; j++) {
@@ -30,7 +30,7 @@ export class Board {
         return res;
     } 
 
-    public getPlayerEntities(playerNumber: number) {
+    public getPlayerUnits(playerNumber: number) {
         return this.spaces[playerNumber];
     }
 
