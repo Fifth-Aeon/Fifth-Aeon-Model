@@ -28,8 +28,8 @@ export abstract class Card {
 
     public isPlayable(game: Game): boolean {
         let owner = game.getPlayer(this.owner);
-        // Todo, check resource and target
-        return game.isPlayerTurn(this.owner);
+        return game.isPlayerTurn(this.owner) &&
+            owner.getPool().meetsReq(this.cost);
     }
 
     public getPrototype() {

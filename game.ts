@@ -121,6 +121,9 @@ export class Game {
                 this.turn = params.turn;
                 this.turnNum = params.turnNum;
                 break;
+            case GameEventType.playResource:
+                this.players[params.playerNo].getPool().add(params.resource)
+            break;
 
         }
     }
@@ -170,6 +173,10 @@ export class Game {
 
         this.addGameEvent(new SyncGameEvent(GameEventType.turnStart, { turn: this.turn, turnNum: this.turnNum }));
         return this.events;
+    }
+
+    public getCurrentPlayer() {
+        return this.players[this.turn];
     }
 
     private getCardById(player: Player, id: string): Card | undefined {
@@ -230,7 +237,7 @@ export class Game {
         let player = this.players[act.player];
         if (!this.isPlayerTurn(act.player) || !player.canPlayResource())
             return true;
-        let res = new Resource();
+        let res = new Resource(1, 1);
         player.playResource(res);
         this.addGameEvent(new SyncGameEvent(GameEventType.playResource, { played: res }));
         return false;
