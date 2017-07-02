@@ -11,7 +11,7 @@ export class Player {
     private deck: Array<Card>;
     private resource: Resource;
     private life: number;
-    private hasPlayedResource: boolean;
+    private hasPlayedResource: boolean = false;
 
     constructor(private parent: Game, cards: Array<Card>, private playerNumber: number, initResource: Resource, life: number) {
         this.deck = cards;
@@ -40,11 +40,12 @@ export class Player {
     }
 
     public canPlayResource(): boolean {
-        return this.hasPlayedResource;
+        return !this.hasPlayedResource;
     }
 
     public playResource(played: Resource) {
         this.resource.addRes(played);
+        this.hasPlayedResource = true;
     }
 
     public getLife() {

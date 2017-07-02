@@ -228,11 +228,13 @@ export class Game {
 
     private playResource(act: GameAction): boolean {
         let player = this.players[act.player];
-        if (!this.isPlayerTurn(act.player) || !player.canPlayResource())
+        console.log('pr', this.isPlayerTurn(act.player), player.canPlayResource());
+        if (!(this.isPlayerTurn(act.player) && player.canPlayResource()))
             return true;
         let res = new Resource();
         player.playResource(res);
-        this.addGameEvent(new SyncGameEvent(GameEventType.playResource, { played: res }));
+        this.addGameEvent(new SyncGameEvent(GameEventType.playResource, { playerNo: act.player, resource: res }));
+        console.log('pre');
         return false;
     }
 
