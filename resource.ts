@@ -1,8 +1,8 @@
 export const ResourceType = {
-    "Astral": "Astral",
-    "Primeval": "Primeval",
-    "Necrotic": "Necrotic",
-    "Radiant": "Radiant"
+    "Synthesis": "Synthesis",
+    "Growth": "Growth",
+    "Necrosis": "Necrosis",
+    "Renewal": "Renewal"
 }
 
 export class Resource {
@@ -10,19 +10,30 @@ export class Resource {
     private numeric: number;
     private maxNumeric: number;
 
-    constructor(maxNumeric?: number, types?: Map<string, number>, numeric?: number) {
-        this.maxNumeric = maxNumeric || 1;
-        this.numeric = numeric || this.maxNumeric;
+    constructor(numeric: number, maxNumeric: number = 0, types?: Map<string, number>, ) {
+        this.numeric = numeric;
+        this.maxNumeric = maxNumeric;
         this.types = types || new Map<string, number>();
     }
 
-    public toString(): string {
-        return this.numeric.toString();
+    public asCost(): string {
+        let types = Array.from(this.types.keys()).map(key => key[0].repeat(this.types[key])).join('')
+        return `${this.numeric.toString()} ${types}`;
+    }
+
+    public asPool(): string {
+        let types = Array.from(this.types.keys()).map(key => key[0].repeat(this.types[key])).join('')
+        return `(${this.numeric.toString()} / ${this.maxNumeric.toString()}) ${types}`;
     }
 
     public subtract(other: Resource) {
         this.maxNumeric -= other.maxNumeric;
         this.numeric -= other.numeric;
+    }
+
+    public add(other: Resource) {
+        this.maxNumeric += other.maxNumeric;
+        this.numeric += other.numeric;
     }
 
     public meetsReq(req: Resource): boolean {

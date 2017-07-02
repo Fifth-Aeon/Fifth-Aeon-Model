@@ -60,6 +60,10 @@ export class Player {
         this.drawCard();
     }
 
+    public getPool() {
+        return this.resource;
+    }
+
     public drawCards(quantity: number) {
         for (let i = 0; i < quantity; i++) {
             this.drawCard();
