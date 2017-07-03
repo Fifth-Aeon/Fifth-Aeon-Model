@@ -18,7 +18,13 @@ export class Player {
         this.deck.forEach(card => card.setOwner(playerNumber));
         this.hand = [];
         this.life = life;
-        this.resource = initResource; // Todo, fix by ref 
+        this.resource = new Resource(0);
+        this.resource.add(initResource);
+    }
+
+    private drawDisabled: boolean = false;
+    public disableDraw() {
+        this.drawDisabled = true;
     }
 
 
@@ -44,8 +50,8 @@ export class Player {
     }
 
     public playResource(played: Resource) {
-        this.resource.addRes(played);
-        this.hasPlayedResource = true;
+        this.resource.add(played);
+        this.hasPlayedResource = true; 
     }
 
     public getLife() {
@@ -58,6 +64,8 @@ export class Player {
 
     public startTurn() {
         this.drawCard();
+        this.hasPlayedResource = false;
+        this.resource.renew();
     }
 
     public getPool() {
@@ -95,6 +103,8 @@ export class Player {
     }
 
     public drawCard() {
+        if (this.drawDisabled)
+            return;
         let drawn = sample(this.deck);
         remove(this.deck, drawn);
         if (!drawn)

@@ -72,7 +72,7 @@ export class Game {
      * @param {any} [format=new GameFormat()] 
      * @memberof Game
      */
-    constructor(format = new GameFormat()) {
+    constructor(format = new GameFormat(), client: boolean = false) {
         this.format = format;
         this.board = new Board(this.format.playerCount, this.format.boardSize);
         this.cardPool = new Map<string, Card>();
@@ -85,6 +85,10 @@ export class Game {
         this.events = [];
         this.attackers = [];
         this.blockers = [];
+
+        if (client) {
+            this.players.forEach(player => player.disableDraw());
+        }
 
         this.addActionHandeler(GameActionType.pass, this.pass);
         this.addActionHandeler(GameActionType.playResource, this.playResource);
@@ -119,11 +123,12 @@ export class Game {
                 break;
             case GameEventType.turnStart:
                 this.turn = params.turn;
-                this.turnNum = params.turnNum;
+                this.turnNum = params.turnNum
+                this.refresh();
                 break;
             case GameEventType.playResource:
                 this.players[params.playerNo].getPool().add(params.resource)
-            break;
+                break;
 
         }
     }
@@ -235,14 +240,14 @@ export class Game {
 
     private playResource(act: GameAction): boolean {
         let player = this.players[act.player];
-        console.log('pr', this.isPlayerTurn(act.player), player.canPlayResource());
         if (!(this.isPlayerTurn(act.player) && player.canPlayResource()))
-            return true;
-        let res = new Resource(1, 1);
+            return false;
+        let res = this.format.basicResources.get(act.params.type);
+        if (!res)
+            return false;
         player.playResource(res);
         this.addGameEvent(new SyncGameEvent(GameEventType.playResource, { playerNo: act.player, resource: res }));
-        console.log('pre');
-        return false;
+        return true;
     }
 
     private pass(act: GameAction): boolean {
@@ -299,11 +304,15 @@ export class Game {
     public nextTurn() {
         this.turn = this.getOtherPlayerNumber(this.turn);
         this.turnNum++;
+        this.addGameEvent(new SyncGameEvent(GameEventType.turnStart, { turn: this.turn, turnNum: this.turnNum }));
+        this.refresh();
+    }
+
+    public refresh() {
         let currentPlayerEntities = this.getCurrentPlayerEntities();
         currentPlayerEntities.forEach(unit => unit.refresh());
         this.attackers = [];
         this.blockers = [];
-        this.addGameEvent(new SyncGameEvent(GameEventType.turnStart, { turn: this.turn, turnNum: this.turnNum }));
         this.players[this.turn].startTurn();
     }
 

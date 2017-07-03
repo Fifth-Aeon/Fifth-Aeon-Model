@@ -4,25 +4,35 @@ export const ResourceType = {
     "Necrosis": "Necrosis",
     "Renewal": "Renewal"
 }
-
+interface ResourceTypeGroup {
+    Synthesis: number
+    Growth: number
+    Necrosis: number
+    Renewal: number
+}
 export class Resource {
-    private types: Map<string, number>;
+    private types: ResourceTypeGroup;
     private numeric: number;
     private maxNumeric: number;
 
-    constructor(numeric: number, maxNumeric: number = 0, types?: Map<string, number>, ) {
+    constructor(numeric: number, maxNumeric: number = 0, types?: ResourceTypeGroup, ) {
         this.numeric = numeric;
         this.maxNumeric = maxNumeric;
-        this.types = types || new Map<string, number>();
+        this.types = types || {
+            Synthesis: 0,
+            Growth: 0,
+            Necrosis: 0,
+            Renewal: 0
+        };
     }
 
     public asCost(): string {
-        let types = Array.from(this.types.keys()).map(key => key[0].repeat(this.types[key])).join('')
+        let types = Object.keys(this.types).map(key => key[0].repeat(this.types[key])).join('')
         return `${this.numeric.toString()} ${types}`;
     }
 
     public asPool(): string {
-        let types = Array.from(this.types.keys()).map(key => key[0].repeat(this.types[key])).join('')
+        let types = Object.keys(this.types).map(key => key[0].repeat(this.types[key])).join('')
         return `(${this.numeric.toString()} / ${this.maxNumeric.toString()}) ${types}`;
     }
 
@@ -32,24 +42,24 @@ export class Resource {
     }
 
     public add(other: Resource) {
-        this.maxNumeric += other.maxNumeric;
         this.numeric += other.numeric;
+        this.maxNumeric += other.maxNumeric;
+        Object.keys(other.types).forEach((reqType) => {
+            this.types[reqType] = this.types[reqType] + other.types[reqType];
+        });
+    }
+
+    public renew() {
+        this.numeric = this.maxNumeric;
     }
 
     public meetsReq(req: Resource): boolean {
         let ok = true;
-        req.types.forEach((necReq, req) => {
-            if (this.types.get(req) || 0 < necReq)
+        Object.keys(req.types).forEach((key) => {
+            let necReq = req.types[key]
+            if (this.types[key] || 0 < necReq)
                 ok = false
         })
         return ok && this.numeric > req.maxNumeric;
-    }
-
-    public addRes(res: Resource) {
-        res.types.forEach((amount, resType) => {
-            this.types.set(resType, (this.types.get(resType) || 0) + amount)
-        })
-        this.numeric += res.numeric;
-        this.maxNumeric += res.maxNumeric;
     }
 }
