@@ -57,9 +57,9 @@ export class Resource {
         let ok = true;
         Object.keys(req.types).forEach((key) => {
             let necReq = req.types[key]
-            if (this.types[key] || 0 < necReq)
+            if ((this.types[key] || 0) < necReq)
                 ok = false
         })
-        return ok && this.numeric > req.maxNumeric;
+        return ok && this.numeric > req.maxNumeric; 
     }
 }
