@@ -39,6 +39,10 @@ export abstract class Card {
         }
     }
 
+    public isAttacking() {
+        return false;
+    }
+
     public getDataId() {
         return this.dataId;
     }

@@ -5,9 +5,6 @@ import { EventGroup, EventType } from './gameEvent';
 import { Resource } from './resource';
 
 export abstract class Unit extends Card {
-    // Board 
-    private parent: Game;
-
     // Stats
     protected life: number;
     protected maxLife: number;
@@ -15,8 +12,9 @@ export abstract class Unit extends Card {
 
     // Actions
     protected exausted: boolean;
+    protected attacking: boolean;
 
-    // Mods
+    // Modifications
     protected events: EventGroup;
 
     constructor() {
@@ -25,6 +23,20 @@ export abstract class Unit extends Card {
         this.exausted = true;
         this.unit = true;
         this.life = this.life || this.maxLife;
+    }
+
+    public isAttacking() {
+        return this.attacking;
+    }
+
+    public toggleAttacking() {
+        if (!this.canAttack())
+            return;
+        this.attacking = !this.attacking;
+    }
+
+    public canAttack() {
+        return !this.exausted;
     }
 
     public getEvents() {
@@ -42,9 +54,8 @@ export abstract class Unit extends Card {
         this.life = this.maxLife;
     }
 
-
     public canActivate(): boolean {
-        return this.exausted;
+        return !this.exausted;
     }
 
     public toString() {
@@ -58,7 +69,7 @@ export abstract class Unit extends Card {
             ['attacker', this],
             ['defender', target]
         ]);
-        let damage:number = this.events.trigger(EventType.onAttack, eventParams).get('damage');
+        let damage: number = this.events.trigger(EventType.onAttack, eventParams).get('damage');
 
         // Remove actions and deal damage
         this.dealDamage(target, damage);

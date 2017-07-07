@@ -27,7 +27,6 @@ export class Player {
         this.drawDisabled = true;
     }
 
-
     public reduceResource(resource: Resource) {
         this.resource.subtract(resource);
     }

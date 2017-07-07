@@ -207,6 +207,15 @@ export class Game {
     public playCard(player: Player, card: Card) {
         player.playCard(this, card);
     }
+    
+    public isAttacking() {
+        return this.getAttackers().length > 0;
+    }
+
+    public getAttackers() {
+        let units = this.board.getPlayerUnits(this.turn);
+        return units.filter(unit => unit.isAttacking());
+    }
 
     private declareAttackers(act: GameAction): boolean {
         let player = this.players[act.player];
