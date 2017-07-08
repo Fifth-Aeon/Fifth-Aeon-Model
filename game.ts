@@ -17,12 +17,12 @@ const game_phase_count = 4;
 
 export enum GameActionType {
     mulligan, playResource, playCard, pass, concede, activateAbility,
-    declareAttackers, declareBlockers, distributeDamage,
+    toggleAttack, declareBlockers, distributeDamage,
     declareTarget, Quit
 }
 
 export enum GameEventType {
-    start, attack, turnStart, phaseChange, playResource, mulligan, playCard, block, draw
+    start, attackToggled, turnStart, phaseChange, playResource, mulligan, playCard, block, draw
 }
 
 export interface GameAction {
@@ -93,7 +93,7 @@ export class Game {
         this.addActionHandeler(GameActionType.pass, this.pass);
         this.addActionHandeler(GameActionType.playResource, this.playResource);
         this.addActionHandeler(GameActionType.playCard, this.playCardAction);
-        this.addActionHandeler(GameActionType.declareAttackers, this.declareAttackers);
+        this.addActionHandeler(GameActionType.toggleAttack, this.toggleAttack);
         //this.addActionHandeler(GameActionType.declareBlockers, this.declareBlockers);
     }
 
@@ -128,6 +128,10 @@ export class Game {
                 break;
             case GameEventType.playResource:
                 this.players[params.playerNo].getPool().add(params.resource)
+                break;
+            case GameEventType.attackToggled:
+                if (params.playerNo != playerNumber)
+                    this.getUnitById(params.player, params.unitId).toggleAttacking();
                 break;
 
         }
@@ -207,7 +211,7 @@ export class Game {
     public playCard(player: Player, card: Card) {
         player.playCard(this, card);
     }
-    
+
     public isAttacking() {
         return this.getAttackers().length > 0;
     }
@@ -217,15 +221,12 @@ export class Game {
         return units.filter(unit => unit.isAttacking());
     }
 
-    private declareAttackers(act: GameAction): boolean {
+    private toggleAttack(act: GameAction): boolean {
         let player = this.players[act.player];
-        if (!this.isPlayerTurn(act.player) || this.phase !== GamePhase.play1)
+        let unit = this.getUnitById(act.player, act.params.unitId);
+        if (!unit.canAttack())
             return false;
-        this.attackers = act.params['attackers']
-            .map((unitId: string) => this.getUnitById(act.player, unitId))
-            .filter((unit: Unit) => unit);
-        this.phase = GamePhase.combat
-        this.addGameEvent(new SyncGameEvent(GameEventType.attack, { attacking: this.attackers.map(e => e.toString()) }));
+        this.addGameEvent(new SyncGameEvent(GameEventType.attackToggled, { player: act.player, unitId: act.params.unitId }));
         return true;
     }
 
