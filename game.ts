@@ -277,11 +277,17 @@ export class Game {
     }
 
     private resolveCombat() {
+        console.log('resolve combat');
         let attackers = this.getAttackers();
         let target = this.players[this.getOtherPlayerNumber(this.getCurrentPlayer().getPlayerNumber())];
+        
 
         attackers.forEach(attacker => {
+            console.log(attacker.getName(), attacker.isAttacking());
             attacker.dealDamage(target, attacker.getDamage());
+            attacker.setExausted(true);
+            attacker.toggleAttacking();
+            console.log(attacker.getName(), attacker.isAttacking());
         });
 
     }

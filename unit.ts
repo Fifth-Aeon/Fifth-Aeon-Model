@@ -27,11 +27,15 @@ export abstract class Unit extends Card {
         this.life = this.life || this.maxLife;
     }
 
+    public setExausted(exausted: boolean) {
+        this.exausted = exausted;
+    }
+
     public setBlocking(blockedId: string) {
         this.blockedUnitId = blockedId;
     }
 
-    public canBlock(toBlock:Unit) {
+    public canBlock(toBlock: Unit) {
         return !this.exausted;
     }
 
@@ -40,7 +44,7 @@ export abstract class Unit extends Card {
     }
 
     public toggleAttacking() {
-        if (!this.canAttack())
+        if (!this.attacking && !this.canAttack())
             return;
         this.attacking = !this.attacking;
     }
