@@ -130,9 +130,17 @@ export class Game {
                 this.players[params.playerNo].getPool().add(params.resource)
                 break;
             case GameEventType.attackToggled:
-                if (params.playerNo != playerNumber)
+                if (params.player != playerNumber)
                     this.getUnitById(params.player, params.unitId).toggleAttacking();
                 break;
+            case GameEventType.block:
+                if (params.player != playerNumber)
+                    this.getUnitById(params.player, params.blockerId).setBlocking(params.blockedId);
+                break;
+            case GameEventType.phaseChange:
+                this.phase = params.phase;
+                if (this.phase === GamePhase.play2)
+                    this.resolveCombat();
 
         }
     }
@@ -230,23 +238,24 @@ export class Game {
         return true;
     }
 
-    /*
-    private declareBlockers(act: GameAction) {
+
+    private declareBlocker(act: GameAction) {
         let player = this.players[act.player];
-        let op = this.players[this.getOtherPlayerNumber(act.player)];
-        if (this.isPlayerTurn(act.player) || this.phase !== GamePhase.combat)
+        let blocker = this.getUnitById(act.player, act.params.blockerId);
+        let blocked = this.getUnitById(act.player, act.params.blockedId);
+
+        if (this.isPlayerTurn(act.player) || this.phase !== GamePhase.combat || !blocker.canBlock(blocked))
             return false;
-        this.blockers = act.params['blockers']
-            .map((block: any) => [
-                this.resolvePlayerUnit(block[0], op),
-                this.resolvePlayerUnit(block[1], player)
-            ])
-            .filter((block: [Unit, Unit]) => block[0] && block[1]);
-        this.addGameEvent(new SyncGameEvent(GameEventType.block, { blocks: this.blockers.map(b => b.map(e => e.toString())) }));
-        this.resolveCombat();
+
+        blocker.setBlocking(blocked.getId());
+        this.addGameEvent(new SyncGameEvent(GameEventType.block, { 
+            player: act.player,
+            blockerId: act.params.blockerId,
+            blockedId: act.params.blockedId
+        }));
+        
         return true;
     }
-    */
 
     private playResource(act: GameAction): boolean {
         let player = this.players[act.player];
@@ -261,28 +270,39 @@ export class Game {
     }
 
     private pass(act: GameAction): boolean {
-        if (!this.isPlayerTurn(act.player))
+        if (!this.isActivePlayer(act.player))
             return false;
         this.nextPhase(act.player);
         return true;
     }
 
     private resolveCombat() {
-        this.phase = GamePhase.play2;
+        let attackers = this.getAttackers();
+        let target = this.players[this.getOtherPlayerNumber(this.getCurrentPlayer().getPlayerNumber())];
+
+        attackers.forEach(attacker => {
+            attacker.dealDamage(target, attacker.getDamage());
+        });
+
     }
 
     private nextPhase(player: number) {
         let curr = this.phase;
         switch (this.phase) {
             case GamePhase.play1:
-                this.nextTurn();
+                if (this.isAttacking()) {
+                    this.phase = GamePhase.combat;
+                    this.addGameEvent(new SyncGameEvent(GameEventType.phaseChange, { phase: this.phase }));
+                } else
+                    this.nextTurn();
                 break;
             case GamePhase.play2:
                 this.nextTurn();
                 break;
             case GamePhase.combat:
-                if (!this.isPlayerTurn(player))
-                    this.resolveCombat();
+                this.resolveCombat();
+                this.phase = GamePhase.play2;
+                this.addGameEvent(new SyncGameEvent(GameEventType.phaseChange, { phase: this.phase }));
                 break;
         }
     }
@@ -293,6 +313,12 @@ export class Game {
 
     public isPlayerTurn(player: number) {
         return this.turn === player;
+    }
+
+    public isActivePlayer(player: number) {
+        return this.isPlayerTurn(player) ||
+            this.phase == GamePhase.combat && !this.isPlayerTurn(player);
+
     }
 
     public removeUnit(unit: Unit) {

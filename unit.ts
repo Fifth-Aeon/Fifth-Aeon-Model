@@ -13,6 +13,7 @@ export abstract class Unit extends Card {
     // Actions
     protected exausted: boolean;
     protected attacking: boolean;
+    protected blockedUnitId: string | null;
 
     // Modifications
     protected events: EventGroup;
@@ -21,8 +22,17 @@ export abstract class Unit extends Card {
         super()
         this.events = new EventGroup();
         this.exausted = true;
+        this.blockedUnitId = null;
         this.unit = true;
         this.life = this.life || this.maxLife;
+    }
+
+    public setBlocking(blockedId: string) {
+        this.blockedUnitId = blockedId;
+    }
+
+    public canBlock(toBlock:Unit) {
+        return !this.exausted;
     }
 
     public isAttacking() {
@@ -43,6 +53,10 @@ export abstract class Unit extends Card {
         return this.events;
     }
 
+    public getDamage() {
+        return this.damage;
+    }
+
 
     public play(game: Game) {
         super.play(game);
@@ -52,6 +66,7 @@ export abstract class Unit extends Card {
     public refresh() {
         this.exausted = false;
         this.life = this.maxLife;
+        this.setBlocking(null);
     }
 
     public canActivate(): boolean {
