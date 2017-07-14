@@ -185,7 +185,7 @@ export class Game {
             this.players[i].drawCards(this.format.initialDraw[i]);
         }
         this.players[this.turn].startTurn();
-        this.getCurrentPlayerEntities().forEach(unit => unit.refresh());
+        this.getCurrentPlayerUnits().forEach(unit => unit.refresh());
         this.phase = GamePhase.play1;
 
         this.addGameEvent(new SyncGameEvent(GameEventType.turnStart, { turn: this.turn, turnNum: this.turnNum }));
@@ -234,6 +234,7 @@ export class Game {
         let unit = this.getUnitById(act.player, act.params.unitId);
         if (!unit.canAttack())
             return false;
+        unit.toggleAttacking();
         this.addGameEvent(new SyncGameEvent(GameEventType.attackToggled, { player: act.player, unitId: act.params.unitId }));
         return true;
     }
@@ -248,12 +249,12 @@ export class Game {
             return false;
 
         blocker.setBlocking(blocked.getId());
-        this.addGameEvent(new SyncGameEvent(GameEventType.block, { 
+        this.addGameEvent(new SyncGameEvent(GameEventType.block, {
             player: act.player,
             blockerId: act.params.blockerId,
             blockedId: act.params.blockedId
         }));
-        
+
         return true;
     }
 
@@ -286,15 +287,38 @@ export class Game {
 
     }
 
+    private blockersExist() {
+        let potentialBlockers = this.board.getPlayerUnits(this.getInactivePlayer());
+        let attackers = this.board.getPlayerUnits(this.getCurrentPlayer().getPlayerNumber());
+
+        for (let blocker of potentialBlockers) {
+            for (let attacker of attackers) {
+                if (blocker.canBlock(attacker))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    private endPhaseOne() {
+        if (this.isAttacking()) {
+            if (this.blockersExist()) {
+                this.phase = GamePhase.combat;
+                this.addGameEvent(new SyncGameEvent(GameEventType.phaseChange, { phase: this.phase }));
+            } else {
+                this.phase = GamePhase.play2;
+                this.addGameEvent(new SyncGameEvent(GameEventType.phaseChange, { phase: this.phase }));
+            }
+        } else {
+            this.nextTurn();
+        }
+    }
+
     private nextPhase(player: number) {
-        let curr = this.phase;
+        console.log('nextPhase', this.phase);
         switch (this.phase) {
             case GamePhase.play1:
-                if (this.isAttacking()) {
-                    this.phase = GamePhase.combat;
-                    this.addGameEvent(new SyncGameEvent(GameEventType.phaseChange, { phase: this.phase }));
-                } else
-                    this.nextTurn();
+                this.endPhaseOne();
                 break;
             case GamePhase.play2:
                 this.nextTurn();
@@ -340,15 +364,14 @@ export class Game {
     public nextTurn() {
         this.turn = this.getOtherPlayerNumber(this.turn);
         this.turnNum++;
+        this.phase = GamePhase.play1;
         this.addGameEvent(new SyncGameEvent(GameEventType.turnStart, { turn: this.turn, turnNum: this.turnNum }));
         this.refresh();
     }
 
     public refresh() {
-        let currentPlayerEntities = this.getCurrentPlayerEntities();
+        let currentPlayerEntities = this.getCurrentPlayerUnits();
         currentPlayerEntities.forEach(unit => unit.refresh());
-        this.attackers = [];
-        this.blockers = [];
         this.players[this.turn].startTurn();
     }
 
@@ -362,8 +385,12 @@ export class Game {
         return this.board;
     }
 
-    public getCurrentPlayerEntities() {
+    public getCurrentPlayerUnits() {
         return this.board.getAllUnits().filter(unit => this.isPlayerTurn(unit.getOwner()));
+    }
+
+    public getInactivePlayer() {
+        return this.getOtherPlayerNumber(this.turn);
     }
 
     public getOtherPlayerNumber(playerNum: number): number {
