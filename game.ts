@@ -284,11 +284,9 @@ export class Game {
         
 
         attackers.forEach(attacker => {
-            console.log(attacker.getName(), attacker.isAttacking());
             attacker.dealDamage(target, attacker.getDamage());
             attacker.setExausted(true);
             attacker.toggleAttacking();
-            console.log(attacker.getName(), attacker.isAttacking());
         });
 
     }
@@ -312,6 +310,7 @@ export class Game {
                 this.phase = GamePhase.combat;
                 this.addGameEvent(new SyncGameEvent(GameEventType.phaseChange, { phase: this.phase }));
             } else {
+                this.resolveCombat();
                 this.phase = GamePhase.play2;
                 this.addGameEvent(new SyncGameEvent(GameEventType.phaseChange, { phase: this.phase }));
             }
