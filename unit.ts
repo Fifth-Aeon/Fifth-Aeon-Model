@@ -43,6 +43,10 @@ export abstract class Unit extends Card {
         return this.attacking;
     }
 
+    public isExausted() {
+        return this.exausted;
+    }
+
     public toggleAttacking() {
         if (!this.attacking && !this.canAttack())
             return;
