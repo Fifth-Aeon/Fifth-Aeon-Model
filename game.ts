@@ -204,6 +204,10 @@ export class Game {
         return this.board.getPlayerUnits(playerNo).find(unit => unit.getId() == id);
     }
 
+    public getPhase() {
+        return this.phase;
+    }
+
     private playCardAction(act: GameAction): boolean {
         let player = this.players[act.player];
         if (!this.isPlayerTurn(act.player))
@@ -218,6 +222,10 @@ export class Game {
 
     public playCard(player: Player, card: Card) {
         player.playCard(this, card);
+    }
+
+    public playerCanAttack(playerNo:number) {
+        return this.phase == GamePhase.play1 && this.isActivePlayer(playerNo);
     }
 
     public isAttacking() {
@@ -281,14 +289,12 @@ export class Game {
         console.log('resolve combat');
         let attackers = this.getAttackers();
         let target = this.players[this.getOtherPlayerNumber(this.getCurrentPlayer().getPlayerNumber())];
-        
 
         attackers.forEach(attacker => {
             attacker.dealDamage(target, attacker.getDamage());
             attacker.setExausted(true);
             attacker.toggleAttacking();
         });
-
     }
 
     private blockersExist() {
@@ -345,9 +351,8 @@ export class Game {
     }
 
     public isActivePlayer(player: number) {
-        return this.isPlayerTurn(player) ||
+        return this.phase != GamePhase.combat && this.isPlayerTurn(player) ||
             this.phase == GamePhase.combat && !this.isPlayerTurn(player);
-
     }
 
     public removeUnit(unit: Unit) {
@@ -369,12 +374,12 @@ export class Game {
     public nextTurn() {
         this.turn = this.getOtherPlayerNumber(this.turn);
         this.turnNum++;
-        this.phase = GamePhase.play1;
         this.addGameEvent(new SyncGameEvent(GameEventType.turnStart, { turn: this.turn, turnNum: this.turnNum }));
         this.refresh();
     }
 
     public refresh() {
+        this.phase = GamePhase.play1;
         let currentPlayerEntities = this.getCurrentPlayerUnits();
         currentPlayerEntities.forEach(unit => unit.refresh());
         this.players[this.turn].startTurn();
