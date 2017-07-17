@@ -53,6 +53,10 @@ export abstract class Card {
 
     public play(game: Game) {
         game.getPlayer(this.owner).reduceResource(this.cost);
+        this.mechanics.forEach(mechanic => mechanic.run(this, game));
+        if (!this.isUnit()) {
+            // move to crypt
+        }
     }
 
     public getText(): string {
