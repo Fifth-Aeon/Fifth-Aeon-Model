@@ -94,7 +94,7 @@ export class Game {
         this.addActionHandeler(GameActionType.playResource, this.playResource);
         this.addActionHandeler(GameActionType.playCard, this.playCardAction);
         this.addActionHandeler(GameActionType.toggleAttack, this.toggleAttack);
-        //this.addActionHandeler(GameActionType.declareBlockers, this.declareBlockers);
+        this.addActionHandeler(GameActionType.declareBlockers, this.declareBlocker);
     }
 
     // Syncronization --------------------------------------------------------
@@ -251,11 +251,9 @@ export class Game {
     private declareBlocker(act: GameAction) {
         let player = this.players[act.player];
         let blocker = this.getUnitById(act.player, act.params.blockerId);
-        let blocked = this.getUnitById(act.player, act.params.blockedId);
-
+        let blocked = this.getUnitById(this.getOtherPlayerNumber(act.player), act.params.blockedId);
         if (this.isPlayerTurn(act.player) || this.phase !== GamePhase.combat || !blocker.canBlock(blocked))
             return false;
-
         blocker.setBlocking(blocked.getId());
         this.addGameEvent(new SyncGameEvent(GameEventType.block, {
             player: act.player,
