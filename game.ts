@@ -9,7 +9,7 @@ import { data } from './gameData';
 
 import { Serialize, Deserialize } from 'cerialize';
 
-enum GamePhase {
+export enum GamePhase {
     play1, combat, play2, end, responceWindow
 }
 
@@ -113,7 +113,10 @@ export class Game {
             case GameEventType.playCard:
                 if (params.playerNo != playerNumber) {
                     let player = this.players[params.playerNo];
-                    this.playCard(player, this.unpackCard(params.played, params.playerNo));
+                    let card = this.unpackCard(params.played, params.playerNo)
+                    if (params.target)
+                        card.getTargeter().setTarget(this.getUnitById(params.target));
+                    this.playCard(player, card);
                 }
                 break;
             case GameEventType.draw:
@@ -131,11 +134,11 @@ export class Game {
                 break;
             case GameEventType.attackToggled:
                 if (params.player != playerNumber)
-                    this.getUnitById(params.player, params.unitId).toggleAttacking();
+                    this.getPlayerUnitById(params.player, params.unitId).toggleAttacking();
                 break;
             case GameEventType.block:
                 if (params.player != playerNumber)
-                    this.getUnitById(params.player, params.blockerId).setBlocking(params.blockedId);
+                    this.getPlayerUnitById(params.player, params.blockerId).setBlocking(params.blockedId);
                 break;
             case GameEventType.phaseChange:
                 this.phase = params.phase;
@@ -200,7 +203,11 @@ export class Game {
         return player.getHand().find(card => card.getId() == id);
     }
 
-    private getUnitById(playerNo: number, id: string): Unit | undefined {
+    public getUnitById(id: string): Unit | undefined {
+        return this.board.getAllUnits().find(unit => unit.getId() == id);
+    }
+
+    private getPlayerUnitById(playerNo: number, id: string): Unit | undefined {
         return this.board.getPlayerUnits(playerNo).find(unit => unit.getId() == id);
     }
 
@@ -215,8 +222,14 @@ export class Game {
         let card = this.getCardById(player, act.params.id);
         if (!card)
             return false;
+        if (act.params.taget != null)
+            card.getTargeter().setTarget(this.getUnitById(act.params.target));
         this.playCard(player, card);
-        this.addGameEvent(new SyncGameEvent(GameEventType.playCard, { playerNo: act.player, played: card.getPrototype() }));
+        this.addGameEvent(new SyncGameEvent(GameEventType.playCard, {
+            playerNo: act.player,
+            played: card.getPrototype(),
+            target: act.params.target
+        }));
         return true;
     }
 
@@ -224,7 +237,7 @@ export class Game {
         player.playCard(this, card);
     }
 
-    public playerCanAttack(playerNo:number) {
+    public playerCanAttack(playerNo: number) {
         return this.phase == GamePhase.play1 && this.isActivePlayer(playerNo);
     }
 
@@ -239,7 +252,7 @@ export class Game {
 
     private toggleAttack(act: GameAction): boolean {
         let player = this.players[act.player];
-        let unit = this.getUnitById(act.player, act.params.unitId);
+        let unit = this.getPlayerUnitById(act.player, act.params.unitId);
         if (!unit.canAttack())
             return false;
         unit.toggleAttacking();
@@ -250,8 +263,8 @@ export class Game {
 
     private declareBlocker(act: GameAction) {
         let player = this.players[act.player];
-        let blocker = this.getUnitById(act.player, act.params.blockerId);
-        let blocked = this.getUnitById(act.player, act.params.blockedId);
+        let blocker = this.getPlayerUnitById(act.player, act.params.blockerId);
+        let blocked = this.getPlayerUnitById(act.player, act.params.blockedId);
 
         if (this.isPlayerTurn(act.player) || this.phase !== GamePhase.combat || !blocker.canBlock(blocked))
             return false;
@@ -285,14 +298,27 @@ export class Game {
         return true;
     }
 
+    public getBlockers() {
+        return this.board.getPlayerUnits(this.getInactivePlayer())
+            .filter(unit => unit.getBlockedUnitId());
+    }
+
     private resolveCombat() {
         console.log('resolve combat');
         let attackers = this.getAttackers();
-        let target = this.players[this.getOtherPlayerNumber(this.getCurrentPlayer().getPlayerNumber())];
+        let blockers = this.getBlockers();
+        let defendingPlayer = this.players[this.getOtherPlayerNumber(this.getCurrentPlayer().getPlayerNumber())];
+
+        blockers.forEach(blocker => {
+            let blocked = this.getPlayerUnitById(this.getCurrentPlayer().getPlayerNumber(), blocker.getBlockedUnitId());
+            blocked.fight(blocker);
+        })
 
         attackers.forEach(attacker => {
-            attacker.dealDamage(target, attacker.getDamage());
-            attacker.setExausted(true);
+            if (!attacker.isExausted()) {
+                attacker.dealDamage(defendingPlayer, attacker.getDamage());
+                attacker.setExausted(true);
+            }
             attacker.toggleAttacking();
         });
     }

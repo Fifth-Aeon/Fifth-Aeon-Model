@@ -65,6 +65,10 @@ export abstract class Unit extends Card {
         return this.damage;
     }
 
+    public getBlockedUnitId() {
+        return this.blockedUnitId;
+    }
+
 
     public play(game: Game) {
         super.play(game);
@@ -97,6 +101,8 @@ export abstract class Unit extends Card {
         // Remove actions and deal damage
         this.dealDamage(target, damage);
         target.dealDamage(this, target.damage);
+        this.setExausted(true);
+        target.setExausted(true);
     }
 
     public takeDamage(amount: number) {
