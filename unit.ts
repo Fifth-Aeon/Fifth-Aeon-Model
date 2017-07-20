@@ -43,6 +43,10 @@ export abstract class Unit extends Card {
         return this.attacking;
     }
 
+    public isBlocking() {
+        return this.blockedUnitId != null;
+    }
+
     public isExausted() {
         return this.exausted;
     }

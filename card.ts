@@ -43,6 +43,10 @@ export abstract class Card {
         return false;
     }
 
+    public isBlocking() {
+        return false;
+    }
+
     public getDataId() {
         return this.dataId;
     }

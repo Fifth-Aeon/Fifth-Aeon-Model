@@ -114,8 +114,8 @@ export class Game {
                 if (params.playerNo != playerNumber) {
                     let player = this.players[params.playerNo];
                     let card = this.unpackCard(params.played, params.playerNo)
-                    if (params.target)
-                        card.getTargeter().setTarget(this.getUnitById(params.target));
+                    if (params.target.id)
+                        card.getTargeter().setTarget(this.getUnitById(params.target.id));
                     this.playCard(player, card);
                 }
                 break;
@@ -294,7 +294,7 @@ export class Game {
             return false;
         this.nextPhase(act.player);
         return true;
-    }
+    } 
 
     public getBlockers() {
         return this.board.getPlayerUnits(this.getInactivePlayer())
