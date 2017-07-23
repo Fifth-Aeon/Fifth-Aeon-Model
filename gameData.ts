@@ -2,21 +2,21 @@ import { Mechanic } from './mechanic';
 import { Card } from './card';
 import { sample } from 'lodash';
 
-import { CardConstructor, allCards } from './cards/allCards';
+import { CardFactory, allCards } from './cards/allCards';
 
 
 class GameData {
-    private cards: Map<string, CardConstructor> = allCards;
+    private cards: Map<string, CardFactory> = allCards;
 
-    public addCardConstructor(id: string, constructor: CardConstructor) {
+    public addCardConstructor(id: string, constructor: CardFactory) {
         this.cards.set(id, constructor);
     }
 
     public getCard(id: string): Card {
-        let constructor = this.cards.get(id);
-        if (!constructor)
+        let factory = this.cards.get(id);
+        if (!factory)
             throw Error('No card with id: ' + id);
-        return new constructor();
+        return factory();
     }
 
     public getRandomDeck(size: number): Card[] {

@@ -16,7 +16,7 @@ export class Player extends Unit {
     public dataId = '';
 
     constructor(private parent: Game, cards: Array<Card>, private playerNumber: number, initResource: Resource, life: number) {
-        super();
+        super('Player', 'Player', '', new Resource(Infinity), null, 0, life, []);
         this.deck = cards;
         this.deck.forEach(card => card.setOwner(playerNumber));
         this.hand = [];
@@ -53,7 +53,7 @@ export class Player extends Unit {
 
     public playResource(played: Resource) {
         this.resource.add(played);
-        this.hasPlayedResource = true; 
+        this.hasPlayedResource = true;
     }
 
     public getLife() {
