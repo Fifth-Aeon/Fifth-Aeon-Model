@@ -7,8 +7,7 @@ import { Mechanic } from './mechanic';
 import { Targeter, Untargeted } from './targeter';
 import { remove } from 'lodash';
 
-
-export abstract class Card {
+export class Card {
     public name: string;
     protected id: string;
     protected set: string;
@@ -18,12 +17,23 @@ export abstract class Card {
     protected cost: Resource;
     protected unit = false;
     protected owner: number;
-    abstract dataId: string;
+    protected dataId: string;
+    protected imageUrl: string;
 
     protected targeter: Targeter<any> = new Untargeted();
 
-    constructor() {
+    constructor(dataId: string, name: string, imageUrl: string, cost: Resource, targeter: Targeter<any>, mechanics: Array<Mechanic>) {
+        this.dataId = dataId;
+        this.name = name;
+        this.imageUrl = imageUrl;
+        this.cost = cost;
+        this.targeter = targeter;
+        this.mechanics = mechanics;
         this.id = Math.random().toString(16)
+    }
+
+    public getImage() {
+        return this.imageUrl;
     }
 
     public isPlayable(game: Game): boolean {
@@ -40,6 +50,10 @@ export abstract class Card {
     }
 
     public isAttacking() {
+        return false;
+    }
+
+    public isBlocking() {
         return false;
     }
 

@@ -1,11 +1,12 @@
 import { Card } from '../card';
-import { DamageCard, BasicUnit } from './testCards';
+import { makeDamageCard, makeBasicUnit } from './testCards';
+import { makeGrowth1, makeGrowth2 } from './growthCards';
 
-export interface CardConstructor {
-    new (): Card;
-}
+export type CardFactory = () => Card;
 
-export const allCards = new Map<string, CardConstructor>();
+export const allCards = new Map<string, CardFactory>();
 
-allCards.set('DamageCard', DamageCard);
-allCards.set('BasicUnit', BasicUnit);
+allCards.set('DamageCard', makeDamageCard);
+allCards.set('BasicUnit', makeBasicUnit);
+allCards.set('G1', makeGrowth1);
+allCards.set('G2', makeGrowth2);

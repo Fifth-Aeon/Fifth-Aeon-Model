@@ -3,8 +3,10 @@ import { Player } from './player';
 import { Card } from './card';
 import { EventGroup, EventType } from './gameEvent';
 import { Resource } from './resource';
+import { Targeter } from './targeter';
+import { Mechanic } from './mechanic';
 
-export abstract class Unit extends Card {
+export class Unit extends Card {
     // Stats
     protected life: number;
     protected maxLife: number;
@@ -18,13 +20,15 @@ export abstract class Unit extends Card {
     // Modifications
     protected events: EventGroup;
 
-    constructor() {
-        super()
+    constructor(dataId: string, name: string, imageUrl:string, cost: Resource, targeter: Targeter<any>, damage: number, maxLife: number, mechanics: Array<Mechanic>) {
+        super(dataId, name, imageUrl, cost, targeter, mechanics);
         this.events = new EventGroup();
         this.exausted = true;
         this.blockedUnitId = null;
         this.unit = true;
-        this.life = this.life || this.maxLife;
+        this.damage = damage;
+        this.maxLife = maxLife;
+        this.life = this.maxLife;
     }
 
     public setExausted(exausted: boolean) {
@@ -41,6 +45,10 @@ export abstract class Unit extends Card {
 
     public isAttacking() {
         return this.attacking;
+    }
+
+    public isBlocking() {
+        return this.blockedUnitId != null;
     }
 
     public isExausted() {
