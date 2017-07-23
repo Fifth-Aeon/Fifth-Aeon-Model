@@ -60,6 +60,6 @@ export class Resource {
             if ((this.types[key] || 0) < necReq)
                 ok = false
         })
-        return ok && this.numeric > req.maxNumeric; 
+        return ok && this.numeric >= req.maxNumeric; 
     }
 }

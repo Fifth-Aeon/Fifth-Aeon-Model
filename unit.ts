@@ -20,7 +20,7 @@ export class Unit extends Card {
     // Modifications
     protected events: EventGroup;
 
-    constructor(dataId: string, name: string, imageUrl:string, cost: Resource, targeter: Targeter<any>, damage: number, maxLife: number, mechanics: Array<Mechanic>) {
+    constructor(dataId: string, name: string, imageUrl:string, cost: Resource, targeter: Targeter, damage: number, maxLife: number, mechanics: Array<Mechanic>) {
         super(dataId, name, imageUrl, cost, targeter, mechanics);
         this.events = new EventGroup();
         this.exausted = true;

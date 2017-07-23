@@ -43,6 +43,10 @@ export class Player extends Unit {
         this.hand.push(card);
     }
 
+    public addToDeck(card: Card) {
+        this.deck.push(card);
+    }
+
     public getPlayerNumber() {
         return this.playerNumber;
     }
