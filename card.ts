@@ -20,9 +20,9 @@ export class Card {
     protected dataId: string;
     protected imageUrl: string;
 
-    protected targeter: Targeter<any> = new Untargeted();
+    protected targeter: Targeter = new Untargeted();
 
-    constructor(dataId: string, name: string, imageUrl: string, cost: Resource, targeter: Targeter<any>, mechanics: Array<Mechanic>) {
+    constructor(dataId: string, name: string, imageUrl: string, cost: Resource, targeter: Targeter, mechanics: Array<Mechanic>) {
         this.dataId = dataId;
         this.name = name;
         this.imageUrl = imageUrl;

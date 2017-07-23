@@ -115,7 +115,7 @@ export class Game {
                     let player = this.players[params.playerNo];
                     let card = this.unpackCard(params.played, params.playerNo)
                     if (params.target.id)
-                        card.getTargeter().setTarget(this.getUnitById(params.target.id));
+                        card.getTargeter().setTarget([this.getUnitById(params.target.id)]);
                     this.playCard(player, card);
                 }
                 break;
@@ -223,7 +223,7 @@ export class Game {
         if (!card)
             return false;
         if (act.params.taget != null)
-            card.getTargeter().setTarget(this.getUnitById(act.params.target));
+            card.getTargeter().setTarget([this.getUnitById(act.params.target)]);
         this.playCard(player, card);
         this.addGameEvent(new SyncGameEvent(GameEventType.playCard, {
             playerNo: act.player,
@@ -294,7 +294,7 @@ export class Game {
             return false;
         this.nextPhase(act.player);
         return true;
-    } 
+    }
 
     public getBlockers() {
         return this.board.getPlayerUnits(this.getInactivePlayer())
