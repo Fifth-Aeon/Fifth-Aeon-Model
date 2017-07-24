@@ -224,8 +224,8 @@ export class Game {
         let card = this.getCardById(player, act.params.id);
         if (!card)
             return false;
-        if (act.params.taget != null)
-            card.getTargeter().setTarget([this.getUnitById(act.params.target)]);
+        if (act.params.target.id != null)
+            card.getTargeter().setTarget([this.getUnitById(act.params.target.id)]);
         this.playCard(player, card);
         this.addGameEvent(new SyncGameEvent(GameEventType.playCard, {
             playerNo: act.player,
