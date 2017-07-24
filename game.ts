@@ -88,6 +88,8 @@ export class Game {
         this.attackers = [];
         this.blockers = [];
 
+        this.gameEvents = new EventGroup();
+
         if (client) {
             this.players.forEach(player => player.disableDraw());
         }
