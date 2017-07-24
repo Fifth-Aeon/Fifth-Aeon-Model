@@ -1,15 +1,17 @@
 import { Mechanic } from '../mechanic';
 import { Card } from '../card';
-import { Unit } from '../unit';
+import { Unit, UnitType } from '../unit';
 import { SingleUnit, Untargeted } from '../targeter';
 import { DealDamage } from './mechanics/dealDamage';
+import { Affinity } from './mechanics/affinity';
 import { Resource } from '../resource';
 
-export function makeGrowth1() {
+export function spiderHatchling() {
     return new Unit(
-        'G1',
-        'Growth Unit 1',
+        'SpiderHatchling',
+        'Spider Hatchling',
         'growth.png',
+        UnitType.Spider,
         new Resource(1, 0, {
             Growth: 1,
             Necrosis: 0,
@@ -17,25 +19,26 @@ export function makeGrowth1() {
             Synthesis: 0
         }),
         new Untargeted(),
-        2, 2,
-        []
-    ); 
-}
-
-
-export function makeGrowth2() {
+        1, 2,
+        [new Affinity('Gain +1 damage.', (unit, game) => unit.buff(1, 0))]
+    );
+} 
+ 
+export function wolfPup() {
     return new Unit(
-        'G2',
-        'Growth Unit 2',
+        'WolfPup',
+        'Wolf Pup',
         'growth.png',
-        new Resource(2, 0, {
-            Growth: 2,
+        UnitType.Wolf,
+        new Resource(1, 0, {
+            Growth: 1,
             Necrosis: 0,
             Renewal: 0,
             Synthesis: 0
         }),
         new Untargeted(),
-        3, 3,
-        []
+        2, 1,
+        [new Affinity('Gain +1 maximum life.', (unit, game) => unit.buff(0, 1))]
     );
 }
+

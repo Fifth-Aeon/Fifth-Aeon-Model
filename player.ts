@@ -1,5 +1,5 @@
 import { Card } from './card';
-import { Unit } from './unit';
+import { Unit, UnitType } from './unit';
 import { sample, remove } from 'lodash';
 import { GameFormat } from './gameFormat';
 import { Game, SyncGameEvent, GameEventType } from './game';
@@ -16,7 +16,7 @@ export class Player extends Unit {
     public dataId = '';
 
     constructor(private parent: Game, cards: Array<Card>, private playerNumber: number, initResource: Resource, life: number) {
-        super('Player', 'Player', '', new Resource(Infinity), null, 0, life, []);
+        super('Player', 'Player', '', UnitType.Player, new Resource(Infinity), null, 0, life, []);
         this.deck = cards;
         this.deck.forEach(card => card.setOwner(playerNumber));
         this.hand = [];

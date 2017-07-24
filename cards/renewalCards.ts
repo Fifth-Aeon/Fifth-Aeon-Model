@@ -21,20 +21,3 @@ export function armstice() {
     );
 }
 
-
-export function makeGrowth2() {
-    return new Unit(
-        'G2',
-        'Growth Unit 2',
-        'growth.png',
-        new Resource(2, 0, {
-            Growth: 2,
-            Necrosis: 0,
-            Renewal: 0,
-            Synthesis: 0
-        }),
-        new Untargeted(),
-        3, 3,
-        []
-    );
-}

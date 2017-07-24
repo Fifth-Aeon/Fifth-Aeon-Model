@@ -6,7 +6,14 @@ import { Resource } from './resource';
 import { Targeter } from './targeter';
 import { Mechanic } from './mechanic';
 
+export enum UnitType {
+    Player, Wolf, Spider, Automaton
+}
+
 export class Unit extends Card {
+
+    private unitType: UnitType
+
     // Stats
     protected life: number;
     protected maxLife: number;
@@ -20,8 +27,9 @@ export class Unit extends Card {
     // Modifications
     protected events: EventGroup;
 
-    constructor(dataId: string, name: string, imageUrl:string, cost: Resource, targeter: Targeter, damage: number, maxLife: number, mechanics: Array<Mechanic>) {
+    constructor(dataId: string, name: string, imageUrl: string, type: UnitType, cost: Resource, targeter: Targeter, damage: number, maxLife: number, mechanics: Array<Mechanic>) {
         super(dataId, name, imageUrl, cost, targeter, mechanics);
+        this.unitType = type;
         this.events = new EventGroup();
         this.exausted = true;
         this.blockedUnitId = null;
@@ -32,7 +40,7 @@ export class Unit extends Card {
     }
 
     public getType() {
-        return '';
+        return this.unitType;
     }
 
     public setExausted(exausted: boolean) {
@@ -81,6 +89,11 @@ export class Unit extends Card {
         return this.blockedUnitId;
     }
 
+    public buff(damage: number, maxLife: number) {
+        this.damage += damage;
+        this.maxLife += maxLife;
+        this.life = Math.min(this.life, this.maxLife);
+    }
 
     public play(game: Game) {
         super.play(game);

@@ -1,6 +1,6 @@
 import { Mechanic } from '../mechanic';
 import { Card } from '../card';
-import { Unit } from '../unit';
+import { Unit, UnitType } from '../unit';
 import { SingleUnit, Untargeted } from '../targeter';
 import { DealDamage } from './mechanics/dealDamage';
 import { Resource } from '../resource';
@@ -23,6 +23,7 @@ export function makeBasicUnit() {
         'BasicUnit',
         'Test Unit',
         'growth.png',
+        UnitType.Automaton,
         new Resource(1),
         new Untargeted(),
         2, 2,
