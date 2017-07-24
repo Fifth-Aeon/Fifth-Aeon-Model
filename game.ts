@@ -4,7 +4,7 @@ import { Card } from './card';
 import { Unit } from './unit';
 import { GameFormat } from './gameFormat';
 import { Resource } from './resource';
-import { GameEvent, EventType } from './gameEvent';
+import { GameEvent, EventType, EventGroup } from './gameEvent';
 import { data } from './gameData';
 
 import { Serialize, Deserialize } from 'cerialize';
@@ -63,6 +63,8 @@ export class Game {
     private blockers: [Unit, Unit][];
     // A map of cards loaded from the server so far
     private cardPool: Map<string, Card>;
+
+    public gameEvents: EventGroup;
 
     /**
      * Constructs a game given a format. The format
@@ -383,16 +385,19 @@ export class Game {
         this.board.removeUnit(unit);
     }
 
-    public playUnit(ent: Unit, owner: number) {
-        this.addUnit(ent, owner);
+    public playUnit(unit: Unit, owner: number) {
+        this.addUnit(unit, owner);
     }
 
     public addUnit(unit: Unit, owner: number) {
-        unit.getEvents().addEvent(null, new GameEvent(EventType.onDeath, (params) => {
+        unit.getEvents().addEvent(null, new GameEvent(EventType.Death, (params) => {
             this.removeUnit(unit);
             return params;
         }));
         this.board.addUnit(unit);
+        this.gameEvents.trigger(EventType.UnitEntersPlay, new Map<string, any>([
+            ['enteringUnit', unit]
+        ]));
     }
 
     public nextTurn() {

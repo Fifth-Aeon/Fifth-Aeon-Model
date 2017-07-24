@@ -31,6 +31,10 @@ export class Unit extends Card {
         this.life = this.maxLife;
     }
 
+    public getType() {
+        return '';
+    }
+
     public setExausted(exausted: boolean) {
         this.exausted = exausted;
     }
@@ -104,7 +108,7 @@ export class Unit extends Card {
             ['attacker', this],
             ['defender', target]
         ]);
-        let damage: number = this.events.trigger(EventType.onAttack, eventParams).get('damage');
+        let damage: number = this.events.trigger(EventType.Attack, eventParams).get('damage');
 
         // Remove actions and deal damage
         this.dealDamage(target, damage);
@@ -125,6 +129,6 @@ export class Unit extends Card {
     }
 
     public die() {
-        this.events.trigger(EventType.onDeath, new Map());
+        this.events.trigger(EventType.Death, new Map());
     }
 }

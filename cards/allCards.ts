@@ -12,4 +12,4 @@ allCards.set('DamageCard', makeDamageCard);
 allCards.set('BasicUnit', makeBasicUnit);
 allCards.set('G1', makeGrowth1);
 allCards.set('G2', makeGrowth2);
-allCards.set('armstice', armstice);
+allCards.set('Armstice', armstice);

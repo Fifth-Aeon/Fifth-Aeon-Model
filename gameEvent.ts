@@ -5,20 +5,17 @@ import { Game } from './game';
 
 
 export enum EventType {
-    onDamaged, onDeath, onPlay, onAttack, onKillingAttack,
-    onStartOfTurn, onEndOfTurn, onMinionSummoned, onMinionDeath
+    UnitEntersPlay, StartOfTurn, EndOfTurn,
+    Death, Attack
 }
-
-// Damaged, Death, Enter, Attacks, Counterattacks, Start of turn, End of turn, Minion summones, kills 
 
 export class GameEvent {
     public source: Mechanic | null;
     constructor(
         public type: EventType,
-        public trigger: (params: Map<string, any>) => Map<string, any>
+        public trigger: (params: (Map<string, any>)) => Map<string, any>
     ) { }
 }
-
 
 export class EventGroup {
     private events: Map<EventType, Array<GameEvent>>
