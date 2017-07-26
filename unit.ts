@@ -39,6 +39,11 @@ export class Unit extends Card {
         this.life = this.maxLife;
     }
 
+    public addMechanic(mechanic: Mechanic, game: Game) {
+        this.mechanics.push(mechanic);
+        mechanic.run(this, game)
+    }
+
     public getType() {
         return this.unitType;
     }
@@ -126,6 +131,9 @@ export class Unit extends Card {
         // Remove actions and deal damage
         this.dealDamage(target, damage);
         target.dealDamage(this, target.damage);
+
+
+
         this.setExausted(true);
         target.setExausted(true);
     }
@@ -139,6 +147,13 @@ export class Unit extends Card {
 
     public dealDamage(target: Unit, amount: number) {
         target.takeDamage(amount);
+        if (amount > 0) {
+            this.events.trigger(EventType.DealDamage, new Map<string, any>([
+                ['source', this],
+                ['target', target],
+                ['amount', amount]
+            ]));
+        }
     }
 
     public die() {
