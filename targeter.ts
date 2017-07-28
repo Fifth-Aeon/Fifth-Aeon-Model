@@ -13,13 +13,12 @@ export abstract class Targeter {
         return this.target;
     }
     abstract getText(): string;
-    abstract getValidTargets(game: Game): Array<Unit>;
+    public getValidTargets(game: Game) {
+        return new Array<Unit>();
+    }
 }
 
 export class Untargeted extends Targeter {
-    public getValidTargets(game: Game) {
-        return [];
-    }
     public getText() {
         return '';
     }
@@ -38,9 +37,6 @@ export class SingleUnit extends Targeter {
 }
 
 export class AllUnits extends Targeter {
-    public getValidTargets(game: Game) {
-        return [];
-    }
     public getText() {
         return 'all units';
     }
@@ -51,12 +47,10 @@ export class AllUnits extends Targeter {
         return game.getBoard().getAllUnits();
     }
 }
+
 export class AllUnitsOtherUnits extends Targeter {
-    constructor (private owner: Unit) {
+    constructor(private owner: Unit) {
         super();
-    }
-    public getValidTargets(game: Game) {
-        return [];
     }
     public getText() {
         return 'all other units';

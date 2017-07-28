@@ -24,7 +24,7 @@ export class Affinity extends Mechanic {
                 this.triggered = true;
             }
             return params;
-        }))
+        }));
     }
 
     public remove(card: Card, game: Game) {
@@ -34,6 +34,6 @@ export class Affinity extends Mechanic {
     public getText(card: Card) {
         if (this.triggered)
             return '';
-        return `Affinity: ${this.effectText}.`
+        return `Affinity: ${this.effectText}.`;
     }
 }

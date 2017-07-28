@@ -41,9 +41,10 @@ export class Unit extends Card {
         this.life = this.maxLife;
     }
 
-    public addMechanic(mechanic: Mechanic, game: Game) {
+    public addMechanic(mechanic: Mechanic, game: Game | null = null) {
         this.mechanics.push(mechanic);
-        mechanic.run(this, game)
+        if (game != null)
+            mechanic.run(this, game)
     }
 
     public getType() {
