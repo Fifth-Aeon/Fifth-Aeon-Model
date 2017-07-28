@@ -12,7 +12,7 @@ export function spiderHatchling() {
     return new Unit(
         'SpiderHatchling',
         'Spider Hatchling',
-        'growth.png',
+        'masked-spider.png',
         UnitType.Spider,
         new Resource(1, 0, {
             Growth: 1,
@@ -22,15 +22,15 @@ export function spiderHatchling() {
         }),
         new Untargeted(),
         1, 2,
-        [new Affinity('Gain +1/+0.', (unit, game) => unit.buff(1, 0))]
+        [new Affinity('Gain +1/+0', (unit, game) => unit.buff(1, 0))]
     );
 } 
 
 export function venomousSpiderling() {
     return new Unit(
-        'VenomousSpiderling',
-        'Venomous Spiderling',
-        'growth.png',
+        'Spiderling',
+        'Toxic Spiderling',
+        'hanging-spider.png',
         UnitType.Spider,
         new Resource(1, 0, {
             Growth: 1,
@@ -48,7 +48,7 @@ export function wolfPup() {
     return new Unit(
         'WolfPup',
         'Wolf Pup',
-        'growth.png',
+        'wolf-head.png',
         UnitType.Wolf,
         new Resource(1, 0, {
             Growth: 1,
@@ -58,7 +58,7 @@ export function wolfPup() {
         }),
         new Untargeted(),
         2, 1,
-        [new Affinity('Gain +0/+1.', (unit, game) => unit.buff(0, 1))]
+        [new Affinity('Gain +0/+1', (unit, game) => unit.buff(0, 1))]
     );
 }
 

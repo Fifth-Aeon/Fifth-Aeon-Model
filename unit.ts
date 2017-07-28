@@ -7,7 +7,7 @@ import { Targeter } from './targeter';
 import { Mechanic } from './mechanic';
 
 export enum UnitType {
-    Player, Wolf, Spider, Automaton
+    Player, Human, Wolf, Spider, Automaton
 }
 
 export class Unit extends Card {
@@ -100,7 +100,7 @@ export class Unit extends Card {
     public buff(damage: number, maxLife: number) {
         this.damage += damage;
         this.maxLife += maxLife;
-        this.life = Math.min(this.life, this.maxLife);
+        this.life += maxLife;
         if (this.life <= 0) {
             this.die();
         }

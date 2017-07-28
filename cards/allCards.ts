@@ -12,8 +12,8 @@ function addFactory(factory: CardFactory) {
     allCards.set(factory().getDataId(), factory);
 }
 
-addFactory(makeDamageCard);
-addFactory(makeBasicUnit);
+//addFactory(makeDamageCard);
+//addFactory(makeBasicUnit);
 
 addFactory(armstice);
 

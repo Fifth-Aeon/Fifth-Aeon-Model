@@ -9,7 +9,7 @@ export function armstice() {
     return new Card(
         'Armstice',
         'Armstice',
-        'renewal.png',
+        'tied-scroll.png',
         new Resource(6, 0, {
             Growth: 0,
             Necrosis: 0,

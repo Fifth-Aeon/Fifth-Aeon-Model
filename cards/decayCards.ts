@@ -8,9 +8,9 @@ import { Resource } from '../resource';
 export function princeOfDecay() {
     let unit = new Unit(
         'PriceOfDecay',
-        'Price of Decay',
-        'necrosis.png',
-        UnitType.Spider,
+        'Prince of Decay',
+        'cultist.png',
+        UnitType.Human,
         new Resource(8, 0, {
             Growth: 0,
             Necrosis: 6,

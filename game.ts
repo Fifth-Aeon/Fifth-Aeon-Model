@@ -134,7 +134,7 @@ export class Game {
                 this.refresh();
                 break;
             case GameEventType.playResource:
-                this.players[params.playerNo].getPool().add(params.resource)
+                this.players[params.playerNo].playResource(params.resource);
                 break;
             case GameEventType.attackToggled:
                 if (params.player != playerNumber)

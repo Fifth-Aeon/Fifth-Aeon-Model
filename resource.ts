@@ -26,6 +26,14 @@ export class Resource {
         };
     }
 
+    public getNumeric() {
+        return this.numeric;
+    }
+
+    public getTyped() {
+        return Object.keys(this.types).map(key => key[0].repeat(this.types[key])).join('').split('');
+    }
+
     public asCost(): string {
         let types = Object.keys(this.types).map(key => key[0].repeat(this.types[key])).join('')
         return `${this.numeric.toString()} ${types}`;
@@ -60,6 +68,6 @@ export class Resource {
             if ((this.types[key] || 0) < necReq)
                 ok = false
         })
-        return ok && this.numeric >= req.numeric; 
+        return ok && this.numeric >= req.numeric;
     }
 }

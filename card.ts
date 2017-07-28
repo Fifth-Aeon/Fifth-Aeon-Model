@@ -32,6 +32,10 @@ export class Card {
         this.id = Math.random().toString(16)
     }
 
+    public getCost() {
+        return this.cost;
+    }
+
     public getImage() {
         return this.imageUrl;
     }
