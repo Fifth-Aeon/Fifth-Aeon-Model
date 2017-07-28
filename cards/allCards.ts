@@ -2,6 +2,7 @@ import { Card } from '../card';
 import { makeDamageCard, makeBasicUnit } from './testCards';
 import { wolfPup, spiderHatchling, venomousSpiderling } from './growthCards';
 import { armstice } from './renewalCards';
+import { princeOfDecay } from './decayCards';
 
 export type CardFactory = () => Card;
 
@@ -13,7 +14,11 @@ function addFactory(factory: CardFactory) {
 
 addFactory(makeDamageCard);
 addFactory(makeBasicUnit);
+
+addFactory(armstice);
+
 addFactory(wolfPup);
 addFactory(spiderHatchling);
-addFactory(armstice);
 addFactory(venomousSpiderling);
+
+addFactory(princeOfDecay);

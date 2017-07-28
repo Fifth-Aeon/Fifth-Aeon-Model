@@ -21,6 +21,7 @@ export class Unit extends Card {
 
     // Actions
     protected exausted: boolean;
+    protected ready: boolean;
     protected attacking: boolean;
     protected blockedUnitId: string | null;
 
@@ -31,7 +32,8 @@ export class Unit extends Card {
         super(dataId, name, imageUrl, cost, targeter, mechanics);
         this.unitType = type;
         this.events = new EventGroup();
-        this.exausted = true;
+        this.exausted = false;
+        this.ready = false;
         this.blockedUnitId = null;
         this.unit = true;
         this.damage = damage;
@@ -79,7 +81,7 @@ export class Unit extends Card {
     }
 
     public canAttack() {
-        return !this.exausted;
+        return this.ready && !this.exausted;
     }
 
     public getEvents() {
@@ -98,6 +100,9 @@ export class Unit extends Card {
         this.damage += damage;
         this.maxLife += maxLife;
         this.life = Math.min(this.life, this.maxLife);
+        if (this.life <= 0) {
+            this.die();
+        }
     }
 
     public play(game: Game) {
@@ -106,6 +111,7 @@ export class Unit extends Card {
     }
 
     public refresh() {
+        this.ready = true;
         this.exausted = false;
         this.life = this.maxLife;
         this.setBlocking(null);
@@ -131,8 +137,6 @@ export class Unit extends Card {
         // Remove actions and deal damage
         this.dealDamage(target, damage);
         target.dealDamage(this, target.damage);
-
-
 
         this.setExausted(true);
         target.setExausted(true);

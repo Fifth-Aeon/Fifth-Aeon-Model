@@ -51,3 +51,20 @@ export class AllUnits extends Targeter {
         return game.getBoard().getAllUnits();
     }
 }
+export class AllUnitsOtherUnits extends Targeter {
+    constructor (private owner: Unit) {
+        super();
+    }
+    public getValidTargets(game: Game) {
+        return [];
+    }
+    public getText() {
+        return 'all other units';
+    }
+    public needsInput() {
+        return false;
+    }
+    public getTargets(game: Game): Array<Unit> {
+        return game.getBoard().getAllUnits().filter(unit => unit != this.owner);
+    }
+}

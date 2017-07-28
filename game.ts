@@ -414,6 +414,9 @@ export class Game {
         let currentPlayerEntities = this.getCurrentPlayerUnits();
         currentPlayerEntities.forEach(unit => unit.refresh());
         this.players[this.turn].startTurn();
+        this.gameEvents.trigger(EventType.StartOfTurn, new Map([
+            ['player', this.turn]
+        ]))
     }
 
     // Getters and setters ---------------------------------------------------

@@ -25,13 +25,30 @@ export class Poisoned extends Mechanic {
     }
 }
 
+export class PoisonTarget extends Mechanic {
+    constructor(private targeter: Targeter) {
+        super();
+    }
+
+    public run(card: Card, game: Game) {
+        for (let target of this.targeter.getTargets(game)) {
+            target.addMechanic(new Poisoned(), game);
+        }
+    }
+
+    public getText(card: Card) {
+        return `Poison ${this.targeter.getText()}.`
+    }
+}
+
+
 export class Venomous extends Mechanic {
     public run(card: Card, game: Game) {
         let unit = card as Unit;
         unit.getEvents().addEvent(this, new GameEvent(EventType.DealDamage, (params) => {
             let target = params.get('target') as Unit;
             if (target.getType() != UnitType.Player)
-                unit.addMechanic(new Poisoned(), game)
+                target.addMechanic(new Poisoned(), game)
             return params;
         }));
     }
