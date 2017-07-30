@@ -1,8 +1,10 @@
 import { Card } from '../card';
+
 import { makeDamageCard, makeBasicUnit } from './testCards';
 import { wolfPup, spiderHatchling, venomousSpiderling } from './growthCards';
-import { armstice, callOfJustice } from './renewalCards';
+import { armstice, callOfJustice, ruralMonk } from './renewalCards';
 import { princeOfDecay, poison, crawlingZombie, unbury } from './decayCards';
+import { insight } from './synthCards';
 
 export type CardFactory = () => Card;
 
@@ -17,6 +19,7 @@ addFactory(makeDamageCard);
 
 addFactory(armstice);
 addFactory(callOfJustice);
+addFactory(ruralMonk);
 
 addFactory(wolfPup);
 addFactory(spiderHatchling);
@@ -26,3 +29,5 @@ addFactory(princeOfDecay);
 addFactory(poison);
 addFactory(crawlingZombie);
 addFactory(unbury);
+
+addFactory(insight);

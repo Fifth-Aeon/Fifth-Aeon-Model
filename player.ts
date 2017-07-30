@@ -104,8 +104,22 @@ export class Player extends Unit {
         card.play(game);
     }
 
-    public removeCard(card: Card) {
+    public removeCardFromHand(card: Card) {
         remove(this.hand, (toRem: Card) => toRem === card);
+    }
+
+    public getDeck() {
+        return this.deck;
+    }
+
+    public replace(game: Game, count:number) {
+        game.promptCardChoice(this.getPlayerNumber(), this.hand, count, (cards: Card[]) => {
+            cards.forEach(card => {
+                this.removeCardFromHand(card);
+                this.addToDeck(card);
+                this.drawCard();
+            });
+        });
     }
 
     public drawCard() {

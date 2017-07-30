@@ -10,11 +10,13 @@ export class ReturnFromCrypt extends Mechanic {
     }
 
     public run(card: Card, game: Game) {
-        let validCards = game.getCrypt(card.getOwner()).filter(this.filter);
+        let crypt = game.getCrypt(card.getOwner());
+        let validCards = crypt.filter(this.filter);
         let player = game.getPlayer(card.getOwner());
         game.promptCardChoice(card.getOwner(), validCards, 1, (raised: Card[]) => {
             raised.forEach(raisedCard => {
                 player.drawGeneratedCard(raisedCard);
+                crypt.splice(crypt.indexOf(raisedCard), 1);
             });
         });
     }

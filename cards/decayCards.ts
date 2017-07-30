@@ -63,7 +63,7 @@ export function unbury() {
     return new Card(
         'Unbury',
         'Unbury',
-        'necrosis.png',
+        'coffin.png',
         new Resource(1, 0, {
             Growth: 0,
             Necrosis: 1,
