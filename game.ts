@@ -17,12 +17,12 @@ const game_phase_count = 4;
 
 export enum GameActionType {
     mulligan, playResource, playCard, pass, concede, activateAbility,
-    toggleAttack, declareBlockers, distributeDamage,
+    toggleAttack, declareBlockers, distributeDamage, CardChoice,
     declareTarget, Quit
 }
 
 export enum GameEventType {
-    start, attackToggled, turnStart, phaseChange, playResource, mulligan, playCard, block, draw, CardChoice
+    start, attackToggled, turnStart, phaseChange, playResource, mulligan, playCard, block, draw, ChoiceMade
 }
 
 export interface GameAction {
@@ -68,16 +68,31 @@ export class Game {
 
     public gameEvents: EventGroup;
 
-    private actionOnChoice: (cards: Card[]) => void;
+    private deferedChoice: (cards: Card[]) => void;
+    private waitingForPlayerChoice: number | null = null;
 
     private deferChoice(player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) {
-        this.actionOnChoice = callback;
+        this.deferedChoice = callback;
+        this.waitingForPlayerChoice = player;
     }
 
     public promptCardChoice: (player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) => void;
 
+    public setDeferedChoice(callback: (cards: Card[]) => void) {
+        this.deferedChoice = callback;
+    }
+    private makeDeferedChoice(choiceIds: string[]) {
+        this.deferedChoice(choiceIds.map((id: string) => this.getCardById(id)));
+    }
 
     private makeCardChocie(act: GameAction): boolean {
+        if (act.player != this.waitingForPlayerChoice)
+            return false;
+        this.makeDeferedChoice(act.params.choice);
+        this.addGameEvent(new SyncGameEvent(GameEventType.ChoiceMade, {
+            player: act.player,
+            choice: act.params.choice
+        }));
         return true;
     }
 
@@ -117,6 +132,7 @@ export class Game {
         this.addActionHandeler(GameActionType.playCard, this.playCardAction);
         this.addActionHandeler(GameActionType.toggleAttack, this.toggleAttack);
         this.addActionHandeler(GameActionType.declareBlockers, this.declareBlocker);
+        this.addActionHandeler(GameActionType.CardChoice, this.makeCardChocie);
     }
 
     // Syncronization --------------------------------------------------------
@@ -167,6 +183,11 @@ export class Game {
                 this.phase = params.phase;
                 if (this.phase === GamePhase.play2)
                     this.resolveCombat();
+                break;
+            case GameEventType.ChoiceMade:
+                if (params.player != playerNumber)
+                    this.makeDeferedChoice(params.choice);
+                break;
 
         }
     }
@@ -231,8 +252,12 @@ export class Game {
         return this.players[this.turn];
     }
 
-    private getCardById(player: Player, id: string): Card | undefined {
+    private getPlayerCardById(player: Player, id: string): Card | undefined {
         return player.getHand().find(card => card.getId() == id);
+    }
+
+    private getCardById(id: string): Card | undefined {
+        return this.cardPool.get(id);
     }
 
     public getUnitById(id: string): Unit | undefined {
@@ -251,7 +276,7 @@ export class Game {
         let player = this.players[act.player];
         if (!this.isPlayerTurn(act.player))
             return false;
-        let card = this.getCardById(player, act.params.id);
+        let card = this.getPlayerCardById(player, act.params.id);
         if (!card)
             return false;
         if (act.params.targetIds != null) {
