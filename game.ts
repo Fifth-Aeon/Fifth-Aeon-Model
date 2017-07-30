@@ -242,14 +242,15 @@ export class Game {
         let card = this.getCardById(player, act.params.id);
         if (!card)
             return false;
-        if (act.params.targetIds != null)
+        if (act.params.targetIds != null) {
             card.getTargeter().setTarget(act.params.targetIds
                 .map((id: string) => this.getUnitById(id)));
+        }
         this.playCard(player, card);
         this.addGameEvent(new SyncGameEvent(GameEventType.playCard, {
             playerNo: act.player,
             played: card.getPrototype(),
-            target: act.params.target
+            targetIds: act.params.targetIds
         }));
         return true;
     }
