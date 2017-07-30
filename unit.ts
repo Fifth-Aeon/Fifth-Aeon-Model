@@ -161,6 +161,16 @@ export class Unit extends Card {
         }
     }
 
+    public leaveBoard(game:Game) {
+        this.blockedUnitId = null;
+        this.life = this.maxLife;
+        this.ready = false;
+        this.exausted = false;
+        this.mechanics.forEach(mechanic => {
+            mechanic.remove(this, game);
+        });
+    }
+
     public die() {
         this.events.trigger(EventType.Death, new Map());
     }

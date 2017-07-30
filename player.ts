@@ -118,4 +118,8 @@ export class Player extends Unit {
         this.parent.addGameEvent(new SyncGameEvent(GameEventType.draw, { playerNo: this.playerNumber, card: drawn.getPrototype() }));
         this.hand.push(drawn);
     }
+
+    public drawGeneratedCard(card: Card) {
+        this.hand.push(card);
+    }
 }

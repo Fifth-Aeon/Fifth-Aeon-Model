@@ -41,6 +41,8 @@ export class Game {
     public id: string;
     // A board containing units in play
     private board: Board;
+    // Where dead cards go
+    private crypt: [Card[], Card[]]
     // The number of player whose turn it currently is
     private turn: number;
     // The number of turns that have passed from the games start
@@ -87,6 +89,7 @@ export class Game {
         this.events = [];
         this.attackers = [];
         this.blockers = [];
+        this.crypt = [[], []];
 
         this.gameEvents = new EventGroup();
 
@@ -160,6 +163,18 @@ export class Game {
         card.setOwner(owner);
         this.cardPool.set(proto.id, card);
         return card;
+    }
+
+    public addToCrypt(card: Card) {
+        this.crypt[card.getOwner()].push(card);
+    }
+
+    public getCrypt(player: number) {
+        return this.crypt[player];
+    }
+
+    public promptCardChoice(choices:Card[], count: number, callback: (cards:Card[]) => void) {
+        
     }
 
     /**
@@ -393,7 +408,9 @@ export class Game {
 
     public addUnit(unit: Unit, owner: number) {
         unit.getEvents().addEvent(null, new GameEvent(EventType.Death, (params) => {
+            unit.leaveBoard(this);
             this.removeUnit(unit);
+            this.addToCrypt(unit);
             return params;
         }));
         this.board.addUnit(unit);

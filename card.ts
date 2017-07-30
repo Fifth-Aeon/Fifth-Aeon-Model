@@ -73,7 +73,7 @@ export class Card {
         game.getPlayer(this.owner).reduceResource(this.cost);
         this.mechanics.forEach(mechanic => mechanic.run(this, game));
         if (!this.isUnit()) {
-            // move to crypt
+            game.addToCrypt(this);
         }
     }
 
