@@ -11,9 +11,9 @@ export class RenewalMCTargeter extends Targeter {
         let owner = game.getPlayer(card.getOwner());
         return game.getBoard()
             .getPlayerUnits(game.getOtherPlayerNumber(card.getOwner()))
-            .filter(unit => {
-                unit.getCost().getNumeric() < owner.getPool().getOfType('Renewal');
-            })
+            .filter(unit => 
+                unit.getCost().getNumeric() < owner.getPool().getOfType('Renewal')
+            )
     }
     public getText() {
         return 'target unit with cost less than your renewal';

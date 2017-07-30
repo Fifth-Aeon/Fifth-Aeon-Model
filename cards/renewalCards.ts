@@ -24,18 +24,19 @@ export function armstice() {
 
 
 export function callOfJustice() {
+    let targeter = new RenewalMCTargeter();
     return new Card(
         'CallOfJustice',
         'Call of Justice',
-        'tied-scroll.png',
+        'king.png',
         new Resource(4, 0, {
             Growth: 0,
             Necrosis: 0,
             Renewal: 3,
             Synthesis: 0
         }),
-        new Untargeted(),
-        [new MindControl(new RenewalMCTargeter())]
+        targeter,
+        [new MindControl(targeter)]
     );
 }
 
