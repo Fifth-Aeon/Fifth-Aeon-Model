@@ -121,8 +121,9 @@ export class Game {
                 if (params.playerNo != playerNumber) {
                     let player = this.players[params.playerNo];
                     let card = this.unpackCard(params.played, params.playerNo)
-                    if (params.target.id)
-                        card.getTargeter().setTarget([this.getUnitById(params.target.id)]);
+                    if (params.targetIds)
+                        card.getTargeter().setTarget(params.targetIds
+                            .map((id: string) => this.getUnitById(id)));
                     this.playCard(player, card);
                 }
                 break;
@@ -173,8 +174,8 @@ export class Game {
         return this.crypt[player];
     }
 
-    public promptCardChoice(choices:Card[], count: number, callback: (cards:Card[]) => void) {
-        
+    public promptCardChoice(choices: Card[], count: number, callback: (cards: Card[]) => void) {
+
     }
 
     /**
@@ -241,8 +242,9 @@ export class Game {
         let card = this.getCardById(player, act.params.id);
         if (!card)
             return false;
-        if (act.params.target.id != null)
-            card.getTargeter().setTarget([this.getUnitById(act.params.target.id)]);
+        if (act.params.targetIds != null)
+            card.getTargeter().setTarget(act.params.targetIds
+                .map((id: string) => this.getUnitById(id)));
         this.playCard(player, card);
         this.addGameEvent(new SyncGameEvent(GameEventType.playCard, {
             playerNo: act.player,
