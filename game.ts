@@ -70,11 +70,14 @@ export class Game {
 
     private actionOnChoice: (cards: Card[]) => void;
 
-    private deferChoice(choices: Card[], count: number, callback: (cards: Card[]) => void) {
+    private deferChoice(player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) {
         this.actionOnChoice = callback;
     }
 
-      private makeCardChocie(act: GameAction): boolean {
+    public promptCardChoice: (player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) => void;
+
+
+    private makeCardChocie(act: GameAction): boolean {
         return true;
     }
 
