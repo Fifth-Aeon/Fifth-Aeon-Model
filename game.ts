@@ -22,7 +22,7 @@ export enum GameActionType {
 }
 
 export enum GameEventType {
-    start, attackToggled, turnStart, phaseChange, playResource, mulligan, playCard, block, draw
+    start, attackToggled, turnStart, phaseChange, playResource, mulligan, playCard, block, draw, CardChoice
 }
 
 export interface GameAction {
@@ -68,6 +68,16 @@ export class Game {
 
     public gameEvents: EventGroup;
 
+    private actionOnChoice: (cards: Card[]) => void;
+
+    private deferChoice(choices: Card[], count: number, callback: (cards: Card[]) => void) {
+        this.actionOnChoice = callback;
+    }
+
+      private makeCardChocie(act: GameAction): boolean {
+        return true;
+    }
+
     /**
      * Constructs a game given a format. The format
      * informs how the game is initlized eg how
@@ -96,6 +106,8 @@ export class Game {
         if (client) {
             this.players.forEach(player => player.disableDraw());
         }
+
+        this.promptCardChoice = this.deferChoice;
 
         this.addActionHandeler(GameActionType.pass, this.pass);
         this.addActionHandeler(GameActionType.playResource, this.playResource);
@@ -174,7 +186,6 @@ export class Game {
         return this.crypt[player];
     }
 
-    public promptCardChoice: (choices: Card[], count: number, callback: (cards: Card[]) => void) => void;
 
     /**
      * 
