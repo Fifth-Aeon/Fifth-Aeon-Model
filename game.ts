@@ -174,9 +174,7 @@ export class Game {
         return this.crypt[player];
     }
 
-    public promptCardChoice(choices: Card[], count: number, callback: (cards: Card[]) => void) {
-
-    }
+    public promptCardChoice: (choices: Card[], count: number, callback: (cards: Card[]) => void) => void;
 
     /**
      * 

@@ -20,6 +20,6 @@ export class ReturnFromCrypt extends Mechanic {
     }
 
     public getText(card: Card) {
-        return `Raise`
+        return `Return a unit from your crypt to your hand.`
     }
 }
