@@ -3,6 +3,7 @@ import { Card } from '../card';
 import { Unit, UnitType } from '../unit';
 import { SingleUnit, Untargeted, AllUnits, AllUnitsOtherUnits } from '../targeter';
 import { PoisonTarget } from './mechanics/poison';
+import { ReturnFromCrypt } from './mechanics/returnFromCrypt';
 import { Resource } from '../resource';
 
 export function poison() {
@@ -11,7 +12,7 @@ export function poison() {
         'Poison',
         'Poison',
         'death-juice.png',
-        new Resource(1, 0, {
+        new Resource(2, 0, {
             Growth: 0,
             Necrosis: 1,
             Renewal: 0,
@@ -57,4 +58,21 @@ export function princeOfDecay() {
         [new PoisonTarget(new AllUnitsOtherUnits())]
     )
 }
+
+export function unbury() {
+    return new Card(
+        'Unbury',
+        'Unbury',
+        'necrosis.png',
+        new Resource(1, 0, {
+            Growth: 0,
+            Necrosis: 1,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        [new ReturnFromCrypt((card) => card.isUnit())]
+    )
+}
+
 
