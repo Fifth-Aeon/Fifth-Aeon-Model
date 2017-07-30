@@ -6,11 +6,11 @@ import { Unit } from '../../unit';
 
 export class DealDamage extends Mechanic {
     constructor(private amount: number, private targeter: Targeter) {
-        super();
+        super(); 
     }
 
     public run(card: Card, game: Game) {
-        for (let target of this.targeter.getTargets(game)) {
+        for (let target of this.targeter.getTargets(card, game)) {
             target.takeDamage(this.amount);
         }
     }

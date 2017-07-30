@@ -5,12 +5,12 @@ import { Card } from '../../card';
 import { Unit } from '../../unit';
 
 export class ShuffleIntoDeck extends Mechanic {
-    constructor(private targeter) {
+    constructor(private targeter:Targeter) {
         super();
     }
 
     public run(card: Card, game: Game) {
-        let targets = this.targeter.getTargets(game);
+        let targets = this.targeter.getTargets(card, game);
         for (let target of targets) {
             let owner = game.getPlayer(target.getOwner());
             let board = game.getBoard().getPlayerUnits(target.getOwner());

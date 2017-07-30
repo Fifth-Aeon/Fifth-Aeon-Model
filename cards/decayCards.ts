@@ -6,7 +6,7 @@ import { PoisonTarget } from './mechanics/poison';
 import { Resource } from '../resource';
 
 export function princeOfDecay() {
-    let unit = new Unit(
+    return new Unit(
         'PriceOfDecay',
         'Prince of Decay',
         'cultist.png',
@@ -19,10 +19,7 @@ export function princeOfDecay() {
         }),
         new Untargeted(),
         4, 4,
-        []
+        [new PoisonTarget(new AllUnitsOtherUnits())]
     )
-    unit.addMechanic(new PoisonTarget(new AllUnitsOtherUnits(unit)), null);
-
-    return unit;
 }
 

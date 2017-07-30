@@ -1,4 +1,5 @@
 import { Game } from './game';
+import { Card } from './Card';
 import { Unit } from './unit';
 
 export abstract class Targeter {
@@ -9,11 +10,11 @@ export abstract class Targeter {
     public setTarget(target: Array<Unit>) {
         this.target = target;
     }
-    public getTargets(game: Game): Array<Unit> {
+    public getTargets(card: Card, game: Game): Array<Unit> {
         return this.target;
     }
     abstract getText(): string;
-    public getValidTargets(game: Game) {
+    public getValidTargets(card: Card, game: Game) {
         return new Array<Unit>();
     }
 }
@@ -28,7 +29,7 @@ export class Untargeted extends Targeter {
 }
 
 export class SingleUnit extends Targeter {
-    public getValidTargets(game: Game) {
+    public getValidTargets(card: Card, game: Game) {
         return game.getBoard().getAllUnits();
     }
     public getText() {
@@ -43,22 +44,19 @@ export class AllUnits extends Targeter {
     public needsInput() {
         return false;
     }
-    public getTargets(game: Game): Array<Unit> {
+    public getTargets(card: Card, game: Game): Array<Unit> {
         return game.getBoard().getAllUnits();
     }
 }
 
 export class AllUnitsOtherUnits extends Targeter {
-    constructor(private owner: Unit) {
-        super();
-    }
     public getText() {
         return 'all other units';
     }
     public needsInput() {
         return false;
     }
-    public getTargets(game: Game): Array<Unit> {
-        return game.getBoard().getAllUnits().filter(unit => unit != this.owner);
+    public getTargets(card: Card, game: Game): Array<Unit> {
+        return game.getBoard().getAllUnits().filter(unit => unit != card);
     }
 }

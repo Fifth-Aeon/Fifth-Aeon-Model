@@ -44,6 +44,10 @@ export class Resource {
         return `(${this.numeric.toString()} / ${this.maxNumeric.toString()}) ${types}`;
     }
 
+    public getOfType(string:string) {
+        return this.types[string];
+    }
+
     public subtract(other: Resource) {
         this.maxNumeric -= other.maxNumeric;
         this.numeric -= other.numeric;

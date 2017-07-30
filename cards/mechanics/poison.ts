@@ -32,7 +32,7 @@ export class PoisonTarget extends Mechanic {
     }
 
     public run(card: Card, game: Game) {
-        for (let target of this.targeter.getTargets(game)) {
+        for (let target of this.targeter.getTargets(card, game)) {
             target.addMechanic(new Poisoned(), game);
         }
     }
