@@ -22,7 +22,7 @@ export enum GameActionType {
 }
 
 export enum GameEventType {
-    start, attackToggled, turnStart, phaseChange, playResource, mulligan, playCard, block, draw
+    start, attackToggled, turnStart, phaseChange, playResource, mulligan, playCard, block, draw, CardChoice
 }
 
 export interface GameAction {
@@ -174,7 +174,7 @@ export class Game {
         return this.crypt[player];
     }
 
-    public promptCardChoice: (choices: Card[], count: number, callback: (cards: Card[]) => void) => void;
+    public promptCardChoice: (player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) => void;
 
     /**
      * 

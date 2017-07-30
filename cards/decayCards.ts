@@ -10,7 +10,7 @@ export function poison() {
     let targeter = new SingleUnit();
     return new Card(
         'Poison',
-        'Poison',
+        'Toxin',
         'death-juice.png',
         new Resource(2, 0, {
             Growth: 0,
