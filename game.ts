@@ -309,6 +309,7 @@ export class Game {
 
     private generatedCardId = 1;
     public playGeneratedUnit(player: Player, card: Card) {
+        card.setOwner(player.getPlayerNumber());
         card.setId(this.generatedCardId.toString(16));
         this.generatedCardId++;
         player.playCard(this, card);
