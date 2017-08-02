@@ -2,7 +2,7 @@ import { Card } from '../card';
 
 import { makeDamageCard, makeBasicUnit } from './testCards';
 import { wolfPup, spiderHatchling, venomousSpiderling } from './growthCards';
-import { armstice, callOfJustice, ruralMonk } from './renewalCards';
+import { armstice, callOfJustice, ruralMonk, monestary } from './renewalCards';
 import { princeOfDecay, poison, crawlingZombie, unbury } from './decayCards';
 import { insight } from './synthCards';
 
@@ -20,6 +20,7 @@ addFactory(makeDamageCard);
 addFactory(armstice);
 addFactory(callOfJustice);
 addFactory(ruralMonk);
+addFactory(monestary);
 
 addFactory(wolfPup);
 addFactory(spiderHatchling);
