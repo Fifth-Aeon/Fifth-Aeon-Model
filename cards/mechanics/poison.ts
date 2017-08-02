@@ -17,7 +17,6 @@ export class Poisoned extends Mechanic {
     }
 
     public remove(card: Card, game: Game) {
-        console.log('remve posion');
         game.gameEvents.removeEvents(this);
     }
 

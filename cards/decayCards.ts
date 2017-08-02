@@ -62,7 +62,7 @@ export function princeOfDecay() {
 export function unbury() {
     return new Card(
         'Unbury',
-        'Unbury',
+        'Unearth',
         'coffin.png',
         new Resource(1, 0, {
             Growth: 0,

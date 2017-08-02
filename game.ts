@@ -164,6 +164,7 @@ export class Game {
                 }
                 break;
             case GameEventType.turnStart:
+                this.gameEvents.trigger(EventType.EndOfTurn, new Map());
                 this.turn = params.turn;
                 this.turnNum = params.turnNum
                 this.refresh();
@@ -296,6 +297,13 @@ export class Game {
         player.playCard(this, card);
     }
 
+    private generatedCardId = 1;
+    public playGeneratedUnit(player: Player, card: Card) {
+        card.setId(this.generatedCardId.toString(16));
+        this.generatedCardId++;
+        player.playCard(this, card);
+    }
+
     public playerCanAttack(playerNo: number) {
         return this.phase == GamePhase.play1 && this.isActivePlayer(playerNo);
     }
@@ -361,7 +369,6 @@ export class Game {
     }
 
     private resolveCombat() {
-        console.log('resolve combat');
         let attackers = this.getAttackers();
         let blockers = this.getBlockers();
         let defendingPlayer = this.players[this.getOtherPlayerNumber(this.getCurrentPlayer().getPlayerNumber())];
@@ -409,7 +416,6 @@ export class Game {
     }
 
     private nextPhase(player: number) {
-        console.log('nextPhase', this.phase);
         switch (this.phase) {
             case GamePhase.play1:
                 this.endPhaseOne();
@@ -424,6 +430,25 @@ export class Game {
                 break;
         }
     }
+
+    public nextTurn() {
+        this.gameEvents.trigger(EventType.EndOfTurn, new Map());
+        this.turn = this.getOtherPlayerNumber(this.turn);
+        this.turnNum++;
+        this.addGameEvent(new SyncGameEvent(GameEventType.turnStart, { turn: this.turn, turnNum: this.turnNum }));
+        this.refresh();
+    }
+
+    public refresh() {
+        this.phase = GamePhase.play1;
+        let currentPlayerEntities = this.getCurrentPlayerUnits();
+        currentPlayerEntities.forEach(unit => unit.refresh());
+        this.players[this.turn].startTurn();
+        this.gameEvents.trigger(EventType.StartOfTurn, new Map([
+            ['player', this.turn]
+        ]))
+    }
+
 
     public addGameEvent(event: SyncGameEvent) {
         this.events.push(event);
@@ -459,25 +484,7 @@ export class Game {
         ]));
     }
 
-    public nextTurn() {
-        this.turn = this.getOtherPlayerNumber(this.turn);
-        this.turnNum++;
-        this.addGameEvent(new SyncGameEvent(GameEventType.turnStart, { turn: this.turn, turnNum: this.turnNum }));
-        this.refresh();
-    }
-
-    public refresh() {
-        this.phase = GamePhase.play1;
-        let currentPlayerEntities = this.getCurrentPlayerUnits();
-        currentPlayerEntities.forEach(unit => unit.refresh());
-        this.players[this.turn].startTurn();
-        this.gameEvents.trigger(EventType.StartOfTurn, new Map([
-            ['player', this.turn]
-        ]))
-    }
-
     // Getters and setters ---------------------------------------------------
-
     public getPlayer(playerNum: number) {
         return this.players[playerNum];
     }

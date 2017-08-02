@@ -24,6 +24,7 @@ export class Unit extends Card {
     protected ready: boolean;
     protected attacking: boolean;
     protected blockedUnitId: string | null;
+    protected attackDisabled: boolean;
 
     // Modifications
     protected events: EventGroup;
@@ -34,6 +35,7 @@ export class Unit extends Card {
         this.events = new EventGroup();
         this.exausted = false;
         this.ready = false;
+        this.attackDisabled = false;
         this.blockedUnitId = null;
         this.unit = true;
         this.damage = damage;
@@ -81,8 +83,12 @@ export class Unit extends Card {
         this.attacking = !this.attacking;
     }
 
+    public setAttackDisabled(val: boolean) {
+        this.attackDisabled = val;
+    }
+
     public canAttack() {
-        return this.ready && !this.exausted;
+        return !this.attackDisabled && this.ready && !this.exausted;
     }
 
     public getEvents() {
@@ -161,7 +167,7 @@ export class Unit extends Card {
         }
     }
 
-    public leaveBoard(game:Game) {
+    public leaveBoard(game: Game) {
         this.blockedUnitId = null;
         this.life = this.maxLife;
         this.ready = false;
