@@ -163,7 +163,7 @@ export class Game {
             case GameEventType.playCard:
                 if (params.playerNo != playerNumber) {
                     let player = this.players[params.playerNo];
-                    let card = this.unpackCard(params.played, params.playerNo)
+                    let card = this.unpackCard(params.played)
                     if (params.targetIds)
                         card.getTargeter().setTarget(params.targetIds
                             .map((id: string) => this.getUnitById(id)));
@@ -172,7 +172,7 @@ export class Game {
                 break;
             case GameEventType.draw:
                 if (params.playerNo == playerNumber) {
-                    this.players[params.playerNo].addToHand(this.unpackCard(params.card, params.playerNo))
+                    this.players[params.playerNo].addToHand(this.unpackCard(params.card))
                 }
                 break;
             case GameEventType.turnStart:
@@ -202,19 +202,19 @@ export class Game {
                     this.makeDeferedChoice(params.choice);
                 break;
             case GameEventType.QueryResult:
-                let cards = params.cards.map(this.unpackCard);
+                let cards = params.cards.map((proto) => this.unpackCard(proto));
                 this.setQueryResult(cards);
                 break;
 
         }
     }
 
-    public unpackCard(proto: { id: string, data: string }, owner: number) {
+    public unpackCard(proto: { id: string, data: string, owner:number }) {
         if (this.cardPool.has(proto.id))
             return this.cardPool.get(proto.id);
         let card = data.getCard(proto.data);
         card.setId(proto.id);
-        card.setOwner(owner);
+        card.setOwner(proto.owner);
         this.cardPool.set(proto.id, card);
         return card;
     }

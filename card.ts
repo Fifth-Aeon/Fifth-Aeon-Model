@@ -49,7 +49,8 @@ export class Card {
     public getPrototype() {
         return {
             id: this.getId(),
-            data: this.getDataId()
+            data: this.getDataId(),
+            owner: this.owner
         }
     }
 
