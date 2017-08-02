@@ -60,7 +60,7 @@ export class Player extends Unit {
         this.hasPlayedResource = true;
     }
 
-    public addLife(diff:number) {
+    public addLife(diff: number) {
         this.life += diff;
     }
 
@@ -116,7 +116,7 @@ export class Player extends Unit {
         return this.deck;
     }
 
-    public replace(game: Game, count:number) {
+    public replace(game: Game, count: number) {
         game.promptCardChoice(this.getPlayerNumber(), this.hand, count, (cards: Card[]) => {
             cards.forEach(card => {
                 this.removeCardFromHand(card);
@@ -124,6 +124,19 @@ export class Player extends Unit {
                 this.drawCard();
             });
         });
+    }
+
+    public searchForCard(game: Game, count: number) {
+        game.queryCards(
+            (game: Game) => game.getPlayer(this.playerNumber).getDeck(),
+            (deck) => {
+                game.promptCardChoice(this.playerNumber, deck, 1, (cards: Card[]) => {
+                    cards.forEach(card => {
+                        this.drawGeneratedCard(card);
+                        deck.splice(deck.indexOf(card), 1);
+                    });
+                });
+            });
     }
 
     public drawCard() {

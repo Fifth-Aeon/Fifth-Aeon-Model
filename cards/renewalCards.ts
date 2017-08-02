@@ -31,20 +31,38 @@ export function monestary() {
         'Monastery',
         'Monastery',
         'church.png',
-        UnitType.Human,
-        new Resource(1, 0, {
+        UnitType.Structure,
+        new Resource(5, 0, {
             Growth: 0,
             Necrosis: 0,
-            Renewal: 1,
+            Renewal: 3,
             Synthesis: 0
         }),
         new Untargeted(),
         0, 5,
         [new CannotAttack(),
-        new Serenity('Play a Traveling Monk.', (unit, game) => {
+        new Serenity('Play a Traveling Monk', (unit, game) => {
             let player = game.getPlayer(unit.getOwner());
             game.playGeneratedUnit(player, ruralMonk());
         })]
+    );
+}
+
+export function castle() {
+    return new Unit(
+        'Castle',
+        'Castle',
+        'church.png',
+        UnitType.Structure,
+        new Resource(7, 0, {
+            Growth: 0,
+            Necrosis: 0,
+            Renewal: 3,
+            Synthesis: 1
+        }),
+        new Untargeted(),
+        6, 12,
+        [new CannotAttack()]
     );
 }
 

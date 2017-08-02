@@ -22,7 +22,8 @@ export enum GameActionType {
 }
 
 export enum GameEventType {
-    start, attackToggled, turnStart, phaseChange, playResource, mulligan, playCard, block, draw, ChoiceMade
+    start, attackToggled, turnStart, phaseChange, playResource, mulligan,
+    playCard, block, draw, ChoiceMade, QueryResult
 }
 
 export interface GameAction {
@@ -104,24 +105,22 @@ export class Game {
      * @param {any} [format=new GameFormat()] 
      * @memberof Game
      */
-    constructor(format = new GameFormat(), client: boolean = false) {
+    constructor(format = new GameFormat(), private client: boolean = false) {
         this.format = format;
         this.board = new Board(this.format.playerCount, this.format.boardSize);
         this.cardPool = new Map<string, Card>();
         this.turnNum = 1;
         this.actionHandelers = new Map<GameActionType, actionCb>();
-        
+
         this.events = [];
         this.attackers = [];
         this.blockers = [];
         this.crypt = [[], []];
 
         this.gameEvents = new EventGroup();
-        
-        let decks:[Card[], Card[]] = [[], []];
-        if (client) {
-            this.players.forEach(player => player.disableDraw());
-        } else {
+
+        let decks: [Card[], Card[]] = [[], []];
+        if (!client) {
             decks = [data.getRandomDeck(format.minDeckSize), data.getRandomDeck(format.minDeckSize)]
             decks.forEach(deck => {
                 deck.forEach(card => {
@@ -135,6 +134,10 @@ export class Game {
             new Player(this, decks[1], 1, this.format.initalResource[1], this.format.initialLife[1])
         ];
 
+        if (client) {
+            this.players.forEach(player => player.disableDraw());
+        }
+
         this.promptCardChoice = this.deferChoice;
 
         this.addActionHandeler(GameActionType.pass, this.pass);
@@ -146,7 +149,6 @@ export class Game {
     }
 
     // Syncronization --------------------------------------------------------
-
     /**
      * Syncs an event that happened on the server into the state of this game model
      * 
@@ -198,6 +200,10 @@ export class Game {
             case GameEventType.ChoiceMade:
                 if (params.player != playerNumber)
                     this.makeDeferedChoice(params.choice);
+                break;
+            case GameEventType.QueryResult:
+                let cards = params.cards.map(this.unpackCard);
+                this.setQueryResult(cards);
                 break;
 
         }
@@ -301,6 +307,22 @@ export class Game {
             targetIds: act.params.targetIds
         }));
         return true;
+    }
+
+    private setQueryResult(cards: Card[]) {
+        this.onQueryResult(cards)
+    }
+    private onQueryResult: (cards: Card[]) => void;
+    public queryCards(getCards: (game: Game) => Card[], callback: (cards: Card[]) => void) {
+        if (this.client) {
+            this.onQueryResult = callback;
+        } else {
+            let cards = getCards(this);
+            callback(cards);
+            this.addGameEvent(new SyncGameEvent(GameEventType.QueryResult, {
+                cards: cards.map(card => card.getPrototype())
+            }));
+        }
     }
 
     public playCard(player: Player, card: Card) {
