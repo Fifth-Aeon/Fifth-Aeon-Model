@@ -60,6 +60,10 @@ export class Player extends Unit {
         this.hasPlayedResource = true;
     }
 
+    public addLife(diff:number) {
+        this.life += diff;
+    }
+
     public getLife() {
         return this.life;
     }
