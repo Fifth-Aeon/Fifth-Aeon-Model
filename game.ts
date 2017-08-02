@@ -110,20 +110,30 @@ export class Game {
         this.cardPool = new Map<string, Card>();
         this.turnNum = 1;
         this.actionHandelers = new Map<GameActionType, actionCb>();
-        this.players = [
-            new Player(this, data.getRandomDeck(format.minDeckSize), 0, this.format.initalResource[0], this.format.initialLife[0]),
-            new Player(this, data.getRandomDeck(format.minDeckSize), 1, this.format.initalResource[1], this.format.initialLife[1])
-        ];
+        
         this.events = [];
         this.attackers = [];
         this.blockers = [];
         this.crypt = [[], []];
 
         this.gameEvents = new EventGroup();
-
+        
+        let decks:[Card[], Card[]] = [[], []];
         if (client) {
             this.players.forEach(player => player.disableDraw());
+        } else {
+            decks = [data.getRandomDeck(format.minDeckSize), data.getRandomDeck(format.minDeckSize)]
+            decks.forEach(deck => {
+                deck.forEach(card => {
+                    this.cardPool.set(card.getId(), card);
+                })
+            })
         }
+
+        this.players = [
+            new Player(this, decks[0], 0, this.format.initalResource[0], this.format.initialLife[0]),
+            new Player(this, decks[1], 1, this.format.initalResource[1], this.format.initialLife[1])
+        ];
 
         this.promptCardChoice = this.deferChoice;
 
