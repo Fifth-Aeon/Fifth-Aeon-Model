@@ -202,14 +202,14 @@ export class Game {
                     this.makeDeferedChoice(params.choice);
                 break;
             case GameEventType.QueryResult:
-                let cards = params.cards.map((proto) => this.unpackCard(proto));
+                let cards = params.cards.map((proto: { id: string, data: string, owner: number }) => this.unpackCard(proto));
                 this.setQueryResult(cards);
                 break;
 
         }
     }
 
-    public unpackCard(proto: { id: string, data: string, owner:number }) {
+    public unpackCard(proto: { id: string, data: string, owner: number }) {
         if (this.cardPool.has(proto.id))
             return this.cardPool.get(proto.id);
         let card = data.getCard(proto.data);

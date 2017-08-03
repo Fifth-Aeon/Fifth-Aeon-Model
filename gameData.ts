@@ -26,7 +26,7 @@ class GameData {
             let constr = sample(cards);
             if (!constr)
                 throw new Error("No cards to construct");
-            deck.push(new constr());
+            deck.push(constr());
         }
         return deck;
     }
