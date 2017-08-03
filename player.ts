@@ -5,6 +5,7 @@ import { GameFormat } from './gameFormat';
 import { Game, SyncGameEvent, GameEventType } from './game';
 import { Resource } from './resource';
 
+import { shuffle } from 'lodash';
 
 export class Player extends Unit {
     private format: GameFormat;
@@ -128,7 +129,7 @@ export class Player extends Unit {
 
     public searchForCard(game: Game, count: number) {
         game.queryCards(
-            (game: Game) => game.getPlayer(this.playerNumber).getDeck(),
+            (game: Game) => shuffle(game.getPlayer(this.playerNumber).getDeck()),
             (deck) => {
                 game.promptCardChoice(this.playerNumber, deck, 1, (cards: Card[]) => {
                     cards.forEach(card => {
