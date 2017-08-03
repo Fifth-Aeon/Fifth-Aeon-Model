@@ -1,6 +1,6 @@
 import { Mechanic } from '../mechanic';
 import { Card } from '../card';
-import { Unit } from '../unit';
+import { Unit, UnitType } from '../unit';
 import { SingleUnit, Untargeted, AllUnits } from '../targeter';
 import { ShuffleIntoDeck } from './mechanics/shuffleIntoDeck';
 import { AugarCard } from './mechanics/draw';
@@ -26,10 +26,11 @@ export function insight() {
 }
 
 export function mine() {
-    return new Card(
+    return new Unit(
         'Mine',
         'Gold Mine',
         'gold-mine.png',
+        UnitType.Structure,
         new Resource(4, 0, {
             Growth: 0,
             Necrosis: 0,
@@ -37,6 +38,7 @@ export function mine() {
             Synthesis: 3
         }),
         new Untargeted(),
+        0, 3,
         [new CannotAttack(),
         new EndOfTurn('draw a card and get -0/-1', (unit, game) => {
             game.getPlayer(unit.getOwner()).drawCard();

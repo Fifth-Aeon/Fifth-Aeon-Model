@@ -52,7 +52,7 @@ export function castle() {
     return new Unit(
         'Castle',
         'Castle',
-        'church.png',
+        'castle.png',
         UnitType.Structure,
         new Resource(7, 0, {
             Growth: 0,
