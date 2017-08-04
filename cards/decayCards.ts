@@ -14,7 +14,7 @@ export function poison() {
         'death-juice.png',
         new Resource(2, 0, {
             Growth: 0,
-            Necrosis: 1,
+            Decay: 1,
             Renewal: 0,
             Synthesis: 0
         }),
@@ -31,7 +31,7 @@ export function crawlingZombie() {
         UnitType.Undead,
         new Resource(1, 0, {
             Growth: 0,
-            Necrosis: 1,
+            Decay: 1,
             Renewal: 0,
             Synthesis: 0
         }),
@@ -49,7 +49,7 @@ export function princeOfDecay() {
         UnitType.Human,
         new Resource(8, 0, {
             Growth: 0,
-            Necrosis: 6,
+            Decay: 6,
             Renewal: 0,
             Synthesis: 0
         }),
@@ -66,7 +66,7 @@ export function unbury() {
         'coffin.png',
         new Resource(1, 0, {
             Growth: 0,
-            Necrosis: 1,
+            Decay: 1,
             Renewal: 0,
             Synthesis: 0
         }),

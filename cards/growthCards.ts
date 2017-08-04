@@ -16,7 +16,7 @@ export function spiderHatchling() {
         UnitType.Spider,
         new Resource(1, 0, {
             Growth: 1,
-            Necrosis: 0,
+            Decay: 0,
             Renewal: 0,
             Synthesis: 0
         }),
@@ -34,7 +34,7 @@ export function venomousSpiderling() {
         UnitType.Spider,
         new Resource(1, 0, {
             Growth: 1,
-            Necrosis: 0,
+            Decay: 0,
             Renewal: 0,
             Synthesis: 0
         }),
@@ -52,7 +52,7 @@ export function wolfPup() {
         UnitType.Wolf,
         new Resource(1, 0, {
             Growth: 1,
-            Necrosis: 0,
+            Decay: 0,
             Renewal: 0,
             Synthesis: 0
         }),

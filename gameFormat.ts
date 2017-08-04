@@ -23,7 +23,7 @@ export class GameFormat {
     constructor() {
         this.basicResources.set('basic', new Resource(1));
         for (let resourceName of Object.keys(ResourceType)) {
-            let types = { Synthesis: 0, Growth: 0, Necrosis: 0, Renewal: 0 } as ResourceTypeGroup;
+            let types = { Synthesis: 0, Growth: 0, Decay: 0, Renewal: 0 } as ResourceTypeGroup;
             types[resourceName] = 1;
             this.basicResources.set(resourceName, new Resource(1, 1, types));
         }

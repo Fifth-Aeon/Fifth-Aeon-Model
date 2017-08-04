@@ -16,7 +16,7 @@ export function insight() {
         'third-eye.png',
         new Resource(1, 0, {
             Growth: 0,
-            Necrosis: 0,
+            Decay: 0,
             Renewal: 0,
             Synthesis: 1
         }),
@@ -33,7 +33,7 @@ export function mine() {
         UnitType.Structure,
         new Resource(4, 0, {
             Growth: 0,
-            Necrosis: 0,
+            Decay: 0,
             Renewal: 0,
             Synthesis: 3
         }),

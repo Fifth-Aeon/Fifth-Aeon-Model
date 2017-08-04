@@ -16,7 +16,7 @@ export function ruralMonk() {
         UnitType.Human,
         new Resource(1, 0, {
             Growth: 0,
-            Necrosis: 0,
+            Decay: 0,
             Renewal: 1,
             Synthesis: 0
         }),
@@ -34,7 +34,7 @@ export function monestary() {
         UnitType.Structure,
         new Resource(5, 0, {
             Growth: 0,
-            Necrosis: 0,
+            Decay: 0,
             Renewal: 3,
             Synthesis: 0
         }),
@@ -56,7 +56,7 @@ export function castle() {
         UnitType.Structure,
         new Resource(7, 0, {
             Growth: 0,
-            Necrosis: 0,
+            Decay: 0,
             Renewal: 3,
             Synthesis: 1
         }),
@@ -74,7 +74,7 @@ export function armstice() {
         'tied-scroll.png',
         new Resource(6, 0, {
             Growth: 0,
-            Necrosis: 0,
+            Decay: 0,
             Renewal: 3,
             Synthesis: 0
         }),
@@ -91,7 +91,7 @@ export function callOfJustice() {
         'king.png',
         new Resource(5, 0, {
             Growth: 0,
-            Necrosis: 0,
+            Decay: 0,
             Renewal: 3,
             Synthesis: 0
         }),

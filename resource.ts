@@ -1,14 +1,14 @@
 export const ResourceType = {
     "Synthesis": "Synthesis",
     "Growth": "Growth",
-    "Necrosis": "Necrosis",
+    "Decay": "Decay",
     "Renewal": "Renewal"
 }
 export interface ResourceTypeGroup {
     [type: string]: number
     Synthesis: number
     Growth: number
-    Necrosis: number
+    Decay: number
     Renewal: number
 }
 export class Resource {
@@ -23,7 +23,7 @@ export class Resource {
             
             Synthesis: 0,
             Growth: 0,
-            Necrosis: 0,
+            Decay: 0,
             Renewal: 0
         };
     }
