@@ -414,6 +414,7 @@ export class Game {
         blockers.forEach(blocker => {
             let blocked = this.getPlayerUnitById(this.getCurrentPlayer().getPlayerNumber(), blocker.getBlockedUnitId());
             blocked.fight(blocker);
+            blocker.setBlocking(null);
         })
 
         attackers.forEach(attacker => {
