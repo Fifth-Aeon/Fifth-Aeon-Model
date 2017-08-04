@@ -7,7 +7,7 @@ import { Targeter } from './targeter';
 import { Mechanic } from './mechanic';
 
 export enum UnitType {
-    Player, Human, Wolf, Spider, Automaton, Undead, Structure
+    Player, Human, Wolf, Spider, Automaton, Undead, Structure, Vehicle
 }
 
 export class Unit extends Card {
@@ -25,6 +25,7 @@ export class Unit extends Card {
     protected attacking: boolean;
     protected blockedUnitId: string | null;
     protected attackDisabled: boolean;
+    protected blockDisabled: boolean;
 
     // Modifications
     protected events: EventGroup;
@@ -36,6 +37,7 @@ export class Unit extends Card {
         this.exausted = false;
         this.ready = false;
         this.attackDisabled = false;
+        this.blockDisabled = false;
         this.blockedUnitId = null;
         this.unit = true;
         this.damage = damage;
@@ -49,6 +51,9 @@ export class Unit extends Card {
             mechanic.run(this, game)
     }
 
+    public hasMechanicWithId(id:string) {
+        return this.mechanics.find(mechanic => mechanic.id() == id) != undefined;
+    }
     public getLocation() {
         return this.location;
     }
@@ -70,7 +75,12 @@ export class Unit extends Card {
     }
 
     public canBlock(toBlock: Unit) {
-        return !this.exausted;
+        return !this.blockDisabled && 
+        !this.exausted && 
+        toBlock.getEvents().trigger(EventType.CheckBlock, new Map<string, any>([
+            ['blocker', this],
+            ['canBlock', true]
+        ])).get('canBlock');
     }
 
     public isAttacking() {
@@ -93,6 +103,10 @@ export class Unit extends Card {
 
     public setAttackDisabled(val: boolean) {
         this.attackDisabled = val;
+    }
+
+    public setBlockDisabled(val: boolean) {
+        this.blockDisabled = val;
     }
 
     public canAttack() {

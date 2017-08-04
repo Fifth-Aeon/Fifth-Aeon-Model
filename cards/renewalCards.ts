@@ -66,6 +66,42 @@ export function castle() {
     );
 }
 
+export function plaugeDoctor() {
+    return new Unit(
+        'PlaugeDoctor',
+        'Plauge Doctor',
+        'plauge-doctor-profile.png',
+        UnitType.Human,
+        new Resource(2, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 2,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        2, 2,
+        []
+    );
+}
+
+export function knight() {
+    return new Unit(
+        'Knight',
+        'Knight',
+        'mounted-knight.png',
+        UnitType.Human,
+        new Resource(3, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 2,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        3, 3,
+        []
+    );
+}
+
 
 export function armstice() {
     return new Card(
