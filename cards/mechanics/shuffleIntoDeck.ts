@@ -12,11 +12,7 @@ export class ShuffleIntoDeck extends Mechanic {
     public run(card: Card, game: Game) {
         let targets = this.targeter.getTargets(card, game);
         for (let target of targets) {
-            let owner = game.getPlayer(target.getOwner());
-            let board = game.getBoard().getPlayerUnits(target.getOwner());
-
-            board.splice(board.indexOf(target));
-            owner.addToDeck(target);
+            game.returnUnitToDeck(target);
         }
     }
 

@@ -482,7 +482,6 @@ export class Game {
         ]))
     }
 
-
     public addGameEvent(event: SyncGameEvent) {
         this.events.push(event);
     }
@@ -496,17 +495,29 @@ export class Game {
             this.phase == GamePhase.combat && !this.isPlayerTurn(player);
     }
 
-    public removeUnit(unit: Unit) {
-        this.board.removeUnit(unit);
-    }
 
+    // Unit Zone Changes ------------------------------------------------------
     public playUnit(unit: Unit, owner: number) {
         this.addUnit(unit, owner);
     }
 
+    public returnUnitToDeck(unit:Unit)  {
+        this.removeUnit(unit);
+        this.players[unit.getOwner()].addToDeck(unit);
+    }
+
+    public returnUnitToHand(unit:Unit) {
+        this.removeUnit(unit);
+        this.players[unit.getOwner()].addToHand(unit);
+    }
+
+    private removeUnit(unit: Unit) {
+        unit.leaveBoard(this);
+        this.board.removeUnit(unit);
+    }
+
     public addUnit(unit: Unit, owner: number) {
         unit.getEvents().addEvent(null, new GameEvent(EventType.Death, (params) => {
-            unit.leaveBoard(this);
             this.removeUnit(unit);
             this.addToCrypt(unit);
             unit.getEvents().removeEvents(null);
