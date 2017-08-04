@@ -4,7 +4,8 @@ export const ResourceType = {
     "Necrosis": "Necrosis",
     "Renewal": "Renewal"
 }
-interface ResourceTypeGroup {
+export interface ResourceTypeGroup {
+    [type: string]: number
     Synthesis: number
     Growth: number
     Necrosis: number
@@ -19,6 +20,7 @@ export class Resource {
         this.numeric = numeric;
         this.maxNumeric = maxNumeric;
         this.types = types || {
+            
             Synthesis: 0,
             Growth: 0,
             Necrosis: 0,
