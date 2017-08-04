@@ -43,7 +43,7 @@ export class EventGroup {
         return params;
     }
 
-    public removeEvents(source: Mechanic) {
+    public removeEvents(source: Mechanic | null) {
         let allEvents = Array.from(this.events.values());
         allEvents.forEach(eventList => remove(eventList, event => event.source == source))
     }

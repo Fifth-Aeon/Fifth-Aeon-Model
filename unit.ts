@@ -1,6 +1,6 @@
 import { Game } from './game';
 import { Player } from './player';
-import { Card } from './card';
+import { Card, Location } from './card';
 import { EventGroup, EventType } from './gameEvent';
 import { Resource } from './resource';
 import { Targeter } from './targeter';
@@ -49,8 +49,16 @@ export class Unit extends Card {
             mechanic.run(this, game)
     }
 
+    public getLocation() {
+        return this.location;
+    }
+
     public getType() {
         return this.unitType;
+    }
+
+    public getLife() {
+        return this.life;
     }
 
     public setExausted(exausted: boolean) {
@@ -114,6 +122,7 @@ export class Unit extends Card {
 
     public play(game: Game) {
         super.play(game);
+        this.location = Location.Board;
         game.playUnit(this, this.owner);
     }
 
@@ -178,6 +187,9 @@ export class Unit extends Card {
     }
 
     public die() {
+        if (this.location != Location.Board)
+            return;
         this.events.trigger(EventType.Death, new Map());
+        this.location = Location.Crypt;
     }
 }

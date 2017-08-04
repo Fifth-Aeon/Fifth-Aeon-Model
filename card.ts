@@ -7,6 +7,12 @@ import { Mechanic } from './mechanic';
 import { Targeter, Untargeted } from './targeter';
 import { remove } from 'lodash';
 
+
+export enum Location {
+    Deck, Hand, Board, Crypt
+}
+
+
 export class Card {
     public name: string;
     protected id: string;
@@ -19,6 +25,7 @@ export class Card {
     protected owner: number;
     protected dataId: string;
     protected imageUrl: string;
+    protected location: Location;
 
     protected targeter: Targeter = new Untargeted();
 
@@ -29,7 +36,12 @@ export class Card {
         this.cost = cost;
         this.targeter = targeter;
         this.mechanics = mechanics;
+        this.location = Location.Deck;
         this.id = Math.random().toString(16)
+    }
+
+    public draw() {
+        this.location = Location.Hand;
     }
 
     public getCost() {
@@ -71,7 +83,6 @@ export class Card {
     }
 
     public play(game: Game) {
-        game.getPlayer(this.owner).reduceResource(this.cost);
         this.mechanics.forEach(mechanic => mechanic.run(this, game));
         if (!this.isUnit()) {
             game.addToCrypt(this);

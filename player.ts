@@ -104,8 +104,10 @@ export class Player extends Unit {
         }) || null;
     }
 
-    public playCard(game: Game, card: Card) {
+    public playCard(game: Game, card: Card, free: boolean = false) {
         remove(this.hand, (toRem: Card) => toRem === card);
+        if (!free)
+            this.reduceResource(card.getCost());
         card.play(game);
     }
 

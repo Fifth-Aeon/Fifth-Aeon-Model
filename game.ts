@@ -334,7 +334,7 @@ export class Game {
         card.setOwner(player.getPlayerNumber());
         card.setId(this.generatedCardId.toString(16));
         this.generatedCardId++;
-        player.playCard(this, card);
+        player.playCard(this, card, true);
     }
 
     public playerCanAttack(playerNo: number) {
@@ -509,12 +509,16 @@ export class Game {
             unit.leaveBoard(this);
             this.removeUnit(unit);
             this.addToCrypt(unit);
+            unit.getEvents().removeEvents(null);
             return params;
         }));
         this.board.addUnit(unit);
         this.gameEvents.trigger(EventType.UnitEntersPlay, new Map<string, any>([
             ['enteringUnit', unit]
         ]));
+        if (unit.getLife() < 1) {
+            unit.die();
+        }
     }
 
     // Getters and setters ---------------------------------------------------
