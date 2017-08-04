@@ -21,11 +21,11 @@ export class CannotAttack extends Mechanic {
 
 export class CannotBlock extends Mechanic {
     public run(card: Card, game: Game) {
-        (card as Unit).setAttackDisabled(true);
+        (card as Unit).setBlockDisabled(true);
     }
 
     public remove(card: Card, game: Game) {
-        (card as Unit).setAttackDisabled(false);
+        (card as Unit).setBlockDisabled(false);
     }
 
     public getText(card: Card) {

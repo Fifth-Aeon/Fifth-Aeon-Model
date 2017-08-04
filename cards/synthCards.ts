@@ -50,7 +50,7 @@ export function airship() {
     return new Unit(
         'Airship',
         'Airship',
-        'zeppelinr.png',
+        'zeppelin.png',
         UnitType.Vehicle,
         new Resource(4, 0, {
             Growth: 0,

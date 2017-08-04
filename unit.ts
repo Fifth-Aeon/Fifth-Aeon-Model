@@ -51,7 +51,7 @@ export class Unit extends Card {
             mechanic.run(this, game)
     }
 
-    public hasMechanicWithId(id:string) {
+    public hasMechanicWithId(id: string) {
         return this.mechanics.find(mechanic => mechanic.id() == id) != undefined;
     }
     public getLocation() {
@@ -75,12 +75,12 @@ export class Unit extends Card {
     }
 
     public canBlock(toBlock: Unit) {
-        return !this.blockDisabled && 
-        !this.exausted && 
-        toBlock.getEvents().trigger(EventType.CheckBlock, new Map<string, any>([
-            ['blocker', this],
-            ['canBlock', true]
-        ])).get('canBlock');
+        return !this.blockDisabled &&
+            !this.exausted &&
+            toBlock.getEvents().trigger(EventType.CheckBlock, new Map<string, any>([
+                ['blocker', this],
+                ['canBlock', true]
+            ])).get('canBlock');
     }
 
     public isAttacking() {
