@@ -159,6 +159,7 @@ export class Game {
     public syncServerEvent(playerNumber: number, event: SyncGameEvent) {
         let params = event.params;
         console.log('sync', GameEventType[event.type], event.params);
+        this.events.push(event);
         switch (event.type) {
             case GameEventType.playCard:
                 if (params.playerNo != playerNumber) {
@@ -273,7 +274,7 @@ export class Game {
         return player.getHand().find(card => card.getId() == id);
     }
 
-    private getCardById(id: string): Card | undefined {
+    public getCardById(id: string): Card | undefined {
         return this.cardPool.get(id);
     }
 
@@ -287,6 +288,10 @@ export class Game {
 
     public getPhase() {
         return this.phase;
+    }
+
+    public getPlayerActions() {
+        return this.events;
     }
 
     private playCardAction(act: GameAction): boolean {
@@ -501,12 +506,12 @@ export class Game {
         this.addUnit(unit, owner);
     }
 
-    public returnUnitToDeck(unit:Unit)  {
+    public returnUnitToDeck(unit: Unit) {
         this.removeUnit(unit);
         this.players[unit.getOwner()].addToDeck(unit);
     }
 
-    public returnUnitToHand(unit:Unit) {
+    public returnUnitToHand(unit: Unit) {
         this.removeUnit(unit);
         this.players[unit.getOwner()].addToHand(unit);
     }
