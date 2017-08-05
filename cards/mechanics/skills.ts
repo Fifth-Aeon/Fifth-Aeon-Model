@@ -22,7 +22,7 @@ export class Flying extends Mechanic {
     }
 
     public getText(card: Card) {
-        return `Flying`;
+        return `Flying.`;
     }
 
     public id() {

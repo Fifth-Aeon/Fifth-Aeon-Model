@@ -3,7 +3,7 @@ import { Card } from '../card';
 import { Unit, UnitType } from '../unit';
 import { SingleUnit, Untargeted, AllUnits } from '../targeter';
 import { ShuffleIntoDeck } from './mechanics/shuffleIntoDeck';
-import { AugarCard } from './mechanics/draw';
+import { AugarCard, Peek } from './mechanics/draw';
 import { EndOfTurn } from './mechanics/periodic';
 import { CannotAttack, CannotBlock } from './mechanics/cantAttack';
 import { Flying} from './mechanics/skills';
@@ -24,7 +24,7 @@ export function observationBallon() {
         }),
         new Untargeted(),
         0, 3,
-        [new Flying()]
+        [new Flying(), new Peek()]
     );
 }
 

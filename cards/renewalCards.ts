@@ -68,9 +68,9 @@ export function castle() {
 
 export function plaugeDoctor() {
     return new Unit(
-        'PlaugeDoctor',
-        'Plauge Doctor',
-        'plauge-doctor-profile.png',
+        'PlagueDoctor',
+        'Plague Doctor',
+        'plague-doctor-profile.png',
         UnitType.Human,
         new Resource(2, 0, {
             Growth: 0,

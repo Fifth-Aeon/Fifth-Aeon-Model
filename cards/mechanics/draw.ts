@@ -21,6 +21,20 @@ export class DrawCard extends Mechanic {
     }
 }
 
+export class Peek extends Mechanic {
+    public run(card: Card, game: Game) {
+        game.queryCards(
+            (game: Game) => game.getPlayer(game.getOtherPlayerNumber(card.getOwner())).getHand(),
+            (deck) => {
+                game.promptCardChoice(card.getOwner(), deck, 0, (cards: Card[]) => { });
+            });
+    }
+
+    public getText(card: Card) {
+        return `Peek at your opponents hand..`;
+    }
+}
+
 export class AugarCard extends Mechanic {
     public run(card: Card, game: Game) {
         let owner = game.getPlayer(card.getOwner());
