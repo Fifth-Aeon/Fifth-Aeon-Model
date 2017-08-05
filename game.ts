@@ -23,7 +23,7 @@ export enum GameActionType {
 
 export enum GameEventType {
     start, attackToggled, turnStart, phaseChange, playResource, mulligan,
-    playCard, block, draw, ChoiceMade, QueryResult
+    playCard, block, draw, ChoiceMade, QueryResult, Ended
 }
 
 export interface GameAction {
@@ -72,31 +72,6 @@ export class Game {
     private deferedChoice: (cards: Card[]) => void;
     private waitingForPlayerChoice: number | null = null;
 
-    private deferChoice(player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) {
-        this.deferedChoice = callback;
-        this.waitingForPlayerChoice = player;
-    }
-
-    public promptCardChoice: (player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) => void;
-
-    public setDeferedChoice(callback: (cards: Card[]) => void) {
-        this.deferedChoice = callback;
-    }
-    private makeDeferedChoice(choiceIds: string[]) {
-        this.deferedChoice(choiceIds.map((id: string) => this.getCardById(id)));
-    }
-
-    private makeCardChocie(act: GameAction): boolean {
-        if (act.player != this.waitingForPlayerChoice)
-            return false;
-        this.makeDeferedChoice(act.params.choice);
-        this.addGameEvent(new SyncGameEvent(GameEventType.ChoiceMade, {
-            player: act.player,
-            choice: act.params.choice
-        }));
-        return true;
-    }
-
     /**
      * Constructs a game given a format. The format
      * informs how the game is initlized eg how
@@ -134,6 +109,13 @@ export class Game {
             new Player(this, decks[1], 1, this.format.initalResource[1], this.format.initialLife[1])
         ];
 
+        this.players.forEach((player, number) => {
+            player.getEvents().addEvent(null, new GameEvent(EventType.Death, (params) => {
+                this.endGame(this.getOtherPlayerNumber(number));
+                return params;
+            }))
+        })
+
         if (client) {
             this.players.forEach(player => player.disableDraw());
         }
@@ -146,6 +128,31 @@ export class Game {
         this.addActionHandeler(GameActionType.toggleAttack, this.toggleAttack);
         this.addActionHandeler(GameActionType.declareBlockers, this.declareBlocker);
         this.addActionHandeler(GameActionType.CardChoice, this.makeCardChocie);
+    }
+
+    private winner = -1;
+    private endGame(winningPlayer: number, quit: boolean = false) {
+        if (this.winner != -1)
+            return;
+        this.winner = winningPlayer;
+        this.addGameEvent(new SyncGameEvent(GameEventType.Ended, { winner: winningPlayer, quit: quit }));
+    }
+
+    private quit(action: GameAction) {
+        this.endGame(this.getOtherPlayerNumber(action.player));
+    }
+
+    /**
+    * 
+    * Returns the number of the player who has won the game.
+    * If it is still in progress it will return -1;
+    * 
+    * @returns 
+    * @memberof Game
+    */
+    public getWinner() {
+        // TODO, check for winner
+        return -1;
     }
 
     // Syncronization --------------------------------------------------------
@@ -206,8 +213,37 @@ export class Game {
                 let cards = params.cards.map((proto: { id: string, data: string, owner: number }) => this.unpackCard(proto));
                 this.setQueryResult(cards);
                 break;
+            case GameEventType.Ended:
+                this.winner = event.params.winner;
+                break;
 
         }
+    }
+
+    // Player choice =--------------------------------------------------------
+    private deferChoice(player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) {
+        this.deferedChoice = callback;
+        this.waitingForPlayerChoice = player;
+    }
+
+    public promptCardChoice: (player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) => void;
+
+    public setDeferedChoice(callback: (cards: Card[]) => void) {
+        this.deferedChoice = callback;
+    }
+    private makeDeferedChoice(choiceIds: string[]) {
+        this.deferedChoice(choiceIds.map((id: string) => this.getCardById(id)));
+    }
+
+    private makeCardChocie(act: GameAction): boolean {
+        if (act.player != this.waitingForPlayerChoice)
+            return false;
+        this.makeDeferedChoice(act.params.choice);
+        this.addGameEvent(new SyncGameEvent(GameEventType.ChoiceMade, {
+            player: act.player,
+            choice: act.params.choice
+        }));
+        return true;
     }
 
     public unpackCard(proto: { id: string, data: string, owner: number }) {
@@ -563,16 +599,5 @@ export class Game {
         return (playerNum + 1) % this.players.length
     }
 
-    /**
-    * 
-    * Returns the number of the player who has won the game.
-    * If it is still in progress it will return -1;
-    * 
-    * @returns 
-    * @memberof Game
-    */
-    public getWinner() {
-        // TODO, check for winner
-        return -1;
-    }
+
 }
