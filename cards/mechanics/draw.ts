@@ -31,7 +31,7 @@ export class Peek extends Mechanic {
     }
 
     public getText(card: Card) {
-        return `Peek at your opponents hand..`;
+        return `Peek at your opponents hand.`;
     }
 }
 

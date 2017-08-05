@@ -17,8 +17,8 @@ addFactory(makeDamageCard);
 import { armstice, callOfJustice, ruralMonk, monestary, castle, plaugeDoctor, knight } from './renewalCards';
 addFactory(armstice, callOfJustice, ruralMonk, monestary, castle, plaugeDoctor, knight);
 
-import { wolfPup, spiderHatchling, venomousSpiderling } from './growthCards';
-addFactory(wolfPup, spiderHatchling, venomousSpiderling);
+import { wolfPup, spiderHatchling, venomousSpiderling, werewolf, wasp, dragon } from './growthCards';
+addFactory(wolfPup, spiderHatchling, venomousSpiderling, werewolf, wasp, dragon);
 
 import { princeOfDecay, poison, crawlingZombie, unbury } from './decayCards';
 addFactory(princeOfDecay, poison, crawlingZombie, unbury);
