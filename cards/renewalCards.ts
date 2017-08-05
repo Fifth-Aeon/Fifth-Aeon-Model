@@ -57,8 +57,8 @@ export function castle() {
         new Resource(7, 0, {
             Growth: 0,
             Decay: 0,
-            Renewal: 3,
-            Synthesis: 1
+            Renewal: 4,
+            Synthesis: 0
         }),
         new Untargeted(),
         6, 12,

@@ -7,7 +7,7 @@ import { Targeter } from './targeter';
 import { Mechanic } from './mechanic';
 
 export enum UnitType {
-    Player, Human, Wolf, Spider, Automaton, Undead, Structure, Vehicle
+    Player, Human, Wolf, Spider, Automaton, Undead, Structure, Vehicle, Insect, Dragon
 }
 
 export class Unit extends Card {
