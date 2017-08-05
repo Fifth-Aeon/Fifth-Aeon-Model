@@ -4,6 +4,12 @@ export const ResourceType = {
     "Decay": "Decay",
     "Renewal": "Renewal"
 }
+export const ResourceTypeNames = [
+    "Synthesis",
+    "Growth",
+    "Decay",
+    "Renewal"
+]
 export interface ResourceTypeGroup {
     [type: string]: number
     Synthesis: number
@@ -20,7 +26,7 @@ export class Resource {
         this.numeric = numeric;
         this.maxNumeric = maxNumeric;
         this.types = types || {
-            
+
             Synthesis: 0,
             Growth: 0,
             Decay: 0,
@@ -46,7 +52,7 @@ export class Resource {
         return `(${this.numeric.toString()} / ${this.maxNumeric.toString()}) ${types}`;
     }
 
-    public getOfType(string:string) {
+    public getOfType(string: string) {
         return this.types[string];
     }
 

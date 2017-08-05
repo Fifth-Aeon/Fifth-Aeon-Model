@@ -1,8 +1,9 @@
 import { Mechanic } from './mechanic';
 import { Card } from './card';
-import { sample } from 'lodash';
+import { sample, sampleSize } from 'lodash';
 
 import { CardFactory, allCards } from './cards/allCards';
+import { ResourceTypeNames } from './resource';
 
 
 class GameData {
@@ -22,6 +23,28 @@ class GameData {
     public getRandomDeck(size: number): Card[] {
         let deck = [];
         let cards = Array.from(this.cards.values());
+        for (let i = 0; i < size; i++) {
+            let constr = sample(cards);
+            if (!constr)
+                throw new Error("No cards to construct");
+            deck.push(constr());
+        }
+        return deck;
+    }
+
+    public getTwoColorDeck(size: number) {
+        let deck = [];
+        let colors = sampleSize(ResourceTypeNames, 2);
+        console.log(colors);
+        let cards = Array.from(this.cards.values()).filter(factory => {
+            let card = factory();
+            for (let color of colors) {
+                if (card.getCost().getOfType(color) > 0) {
+                    return true
+                }
+            }
+            return false;
+        });
         for (let i = 0; i < size; i++) {
             let constr = sample(cards);
             if (!constr)

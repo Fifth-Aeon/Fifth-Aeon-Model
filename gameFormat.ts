@@ -16,7 +16,7 @@ export class GameFormat {
     public initalResource: Resource[] = [new Resource(0), new Resource(0)];
 
     // Deckbuilding rules
-    public minDeckSize = 20;
+    public minDeckSize = 40;
     public maxDeckSize = 50;
     public cardsOfRarity = [3, 3, 2, 1];
 

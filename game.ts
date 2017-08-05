@@ -121,7 +121,7 @@ export class Game {
 
         let decks: [Card[], Card[]] = [[], []];
         if (!client) {
-            decks = [data.getRandomDeck(format.minDeckSize), data.getRandomDeck(format.minDeckSize)]
+            decks = [data.getTwoColorDeck(format.minDeckSize), data.getTwoColorDeck(format.minDeckSize)]
             decks.forEach(deck => {
                 deck.forEach(card => {
                     this.cardPool.set(card.getId(), card);
@@ -413,7 +413,8 @@ export class Game {
 
         blockers.forEach(blocker => {
             let blocked = this.getPlayerUnitById(this.getCurrentPlayer().getPlayerNumber(), blocker.getBlockedUnitId());
-            blocked.fight(blocker);
+            if (blocked)
+                blocked.fight(blocker);
             blocker.setBlocking(null);
         })
 
@@ -428,12 +429,15 @@ export class Game {
 
     private blockersExist() {
         let potentialBlockers = this.board.getPlayerUnits(this.getInactivePlayer());
-        let attackers = this.board.getPlayerUnits(this.getCurrentPlayer().getPlayerNumber());
+        let attackers = this.board.getPlayerUnits(this.getCurrentPlayer().getPlayerNumber())
+            .filter(unit => unit.isAttacking());
 
         for (let blocker of potentialBlockers) {
             for (let attacker of attackers) {
-                if (blocker.canBlock(attacker))
+                if (blocker.canBlock(attacker)) {
+                    console.log(blocker.getName())
                     return true;
+                }
             }
         }
         return false;
