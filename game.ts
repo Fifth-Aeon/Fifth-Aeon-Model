@@ -128,6 +128,7 @@ export class Game {
         this.addActionHandeler(GameActionType.toggleAttack, this.toggleAttack);
         this.addActionHandeler(GameActionType.declareBlockers, this.declareBlocker);
         this.addActionHandeler(GameActionType.CardChoice, this.makeCardChocie);
+        this.addActionHandeler(GameActionType.Quit, this.quit);
     }
 
     private winner = -1;
@@ -139,7 +140,8 @@ export class Game {
     }
 
     private quit(action: GameAction) {
-        this.endGame(this.getOtherPlayerNumber(action.player));
+        this.endGame(this.getOtherPlayerNumber(action.player), true);
+        return true;
     }
 
     /**
@@ -151,8 +153,7 @@ export class Game {
     * @memberof Game
     */
     public getWinner() {
-        // TODO, check for winner
-        return -1;
+        return this.winner;
     }
 
     // Syncronization --------------------------------------------------------

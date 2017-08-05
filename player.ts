@@ -4,6 +4,7 @@ import { sample, remove } from 'lodash';
 import { GameFormat } from './gameFormat';
 import { Game, SyncGameEvent, GameEventType } from './game';
 import { Resource } from './resource';
+import { EventType} from './gameEvent';
 
 import { shuffle } from 'lodash';
 
@@ -65,14 +66,6 @@ export class Player extends Unit {
         this.life += diff;
     }
 
-    public getLife() {
-        return this.life;
-    }
-
-    public takeDamage(damage: number) {
-        this.life -= damage;
-    }
-
     public startTurn() {
         this.drawCard();
         this.hasPlayedResource = false;
@@ -109,6 +102,10 @@ export class Player extends Unit {
         if (!free)
             this.reduceResource(card.getCost());
         card.play(game);
+    }
+
+    public die() {
+        this.events.trigger(EventType.Death, new Map());
     }
 
     public removeCardFromHand(card: Card) {
