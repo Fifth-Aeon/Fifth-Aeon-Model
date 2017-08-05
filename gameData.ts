@@ -1,6 +1,6 @@
 import { Mechanic } from './mechanic';
 import { Card } from './card';
-import { sample } from 'lodash';
+import { sample, sampleSize} from 'lodash';
 
 import { CardFactory, allCards } from './cards/allCards';
 

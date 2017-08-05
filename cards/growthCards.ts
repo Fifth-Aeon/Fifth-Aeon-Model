@@ -92,7 +92,7 @@ export function wasp() {
         'Wasp',
         'Wasp',
         'wasp-sting.png',
-        UnitType.Wolf,
+        UnitType.Insect,
         new Resource(2, 0, {
             Growth: 1,
             Decay: 0,
@@ -110,7 +110,7 @@ export function dragon() {
         'Dragon',
         'Dragon',
         'dragon-head.png',
-        UnitType.Wolf,
+        UnitType.Dragon,
         new Resource(6, 0, {
             Growth: 4,
             Decay: 0,
