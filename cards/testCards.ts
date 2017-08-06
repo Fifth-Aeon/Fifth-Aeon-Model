@@ -11,7 +11,7 @@ export function makeDamageCard() {
     return new Card(
         'DamageCard',
         'Test Spell',
-        'decay.png',
+        'decay-icon.png',
         new Resource(1),
         targeter,
         [new DealDamage(1, targeter)]

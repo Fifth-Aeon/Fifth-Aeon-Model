@@ -31,3 +31,50 @@ export class Flying extends Mechanic {
 }
 
 
+export class Lifesteal {
+    public run(card: Card, game: Game) {
+        (card as Unit).getEvents().addEvent(this, new GameEvent(
+            EventType.DealDamage, params => {
+                game.getPlayer(card.getOwner()).addLife(params.get('amount'));
+                return params;
+            }
+        ))
+    }
+
+    public remove(card: Card, game: Game) {
+        (card as Unit).getEvents().removeEvents(this);
+    }
+
+    public getText(card: Card) {
+        return `Lifesteal.`;
+    }
+
+    public id() {
+        return 'lifesteal';
+    }
+}
+
+export class Lethal {
+    public run(card: Card, game: Game) {
+        (card as Unit).getEvents().addEvent(this, new GameEvent(
+            EventType.DealDamage, params => {
+                let target  =params.get('target') as Unit;
+                target.die();
+                return params;
+            }
+        ))
+    }
+
+    public remove(card: Card, game: Game) {
+        (card as Unit).getEvents().removeEvents(this);
+    }
+
+    public getText(card: Card) {
+        return `Lethal.`;
+    }
+
+    public id() {
+        return 'lethal';
+    }
+
+}
