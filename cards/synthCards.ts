@@ -31,7 +31,7 @@ export function observationBallon() {
 export function hanglider() {
     return new Unit(
         'Hanglider',
-        'Hang Glider',
+        'Scout Glider',
         'hang-glider.png',
         UnitType.Vehicle,
         new Resource(3, 0, {

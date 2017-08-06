@@ -6,7 +6,7 @@ import { Game } from './game';
 
 export enum EventType {
     UnitEntersPlay, StartOfTurn, EndOfTurn, 
-    Death, Attack, DealDamage,CheckBlock
+    Death, Attack, DealDamage,CheckBlock,KillUnit
 }
 
 export class GameEvent {

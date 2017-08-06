@@ -20,8 +20,8 @@ addFactory(armstice, callOfJustice, ruralMonk, monestary, castle, plaugeDoctor, 
 import { wolfPup, spiderHatchling, venomousSpiderling, werewolf, wasp, dragon } from './growthCards';
 addFactory(wolfPup, spiderHatchling, venomousSpiderling, werewolf, wasp, dragon);
 
-import { princeOfDecay, poison, crawlingZombie, unbury } from './decayCards';
-addFactory(princeOfDecay, poison, crawlingZombie, unbury);
+import { princeOfDecay, poison, crawlingZombie, unbury, vampire, bat } from './decayCards';
+addFactory(princeOfDecay, poison, crawlingZombie, unbury, vampire, bat);
 
 import { insight, mine, observationBallon, hanglider, airship } from './synthCards';
 addFactory(insight, mine, observationBallon, hanglider, airship);
