@@ -10,8 +10,8 @@ function addFactory(...factories: CardFactory[]) {
     }
 }
 
-import { makeDamageCard, makeBasicUnit } from './testCards';
-addFactory(makeDamageCard);
+//import { makeDamageCard, makeBasicUnit } from './testCards';
+//addFactory(makeDamageCard);
 //addFactory(makeBasicUnit);
 
 import { armstice, callOfJustice, ruralMonk, monestary, castle, plaugeDoctor, knight } from './renewalCards';
