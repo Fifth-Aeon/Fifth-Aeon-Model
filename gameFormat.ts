@@ -18,7 +18,7 @@ export class GameFormat {
     // Deckbuilding rules
     public minDeckSize = 40;
     public maxDeckSize = 50;
-    public cardsOfRarity = [3, 3, 2, 1];
+    public cardsOfRarity = [4, 4, 4, 4];
 
     constructor() {
         this.basicResources.set('basic', new Resource(1));

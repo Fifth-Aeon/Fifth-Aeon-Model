@@ -26,12 +26,29 @@ export class Resource {
         this.numeric = numeric;
         this.maxNumeric = maxNumeric;
         this.types = types || {
-
             Synthesis: 0,
             Growth: 0,
             Decay: 0,
             Renewal: 0
         };
+    }
+
+    public isInColors(colors:Set<string>) {
+        let resColors = this.getColors();
+        for (let value of Array.from(resColors.values())) {
+            if (!colors.has(value))
+                return false;
+        } 
+        return true;
+    } 
+
+    public getColors(): Set<string> {
+        let set = new Set();
+        for (let prop in this.types) {
+            if (this.types[prop] > 0)
+                set.add(prop);
+        }
+        return set;
     }
 
     public getNumeric() {
