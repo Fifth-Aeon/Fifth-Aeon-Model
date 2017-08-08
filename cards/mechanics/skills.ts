@@ -2,7 +2,7 @@ import { Mechanic } from '../../mechanic';
 import { Game, GamePhase } from '../../Game';
 import { Targeter } from '../../targeter';
 import { Card } from '../../card';
-import { Unit } from '../../unit';
+import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
 export class Flying extends Mechanic {
@@ -59,7 +59,8 @@ export class Lethal {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.DealDamage, params => {
                 let target = params.get('target') as Unit;
-                target.die();
+                if (target.getType() != UnitType.Player)
+                    target.die();
                 return params;
             }
         ))
@@ -80,17 +81,17 @@ export class Lethal {
 }
 
 export class Shielded {
-    private depleted:boolean = false;
+    private depleted: boolean = false;
     public run(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.TakeDamage, params => {
-                if (this.depleted)
+                if (this.depleted || params.get('amount') == 0)
                     return params;
                 params.set('amount', 0);
                 this.depleted = true;
                 return params;
             },
-     0))
+            0))
     }
 
     public remove(card: Card, game: Game) {
@@ -98,6 +99,8 @@ export class Shielded {
     }
 
     public getText(card: Card) {
+        if (this.depleted)
+            return '';
         return `Shielded.`;
     }
 

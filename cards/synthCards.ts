@@ -27,8 +27,8 @@ export function workbot() {
         new Untargeted(),
         1, 1,
         [new UnitEntersPlay('When you play a mechanical unit give it +0/+1', (source, unit) => {
-            if (unit.getOwner() == source.getOwner() && mechanical.has(unit.getType())) {
-                unit.buff(1, 1);
+            if (unit != source && unit.getOwner() == source.getOwner() && mechanical.has(unit.getType())) {
+                unit.buff(0, 1);
             }
         })]
     );
@@ -50,8 +50,8 @@ export function enhancmentChamber() {
         0, 5,
         [   new CannotAttack(),
             new UnitEntersPlay('When you play a biological unit give it +2/+2.', (source, unit) => {
-            if (unit.getOwner() == source.getOwner() && mechanical.has(unit.getType())) {
-                unit.buff(1, 1);
+            if (unit.getOwner() == source.getOwner() && !mechanical.has(unit.getType())) {
+                unit.buff(2, 2);
             }
         })]
     );
