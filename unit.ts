@@ -172,7 +172,11 @@ export class Unit extends Card {
         target.setExausted(true);
     }
 
-    public takeDamage(amount: number):boolean {
+    public takeDamage(amount: number): boolean {
+        amount = this.events.trigger(EventType.TakeDamage, new Map<string, any>([
+            ['target', this],
+            ['amount', amount]
+        ])).get('amount');
         this.life -= amount;
         if (this.life <= 0) {
             this.die();
@@ -191,9 +195,9 @@ export class Unit extends Card {
             ]));
             if (died) {
                 this.events.trigger(EventType.KillUnit, new Map<string, any>([
-                ['source', this],
-                ['target', target]
-            ]));
+                    ['source', this],
+                    ['target', target]
+                ]));
             }
         }
     }
