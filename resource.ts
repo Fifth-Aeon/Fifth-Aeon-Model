@@ -4,12 +4,7 @@ export const ResourceType = {
     "Decay": "Decay",
     "Renewal": "Renewal"
 }
-export const ResourceTypeNames = [
-    "Synthesis",
-    "Growth",
-    "Decay",
-    "Renewal"
-]
+export const ResourceTypeNames = ["Synthesis", "Growth", "Decay", "Renewal"]
 export interface ResourceTypeGroup {
     [type: string]: number
     Synthesis: number
@@ -17,6 +12,11 @@ export interface ResourceTypeGroup {
     Decay: number
     Renewal: number
 }
+
+const colors = [new Set(['Synthesis']), new Set(['Growth']), new Set(['Decay']), new Set(['Renewal']), new Set(['Synthesis', 'Growth']), new Set(['Synthesis', 'Decay']), new Set(['Synthesis', 'Renewal']), new Set(['Growth', 'Decay']), new Set(['Growth', 'Renewal']), new Set(['Decay', 'Renewal']), new
+    Set(['Synthesis', 'Growth', 'Decay']), new Set(['Synthesis', 'Growth', 'Renewal']), new Set(['Synthesis', 'Decay', 'Renewal']), new Set(['Growth'
+        , 'Decay', 'Renewal']), new Set(['Synthesis', 'Growth', 'Decay', 'Renewal'])];
+
 export class Resource {
     private types: ResourceTypeGroup;
     private numeric: number;
@@ -33,14 +33,21 @@ export class Resource {
         };
     }
 
-    public isInColors(colors:Set<string>) {
+    public getColor() {
+        for (let i = 0; i < colors.length; i++) {
+            if (this.isInColors(colors[i]))
+                return i;
+        }
+    }
+
+    public isInColors(colors: Set<string>) {
         let resColors = this.getColors();
         for (let value of Array.from(resColors.values())) {
             if (!colors.has(value))
                 return false;
-        } 
+        }
         return true;
-    } 
+    }
 
     public getColors(): Set<string> {
         let set = new Set();

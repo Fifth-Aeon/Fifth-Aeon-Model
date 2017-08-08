@@ -1,19 +1,20 @@
-import { remove } from 'lodash';
+import { remove, sortBy } from 'lodash';
 
 import { Mechanic } from './mechanic';
 import { Game } from './game';
 
 
 export enum EventType {
-    UnitEntersPlay, StartOfTurn, EndOfTurn, 
-    Death, Attack, DealDamage,CheckBlock,KillUnit
+    UnitEntersPlay, StartOfTurn, EndOfTurn,
+    Death, Attack, TakeDamage, DealDamage, CheckBlock, KillUnit
 }
 
 export class GameEvent {
     public source: Mechanic | null;
     constructor(
         public type: EventType,
-        public trigger: (params: (Map<string, any>)) => Map<string, any>
+        public trigger: (params: (Map<string, any>)) => Map<string, any>,
+        public priority: number = 5
     ) { }
 }
 
@@ -32,6 +33,7 @@ export class EventGroup {
             events = this.events.get(event.type) || [];
         }
         events.push(event);
+        events = sortBy(events, (event: GameEvent) => event.priority);
         event.source = source;
     }
 

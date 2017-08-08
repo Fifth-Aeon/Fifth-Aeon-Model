@@ -14,14 +14,15 @@ function addFactory(...factories: CardFactory[]) {
 //addFactory(makeDamageCard);
 //addFactory(makeBasicUnit);
 
-import { armstice, callOfJustice, ruralMonk, monestary, castle, plaugeDoctor, knight } from './renewalCards';
-addFactory(armstice, callOfJustice, ruralMonk, monestary, castle, plaugeDoctor, knight);
+import { armstice, callOfJustice, ruralMonk, monestary, castle, plaugeDoctor, knight, pontiff } from './renewalCards';
+addFactory(armstice, callOfJustice, ruralMonk, monestary, castle, plaugeDoctor, knight, pontiff);
 
 import { wolfPup, spiderHatchling, venomousSpiderling, werewolf, wasp, dragon } from './growthCards';
 addFactory(wolfPup, spiderHatchling, venomousSpiderling, werewolf, wasp, dragon);
 
 import { princeOfDecay, poison, crawlingZombie, unbury, vampire, bat } from './decayCards';
-addFactory(princeOfDecay, poison, crawlingZombie, unbury, vampire, bat);
+addFactory(princeOfDecay, poison, crawlingZombie, unbury, vampire, bat); 
 
-import { insight, mine, observationBallon, hanglider, airship } from './synthCards';
-addFactory(insight, mine, observationBallon, hanglider, airship);
+import {siegeArtillery, paragon, golem,  workbot, insight, mine, observationBallon, hanglider, airship, enhancmentChamber } from './synthCards';
+addFactory(siegeArtillery, workbot,  paragon, golem,  enhancmentChamber, insight, mine, observationBallon, hanglider, airship);
+

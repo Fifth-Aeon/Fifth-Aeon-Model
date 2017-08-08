@@ -58,7 +58,7 @@ export class Lethal {
     public run(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.DealDamage, params => {
-                let target  =params.get('target') as Unit;
+                let target = params.get('target') as Unit;
                 target.die();
                 return params;
             }
@@ -77,4 +77,55 @@ export class Lethal {
         return 'lethal';
     }
 
+}
+
+export class Shielded {
+    private depleted:boolean = false;
+    public run(card: Card, game: Game) {
+        (card as Unit).getEvents().addEvent(this, new GameEvent(
+            EventType.TakeDamage, params => {
+                if (this.depleted)
+                    return params;
+                params.set('amount', 0);
+                this.depleted = true;
+                return params;
+            },
+     0))
+    }
+
+    public remove(card: Card, game: Game) {
+        (card as Unit).getEvents().removeEvents(this);
+    }
+
+    public getText(card: Card) {
+        return `Shielded.`;
+    }
+
+    public id() {
+        return 'shielded';
+    }
+}
+
+export class Relentless {
+    public run(card: Card, game: Game) {
+        game.gameEvents.addEvent(this, new GameEvent(
+            EventType.EndOfTurn, params => {
+                let target = card as Unit;
+                target.refresh();
+                return params;
+            }
+        ))
+    }
+
+    public remove(card: Card, game: Game) {
+        (card as Unit).getEvents().removeEvents(this);
+    }
+
+    public getText(card: Card) {
+        return `Relentless.`;
+    }
+
+    public id() {
+        return 'relentless';
+    }
 }
