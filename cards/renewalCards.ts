@@ -5,6 +5,7 @@ import { SingleUnit, Untargeted, AllUnits } from '../targeter';
 import { CannotAttack } from './mechanics/cantAttack';
 import { ShuffleIntoDeck } from './mechanics/shuffleIntoDeck';
 import { RenewalMCTargeter, MindControl } from './mechanics/mindControl';
+import { Lordship, unitTypeLordship } from './mechanics/lordship';
 import { Serenity } from './mechanics/serenity';
 import { Resource } from '../resource';
 
@@ -13,7 +14,7 @@ export function ruralMonk() {
         'RuralMonk',
         'Traveling Monk',
         'monk-face.png',
-        UnitType.Human,
+        UnitType.Cleric,
         new Resource(1, 0, {
             Growth: 0,
             Decay: 0,
@@ -75,7 +76,7 @@ export function plaugeDoctor() {
         new Resource(2, 0, {
             Growth: 0,
             Decay: 0,
-            Renewal: 2,
+            Renewal: 1,
             Synthesis: 0
         }),
         new Untargeted(),
@@ -135,4 +136,24 @@ export function callOfJustice() {
         [new MindControl(targeter)]
     );
 }
+
+
+export function pontiff() {
+    return new Unit(
+        'Pontiff',
+        'Pontiff',
+        'pope-crown.png',
+        UnitType.Cleric, 
+        new Resource(4, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 3,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        3, 3,
+        [unitTypeLordship(UnitType.Cleric, 1, 1)]
+    );
+}
+
 
