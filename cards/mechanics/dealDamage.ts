@@ -1,12 +1,12 @@
-import { Mechanic } from '../../mechanic';
+import { Mechanic, TargetedMechanic } from '../../mechanic';
 import { Game } from '../../Game';
 import { Targeter } from '../../targeter';
 import { Card } from '../../card';
 import { Unit } from '../../unit';
 
-export class DealDamage extends Mechanic {
-    constructor(private amount: number, private targeter: Targeter) {
-        super(); 
+export class DealDamage extends TargetedMechanic {
+    constructor(private amount: number, targeter?: Targeter) {
+        super(targeter); 
     }
 
     public run(card: Card, game: Game) {

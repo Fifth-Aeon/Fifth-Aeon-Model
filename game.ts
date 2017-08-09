@@ -566,6 +566,7 @@ export class Game {
 
     private removeUnit(unit: Unit) {
         unit.leaveBoard(this);
+        unit.getEvents().removeEvents(null);
         this.board.removeUnit(unit);
     }
 
@@ -573,7 +574,6 @@ export class Game {
         unit.getEvents().addEvent(null, new GameEvent(EventType.Death, (params) => {
             this.removeUnit(unit);
             this.addToCrypt(unit);
-            unit.getEvents().removeEvents(null);
             return params;
         }));
         unit.getEvents().addEvent(null, new GameEvent(EventType.Annihilate, (params) => {
