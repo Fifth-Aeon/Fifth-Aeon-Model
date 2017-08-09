@@ -47,7 +47,8 @@ export class Unit extends Card {
 
     public addMechanic(mechanic: Mechanic, game: Game | null = null) {
         this.mechanics.push(mechanic);
-        if (game != null)
+        mechanic => mechanic.attach(this);
+        if (this.location == Location.Board && game != null)
             mechanic.run(this, game)
     }
 
@@ -203,6 +204,7 @@ export class Unit extends Card {
     }
 
     public leaveBoard(game: Game) {
+        this.events.trigger(EventType.LeavesPlay, new Map([['leavingUnit', this]]));
         this.blockedUnitId = null;
         this.life = this.maxLife;
         this.ready = false;
@@ -217,5 +219,9 @@ export class Unit extends Card {
             return;
         this.events.trigger(EventType.Death, new Map());
         this.location = Location.Crypt;
+    }
+
+    public annihilate() {
+        this.events.trigger(EventType.Annihilate, new Map());
     }
 }

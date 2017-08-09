@@ -49,7 +49,7 @@ export class AllUnits extends Targeter {
     }
 }
 
-export class AllUnitsOtherUnits extends Targeter {
+export class AllOtherUnits extends Targeter {
     public getText() {
         return 'all other units';
     }

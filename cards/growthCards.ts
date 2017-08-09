@@ -15,14 +15,14 @@ export function spiderHatchling() {
         'Spider Hatchling',
         'masked-spider.png',
         UnitType.Spider,
-        new Resource(1, 0, {
+        new Resource(2, 0, {
             Growth: 1,
             Decay: 0,
             Renewal: 0,
             Synthesis: 0
         }),
         new Untargeted(),
-        1, 2,
+        2, 3,
         [new Affinity('Gain +1/+0', (unit, game) => unit.buff(1, 0))]
     );
 }

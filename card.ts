@@ -36,6 +36,7 @@ export class Card {
         this.cost = cost;
         this.targeter = targeter;
         this.mechanics = mechanics;
+        this.mechanics.forEach(mechanic => mechanic.attach(this));
         this.location = Location.Deck;
         this.id = Math.random().toString(16)
     }

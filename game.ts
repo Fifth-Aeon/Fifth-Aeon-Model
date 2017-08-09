@@ -570,6 +570,10 @@ export class Game {
             unit.getEvents().removeEvents(null);
             return params;
         }));
+        unit.getEvents().addEvent(null, new GameEvent(EventType.Annihilate, (params) => {
+            this.removeUnit(unit);
+            return params;
+        }));
         this.board.addUnit(unit);
         this.gameEvents.trigger(EventType.UnitEntersPlay, new Map<string, any>([
             ['enteringUnit', unit]

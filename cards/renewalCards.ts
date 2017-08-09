@@ -103,7 +103,6 @@ export function knight() {
     );
 }
 
-
 export function armstice() {
     return new Card(
         'Armstice',
@@ -115,8 +114,8 @@ export function armstice() {
             Renewal: 3,
             Synthesis: 0
         }),
-        new Untargeted(),
-        [new ShuffleIntoDeck(new AllUnits())]
+        new AllUnits(),
+        [new ShuffleIntoDeck()]
     );
 }
 
