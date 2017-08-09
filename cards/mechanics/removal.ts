@@ -7,8 +7,9 @@ import { GameEvent, EventType } from '../../gameEvent';
 
 export class Annihilate extends TargetedMechanic {
     public run(card: Card, game: Game) {
-        let unit = card as Unit;
-        unit.annihilate();
+        this.targeter.getTargets(card, game).forEach(target => {
+            target.annihilate();
+        });
     }
 
     public getText(card: Card) {
