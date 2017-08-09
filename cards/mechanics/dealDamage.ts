@@ -12,6 +12,7 @@ export class DealDamage extends Mechanic {
     public run(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game)) {
             target.takeDamage(this.amount);
+            target.checkDeath();
         }
     }
 

@@ -60,7 +60,7 @@ export class Lethal extends Mechanic {
             EventType.DealDamage, params => {
                 let target = params.get('target') as Unit;
                 if (target.getType() != UnitType.Player)
-                    target.die();
+                    target.kill();
                 return params;
             }
         ))
@@ -83,6 +83,7 @@ export class Lethal extends Mechanic {
 export class Shielded extends Mechanic {
     private depleted: boolean = false;
     public run(card: Card, game: Game) {
+        this.depleted = false;
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.TakeDamage, params => {
                 if (this.depleted || params.get('amount') == 0)
@@ -95,6 +96,7 @@ export class Shielded extends Mechanic {
     }
 
     public remove(card: Card, game: Game) {
+        this.depleted = false;
         (card as Unit).getEvents().removeEvents(this);
     }
 
@@ -109,14 +111,14 @@ export class Shielded extends Mechanic {
     }
 }
 
-export class Relentless extends Mechanic  {
+export class Relentless extends Mechanic {
     public run(card: Card, game: Game) {
         game.gameEvents.addEvent(this, new GameEvent(
             EventType.EndOfTurn, params => {
                 let target = card as Unit;
                 target.refresh();
                 return params;
-            } 
+            }
         ))
     }
 

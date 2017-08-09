@@ -8,7 +8,7 @@ import { Resource } from './resource';
 import { GameEvent, EventType, EventGroup } from './gameEvent';
 import { data } from './gameData';
 
-import {shuffle} from 'lodash';
+import { shuffle } from 'lodash';
 import { Serialize, Deserialize } from 'cerialize';
 
 export enum GamePhase {
@@ -96,10 +96,10 @@ export class Game {
 
         this.gameEvents = new EventGroup();
 
-        let decks:  Card[][] = [[], []];
+        let decks: Card[][] = [[], []];
         if (!client) {
             decks = deckLists.map(deckList => {
-                let deck = deckList.toDeck().map(fact =>  {
+                let deck = deckList.toDeck().map(fact => {
                     let card = fact();
                     this.cardPool.set(card.getId(), card);
                     return card;
@@ -356,7 +356,10 @@ export class Game {
     }
 
     private setQueryResult(cards: Card[]) {
-        this.onQueryResult(cards)
+        if (this.onQueryResult)
+            this.onQueryResult(cards)
+        else
+            console.error('Query result', cards, 'with no query handler');
     }
     private onQueryResult: (cards: Card[]) => void;
     public queryCards(getCards: (game: Game) => Card[], callback: (cards: Card[]) => void) {
@@ -581,9 +584,7 @@ export class Game {
         this.gameEvents.trigger(EventType.UnitEntersPlay, new Map<string, any>([
             ['enteringUnit', unit]
         ]));
-        if (unit.getLife() < 1) {
-            unit.die();
-        }
+        unit.checkDeath();
     }
 
     // Getters and setters ---------------------------------------------------

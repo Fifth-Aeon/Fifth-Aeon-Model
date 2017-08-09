@@ -104,7 +104,7 @@ export class Player extends Unit {
         card.play(game);
     }
 
-    public die() {
+    protected die() {
         this.events.trigger(EventType.Death, new Map());
     }
 

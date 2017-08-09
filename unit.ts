@@ -18,6 +18,7 @@ export class Unit extends Card {
     protected life: number;
     protected maxLife: number;
     protected damage: number;
+    protected died: boolean;
 
     // Actions
     protected exausted: boolean;
@@ -43,6 +44,7 @@ export class Unit extends Card {
         this.damage = damage;
         this.maxLife = maxLife;
         this.life = this.maxLife;
+        this.died = false;
     }
 
     public addMechanic(mechanic: Mechanic, game: Game | null = null) {
@@ -130,9 +132,7 @@ export class Unit extends Card {
         this.damage += damage;
         this.maxLife += maxLife;
         this.life += maxLife;
-        if (this.life <= 0) {
-            this.die();
-        }
+        this.checkDeath();
     }
 
     public play(game: Game) {
@@ -168,6 +168,9 @@ export class Unit extends Card {
         // Remove actions and deal damage
         this.dealDamage(target, damage);
         target.dealDamage(this, target.damage);
+        
+        this.checkDeath();
+        target.checkDeath();
 
         this.setExausted(true);
         target.setExausted(true);
@@ -179,10 +182,20 @@ export class Unit extends Card {
             ['amount', amount]
         ])).get('amount');
         this.life -= amount;
-        if (this.life <= 0) {
-            this.die();
-        }
+        if (this.life <= 0)
+            this.died = true;
         return amount;
+    }
+
+    public kill() {
+        this.died = true;
+    }
+
+    public checkDeath() {
+        if (this.died || this.life <= 0) {
+            this.die();
+            this.died = false;
+        }
     }
 
     public dealDamage(target: Unit, amount: number) {
@@ -193,7 +206,7 @@ export class Unit extends Card {
                 ['target', target],
                 ['amount', amount]
             ]));
-            if (target.getLocation() == Location.Crypt) {
+            if (target.died) {
                 this.events.trigger(EventType.KillUnit, new Map<string, any>([
                     ['source', this],
                     ['target', target]
@@ -201,6 +214,8 @@ export class Unit extends Card {
             }
         }
     }
+
+
 
     public leaveBoard(game: Game) {
         this.events.trigger(EventType.LeavesPlay, new Map([['leavingUnit', this]]));
@@ -213,7 +228,7 @@ export class Unit extends Card {
         });
     }
 
-    public die() {
+    protected die() {
         if (this.location != Location.Board)
             return;
         this.events.trigger(EventType.Death, new Map());
