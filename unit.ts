@@ -173,7 +173,7 @@ export class Unit extends Card {
         target.setExausted(true);
     }
 
-    public takeDamage(amount: number): boolean {
+    public takeDamage(amount: number): number {
         amount = this.events.trigger(EventType.TakeDamage, new Map<string, any>([
             ['target', this],
             ['amount', amount]
@@ -181,20 +181,19 @@ export class Unit extends Card {
         this.life -= amount;
         if (this.life <= 0) {
             this.die();
-            return true;
         }
-        return false;
+        return amount;
     }
 
     public dealDamage(target: Unit, amount: number) {
-        let died = target.takeDamage(amount);
+        amount = target.takeDamage(amount);
         if (amount > 0) {
             this.events.trigger(EventType.DealDamage, new Map<string, any>([
                 ['source', this],
                 ['target', target],
                 ['amount', amount]
             ]));
-            if (died) {
+            if (target.getLocation() == Location.Crypt) {
                 this.events.trigger(EventType.KillUnit, new Map<string, any>([
                     ['source', this],
                     ['target', target]
