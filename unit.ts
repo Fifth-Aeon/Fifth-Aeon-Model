@@ -166,9 +166,12 @@ export class Unit extends Card {
         let damage: number = this.events.trigger(EventType.Attack, eventParams).get('damage');
 
         // Remove actions and deal damage
-        this.dealDamage(target, damage);
-        target.dealDamage(this, target.damage);
-        
+        let a1 = this.dealDamagePhase1(target, damage);
+        let a2 = target.dealDamagePhase1(this, target.damage);
+
+        this.dealDamagePhase2(target, a1);
+        this.dealDamagePhase2(target, a2);
+
         this.checkDeath();
         target.checkDeath();
 
@@ -176,7 +179,7 @@ export class Unit extends Card {
         target.setExausted(true);
     }
 
-    public takeDamage(amount: number): number {
+    private takeDamageNoDeath(amount: number): number {
         amount = this.events.trigger(EventType.TakeDamage, new Map<string, any>([
             ['target', this],
             ['amount', amount]
@@ -184,6 +187,12 @@ export class Unit extends Card {
         this.life -= amount;
         if (this.life <= 0)
             this.died = true;
+        return amount;
+    }
+
+    public takeDamage(amount: number): number {
+        amount = this.takeDamageNoDeath(amount);
+        this.checkDeath();
         return amount;
     }
 
@@ -198,24 +207,30 @@ export class Unit extends Card {
         }
     }
 
-    public dealDamage(target: Unit, amount: number) {
-        amount = target.takeDamage(amount);
+    private dealDamagePhase1(target: Unit, amount: number) {
+        return target.takeDamageNoDeath(amount);
+    }
+
+    private dealDamagePhase2(target: Unit, amount: number) {
         if (amount > 0) {
             this.events.trigger(EventType.DealDamage, new Map<string, any>([
                 ['source', this],
                 ['target', target],
                 ['amount', amount]
             ]));
-            if (target.died) {
-                this.events.trigger(EventType.KillUnit, new Map<string, any>([
-                    ['source', this],
-                    ['target', target]
-                ]));
-            }
+        }
+        if (target.died) {
+            this.events.trigger(EventType.KillUnit, new Map<string, any>([
+                ['source', this],
+                ['target', target]
+            ]));
         }
     }
 
-
+    public dealDamage(target: Unit, amount: number) {
+        this.dealDamagePhase2(target, this.dealDamagePhase1(target, amount));
+        target.checkDeath();
+    }
 
     public leaveBoard(game: Game) {
         this.events.trigger(EventType.LeavesPlay, new Map([['leavingUnit', this]]));
