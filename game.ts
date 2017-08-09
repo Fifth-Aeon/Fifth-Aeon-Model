@@ -3,10 +3,12 @@ import { Player } from './player';
 import { Card } from './card';
 import { Unit } from './unit';
 import { GameFormat } from './gameFormat';
+import { DeckList } from './deckList';
 import { Resource } from './resource';
 import { GameEvent, EventType, EventGroup } from './gameEvent';
 import { data } from './gameData';
 
+import {shuffle} from 'lodash';
 import { Serialize, Deserialize } from 'cerialize';
 
 export enum GamePhase {
@@ -80,7 +82,7 @@ export class Game {
      * @param {any} [format=new GameFormat()] 
      * @memberof Game
      */
-    constructor(format = new GameFormat(), private client: boolean = false) {
+    constructor(format = new GameFormat(), private client: boolean = false, deckLists?: [DeckList, DeckList]) {
         this.format = format;
         this.board = new Board(this.format.playerCount, this.format.boardSize);
         this.cardPool = new Map<string, Card>();
@@ -94,13 +96,15 @@ export class Game {
 
         this.gameEvents = new EventGroup();
 
-        let decks: [Card[], Card[]] = [[], []];
+        let decks:  Card[][] = [[], []];
         if (!client) {
-            decks = [data.getTwoColorDeck(format.minDeckSize), data.getTwoColorDeck(format.minDeckSize)]
-            decks.forEach(deck => {
-                deck.forEach(card => {
+            decks = deckLists.map(deckList => {
+                let deck = deckList.toDeck().map(fact =>  {
+                    let card = fact();
                     this.cardPool.set(card.getId(), card);
+                    return card;
                 })
+                return shuffle(deck);
             })
         }
 
@@ -472,7 +476,6 @@ export class Game {
         for (let blocker of potentialBlockers) {
             for (let attacker of attackers) {
                 if (blocker.canBlock(attacker)) {
-                    console.log(blocker.getName())
                     return true;
                 }
             }

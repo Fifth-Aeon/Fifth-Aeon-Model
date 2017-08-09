@@ -35,7 +35,6 @@ class GameData {
     public getTwoColorDeck(size: number) {
         let deck = [];
         let colors = sampleSize(ResourceTypeNames, 2);
-        console.log(colors);
         let cards = Array.from(this.cards.values()).filter(factory => {
             let card = factory();
             for (let color of colors) {
