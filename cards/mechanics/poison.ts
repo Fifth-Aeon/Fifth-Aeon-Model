@@ -1,4 +1,4 @@
-import { Mechanic } from '../../mechanic';
+import { Mechanic, TargetedMechanic } from '../../mechanic';
 import { Game } from '../../Game';
 import { Targeter } from '../../targeter';
 import { Card } from '../../card';
@@ -25,11 +25,7 @@ export class Poisoned extends Mechanic {
     }
 }
 
-export class PoisonTarget extends Mechanic {
-    constructor(private targeter: Targeter) {
-        super();
-    }
-
+export class PoisonTarget extends TargetedMechanic {
     public run(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game)) {
             target.addMechanic(new Poisoned(), game);
@@ -54,7 +50,7 @@ export class Venomous extends Mechanic {
     }
 
     public remove(card: Card, game: Game) {
-        game.gameEvents.removeEvents(this);
+        (card as Unit).getEvents().removeEvents(this);
     }
 
     public getText(card: Card) {

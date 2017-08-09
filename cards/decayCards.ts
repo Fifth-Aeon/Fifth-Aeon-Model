@@ -1,7 +1,7 @@
 import { Mechanic } from '../mechanic';
 import { Card } from '../card';
 import { Unit, UnitType } from '../unit';
-import { SingleUnit, Untargeted, AllUnits, AllUnitsOtherUnits } from '../targeter';
+import { SingleUnit, Untargeted, AllUnits, AllOtherUnits } from '../targeter';
 import { Flying, Lifesteal} from './mechanics/skills';
 import { FinalBlow } from './mechanics/finalBlow';
 import { PoisonTarget } from './mechanics/poison';
@@ -9,7 +9,6 @@ import { ReturnFromCrypt } from './mechanics/returnFromCrypt';
 import { Resource } from '../resource';
 
 export function poison() {
-    let targeter = new SingleUnit();
     return new Card(
         'Poison',
         'Toxin',
@@ -20,8 +19,8 @@ export function poison() {
             Renewal: 0,
             Synthesis: 0
         }),
-        targeter,
-        [new PoisonTarget(targeter)]
+        new SingleUnit(),
+        [new PoisonTarget()]
     );
 }
 
@@ -46,7 +45,7 @@ export function crawlingZombie() {
 export function vampire() {
     return new Unit(
         'Vampire1',
-        'Vamprie Flegling',
+        'Vamprie',
         'vampire.png',
         UnitType.Undead,
         new Resource(3, 0, {
@@ -56,7 +55,7 @@ export function vampire() {
             Synthesis: 0
         }),
         new Untargeted(),
-        3, 2,
+        3, 3,
         [new FinalBlow('Gain +1/+1', (unit) => unit.buff(1, 1))]
     )
 }
@@ -91,9 +90,9 @@ export function princeOfDecay() {
             Renewal: 0,
             Synthesis: 0
         }),
-        new Untargeted(),
+        new AllOtherUnits(),
         4, 4,
-        [new PoisonTarget(new AllUnitsOtherUnits())]
+        [new PoisonTarget()]
     )
 }
 

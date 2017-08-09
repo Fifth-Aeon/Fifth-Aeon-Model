@@ -8,6 +8,8 @@ import { EndOfTurn } from './mechanics/periodic';
 import { CannotAttack, CannotBlock } from './mechanics/cantAttack';
 import { UnitEntersPlay } from './mechanics/entersPlay';
 import { Flying, Lethal, Shielded, Relentless } from './mechanics/skills';
+import { friendlyLordship } from './mechanics/lordship';
+import { Annihilate } from './mechanics/removal';
 import { Resource } from '../resource';
 
 const mechanical = new Set([UnitType.Automaton, UnitType.Structure, UnitType.Vehicle]);
@@ -34,6 +36,25 @@ export function workbot() {
     );
 }
 
+export function comsTower() {
+    return new Unit(
+        'ComsTower',
+        'Communication Tower',
+        'radar-dish.png',
+        UnitType.Structure,
+        new Resource(5, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 3
+        }),
+        new Untargeted(),
+        0, 5,
+        [new CannotAttack(), friendlyLordship(1, 1)]
+    );
+}
+
+
 export function enhancmentChamber() {
     return new Unit(
         'enhancmentChamber',
@@ -44,7 +65,7 @@ export function enhancmentChamber() {
             Growth: 0,
             Decay: 0,
             Renewal: 0,
-            Synthesis: 3
+            Synthesis: 2
         }),
         new Untargeted(),
         0, 5,
@@ -181,6 +202,23 @@ export function insight() {
         }),
         new Untargeted(),
         [new AugarCard()]
+    );
+}
+
+export function riftBlast() {
+    let targeter = new SingleUnit();
+    return new Card(
+        'riftBlast',
+        'Rift Pulse',
+        'lightning-dissipation.png',
+        new Resource(6, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 4
+        }),
+        targeter,
+        [new Annihilate(targeter)]
     );
 }
 

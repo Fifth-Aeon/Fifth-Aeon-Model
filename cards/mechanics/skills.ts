@@ -31,7 +31,7 @@ export class Flying extends Mechanic {
 }
 
 
-export class Lifesteal {
+export class Lifesteal extends Mechanic {
     public run(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.DealDamage, params => {
@@ -54,7 +54,7 @@ export class Lifesteal {
     }
 }
 
-export class Lethal {
+export class Lethal extends Mechanic {
     public run(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.DealDamage, params => {
@@ -80,7 +80,7 @@ export class Lethal {
 
 }
 
-export class Shielded {
+export class Shielded extends Mechanic {
     private depleted: boolean = false;
     public run(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
@@ -109,14 +109,14 @@ export class Shielded {
     }
 }
 
-export class Relentless {
+export class Relentless extends Mechanic  {
     public run(card: Card, game: Game) {
         game.gameEvents.addEvent(this, new GameEvent(
             EventType.EndOfTurn, params => {
                 let target = card as Unit;
                 target.refresh();
                 return params;
-            }
+            } 
         ))
     }
 

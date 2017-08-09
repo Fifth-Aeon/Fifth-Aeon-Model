@@ -23,6 +23,6 @@ addFactory(wolfPup, spiderHatchling, venomousSpiderling, werewolf, wasp, dragon)
 import { princeOfDecay, poison, crawlingZombie, unbury, vampire, bat } from './decayCards';
 addFactory(princeOfDecay, poison, crawlingZombie, unbury, vampire, bat); 
 
-import {siegeArtillery, paragon, golem,  workbot, insight, mine, observationBallon, hanglider, airship, enhancmentChamber } from './synthCards';
-addFactory(siegeArtillery, workbot,  paragon, golem,  enhancmentChamber, insight, mine, observationBallon, hanglider, airship);
+import {siegeArtillery,riftBlast, paragon, golem,  workbot, comsTower, insight, mine, observationBallon, hanglider, airship, enhancmentChamber } from './synthCards';
+addFactory(siegeArtillery,riftBlast, workbot,  paragon, golem, comsTower,  enhancmentChamber, insight, mine, observationBallon, hanglider, airship);
 

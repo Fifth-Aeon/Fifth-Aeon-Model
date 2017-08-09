@@ -1,14 +1,10 @@
-import { Mechanic } from '../../mechanic';
+import { Mechanic, TargetedMechanic } from '../../mechanic';
 import { Game } from '../../Game';
 import { Targeter } from '../../targeter';
 import { Card } from '../../card';
 import { Unit } from '../../unit';
 
-export class ShuffleIntoDeck extends Mechanic {
-    constructor(private targeter:Targeter) {
-        super();
-    }
-
+export class ShuffleIntoDeck extends TargetedMechanic {
     public run(card: Card, game: Game) {
         let targets = this.targeter.getTargets(card, game);
         for (let target of targets) {
