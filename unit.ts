@@ -7,7 +7,8 @@ import { Targeter } from './targeter';
 import { Mechanic } from './mechanic';
 
 export enum UnitType {
-    Player, Human, Cleric, Wolf, Spider, Automaton, Undead, Structure, Vehicle, Insect, Dragon
+    Player, Human, Cleric, Wolf, Spider, Automaton, Monster, Mammal, Soldier,
+    Vampire, Cultist, Agent, Undead, Structure, Vehicle, Insect, Dragon
 }
 
 export class Unit extends Card {
@@ -47,6 +48,13 @@ export class Unit extends Card {
         this.died = false;
     }
 
+    public transform(unit:Unit) {
+        this.maxLife = unit.maxLife;
+        this.life = unit.life;
+        this.damage = unit.damage;
+        this.mechanics = unit.mechanics;
+    }
+
     public addMechanic(mechanic: Mechanic, game: Game | null = null) {
         this.mechanics.push(mechanic);
         mechanic => mechanic.attach(this);
@@ -67,6 +75,14 @@ export class Unit extends Card {
 
     public getLife() {
         return this.life;
+    }
+
+    public getMaxLife() {
+        return this.maxLife;
+    }
+
+    public getDamage() {
+        return this.damage;
     }
 
     public setExausted(exausted: boolean) {
@@ -120,9 +136,6 @@ export class Unit extends Card {
         return this.events;
     }
 
-    public getDamage() {
-        return this.damage;
-    }
 
     public getBlockedUnitId() {
         return this.blockedUnitId;
@@ -166,11 +179,11 @@ export class Unit extends Card {
         let damage: number = this.events.trigger(EventType.Attack, eventParams).get('damage');
 
         // Remove actions and deal damage
-        let a1 = this.dealDamagePhase1(target, damage);
-        let a2 = target.dealDamagePhase1(this, target.damage);
+        let a1 = this.damageDealPhase(target, damage);
+        let a2 = target.damageDealPhase(this, target.damage);
 
-        this.dealDamagePhase2(target, a1);
-        this.dealDamagePhase2(target, a2);
+        this.damageEventPhase(target, a1);
+        this.damageEventPhase(this, a2);
 
         this.checkDeath();
         target.checkDeath();
@@ -207,12 +220,14 @@ export class Unit extends Card {
         }
     }
 
-    private dealDamagePhase1(target: Unit, amount: number) {
+    private damageDealPhase(target: Unit, amount: number) {
         return target.takeDamageNoDeath(amount);
     }
 
-    private dealDamagePhase2(target: Unit, amount: number) {
+    private damageEventPhase(target: Unit, amount: number) {
+        console.log(amount, target.died, target.getName());
         if (amount > 0) {
+            console.log('trig deal damage');
             this.events.trigger(EventType.DealDamage, new Map<string, any>([
                 ['source', this],
                 ['target', target],
@@ -220,6 +235,7 @@ export class Unit extends Card {
             ]));
         }
         if (target.died) {
+            console.log('trig kill unit');
             this.events.trigger(EventType.KillUnit, new Map<string, any>([
                 ['source', this],
                 ['target', target]
@@ -228,7 +244,7 @@ export class Unit extends Card {
     }
 
     public dealDamage(target: Unit, amount: number) {
-        this.dealDamagePhase2(target, this.dealDamagePhase1(target, amount));
+        this.damageEventPhase(target, this.damageDealPhase(target, amount));
         target.checkDeath();
     }
 

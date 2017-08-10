@@ -35,6 +35,20 @@ export class Peek extends Mechanic {
     }
 }
 
+export class Discard extends Mechanic {
+    constructor() {
+        super()
+    }
+    public run(card: Card, game: Game) {
+        let target = game.getPlayer(game.getOtherPlayerNumber(card.getOwner()));
+        target.discard();
+    }
+
+    public getText(card: Card) {
+        return `Your opponent discards a card.`;
+    }
+}
+
 export class AugarCard extends Mechanic {
     public run(card: Card, game: Game) {
         let owner = game.getPlayer(card.getOwner());

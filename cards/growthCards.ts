@@ -114,7 +114,7 @@ export function bear() {
         'Bear',
         'Bear',
         'bear-head.png',
-        UnitType.Insect,
+        UnitType.Mammal,
         new Resource(3, 0, {
             Growth: 3,
             Decay: 0,
@@ -173,7 +173,7 @@ export function spiderQueen() {
         }),
         new Untargeted(),
         3, 6,
-        [new FinalBlow('play a toxic spiderling.', (source, killed, game) =>
+        [new FinalBlow('Play a Toxic Spiderling', (source, killed, game) =>
             game.playGeneratedUnit(game.getPlayer(source.getOwner()), venomousSpiderling()))
         ]
     );
@@ -184,7 +184,7 @@ export function ancientBeast() {
         'AncientBeast',
         'Ancient Beast',
         'dinosaur-rex.png',
-        UnitType.Dragon,
+        UnitType.Monster,
         new Resource(5, 0, {
             Growth: 4,
             Decay: 0,

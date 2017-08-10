@@ -90,7 +90,7 @@ export function knight() {
         'Knight',
         'Knight',
         'mounted-knight.png',
-        UnitType.Human,
+        UnitType.Soldier,
         new Resource(3, 0, {
             Growth: 0,
             Decay: 0,

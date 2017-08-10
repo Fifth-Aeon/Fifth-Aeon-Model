@@ -42,6 +42,7 @@ export class Venomous extends Mechanic {
     public run(card: Card, game: Game) {
         let unit = card as Unit;
         unit.getEvents().addEvent(this, new GameEvent(EventType.DealDamage, (params) => {
+            console.log('venom trigger');
             let target = params.get('target') as Unit;
             if (target.getType() != UnitType.Player)
                 target.addMechanic(new Poisoned(), game)
