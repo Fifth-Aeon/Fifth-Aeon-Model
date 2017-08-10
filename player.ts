@@ -4,7 +4,7 @@ import { sample, remove } from 'lodash';
 import { GameFormat } from './gameFormat';
 import { Game, SyncGameEvent, GameEventType } from './game';
 import { Resource } from './resource';
-import { EventType} from './gameEvent';
+import { EventType } from './gameEvent';
 
 import { shuffle } from 'lodash';
 
@@ -104,9 +104,7 @@ export class Player extends Unit {
         card.play(game);
     }
 
-    public discard() {
-        
-    }
+
 
     protected die() {
         this.events.trigger(EventType.Death, new Map());
@@ -125,6 +123,15 @@ export class Player extends Unit {
             cards.forEach(card => {
                 this.removeCardFromHand(card);
                 this.addToDeck(card);
+                this.drawCard();
+            });
+        });
+    }
+
+    public discard(game: Game, count: number = 1) {
+        game.promptCardChoice(this.getPlayerNumber(), this.hand, count, (cards: Card[]) => {
+            cards.forEach(card => {
+                this.removeCardFromHand(card);
                 this.drawCard();
             });
         });

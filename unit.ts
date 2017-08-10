@@ -48,10 +48,14 @@ export class Unit extends Card {
         this.died = false;
     }
 
-    public transform(unit:Unit) {
+    public transform(unit: Unit, game:Game) {
+        this.cost = unit.cost;
+        this.name = unit.name;
+        this.imageUrl = unit.imageUrl;
         this.maxLife = unit.maxLife;
         this.life = unit.life;
         this.damage = unit.damage;
+        this.mechanics.forEach(mechanic => mechanic.remove(this, game));
         this.mechanics = unit.mechanics;
     }
 
@@ -65,6 +69,7 @@ export class Unit extends Card {
     public hasMechanicWithId(id: string) {
         return this.mechanics.find(mechanic => mechanic.id() == id) != undefined;
     }
+    
     public getLocation() {
         return this.location;
     }
@@ -183,7 +188,7 @@ export class Unit extends Card {
         let a2 = target.damageDealPhase(this, target.damage);
 
         this.damageEventPhase(target, a1);
-        this.damageEventPhase(this, a2);
+        target.damageEventPhase(this, a2);
 
         this.checkDeath();
         target.checkDeath();
@@ -209,8 +214,11 @@ export class Unit extends Card {
         return amount;
     }
 
-    public kill() {
-        this.died = true;
+    public kill(instant: boolean) {
+        if (instant)
+            this.die()
+        else
+            this.died = true;
     }
 
     public checkDeath() {

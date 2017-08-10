@@ -21,7 +21,7 @@ export class TransformDamaged extends Mechanic {
             let target = params.get('target') as Unit;
             if (target.getType() == UnitType.Player)
                 return params;
-            target.transform(this.transformation())
+            target.transform(this.transformation(), game)
             return params;
         }));
     }
@@ -38,9 +38,10 @@ export class TransformDamaged extends Mechanic {
 
 export class AbominationConsume extends Mechanic {
     public run(card: Card, game: Game) {
-        let crypt = game.getCrypt(card.getOwner()).filter(card => card.isUnit());
+        let crypt = game.getCrypt(card.getOwner());
+        let valid = crypt.filter(card => card.isUnit());
         let unit = card as Unit;
-        game.promptCardChoice(card.getOwner(), crypt, 1, (raised: Card[]) => {
+        game.promptCardChoice(card.getOwner(), valid, 2, (raised: Card[]) => {
             let eaten = raised[0] as Unit;
             unit.buff(eaten.getDamage(), eaten.getMaxLife());
             remove(crypt, eaten)
@@ -48,6 +49,6 @@ export class AbominationConsume extends Mechanic {
     }
 
     public getText(card: Card) {
-        return `Consume a unit in your crypt and gain its stats.`;
+        return `Remove up to two units from your crypt. This unit gains their stats.`;
     }
 }

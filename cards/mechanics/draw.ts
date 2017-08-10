@@ -41,7 +41,7 @@ export class Discard extends Mechanic {
     }
     public run(card: Card, game: Game) {
         let target = game.getPlayer(game.getOtherPlayerNumber(card.getOwner()));
-        target.discard();
+        target.discard(game);
     }
 
     public getText(card: Card) {

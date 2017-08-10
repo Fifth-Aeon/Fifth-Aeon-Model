@@ -20,7 +20,7 @@ export class Annihilate extends TargetedMechanic {
 export class KillTarget extends TargetedMechanic {
      public run(card: Card, game: Game) {
         this.targeter.getTargets(card, game).forEach(target => {
-            target.kill();
+            target.kill(true);
         });
     }
 

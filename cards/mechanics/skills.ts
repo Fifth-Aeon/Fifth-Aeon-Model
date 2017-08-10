@@ -30,7 +30,6 @@ export class Flying extends Mechanic {
     }
 }
 
-
 export class Lifesteal extends Mechanic {
     public run(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
@@ -60,7 +59,7 @@ export class Lethal extends Mechanic {
             EventType.DealDamage, params => {
                 let target = params.get('target') as Unit;
                 if (target.getType() != UnitType.Player)
-                    target.kill();
+                    target.kill(false);
                 return params;
             }
         ))

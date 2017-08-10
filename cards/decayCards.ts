@@ -115,7 +115,7 @@ export function Abomination() {
             Synthesis: 0
         }),
         new SingleUnit(),
-        3, 3,
+        0, 1,
         [new AbominationConsume()]
     )
 }
@@ -154,7 +154,10 @@ export function vampire() {
         }),
         new Untargeted(),
         3, 3,
-        [new FinalBlow('Gain +1/+1', (unit) => unit.buff(1, 1))]
+        [new FinalBlow('Gain +1/+1', (unit) => {
+            console.log('vamp abil')
+            unit.buff(1, 1)
+        })]
     )
 }
 
