@@ -114,7 +114,7 @@ export function Abomination() {
             Renewal: 0,
             Synthesis: 0
         }),
-        new SingleUnit(),
+        new Untargeted(),
         0, 1,
         [new AbominationConsume()]
     )

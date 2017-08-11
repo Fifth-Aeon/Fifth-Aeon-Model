@@ -1,13 +1,16 @@
 import { Mechanic } from '../mechanic';
 import { Card } from '../card';
 import { Unit, UnitType } from '../unit';
+import { Resource } from '../resource';
+
 import { SingleUnit, Untargeted, AllUnits } from '../targeter';
 import { CannotAttack } from './mechanics/cantAttack';
 import { ShuffleIntoDeck } from './mechanics/shuffleIntoDeck';
 import { RenewalMCTargeter, MindControl } from './mechanics/mindControl';
 import { Lordship, unitTypeLordship } from './mechanics/lordship';
 import { Serenity } from './mechanics/serenity';
-import { Resource } from '../resource';
+import { SummonUnits } from './mechanics/summonUnits';
+import { Flying, Relentless } from './mechanics/skills';
 
 export function ruralMonk() {
     return new Unit(
@@ -24,6 +27,24 @@ export function ruralMonk() {
         new Untargeted(),
         1, 2,
         [new Serenity('Gain 1 life', (unit, game) => game.getPlayer(unit.getOwner()).addLife(1))]
+    );
+}
+
+export function pikeman() {
+    return new Unit(
+        'Pikeman',
+        'Pikeman',
+        'pikeman.png',
+        UnitType.Soldier,
+        new Resource(1, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 1,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        2, 1,
+        []
     );
 }
 
@@ -55,14 +76,14 @@ export function castle() {
         'Castle',
         'castle.png',
         UnitType.Structure,
-        new Resource(7, 0, {
+        new Resource(4, 0, {
             Growth: 0,
             Decay: 0,
-            Renewal: 4,
+            Renewal: 2,
             Synthesis: 0
         }),
         new Untargeted(),
-        6, 12,
+        4, 7,
         [new CannotAttack()]
     );
 }
@@ -103,6 +124,22 @@ export function knight() {
     );
 }
 
+export function recruitment() {
+    return new Card(
+        'recruitment',
+        'Rapid Recruitment',
+        'rally-the-troops.png',
+        new Resource(3, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 2,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        [new SummonUnits(pikeman, 2)]
+    );
+}
+
 export function armstice() {
     return new Card(
         'Armstice',
@@ -124,7 +161,7 @@ export function callOfJustice() {
     return new Card(
         'CallOfJustice',
         'Call of Justice',
-        'king.png',
+        'scales.png',
         new Resource(5, 0, {
             Growth: 0,
             Decay: 0,
@@ -136,6 +173,24 @@ export function callOfJustice() {
     );
 }
 
+
+export function angel() {
+    return new Unit(
+        'SentryAngel',
+        'Sentry Angel',
+        'angel-wings.png',
+        UnitType.Cleric, 
+        new Resource(6, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 3,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        4, 7,
+        [new Flying(), new Relentless()]
+    );
+}
 
 export function pontiff() {
     return new Unit(

@@ -5,7 +5,7 @@ import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
-import {remove} from 'lodash';
+import { remove } from 'lodash';
 
 export class TransformDamaged extends Mechanic {
     private unitDesc: string;
@@ -42,9 +42,11 @@ export class AbominationConsume extends Mechanic {
         let valid = crypt.filter(card => card.isUnit());
         let unit = card as Unit;
         game.promptCardChoice(card.getOwner(), valid, 2, (raised: Card[]) => {
-            let eaten = raised[0] as Unit;
-            unit.buff(eaten.getDamage(), eaten.getMaxLife());
-            remove(crypt, eaten)
+            raised.forEach(card => {
+                let eaten = card as Unit;
+                unit.buff(eaten.getDamage(), eaten.getMaxLife());
+                remove(crypt, eaten);
+            })
         });
     }
 
