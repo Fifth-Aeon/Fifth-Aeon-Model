@@ -6,7 +6,6 @@ import { Unit } from '../../unit';
 import { Player} from '../../player';
 
 export class RenewalMCTargeter extends Targeter {
-
     public getValidTargets(card: Card, game: Game) {
         let owner = game.getPlayer(card.getOwner());
         return game.getBoard()
@@ -15,6 +14,7 @@ export class RenewalMCTargeter extends Targeter {
                 unit.getCost().getNumeric() < owner.getPool().getOfType('Renewal')
             )
     }
+    
     public getText() {
         return 'target unit with cost less than your renewal';
     }

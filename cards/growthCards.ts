@@ -166,7 +166,7 @@ export function spiderQueen() {
         'spider-face.png',
         UnitType.Spider,
         new Resource(5, 0, {
-            Growth: 4,
+            Growth: 3,
             Decay: 0,
             Renewal: 0,
             Synthesis: 0
@@ -186,7 +186,7 @@ export function ancientBeast() {
         'dinosaur-rex.png',
         UnitType.Monster,
         new Resource(5, 0, {
-            Growth: 4,
+            Growth: 3,
             Decay: 0,
             Renewal: 0,
             Synthesis: 0

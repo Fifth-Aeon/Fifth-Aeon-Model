@@ -11,6 +11,7 @@ import { Lordship, unitTypeLordship } from './mechanics/lordship';
 import { Serenity } from './mechanics/serenity';
 import { SummonUnits } from './mechanics/summonUnits';
 import { Flying, Relentless } from './mechanics/skills';
+import { CurePoisonTargeter, CurePoison } from './mechanics/poison';
 
 export function ruralMonk() {
     return new Unit(
@@ -44,6 +45,24 @@ export function pikeman() {
         }),
         new Untargeted(),
         2, 1,
+        []
+    );
+}
+
+export function unicorn() {
+    return new Unit(
+        'Unicorn',
+        'Unicorn',
+        'unicorn.png',
+        UnitType.Mammal,
+        new Resource(2, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 1,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        2, 3,
         []
     );
 }
@@ -100,9 +119,9 @@ export function plaugeDoctor() {
             Renewal: 1,
             Synthesis: 0
         }),
-        new Untargeted(),
+        new CurePoisonTargeter(),
         2, 2,
-        []
+        [new CurePoison()]
     );
 }
 

@@ -187,7 +187,7 @@ export function princeOfDecay() {
         UnitType.Cultist,
         new Resource(6, 0, {
             Growth: 0,
-            Decay: 5,
+            Decay: 4,
             Renewal: 0,
             Synthesis: 0
         }),
@@ -223,7 +223,7 @@ export function gorgon() {
         UnitType.Monster,
         new Resource(6, 0, {
             Growth: 0,
-            Decay: 5,
+            Decay: 4,
             Renewal: 0,
             Synthesis: 0
         }),

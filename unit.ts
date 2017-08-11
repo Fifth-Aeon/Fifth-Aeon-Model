@@ -53,7 +53,7 @@ export class Unit extends Card {
             game.getBoard().canPlayUnit(this);
     }
 
-    public transform(unit: Unit, game:Game) {
+    public transform(unit: Unit, game: Game) {
         this.cost = unit.cost;
         this.name = unit.name;
         this.imageUrl = unit.imageUrl;
@@ -62,6 +62,14 @@ export class Unit extends Card {
         this.damage = unit.damage;
         this.mechanics.forEach(mechanic => mechanic.remove(this, game));
         this.mechanics = unit.mechanics;
+    }
+
+    public removeMechanic(id: string, card: Card, game: Game) {
+        let target = this.mechanics.find(mechanic => mechanic.id() == id);
+        if (!target)
+            return;
+        target.remove(card, game);
+        this.mechanics.splice(this.mechanics.indexOf(target), 1);
     }
 
     public addMechanic(mechanic: Mechanic, game: Game | null = null) {

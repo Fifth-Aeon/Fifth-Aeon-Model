@@ -11,13 +11,18 @@ export class DeckList {
     private cardCount: number = 0;
 
     constructor(private format: GameFormat) {
-        this.generateTwoColorDeck();
+        if (Math.random() > 0.5) {
+            this.generateTwoColorDeck();
+        } else {
+            this.generateOneColorDeck();
+        }
     }
 
     public toJson() {
         return JSON.stringify([...Array.from(this.records.entries())]);
     }
-    public fromJson(jsonStr) {
+
+    public fromJson(jsonStr:string) {
         this.records = new Map(JSON.parse(jsonStr)) as Map<string, number>;
         this.cardCount = sum(Array.from(this.records.values()))
     }
@@ -39,6 +44,10 @@ export class DeckList {
 
     public generateTwoColorDeck() {
         this.randomDeckWithColors(new Set(sampleSize(ResourceTypeNames, 2) as Array<string>));
+    }
+
+    public generateOneColorDeck() {
+        this.randomDeckWithColors(new Set(sampleSize(ResourceTypeNames, 1) as Array<string>));
     }
 
     public size() {
