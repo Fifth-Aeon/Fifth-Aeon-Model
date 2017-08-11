@@ -553,7 +553,6 @@ export class Game {
 
     // Unit Zone Changes ------------------------------------------------------
     public playUnit(unit: Unit, owner: number) {
-        console.log(this.board.canPlayUnit(unit))
         if (this.board.canPlayUnit(unit))
             this.addUnit(unit, owner);
     }

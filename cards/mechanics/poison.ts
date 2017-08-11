@@ -10,12 +10,16 @@ export class CurePoisonTargeter extends Targeter {
     public getValidTargets(card: Card, game: Game) {
         let owner = game.getPlayer(card.getOwner());
         return game.getBoard()
-            .getPlayerUnits(game.getOtherPlayerNumber(card.getOwner()))
+            .getPlayerUnits(card.getOwner())
             .filter(unit => unit.hasMechanicWithId('poison'))
     }
     
     public getText() {
         return 'target posioned unit';
+    }
+
+    public optional() {
+        return true;
     }
 }
 
@@ -76,7 +80,6 @@ export class Venomous extends Mechanic {
     public run(card: Card, game: Game) {
         let unit = card as Unit;
         unit.getEvents().addEvent(this, new GameEvent(EventType.DealDamage, (params) => {
-            console.log('venom trigger');
             let target = params.get('target') as Unit;
             if (target.getType() != UnitType.Player)
                 target.addMechanic(new Poisoned(), game)

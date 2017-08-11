@@ -241,7 +241,6 @@ export class Unit extends Card {
     }
 
     private damageEventPhase(target: Unit, amount: number) {
-        console.log(amount, target.died, target.getName());
         if (amount > 0) {
             this.events.trigger(EventType.DealDamage, new Map<string, any>([
                 ['source', this],

@@ -3,7 +3,7 @@ import { Card } from './Card';
 import { Unit } from './unit';
 
 export abstract class Targeter {
-    protected target: Array<Unit>;
+    protected target: Array<Unit> = [];
     public needsInput(): boolean {
         return true;
     }
@@ -16,6 +16,9 @@ export abstract class Targeter {
     abstract getText(): string;
     public getValidTargets(card: Card, game: Game) {
         return new Array<Unit>();
+    }
+    public optional():boolean {
+        return false;
     }
 }
 
