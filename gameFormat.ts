@@ -5,7 +5,7 @@ export class GameFormat {
     public zoneNames: ["Board", "Hand", "Crypt"];
 
     // General Gameplay
-    public boardSize: number = 16;
+    public boardSize: number = 7;
     public playerCount: number = 2; // Number of players in format
     public rarityNames: string[] = ["Common", "Rare", "Epic", "Legendary"];
     public basicResources: Map<string, Resource> = new Map<string, Resource>();

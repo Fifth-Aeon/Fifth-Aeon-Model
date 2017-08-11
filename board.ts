@@ -8,13 +8,21 @@ import { Unit } from './unit';
  */
 export class Board {
     private spaces: Unit[][];
-   
-    constructor(playerCount: number, spaceCount: number) {
+
+    constructor(playerCount: number, private spaceCount: number) {
         this.spaces = new Array(playerCount);
         for (let i = 0; i < this.spaces.length; i++) {
             this.spaces[i] = [];
         }
-    } 
+    }
+
+    public canPlayUnit(playerOrUnit: number | Unit) {
+        if (typeof playerOrUnit != 'object') {
+            return this.spaces[playerOrUnit].length < this.spaceCount;
+        } else {
+            return this.spaces[playerOrUnit.getOwner()].length < this.spaceCount;
+        }
+    }
 
     public addUnit(unit: Unit) {
         this.spaces[unit.getOwner()].push(unit);
@@ -28,13 +36,13 @@ export class Board {
             }
         }
         return res;
-    } 
+    }
 
     public getPlayerUnits(playerNumber: number) {
         return this.spaces[playerNumber];
     }
 
-    public removeUnit(unit:Unit) {
+    public removeUnit(unit: Unit) {
         for (let i = 0; i < this.spaces.length; i++) {
             for (let j = 0; j < this.spaces[i].length; j++) {
                 if (this.spaces[i][j] === unit)

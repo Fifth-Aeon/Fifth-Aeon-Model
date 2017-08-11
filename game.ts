@@ -1,6 +1,6 @@
 import { Board } from './board';
 import { Player } from './player';
-import { Card } from './card';
+import { Card, Location } from './card';
 import { Unit } from './unit';
 import { GameFormat } from './gameFormat';
 import { DeckList } from './deckList';
@@ -70,6 +70,7 @@ export class Game {
     private cardPool: Map<string, Card>;
 
     public gameEvents: EventGroup;
+    
 
     private deferedChoice: (cards: Card[]) => void;
     private waitingForPlayerChoice: number | null = null;
@@ -262,6 +263,7 @@ export class Game {
     }
 
     public addToCrypt(card: Card) {
+        card.setLocation(Location.Crypt);
         this.crypt[card.getOwner()].push(card);
     }
 
@@ -551,7 +553,9 @@ export class Game {
 
     // Unit Zone Changes ------------------------------------------------------
     public playUnit(unit: Unit, owner: number) {
-        this.addUnit(unit, owner);
+        console.log(this.board.canPlayUnit(unit))
+        if (this.board.canPlayUnit(unit))
+            this.addUnit(unit, owner);
     }
 
     public returnUnitToDeck(unit: Unit) {

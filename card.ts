@@ -41,6 +41,14 @@ export class Card {
         this.id = Math.random().toString(16)
     }
 
+
+    public setLocation (location:Location) {
+        this.location = location;
+    }
+    public getLocation() {
+        return this.location;
+    }
+
     public draw() {
         this.location = Location.Hand;
     }

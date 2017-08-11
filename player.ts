@@ -1,4 +1,4 @@
-import { Card } from './card';
+import { Card, Location } from './card';
 import { Unit, UnitType } from './unit';
 import { sample, remove } from 'lodash';
 import { GameFormat } from './gameFormat';
@@ -42,6 +42,7 @@ export class Player extends Unit {
 
     public addToHand(card: Card) {
         card.setOwner(this.playerNumber);
+        card.setLocation(Location.Hand);
         this.hand.push(card);
     }
 
@@ -132,7 +133,7 @@ export class Player extends Unit {
         game.promptCardChoice(this.getPlayerNumber(), this.hand, count, (cards: Card[]) => {
             cards.forEach(card => {
                 this.removeCardFromHand(card);
-                this.drawCard();
+                game.addToCrypt(card);
             });
         });
     }
@@ -158,10 +159,10 @@ export class Player extends Unit {
         if (!drawn)
             return;
         this.parent.addGameEvent(new SyncGameEvent(GameEventType.draw, { playerNo: this.playerNumber, card: drawn.getPrototype() }));
-        this.hand.push(drawn);
+        this.addToHand(drawn);
     }
 
     public drawGeneratedCard(card: Card) {
-        this.hand.push(card);
+        this.addToHand(card);
     }
 }

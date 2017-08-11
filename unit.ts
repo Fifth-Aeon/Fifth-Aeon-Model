@@ -48,6 +48,11 @@ export class Unit extends Card {
         this.died = false;
     }
 
+    public isPlayable(game: Game): boolean {
+        return super.isPlayable(game) &&
+            game.getBoard().canPlayUnit(this);
+    }
+
     public transform(unit: Unit, game:Game) {
         this.cost = unit.cost;
         this.name = unit.name;
@@ -68,10 +73,6 @@ export class Unit extends Card {
 
     public hasMechanicWithId(id: string) {
         return this.mechanics.find(mechanic => mechanic.id() == id) != undefined;
-    }
-    
-    public getLocation() {
-        return this.location;
     }
 
     public getType() {
@@ -140,7 +141,6 @@ export class Unit extends Card {
     public getEvents() {
         return this.events;
     }
-
 
     public getBlockedUnitId() {
         return this.blockedUnitId;
@@ -235,7 +235,6 @@ export class Unit extends Card {
     private damageEventPhase(target: Unit, amount: number) {
         console.log(amount, target.died, target.getName());
         if (amount > 0) {
-            console.log('trig deal damage');
             this.events.trigger(EventType.DealDamage, new Map<string, any>([
                 ['source', this],
                 ['target', target],
@@ -243,7 +242,6 @@ export class Unit extends Card {
             ]));
         }
         if (target.died) {
-            console.log('trig kill unit');
             this.events.trigger(EventType.KillUnit, new Map<string, any>([
                 ['source', this],
                 ['target', target]
