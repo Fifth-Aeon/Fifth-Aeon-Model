@@ -418,7 +418,7 @@ export class Game {
         let blocked = this.getUnitById(act.params.blockedId);
         if (this.isPlayerTurn(act.player) || this.phase !== GamePhase.combat || !blocker.canBlock(blocked))
             return false;
-        blocker.setBlocking(blocked.getId());
+        blocker.setBlocking(blocked ? blocked.getId() : null);
         this.addGameEvent(new SyncGameEvent(GameEventType.block, {
             player: act.player,
             blockerId: act.params.blockerId,
