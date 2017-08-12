@@ -1,3 +1,6 @@
+import { properList } from './strings';
+import { toPairs } from 'lodash';
+
 export const ResourceType = {
     "Synthesis": "Synthesis",
     "Growth": "Growth",
@@ -31,6 +34,27 @@ export class Resource {
             Decay: 0,
             Renewal: 0
         };
+    }
+
+    public difference(res: Resource) {
+        return [
+            { name: 'Energy', diff: this.getNumeric() - res.getNumeric() },
+            { name: 'Synthesis', diff: this.types.Synthesis - res.types.Synthesis },
+            { name: 'Growth', diff: this.types.Growth - res.types.Growth },
+            { name: 'Decay', diff: this.types.Decay - res.types.Decay },
+            { name: 'Renewal', diff: this.types.Renewal - res.types.Renewal }
+        ].filter(type => type.diff > 0);
+    }
+
+    public asSentance() {
+        let base = this.numeric + ' energy';
+        let reqs: Array<[string, number]> = toPairs(this.types).filter(pair => pair[1] > 0);
+        if (reqs.length === 0)
+            return `costs ${this.numeric} energy.`;
+        else
+            return `costs ${this.numeric} energy. It also requires ${
+                properList(reqs.map(pair => `${pair[1]} ${pair[0].toLowerCase()}`))
+                }`;;
     }
 
     public getColor() {

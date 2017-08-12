@@ -143,7 +143,7 @@ export function Assassin() {
 export function vampire() {
     return new Unit(
         'Vampire1',
-        'Vamprie',
+        'Vampire',
         'vampire.png',
         UnitType.Vampire,
         new Resource(3, 0, {
@@ -163,7 +163,7 @@ export function vampire() {
 export function bat() {
     return new Unit(
         'VampireBat',
-        'Vamprie Bat',
+        'Vampire Bat',
         'bat.png',
         UnitType.Vampire,
         new Resource(2, 0, {

@@ -110,10 +110,15 @@ export class Unit extends Card {
     public canBlock(toBlock: Unit) {
         return !this.blockDisabled &&
             !this.exausted &&
+            toBlock.isAttacking() &&
             toBlock.getEvents().trigger(EventType.CheckBlock, new Map<string, any>([
                 ['blocker', this],
                 ['canBlock', true]
             ])).get('canBlock');
+    }
+
+    public isReady() {
+        return this.ready;
     }
 
     public isAttacking() {
@@ -122,7 +127,7 @@ export class Unit extends Card {
 
     public isBlocking() {
         return this.blockedUnitId != null;
-    }
+    } 
 
     public isExausted() {
         return this.exausted;
