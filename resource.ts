@@ -86,6 +86,11 @@ export class Resource {
         return this.numeric;
     }
 
+    public getMaxNumeric() { 
+        return this.maxNumeric;
+    }
+        
+
     public getTyped() {
         return Object.keys(this.types).map(key => key[0].repeat(this.types[key])).join('').split('');
     }
