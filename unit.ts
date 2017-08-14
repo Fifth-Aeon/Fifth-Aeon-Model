@@ -107,10 +107,10 @@ export class Unit extends Card {
         this.blockedUnitId = blockedId;
     }
 
-    public canBlock(toBlock: Unit) {
+    public canBlock(toBlock: Unit, hypothetical: boolean = false) {
         return !this.blockDisabled &&
             !this.exausted &&
-            toBlock.isAttacking() &&
+            (toBlock.isAttacking()  || hypothetical) &&
             toBlock.getEvents().trigger(EventType.CheckBlock, new Map<string, any>([
                 ['blocker', this],
                 ['canBlock', true]

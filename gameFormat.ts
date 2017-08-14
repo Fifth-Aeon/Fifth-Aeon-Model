@@ -29,3 +29,5 @@ export class GameFormat {
         }
     }
 }
+
+export const standardFormat = new GameFormat();
