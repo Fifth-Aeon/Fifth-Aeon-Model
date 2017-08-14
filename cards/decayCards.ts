@@ -14,7 +14,6 @@ import { TransformDamaged, AbominationConsume } from './mechanics/decaySpecials'
 import { OnDeath } from './mechanics/death';
 import { KillTarget } from './mechanics/removal';
 
-
 export function poison() {
     return new Card(
         'Poison',

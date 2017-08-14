@@ -108,7 +108,8 @@ export class Unit extends Card {
     }
 
     public canBlock(toBlock: Unit) {
-        return !this.blockDisabled &&
+        return toBlock == null ||
+            !this.blockDisabled &&
             !this.exausted &&
             toBlock.isAttacking() &&
             toBlock.getEvents().trigger(EventType.CheckBlock, new Map<string, any>([
