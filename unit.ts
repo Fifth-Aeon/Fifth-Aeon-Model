@@ -74,7 +74,7 @@ export class Unit extends Card {
 
     public addMechanic(mechanic: Mechanic, game: Game | null = null) {
         this.mechanics.push(mechanic);
-        mechanic => mechanic.attach(this);
+        mechanic.attach(this);
         if (this.location == Location.Board && game != null)
             mechanic.run(this, game)
     }
@@ -107,11 +107,12 @@ export class Unit extends Card {
         this.blockedUnitId = blockedId;
     }
 
-    public canBlock(toBlock: Unit) {
+
+    public canBlock(toBlock: Unit, hypothetical: boolean = false) {
         return toBlock == null ||
             !this.blockDisabled &&
             !this.exausted &&
-            toBlock.isAttacking() &&
+            (toBlock.isAttacking() || hypothetical) &&
             toBlock.getEvents().trigger(EventType.CheckBlock, new Map<string, any>([
                 ['blocker', this],
                 ['canBlock', true]
@@ -128,7 +129,7 @@ export class Unit extends Card {
 
     public isBlocking() {
         return this.blockedUnitId != null;
-    } 
+    }
 
     public isExausted() {
         return this.exausted;
@@ -260,6 +261,10 @@ export class Unit extends Card {
                 ['target', target]
             ]));
         }
+    }
+
+    public evaluate() {
+        return this.maxLife + this.life;
     }
 
     public dealDamage(target: Unit, amount: number) {

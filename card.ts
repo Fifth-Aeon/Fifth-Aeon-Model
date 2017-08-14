@@ -64,7 +64,9 @@ export class Card {
     public isPlayable(game: Game): boolean {
         let owner = game.getPlayer(this.owner);
         return game.isPlayerTurn(this.owner) &&
-            owner.getPool().meetsReq(this.cost);
+            owner.getPool().meetsReq(this.cost) &&
+            (!this.targeter.needsInput() || this.targeter.optional() ||
+            this.targeter.getValidTargets(this, game).length > 0);
     }
 
     public getPrototype() {
@@ -130,5 +132,13 @@ export class Card {
 
     public toString(): string {
         return `${this.name}: (${this.cost})`
+    }
+
+    public evaluate() {
+        return 0;
+    }
+
+    public evaluateTarget(target) {
+        return this.mechanics.map(mechanic => mechanic.evaluateTarget(this.getOwner(), target)).reduce((a, b) => a + b);
     }
 }

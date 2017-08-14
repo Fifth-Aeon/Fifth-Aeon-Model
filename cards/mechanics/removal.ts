@@ -15,10 +15,14 @@ export class Annihilate extends TargetedMechanic {
     public getText(card: Card) {
         return `Annihilate ${this.targeter.getText()}.`;
     }
+
+    public evaluateTarget(owner: number, unit: Unit) {
+        return unit.evaluate() * 1.25 * (unit.getOwner() == owner ? -1 : 1);
+    }
 }
 
 export class KillTarget extends TargetedMechanic {
-     public run(card: Card, game: Game) {
+    public run(card: Card, game: Game) {
         this.targeter.getTargets(card, game).forEach(target => {
             target.kill(true);
         });
@@ -26,6 +30,10 @@ export class KillTarget extends TargetedMechanic {
 
     public getText(card: Card) {
         return `Kill ${this.targeter.getText()}.`;
+    }
+
+    public evaluateTarget(owner: number, unit: Unit) {
+        return unit.evaluate() * 1.0 * (unit.getOwner() == owner ? -1 : 1);
     }
 }
 
