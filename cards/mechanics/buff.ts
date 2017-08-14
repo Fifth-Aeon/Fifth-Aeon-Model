@@ -22,7 +22,12 @@ export class BuffTarget extends TargetedMechanic {
     private abilityString() {
         return this.abilities.map(ability => ability.id()).join(', ');
     }
+
     public getText(card: Card) {
         return `Give ${this.targeter.getText()} +${this.damage}/+${this.life} and ${this.abilityString()}.`
+    }
+
+    public evaluateTarget(owner: number, target:Unit) {
+        return (this.life + this.damage) * 1.1 * (target.getOwner() == owner ? -1 : 1);
     }
 }

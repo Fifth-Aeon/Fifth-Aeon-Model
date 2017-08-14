@@ -261,6 +261,10 @@ export class Unit extends Card {
         }
     }
 
+    public evaluate() {
+        return this.maxLife + this.life;
+    }
+
     public dealDamage(target: Unit, amount: number) {
         this.damageEventPhase(target, this.damageDealPhase(target, amount));
         target.checkDeath();

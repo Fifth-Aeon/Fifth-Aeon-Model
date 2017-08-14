@@ -3,25 +3,25 @@ import { Game } from '../../Game';
 import { Targeter } from '../../targeter';
 import { Card } from '../../card';
 import { Unit } from '../../unit';
-import { Player} from '../../player';
+import { Player } from '../../player';
 
 export class RenewalMCTargeter extends Targeter {
     public getValidTargets(card: Card, game: Game) {
         let owner = game.getPlayer(card.getOwner());
         return game.getBoard()
             .getPlayerUnits(game.getOtherPlayerNumber(card.getOwner()))
-            .filter(unit => 
+            .filter(unit =>
                 unit.getCost().getNumeric() < owner.getPool().getOfType('Renewal')
             )
     }
-    
+
     public getText() {
         return 'target unit with cost less than your renewal';
     }
 }
 
 export class MindControl extends Mechanic {
-    constructor(private targeter:Targeter) {
+    constructor(private targeter: Targeter) {
         super();
     }
 
@@ -30,7 +30,7 @@ export class MindControl extends Mechanic {
         for (let target of targets) {
             let enemyBoard = game.getBoard().getPlayerUnits(target.getOwner());
             let ourBoard = game.getBoard().getPlayerUnits(card.getOwner());
-            
+
             target.setOwner(card.getOwner());
             enemyBoard.splice(enemyBoard.indexOf(target), 1);
             ourBoard.push(target);
@@ -39,5 +39,9 @@ export class MindControl extends Mechanic {
 
     public getText(card: Card) {
         return `Take control of ${this.targeter.getText()}.`
+    }
+
+    public evaluateTarget(owner: number, unit: Unit) {
+        return unit.evaluate() * 2 * (unit.getOwner() == owner ? -1 : 1);
     }
 }

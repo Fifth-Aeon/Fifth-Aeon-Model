@@ -211,7 +211,7 @@ export class Game {
                     this.resolveCombat();
                 break;
             case GameEventType.ChoiceMade:
-                if (params.player != playerNumber)
+                if (params.player != playerNumber && this.deferedChoice)
                     this.makeDeferedChoice(params.choice);
                 break;
             case GameEventType.QueryResult:
@@ -415,7 +415,8 @@ export class Game {
         let player = this.players[act.player];
         let blocker = this.getUnitById(act.params.blockerId);
         let blocked = this.getUnitById(act.params.blockedId);
-        if (this.isPlayerTurn(act.player) || this.phase !== GamePhase.combat || !blocker.canBlock(blocked))
+        if (this.isPlayerTurn(act.player) || this.phase !== GamePhase.combat || 
+            !blocker || !blocker ||!blocker.canBlock(blocked))
             return false;
         blocker.setBlocking(blocked ? blocked.getId() : null);
         this.addGameEvent(new SyncGameEvent(GameEventType.block, {

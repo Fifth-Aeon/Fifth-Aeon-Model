@@ -13,13 +13,13 @@ function addFactory(...factories: CardFactory[]) {
 }
 
 import * as renewal from './renewalCards';
-addFactory(...values(renewal)); 
+addFactory(...(values(renewal) as CardFactory[])); 
 
 import * as growth from './growthCards';
-addFactory(...values(growth)); 
+addFactory(...(values(growth) as CardFactory[])); 
 
 import * as decay from './decayCards';
-addFactory(...values(decay)); 
+addFactory(...(values(decay) as CardFactory[])); 
 
 import * as synthesis from './synthCards';
-addFactory(...values(synthesis)); 
+addFactory(...(values(synthesis) as CardFactory[])); 
