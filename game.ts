@@ -70,7 +70,7 @@ export class Game {
     private cardPool: Map<string, Card>;
 
     public gameEvents: EventGroup;
-    
+
 
     private deferedChoice: (cards: Card[]) => void;
     private waitingForPlayerChoice: number | null = null;
@@ -185,9 +185,8 @@ export class Game {
                 }
                 break;
             case GameEventType.draw:
-                if (params.playerNo == playerNumber) {
-                    this.players[params.playerNo].addToHand(this.unpackCard(params.card))
-                }
+                // Todo, information hiding 
+                this.players[params.playerNo].addToHand(this.unpackCard(params.card))
                 break;
             case GameEventType.turnStart:
                 this.gameEvents.trigger(EventType.EndOfTurn, new Map());

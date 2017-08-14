@@ -105,8 +105,6 @@ export class Player extends Unit {
         card.play(game);
     }
 
-
-
     protected die() {
         this.events.trigger(EventType.Death, new Map());
     }
@@ -130,6 +128,10 @@ export class Player extends Unit {
     }
 
     public discard(game: Game, count: number = 1) {
+        if (count >= this.hand.length) {
+            this.hand = [];
+            return;
+        }
         game.promptCardChoice(this.getPlayerNumber(), this.hand, count, (cards: Card[]) => {
             cards.forEach(card => {
                 this.removeCardFromHand(card);
