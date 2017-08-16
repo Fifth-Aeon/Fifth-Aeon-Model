@@ -264,7 +264,7 @@ export class Unit extends Card {
     }
 
     public evaluate() {
-        return this.maxLife + this.life;
+        return this.maxLife + this.damage;
     }
 
     public dealDamage(target: Unit, amount: number) {

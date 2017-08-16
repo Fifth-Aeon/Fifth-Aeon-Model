@@ -171,7 +171,7 @@ export class Game {
      */
     public syncServerEvent(playerNumber: number, event: SyncGameEvent) {
         let params = event.params;
-        console.log('sync', GameEventType[event.type], event.params);
+        //console.log('sync', GameEventType[event.type], event.params);
         this.events.push(event);
         switch (event.type) {
             case GameEventType.playCard:
@@ -198,12 +198,14 @@ export class Game {
                 this.players[params.playerNo].playResource(params.resource);
                 break;
             case GameEventType.attackToggled:
+                if (!this.getUnitById(params.unitId))
+                    console.error('Cand find unit with id', params.unitId, params)
                 if (params.player != playerNumber)
-                    this.getPlayerUnitById(params.player, params.unitId).toggleAttacking();
+                    this.getUnitById(params.unitId).toggleAttacking();
                 break;
             case GameEventType.block:
                 if (params.player != playerNumber)
-                    this.getPlayerUnitById(params.player, params.blockerId).setBlocking(params.blockedId);
+                    this.getUnitById(params.blockerId).setBlocking(params.blockedId);
                 break;
             case GameEventType.phaseChange:
                 this.phase = params.phase;
@@ -403,7 +405,7 @@ export class Game {
     private toggleAttack(act: GameAction): boolean {
         let player = this.players[act.player];
         let unit = this.getPlayerUnitById(act.player, act.params.unitId);
-        if (!unit.canAttack())
+        if (!unit || !unit.canAttack())
             return false;
         unit.toggleAttacking();
         this.addGameEvent(new SyncGameEvent(GameEventType.attackToggled, { player: act.player, unitId: act.params.unitId }));
@@ -415,8 +417,8 @@ export class Game {
         let player = this.players[act.player];
         let blocker = this.getUnitById(act.params.blockerId);
         let blocked = this.getUnitById(act.params.blockedId);
-        if (this.isPlayerTurn(act.player) || this.phase !== GamePhase.combat || 
-            !blocker || !blocker ||!blocker.canBlock(blocked))
+        if (this.isPlayerTurn(act.player) || this.phase !== GamePhase.combat ||
+            !blocker || !blocker || !blocker.canBlock(blocked))
             return false;
         blocker.setBlocking(blocked ? blocked.getId() : null);
         this.addGameEvent(new SyncGameEvent(GameEventType.block, {

@@ -28,6 +28,6 @@ export class BuffTarget extends TargetedMechanic {
     }
 
     public evaluateTarget(owner: number, target:Unit) {
-        return (this.life + this.damage) * 1.1 * (target.getOwner() == owner ? -1 : 1);
+        return (this.life + this.damage) * 1.1 * (target.getOwner() == owner ? 1 : -1);
     }
 }

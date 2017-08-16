@@ -73,8 +73,11 @@ export class PoisonTarget extends TargetedMechanic {
     public getText(card: Card) {
         return `Poison ${this.targeter.getText()}.`
     }
-}
 
+    public evaluateTarget(owner: number, target: Unit) {
+        return target.evaluate() * 0.5 * (target.getOwner() == owner ? -1 : 1);
+    }
+}
 
 export class Venomous extends Mechanic {
     public run(card: Card, game: Game) {
@@ -94,4 +97,6 @@ export class Venomous extends Mechanic {
     public getText(card: Card) {
         return 'Venomous.';
     }
+
+    
 }
