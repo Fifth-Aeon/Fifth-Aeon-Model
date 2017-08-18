@@ -199,13 +199,18 @@ export class Game {
                 break;
             case GameEventType.attackToggled:
                 if (!this.getUnitById(params.unitId))
-                    console.error('Cand find unit with id', params.unitId, params)
+                    console.error('Cand find unit with id', params.unitId, params, 'i see units', this.getBoard().getAllUnits())
                 if (params.player != playerNumber)
                     this.getUnitById(params.unitId).toggleAttacking();
                 break;
             case GameEventType.block:
-                if (params.player != playerNumber)
+                if (params.player != playerNumber) {
+                    if (!this.getUnitById(params.blockerId))
+                        console.error('Cand find unit with id', params.blockerId, params, 'i see units', this.getBoard().getAllUnits());
+                    if (!this.getUnitById(params.blockedId))
+                        console.error('Cand find unit with id', params.blockedId, params, 'i see units', this.getBoard().getAllUnits());
                     this.getUnitById(params.blockerId).setBlocking(params.blockedId);
+                }
                 break;
             case GameEventType.phaseChange:
                 this.phase = params.phase;
@@ -468,7 +473,7 @@ export class Game {
 
         attackers.forEach(attacker => {
             if (!attacker.isExausted()) {
-                attacker.dealDamage(defendingPlayer, attacker.getDamage());
+                attacker.dealAndApplyDamage(defendingPlayer, attacker.getDamage());
                 attacker.setExausted(true);
             }
             attacker.toggleAttacking();

@@ -13,7 +13,7 @@ export class CurePoisonTargeter extends Targeter {
             .getPlayerUnits(card.getOwner())
             .filter(unit => unit.hasMechanicWithId('poison'))
     }
-    
+
     public getText() {
         return 'target posioned unit';
     }
@@ -40,14 +40,19 @@ export class CurePoison extends TargetedMechanic {
 }
 
 export class Poisoned extends Mechanic {
+    private level = 1;
     public run(card: Card, game: Game) {
         let unit = card as Unit;
         game.gameEvents.addEvent(this, new GameEvent(EventType.StartOfTurn, (params) => {
             let player = params.get('player') as number;
             if (player == unit.getOwner())
-                unit.buff(-1, -1);
+                unit.buff(-this.level, -this.level);
             return params;
         }));
+    }
+
+    public stack() {
+        this.level++;
     }
 
     public remove(card: Card, game: Game) {
@@ -59,7 +64,10 @@ export class Poisoned extends Mechanic {
     }
 
     public getText(card: Card) {
-        return 'Poisoned.';
+        if (this.level == 1)
+            return 'Poisoned.';
+        else 
+            return `Poisoned (${this.level}).`
     }
 }
 
@@ -98,5 +106,5 @@ export class Venomous extends Mechanic {
         return 'Venomous.';
     }
 
-    
+
 }

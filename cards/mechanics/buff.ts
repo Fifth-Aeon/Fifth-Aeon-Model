@@ -4,6 +4,7 @@ import { Targeter } from '../../targeter';
 import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
+import { properCase, properList } from '../../strings';
 
 
 export class BuffTarget extends TargetedMechanic {
@@ -20,14 +21,14 @@ export class BuffTarget extends TargetedMechanic {
     }
 
     private abilityString() {
-        return this.abilities.map(ability => ability.id()).join(', ');
+        return properList(this.abilities.map(ability => properCase(ability.id())));
     }
 
     public getText(card: Card) {
         return `Give ${this.targeter.getText()} +${this.damage}/+${this.life} and ${this.abilityString()}.`
     }
 
-    public evaluateTarget(owner: number, target:Unit) {
+    public evaluateTarget(owner: number, target: Unit) {
         return (this.life + this.damage) * 1.1 * (target.getOwner() == owner ? 1 : -1);
     }
 }
