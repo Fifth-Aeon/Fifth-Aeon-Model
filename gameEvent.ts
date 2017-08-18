@@ -26,6 +26,15 @@ export class EventGroup {
         this.events = new Map<EventType, Array<GameEvent>>();
     }
 
+    public getSubgroup(type:EventType) {
+        let subgroup = new EventGroup();
+        let events = this.events.get(type) || [];
+        events.forEach(event => {
+            subgroup.addEvent(event.source, event);
+        })
+        return subgroup;
+    }
+
     public addEvent(source: Mechanic | null, event: GameEvent) {
         event.source = source;
         let events = this.events.get(event.type);

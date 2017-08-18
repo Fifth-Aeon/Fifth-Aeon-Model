@@ -12,7 +12,7 @@ export class TransformDamaged extends Mechanic {
     constructor(private transformation: () => Unit) {
         super();
         let unit = transformation();
-        this.unitDesc = `${unit.getDamage()}/${unit.getLife()} ${unit.getName()}`
+        this.unitDesc = `${unit.getName()}`;
     }
 
     public run(card: Card, game: Game) {

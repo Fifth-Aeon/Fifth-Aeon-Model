@@ -10,5 +10,5 @@ export function properList(arr: Array<string>) {
 }
 
 export function properCase(str:string) {
-    return str;
+    return str.replace(/\b\w/g, l => l.toUpperCase())    
 }

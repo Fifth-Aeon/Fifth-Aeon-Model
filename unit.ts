@@ -11,6 +11,23 @@ export enum UnitType {
     Vampire, Cultist, Agent, Undead, Structure, Vehicle, Insect, Dragon
 }
 
+class Damager {
+    private events: EventGroup;
+    constructor(private amount: number, private source: Unit, private target: Unit) {
+        this.events = source.getEvents().getSubgroup(EventType.DealDamage)
+    }
+    public run() {
+        let result = this.target.takeDamage(this.amount);
+        if (result > 0) {
+            this.events.trigger(EventType.DealDamage, new Map<string, any>([
+                ['source', this.source],
+                ['target', this.target],
+                ['amount', this.amount]
+            ]));
+        }
+    }
+}
+
 export class Unit extends Card {
 
     private unitType: UnitType
@@ -73,6 +90,10 @@ export class Unit extends Card {
     }
 
     public addMechanic(mechanic: Mechanic, game: Game | null = null) {
+        if (mechanic.id() != null && this.hasMechanicWithId(mechanic.id())) {
+            this.hasMechanicWithId(mechanic.id()).stack();
+            return;
+        }
         this.mechanics.push(mechanic);
         mechanic.attach(this);
         if (this.location == Location.Board && game != null)
@@ -80,7 +101,7 @@ export class Unit extends Card {
     }
 
     public hasMechanicWithId(id: string) {
-        return this.mechanics.find(mechanic => mechanic.id() == id) != undefined;
+        return this.mechanics.find(mechanic => mechanic.id() == id);
     }
 
     public getType() {
@@ -199,20 +220,18 @@ export class Unit extends Card {
         let damage: number = this.events.trigger(EventType.Attack, eventParams).get('damage');
 
         // Remove actions and deal damage
-        let a1 = this.damageDealPhase(target, damage);
-        let a2 = target.damageDealPhase(this, target.damage);
-
-        this.damageEventPhase(target, a1);
-        target.damageEventPhase(this, a2);
-
-        this.checkDeath();
-        target.checkDeath();
+        let damage1 = this.dealDamage(target, damage);
+        let damage2 = target.dealDamage(this, target.damage);
+        damage1.run();
+        damage2.run();
+        this.afterDamage(target);
+        target.afterDamage(this);
 
         this.setExausted(true);
         target.setExausted(true);
     }
 
-    private takeDamageNoDeath(amount: number): number {
+    public takeDamage(amount: number): number {
         amount = this.events.trigger(EventType.TakeDamage, new Map<string, any>([
             ['target', this],
             ['amount', amount]
@@ -220,13 +239,14 @@ export class Unit extends Card {
         this.life -= amount;
         if (this.life <= 0)
             this.died = true;
+        this.checkDeath();
         return amount;
     }
 
-    public takeDamage(amount: number): number {
-        amount = this.takeDamageNoDeath(amount);
-        this.checkDeath();
-        return amount;
+    public checkDeath() {
+        if (this.life <= 0 || this.died) {
+            this.die();
+        }
     }
 
     public kill(instant: boolean) {
@@ -236,25 +256,11 @@ export class Unit extends Card {
             this.died = true;
     }
 
-    public checkDeath() {
-        if (this.died || this.life <= 0) {
-            this.die();
-            this.died = false;
-        }
+    private dealDamage(target: Unit, amount: number): Damager {
+        return new Damager(amount, this, target);
     }
 
-    private damageDealPhase(target: Unit, amount: number) {
-        return target.takeDamageNoDeath(amount);
-    }
-
-    private damageEventPhase(target: Unit, amount: number) {
-        if (amount > 0) {
-            this.events.trigger(EventType.DealDamage, new Map<string, any>([
-                ['source', this],
-                ['target', target],
-                ['amount', amount]
-            ]));
-        }
+    private afterDamage(target: Unit) {
         if (target.died) {
             this.events.trigger(EventType.KillUnit, new Map<string, any>([
                 ['source', this],
@@ -267,9 +273,8 @@ export class Unit extends Card {
         return this.maxLife + this.damage;
     }
 
-    public dealDamage(target: Unit, amount: number) {
-        this.damageEventPhase(target, this.damageDealPhase(target, amount));
-        target.checkDeath();
+    public dealAndApplyDamage(target: Unit, amount: number) {
+        this.dealDamage(target, amount).run();
     }
 
     public leaveBoard(game: Game) {

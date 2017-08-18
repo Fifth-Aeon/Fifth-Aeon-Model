@@ -8,11 +8,11 @@ export abstract class Mechanic {
     abstract run(parent: Card, game: Game): void;
     abstract getText(parent: Card): string;
     public remove(card: Card, game: Game) { };
-    public id() { return '' };
+    public id():string { return null };
     public evaluate() { return { add: 0, mult: 0 }; }
     public evaluateTarget(owner: number, target: Unit) { return 0; }
+    public stack() {}
 }
-
 
 export abstract class TargetedMechanic extends Mechanic {
     constructor(protected targeter?: Targeter) {

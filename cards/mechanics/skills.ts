@@ -59,7 +59,7 @@ export class Lethal extends Mechanic {
             EventType.DealDamage, params => {
                 let target = params.get('target') as Unit;
                 if (target.getType() != UnitType.Player)
-                    target.kill(false);
+                    target.kill(true);
                 return params;
             }
         ))
