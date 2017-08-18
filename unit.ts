@@ -12,9 +12,6 @@ export enum UnitType {
 }
 
 export class Unit extends Card {
-
-    private unitType: UnitType
-
     // Stats
     protected life: number;
     protected maxLife: number;
@@ -29,8 +26,9 @@ export class Unit extends Card {
     protected attackDisabled: boolean;
     protected blockDisabled: boolean;
 
-    // Modifications
+    // Misc
     protected events: EventGroup;
+    private unitType: UnitType
 
     constructor(dataId: string, name: string, imageUrl: string, type: UnitType, cost: Resource, targeter: Targeter, damage: number, maxLife: number, mechanics: Array<Mechanic>) {
         super(dataId, name, imageUrl, cost, targeter, mechanics);
@@ -62,6 +60,7 @@ export class Unit extends Card {
         this.damage = unit.damage;
         this.mechanics.forEach(mechanic => mechanic.remove(this, game));
         this.mechanics = unit.mechanics;
+        this.unitType = unit.unitType;
     }
 
     public removeMechanic(id: string, card: Card, game: Game) {
@@ -106,7 +105,6 @@ export class Unit extends Card {
     public setBlocking(blockedId: string) {
         this.blockedUnitId = blockedId;
     }
-
 
     public canBlock(toBlock: Unit, hypothetical: boolean = false) {
         return toBlock == null ||
