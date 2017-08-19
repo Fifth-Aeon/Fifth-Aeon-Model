@@ -2,7 +2,7 @@ import { Board } from './board';
 import { Player } from './player';
 import { Card, Location } from './card';
 import { Unit } from './unit';
-import { GameFormat } from './gameFormat';
+import { GameFormat, standardFormat } from './gameFormat';
 import { DeckList } from './deckList';
 import { Resource } from './resource';
 import { GameEvent, EventType, EventGroup } from './gameEvent';
@@ -68,11 +68,11 @@ export class Game {
     private blockers: [Unit, Unit][];
     // A map of cards loaded from the server so far
     private cardPool: Map<string, Card>;
-
+    // A group of game logic events that are not connected to any individual unit
     public gameEvents: EventGroup;
-
-
+    // A callback to be run when the result of a player's choice becomes known
     private deferedChoice: (cards: Card[]) => void;
+    // Flag to tell us which player's choice we are waiting for (null if not waiting)
     private waitingForPlayerChoice: number | null = null;
 
     /**
@@ -80,21 +80,19 @@ export class Game {
      * informs how the game is initlized eg how
      * much health each player starts with.
      * 
-     * @param {any} [format=new GameFormat()] 
+     * @param {any} [format=standardFormat] 
      * @memberof Game
      */
-    constructor(format = new GameFormat(), private client: boolean = false, deckLists?: [DeckList, DeckList]) {
+    constructor(format = standardFormat, private client: boolean = false, deckLists?: [DeckList, DeckList]) {
         this.format = format;
         this.board = new Board(this.format.playerCount, this.format.boardSize);
         this.cardPool = new Map<string, Card>();
         this.turnNum = 1;
         this.actionHandelers = new Map<GameActionType, actionCb>();
-
         this.events = [];
         this.attackers = [];
         this.blockers = [];
         this.crypt = [[], []];
-
         this.gameEvents = new EventGroup();
 
         let decks: Card[][] = [[], []];
@@ -127,15 +125,11 @@ export class Game {
 
         this.promptCardChoice = this.deferChoice;
 
-        this.addActionHandeler(GameActionType.pass, this.passAction);
-        this.addActionHandeler(GameActionType.playResource, this.playResourceAction);
-        this.addActionHandeler(GameActionType.playCard, this.playCardAction);
-        this.addActionHandeler(GameActionType.toggleAttack, this.toggleAttackAction);
-        this.addActionHandeler(GameActionType.declareBlockers, this.declareBlockerAction);
-        this.addActionHandeler(GameActionType.CardChoice, this.makeCardChocie);
-        this.addActionHandeler(GameActionType.Quit, this.quit);
+        this.addActionHandelers();
     }
 
+
+    // Game End Logic -----------------------------------------------
     private winner = -1;
     private endGame(winningPlayer: number, quit: boolean = false) {
         if (this.winner != -1)
@@ -161,11 +155,11 @@ export class Game {
         return this.winner;
     }
 
-    // Syncronization --------------------------------------------------------
-
+    // Synchronization --------------------------------------------------------
     public addGameEvent(event: SyncGameEvent) {
         this.events.push(event);
     }
+
     /**
      * Syncs an event that happened on the server into the state of this game model
      * 
@@ -273,7 +267,6 @@ export class Game {
     }
 
     // Crypt logic -------------------------------------
-
     public addToCrypt(card: Card) {
         card.setLocation(Location.Crypt);
         this.crypt[card.getOwner()].push(card);
@@ -282,30 +275,6 @@ export class Game {
     public getCrypt(player: number) {
         return this.crypt[player];
     }
-
-
-    /**
-     * 
-     * Handles a players action and returns a list of events that
-     * resulted from that aciton.
-     * 
-     * @param {GameAction} action 
-     * @returns {SyncGameEvent[]} 
-     * @memberof Game
-     */
-    public handleAction(action: GameAction): SyncGameEvent[] {
-        let mark = this.events.length;
-        let handeler = this.actionHandelers.get(action.type);
-        if (!handeler)
-            return [];
-        let sig = handeler(action);
-        return this.events.slice(mark);
-    }
-
-    private addActionHandeler(type: GameActionType, cb: actionCb) {
-        this.actionHandelers.set(type, cb.bind(this));
-    }
-
 
     // Game Logic --------------------------------------------------------
     public startGame() {
@@ -320,8 +289,6 @@ export class Game {
         this.addGameEvent(new SyncGameEvent(GameEventType.turnStart, { turn: this.turn, turnNum: this.turnNum }));
         return this.events;
     }
-
-
 
     // Server Query Logic ---------------------------------------------------
     private setQueryResult(cards: Card[]) {
@@ -356,18 +323,56 @@ export class Game {
         player.playCard(this, card, true);
     }
 
-    // Actions -------------------------------------------------------------
+    // Player Actions ---------------------------------------------------------
+
+    /**
+   * Handles a players action and returns a list of events that
+   * resulted from that aciton.
+   * 
+   * @param {GameAction} action 
+   * @returns {SyncGameEvent[]} 
+   * @memberof Game
+   */
+    public handleAction(action: GameAction): SyncGameEvent[] {
+        let mark = this.events.length;
+        let handeler = this.actionHandelers.get(action.type);
+        if (!handeler)
+            return [];
+        let sig = handeler(action);
+        return this.events.slice(mark);
+    }
+
+    private addActionHandeler(type: GameActionType, cb: actionCb) {
+        this.actionHandelers.set(type, cb.bind(this));
+    }
+
+    private addActionHandelers() {
+        this.addActionHandeler(GameActionType.pass, this.passAction);
+        this.addActionHandeler(GameActionType.playResource, this.playResourceAction);
+        this.addActionHandeler(GameActionType.playCard, this.playCardAction);
+        this.addActionHandeler(GameActionType.toggleAttack, this.toggleAttackAction);
+        this.addActionHandeler(GameActionType.declareBlockers, this.declareBlockerAction);
+        this.addActionHandeler(GameActionType.CardChoice, this.makeCardChocie);
+        this.addActionHandeler(GameActionType.Quit, this.quit);
+    }
+
+    /* Preconditions 
+        - Its the owners turn
+        - Owner has has card in hand, 
+        - Owner can can afford to play card
+        - The target given for the card is valid 
+    */
     private playCardAction(act: GameAction): boolean {
         let player = this.players[act.player];
         if (!this.isPlayerTurn(act.player))
             return false;
         let card = this.getPlayerCardById(player, act.params.id);
-        if (!card)
+        if (!card || card.isPlayable(this))
             return false;
-        if (act.params.targetIds != null) {
-            card.getTargeter().setTarget(act.params.targetIds
-                .map((id: string) => this.getUnitById(id)));
-        }
+        let targets: Unit[] = act.params.targetIds.map((id: string) => this.getUnitById(id));
+        if (!card.getTargeter().targetsAreValid(card, this))
+            return;
+
         this.playCard(player, card);
         this.addGameEvent(new SyncGameEvent(GameEventType.playCard, {
             playerNo: act.player,
@@ -377,22 +382,33 @@ export class Game {
         return true;
     }
 
+    /* Preconditions 
+        - It is the first phase of the acitng players turn
+        - Unit is on the battlfield, 
+        - Unit can attack
+    */
     private toggleAttackAction(act: GameAction): boolean {
         let player = this.players[act.player];
         let unit = this.getPlayerUnitById(act.player, act.params.unitId);
-        if (!unit || !unit.canAttack())
+        if (!this.isPlayerTurn(act.player) || this.phase != GamePhase.play1 || !unit || !unit.canAttack())
             return false;
         unit.toggleAttacking();
         this.addGameEvent(new SyncGameEvent(GameEventType.attackToggled, { player: act.player, unitId: act.params.unitId }));
         return true;
     }
 
+    /* Preconditions 
+       - It is the block phase of the opposing players turn
+       - Unit is on the battlfield, 
+       - Unit can attack
+   */
     private declareBlockerAction(act: GameAction) {
         let player = this.players[act.player];
         let blocker = this.getUnitById(act.params.blockerId);
         let blocked = this.getUnitById(act.params.blockedId);
-        if (this.isPlayerTurn(act.player) || this.phase !== GamePhase.combat ||
-            !blocker || !blocker || !blocker.canBlock(blocked))
+        if (this.isPlayerTurn(act.player) ||
+            this.phase !== GamePhase.combat ||
+            !blocker || !blocked || !blocker.canBlock(blocked))
             return false;
         blocker.setBlocking(blocked ? blocked.getId() : null);
         this.addGameEvent(new SyncGameEvent(GameEventType.block, {
@@ -400,10 +416,14 @@ export class Game {
             blockerId: act.params.blockerId,
             blockedId: act.params.blockedId
         }));
-
         return true;
     }
 
+    /* Preconditions 
+       - It is the acting player's turn
+       - Player has not already played a resource
+       - Requested resource type is valid
+   */
     private playResourceAction(act: GameAction): boolean {
         let player = this.players[act.player];
         if (!(this.isPlayerTurn(act.player) && player.canPlayResource()))
@@ -425,7 +445,6 @@ export class Game {
 
 
     // Combat ------------------------------------------
-
     public playerCanAttack(playerNo: number) {
         return this.phase == GamePhase.play1 && this.isActivePlayer(playerNo);
     }
@@ -481,7 +500,6 @@ export class Game {
     }
 
     // Game Flow Logic (phases, turns) -------------------------------------------------
-
     private endPhaseOne() {
         if (this.isAttacking()) {
             if (this.blockersExist()) {
