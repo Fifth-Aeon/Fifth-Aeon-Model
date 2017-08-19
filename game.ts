@@ -127,11 +127,11 @@ export class Game {
 
         this.promptCardChoice = this.deferChoice;
 
-        this.addActionHandeler(GameActionType.pass, this.pass);
-        this.addActionHandeler(GameActionType.playResource, this.playResource);
+        this.addActionHandeler(GameActionType.pass, this.passAction);
+        this.addActionHandeler(GameActionType.playResource, this.playResourceAction);
         this.addActionHandeler(GameActionType.playCard, this.playCardAction);
-        this.addActionHandeler(GameActionType.toggleAttack, this.toggleAttack);
-        this.addActionHandeler(GameActionType.declareBlockers, this.declareBlocker);
+        this.addActionHandeler(GameActionType.toggleAttack, this.toggleAttackAction);
+        this.addActionHandeler(GameActionType.declareBlockers, this.declareBlockerAction);
         this.addActionHandeler(GameActionType.CardChoice, this.makeCardChocie);
         this.addActionHandeler(GameActionType.Quit, this.quit);
     }
@@ -162,6 +162,10 @@ export class Game {
     }
 
     // Syncronization --------------------------------------------------------
+
+    public addGameEvent(event: SyncGameEvent) {
+        this.events.push(event);
+    }
     /**
      * Syncs an event that happened on the server into the state of this game model
      * 
@@ -199,16 +203,16 @@ export class Game {
                 break;
             case GameEventType.attackToggled:
                 if (!this.getUnitById(params.unitId))
-                    console.error('Cand find unit with id', params.unitId, params, 'i see units', this.getBoard().getAllUnits())
+                    console.error('Cand find attacking unit with id', params.unitId, params, 'i see units', this.getBoard().getAllUnits())
                 if (params.player != playerNumber)
                     this.getUnitById(params.unitId).toggleAttacking();
                 break;
             case GameEventType.block:
                 if (params.player != playerNumber) {
                     if (!this.getUnitById(params.blockerId))
-                        console.error('Cand find unit with id', params.blockerId, params, 'i see units', this.getBoard().getAllUnits());
+                        console.error('Cand find blocker unitwith id', params.blockerId, params, 'i see units', this.getBoard().getAllUnits());
                     if (!this.getUnitById(params.blockedId))
-                        console.error('Cand find unit with id', params.blockedId, params, 'i see units', this.getBoard().getAllUnits());
+                        console.error('Cand find blocked unit with id', params.blockedId, params, 'i see units', this.getBoard().getAllUnits());
                     this.getUnitById(params.blockerId).setBlocking(params.blockedId);
                 }
                 break;
@@ -268,6 +272,8 @@ export class Game {
         return card;
     }
 
+    // Crypt logic -------------------------------------
+
     public addToCrypt(card: Card) {
         card.setLocation(Location.Crypt);
         this.crypt[card.getOwner()].push(card);
@@ -315,34 +321,42 @@ export class Game {
         return this.events;
     }
 
-    public getCurrentPlayer() {
-        return this.players[this.turn];
+
+
+    // Server Query Logic ---------------------------------------------------
+    private setQueryResult(cards: Card[]) {
+        if (this.onQueryResult)
+            this.onQueryResult(cards)
+        else
+            console.error('Query result', cards, 'with no query handler');
+    }
+    private onQueryResult: (cards: Card[]) => void;
+    public queryCards(getCards: (game: Game) => Card[], callback: (cards: Card[]) => void) {
+        if (this.client) {
+            this.onQueryResult = callback;
+        } else {
+            let cards = getCards(this);
+            callback(cards);
+            this.addGameEvent(new SyncGameEvent(GameEventType.QueryResult, {
+                cards: cards.map(card => card.getPrototype())
+            }));
+        }
     }
 
-    private getPlayerCardById(player: Player, id: string): Card | undefined {
-        return player.getHand().find(card => card.getId() == id);
+    // Card Play Logic -----------------------------------------------------------
+    public playCard(player: Player, card: Card) {
+        player.playCard(this, card);
     }
 
-    public getCardById(id: string): Card | undefined {
-        return this.cardPool.get(id);
+    private generatedCardId = 1;
+    public playGeneratedUnit(player: Player, card: Card) {
+        card.setOwner(player.getPlayerNumber());
+        card.setId(this.generatedCardId.toString(16));
+        this.generatedCardId++;
+        player.playCard(this, card, true);
     }
 
-    public getUnitById(id: string): Unit | undefined {
-        return this.board.getAllUnits().find(unit => unit.getId() == id);
-    }
-
-    private getPlayerUnitById(playerNo: number, id: string): Unit | undefined {
-        return this.board.getPlayerUnits(playerNo).find(unit => unit.getId() == id);
-    }
-
-    public getPhase() {
-        return this.phase;
-    }
-
-    public getPlayerActions() {
-        return this.events;
-    }
-
+    // Actions -------------------------------------------------------------
     private playCardAction(act: GameAction): boolean {
         let player = this.players[act.player];
         if (!this.isPlayerTurn(act.player))
@@ -363,51 +377,7 @@ export class Game {
         return true;
     }
 
-    private setQueryResult(cards: Card[]) {
-        if (this.onQueryResult)
-            this.onQueryResult(cards)
-        else
-            console.error('Query result', cards, 'with no query handler');
-    }
-    private onQueryResult: (cards: Card[]) => void;
-    public queryCards(getCards: (game: Game) => Card[], callback: (cards: Card[]) => void) {
-        if (this.client) {
-            this.onQueryResult = callback;
-        } else {
-            let cards = getCards(this);
-            callback(cards);
-            this.addGameEvent(new SyncGameEvent(GameEventType.QueryResult, {
-                cards: cards.map(card => card.getPrototype())
-            }));
-        }
-    }
-
-    public playCard(player: Player, card: Card) {
-        player.playCard(this, card);
-    }
-
-    private generatedCardId = 1;
-    public playGeneratedUnit(player: Player, card: Card) {
-        card.setOwner(player.getPlayerNumber());
-        card.setId(this.generatedCardId.toString(16));
-        this.generatedCardId++;
-        player.playCard(this, card, true);
-    }
-
-    public playerCanAttack(playerNo: number) {
-        return this.phase == GamePhase.play1 && this.isActivePlayer(playerNo);
-    }
-
-    public isAttacking() {
-        return this.getAttackers().length > 0;
-    }
-
-    public getAttackers() {
-        let units = this.board.getPlayerUnits(this.turn);
-        return units.filter(unit => unit.isAttacking());
-    }
-
-    private toggleAttack(act: GameAction): boolean {
+    private toggleAttackAction(act: GameAction): boolean {
         let player = this.players[act.player];
         let unit = this.getPlayerUnitById(act.player, act.params.unitId);
         if (!unit || !unit.canAttack())
@@ -417,8 +387,7 @@ export class Game {
         return true;
     }
 
-
-    private declareBlocker(act: GameAction) {
+    private declareBlockerAction(act: GameAction) {
         let player = this.players[act.player];
         let blocker = this.getUnitById(act.params.blockerId);
         let blocked = this.getUnitById(act.params.blockedId);
@@ -435,7 +404,7 @@ export class Game {
         return true;
     }
 
-    private playResource(act: GameAction): boolean {
+    private playResourceAction(act: GameAction): boolean {
         let player = this.players[act.player];
         if (!(this.isPlayerTurn(act.player) && player.canPlayResource()))
             return false;
@@ -447,11 +416,27 @@ export class Game {
         return true;
     }
 
-    private pass(act: GameAction): boolean {
+    private passAction(act: GameAction): boolean {
         if (!this.isActivePlayer(act.player))
             return false;
         this.nextPhase(act.player);
         return true;
+    }
+
+
+    // Combat ------------------------------------------
+
+    public playerCanAttack(playerNo: number) {
+        return this.phase == GamePhase.play1 && this.isActivePlayer(playerNo);
+    }
+
+    public isAttacking() {
+        return this.getAttackers().length > 0;
+    }
+
+    public getAttackers() {
+        let units = this.board.getPlayerUnits(this.turn);
+        return units.filter(unit => unit.isAttacking());
     }
 
     public getBlockers() {
@@ -494,6 +479,8 @@ export class Game {
         }
         return false;
     }
+
+    // Game Flow Logic (phases, turns) -------------------------------------------------
 
     private endPhaseOne() {
         if (this.isAttacking()) {
@@ -544,20 +531,6 @@ export class Game {
         ]))
     }
 
-    public addGameEvent(event: SyncGameEvent) {
-        this.events.push(event);
-    }
-
-    public isPlayerTurn(player: number) {
-        return this.turn === player;
-    }
-
-    public isActivePlayer(player: number) {
-        return this.phase != GamePhase.combat && this.isPlayerTurn(player) ||
-            this.phase == GamePhase.combat && !this.isPlayerTurn(player);
-    }
-
-
     // Unit Zone Changes ------------------------------------------------------
     public playUnit(unit: Unit, owner: number) {
         if (this.board.canPlayUnit(unit))
@@ -597,7 +570,7 @@ export class Game {
         unit.checkDeath();
     }
 
-    // Getters and setters ---------------------------------------------------
+    // Misc Getters and setters ---------------------------------------------------
     public getPlayer(playerNum: number) {
         return this.players[playerNum];
     }
@@ -617,6 +590,44 @@ export class Game {
     public getOtherPlayerNumber(playerNum: number): number {
         return (playerNum + 1) % this.players.length
     }
+
+    public getCurrentPlayer() {
+        return this.players[this.turn];
+    }
+
+    private getPlayerCardById(player: Player, id: string): Card | undefined {
+        return player.getHand().find(card => card.getId() == id);
+    }
+
+    public getCardById(id: string): Card | undefined {
+        return this.cardPool.get(id);
+    }
+
+    public getUnitById(id: string): Unit | undefined {
+        return this.board.getAllUnits().find(unit => unit.getId() == id);
+    }
+
+    private getPlayerUnitById(playerNo: number, id: string): Unit | undefined {
+        return this.board.getPlayerUnits(playerNo).find(unit => unit.getId() == id);
+    }
+
+    public getPhase() {
+        return this.phase;
+    }
+
+    public getPlayerActions() {
+        return this.events;
+    }
+
+    public isPlayerTurn(player: number) {
+        return this.turn === player;
+    }
+
+    public isActivePlayer(player: number) {
+        return this.phase != GamePhase.combat && this.isPlayerTurn(player) ||
+            this.phase == GamePhase.combat && !this.isPlayerTurn(player);
+    }
+
 
 
 }
