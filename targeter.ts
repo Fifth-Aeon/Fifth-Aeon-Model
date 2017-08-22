@@ -5,15 +5,15 @@ import { Unit } from './unit';
 import { every } from 'lodash';
 
 export abstract class Targeter {
-    protected target: Array<Unit> = [];
+    protected targets: Array<Unit> = [];
     public needsInput(): boolean {
         return true;
     }
-    public setTarget(target: Array<Unit>) {
-        this.target = target;
+    public setTargets(target: Array<Unit>) {
+        this.targets = target;
     }
     public getTargets(card: Card, game: Game): Array<Unit> {
-        return this.target;
+        return this.targets;
     }
     abstract getText(): string;
     public getValidTargets(card: Card, game: Game) {
@@ -26,7 +26,7 @@ export abstract class Targeter {
         if (!this.needsInput() || this.optional())
             return true;
         let valid = new Set(this.getValidTargets(card, game));
-        return this.target.length > 0 && every(this.target, target => valid.has(target));
+        return this.targets.length > 0 && every(this.targets, target => valid.has(target));
     }
 }
 

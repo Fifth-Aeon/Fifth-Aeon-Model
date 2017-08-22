@@ -45,7 +45,7 @@ export class Game {
     // A board containing units in play
     private board: Board;
     // Where dead cards go
-    private crypt: [Card[], Card[]]
+    private crypt: [Card[], Card[]];
     // The number of player whose turn it currently is
     private turn: number;
     // The number of turns that have passed from the games start
@@ -128,7 +128,6 @@ export class Game {
         this.addActionHandelers();
     }
 
-
     // Game End Logic -----------------------------------------------
     private winner = -1;
     private endGame(winningPlayer: number, quit: boolean = false) {
@@ -177,7 +176,7 @@ export class Game {
                     let player = this.players[params.playerNo];
                     let card = this.unpackCard(params.played)
                     if (params.targetIds)
-                        card.getTargeter().setTarget(params.targetIds
+                        card.getTargeter().setTargets(params.targetIds
                             .map((id: string) => this.getUnitById(id)));
                     this.playCard(player, card);
                 }
@@ -230,6 +229,16 @@ export class Game {
         }
     }
 
+    public unpackCard(proto: { id: string, data: string, owner: number }) {
+        if (this.cardPool.has(proto.id))
+            return this.cardPool.get(proto.id);
+        let card = data.getCard(proto.data);
+        card.setId(proto.id);
+        card.setOwner(proto.owner);
+        this.cardPool.set(proto.id, card);
+        return card;
+    }
+
     // Player choice =--------------------------------------------------------
     private deferChoice(player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) {
         this.deferedChoice = callback;
@@ -256,15 +265,6 @@ export class Game {
         return true;
     }
 
-    public unpackCard(proto: { id: string, data: string, owner: number }) {
-        if (this.cardPool.has(proto.id))
-            return this.cardPool.get(proto.id);
-        let card = data.getCard(proto.data);
-        card.setId(proto.id);
-        card.setOwner(proto.owner);
-        this.cardPool.set(proto.id, card);
-        return card;
-    }
 
     // Crypt logic -------------------------------------
     public addToCrypt(card: Card) {
@@ -333,12 +333,14 @@ export class Game {
    * @returns {SyncGameEvent[]} 
    * @memberof Game
    */
-    public handleAction(action: GameAction): SyncGameEvent[] {
+    public handleAction(action: GameAction): SyncGameEvent[] | null {
         let mark = this.events.length;
         let handeler = this.actionHandelers.get(action.type);
         if (!handeler)
             return [];
         let sig = handeler(action);
+        if (sig != true)
+            return null
         return this.events.slice(mark);
     }
 
@@ -367,12 +369,12 @@ export class Game {
         if (!this.isPlayerTurn(act.player))
             return false;
         let card = this.getPlayerCardById(player, act.params.id);
-        if (!card || card.isPlayable(this))
+        if (!card || !card.isPlayable(this))
             return false;
         let targets: Unit[] = act.params.targetIds.map((id: string) => this.getUnitById(id));
-        if (!card.getTargeter().targetsAreValid(card, this))
-            return;
-
+        card.getTargeter().setTargets(targets);
+        if (!card.getTargeter().targetsAreValid(card, this)) 
+            return false;
         this.playCard(player, card);
         this.addGameEvent(new SyncGameEvent(GameEventType.playCard, {
             playerNo: act.player,
