@@ -12,7 +12,7 @@ import { shuffle } from 'lodash';
 import { Serialize, Deserialize } from 'cerialize';
 
 export enum GamePhase {
-    play1, combat, play2, end, responceWindow
+    Play1, Block, Play2, End, Response
 }
 
 const game_phase_count = 4;
@@ -183,7 +183,10 @@ export class Game {
                 break;
             case GameEventType.draw:
                 // Todo, information hiding 
-                this.players[params.playerNo].addToHand(this.unpackCard(params.card))
+                if (params.discarded)
+                    this.addToCrypt(this.unpackCard(params.card));
+                else
+                    this.players[params.playerNo].addToHand(this.unpackCard(params.card))
                 break;
             case GameEventType.turnStart:
                 this.gameEvents.trigger(EventType.EndOfTurn, new Map());
@@ -211,7 +214,7 @@ export class Game {
                 break;
             case GameEventType.phaseChange:
                 this.phase = params.phase;
-                if (this.phase === GamePhase.play2)
+                if (this.phase === GamePhase.Play2)
                     this.resolveCombat();
                 break;
             case GameEventType.ChoiceMade:
@@ -284,7 +287,7 @@ export class Game {
         }
         this.players[this.turn].startTurn();
         this.getCurrentPlayerUnits().forEach(unit => unit.refresh());
-        this.phase = GamePhase.play1;
+        this.phase = GamePhase.Play1;
 
         this.addGameEvent(new SyncGameEvent(GameEventType.turnStart, { turn: this.turn, turnNum: this.turnNum }));
         return this.events;
@@ -373,7 +376,7 @@ export class Game {
             return false;
         let targets: Unit[] = act.params.targetIds.map((id: string) => this.getUnitById(id));
         card.getTargeter().setTargets(targets);
-        if (!card.getTargeter().targetsAreValid(card, this)) 
+        if (!card.getTargeter().targetsAreValid(card, this))
             return false;
         this.playCard(player, card);
         this.addGameEvent(new SyncGameEvent(GameEventType.playCard, {
@@ -392,7 +395,7 @@ export class Game {
     private toggleAttackAction(act: GameAction): boolean {
         let player = this.players[act.player];
         let unit = this.getPlayerUnitById(act.player, act.params.unitId);
-        if (!this.isPlayerTurn(act.player) || this.phase != GamePhase.play1 || !unit || !unit.canAttack())
+        if (!this.isPlayerTurn(act.player) || this.phase != GamePhase.Play1 || !unit || !unit.canAttack())
             return false;
         unit.toggleAttacking();
         this.addGameEvent(new SyncGameEvent(GameEventType.attackToggled, { player: act.player, unitId: act.params.unitId }));
@@ -409,7 +412,7 @@ export class Game {
         let blocker = this.getUnitById(act.params.blockerId);
         let blocked = this.getUnitById(act.params.blockedId);
         if (this.isPlayerTurn(act.player) ||
-            this.phase !== GamePhase.combat ||
+            this.phase !== GamePhase.Block ||
             !blocker || !blocked || !blocker.canBlock(blocked))
             return false;
         blocker.setBlocking(blocked ? blocked.getId() : null);
@@ -444,11 +447,15 @@ export class Game {
         this.nextPhase(act.player);
         return true;
     }
+    
+    public pass() {
+        this.nextPhase(this.turn);
+    }
 
 
     // Combat ------------------------------------------
     public playerCanAttack(playerNo: number) {
-        return this.phase == GamePhase.play1 && this.isActivePlayer(playerNo);
+        return this.phase == GamePhase.Play1 && this.isActivePlayer(playerNo);
     }
 
     public isAttacking() {
@@ -505,36 +512,46 @@ export class Game {
     private endPhaseOne() {
         if (this.isAttacking()) {
             if (this.blockersExist()) {
-                this.phase = GamePhase.combat;
-                this.addGameEvent(new SyncGameEvent(GameEventType.phaseChange, { phase: this.phase }));
+                this.changePhase(GamePhase.Block);
             } else {
                 this.resolveCombat();
-                this.phase = GamePhase.play2;
-                this.addGameEvent(new SyncGameEvent(GameEventType.phaseChange, { phase: this.phase }));
+                this.changePhase(GamePhase.Play2);
             }
         } else {
-            this.nextTurn();
+            this.startEndPhase();
         }
+    }
+
+    private changePhase(nextPhase: GamePhase) {
+        this.phase = nextPhase;
+        this.addGameEvent(new SyncGameEvent(GameEventType.phaseChange, { phase: nextPhase}));
+    }
+
+    private startEndPhase() {
+        this.gameEvents.trigger(EventType.EndOfTurn, new Map());        
+        this.changePhase(GamePhase.End);
+        this.getCurrentPlayer().discardExtra(this);
     }
 
     private nextPhase(player: number) {
         switch (this.phase) {
-            case GamePhase.play1:
+            case GamePhase.Play1:
                 this.endPhaseOne();
                 break;
-            case GamePhase.play2:
-                this.nextTurn();
+            case GamePhase.Play2:
+                this.startEndPhase();
                 break;
-            case GamePhase.combat:
+            case GamePhase.Block:
                 this.resolveCombat();
-                this.phase = GamePhase.play2;
-                this.addGameEvent(new SyncGameEvent(GameEventType.phaseChange, { phase: this.phase }));
+                this.changePhase(GamePhase.Play2);
+                break;
+            case GamePhase.End:
+                this.nextTurn();
                 break;
         }
     }
 
     public nextTurn() {
-        this.gameEvents.trigger(EventType.EndOfTurn, new Map());
         this.turn = this.getOtherPlayerNumber(this.turn);
         this.turnNum++;
         this.addGameEvent(new SyncGameEvent(GameEventType.turnStart, { turn: this.turn, turnNum: this.turnNum }));
@@ -542,7 +559,7 @@ export class Game {
     }
 
     public refresh() {
-        this.phase = GamePhase.play1;
+        this.phase = GamePhase.Play1;
         let currentPlayerEntities = this.getCurrentPlayerUnits();
         currentPlayerEntities.forEach(unit => unit.refresh());
         this.players[this.turn].startTurn();
@@ -644,8 +661,8 @@ export class Game {
     }
 
     public isActivePlayer(player: number) {
-        return this.phase != GamePhase.combat && this.isPlayerTurn(player) ||
-            this.phase == GamePhase.combat && !this.isPlayerTurn(player);
+        return this.phase != GamePhase.Block && this.isPlayerTurn(player) ||
+            this.phase == GamePhase.Block && !this.isPlayerTurn(player);
     }
 
 

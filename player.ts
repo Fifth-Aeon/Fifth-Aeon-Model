@@ -17,6 +17,9 @@ export class Player extends Unit {
     private hasPlayedResource: boolean = false;
     public dataId = '';
 
+    private hardHandLimit = 12;
+    private softHandLimit = 10;
+
     constructor(private parent: Game, cards: Array<Card>, private playerNumber: number, initResource: Resource, life: number) {
         super('Player', 'Player', '', UnitType.Player, new Resource(Infinity), null, 0, life, []);
         this.deck = cards;
@@ -117,6 +120,14 @@ export class Player extends Unit {
         return this.deck;
     }
 
+    public discardExtra(game: Game) {
+        let num = this.hand.length - this.softHandLimit;
+        if (num > 0)
+            this.discard(game, num, () => game.pass());
+        else
+            game.pass();
+    }
+
     public replace(game: Game, count: number) {
         game.promptCardChoice(this.getPlayerNumber(), this.hand, count, (cards: Card[]) => {
             cards.forEach(card => {
@@ -127,7 +138,7 @@ export class Player extends Unit {
         });
     }
 
-    public discard(game: Game, count: number = 1) {
+    public discard(game: Game, count: number = 1, cb: (cards: Card[]) => void) {
         if (count >= this.hand.length) {
             this.hand = [];
             return;
@@ -137,6 +148,7 @@ export class Player extends Unit {
                 this.removeCardFromHand(card);
                 game.addToCrypt(card);
             });
+            cb(cards);
         });
     }
 
@@ -160,8 +172,17 @@ export class Player extends Unit {
         remove(this.deck, drawn);
         if (!drawn)
             return;
-        this.parent.addGameEvent(new SyncGameEvent(GameEventType.draw, { playerNo: this.playerNumber, card: drawn.getPrototype() }));
-        this.addToHand(drawn);
+
+        if (this.hand.length >= this.hardHandLimit) {
+            this.parent.addToCrypt(drawn);
+        } else {
+            this.addToHand(drawn);
+        }
+        this.parent.addGameEvent(new SyncGameEvent(GameEventType.draw, {
+            playerNo: this.playerNumber,
+            card: drawn.getPrototype(),
+            discarded: this.hand.length > this.hardHandLimit
+        }));
     }
 
     public drawGeneratedCard(card: Card) {

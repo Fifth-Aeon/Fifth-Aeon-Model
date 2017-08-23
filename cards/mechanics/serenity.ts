@@ -13,7 +13,7 @@ export class Serenity extends Mechanic {
     public run(card: Card, game: Game) {
         game.gameEvents.addEvent(this, new GameEvent(EventType.EndOfTurn, (params) => {
             if (game.getCurrentPlayer().getPlayerNumber() == card.getOwner() &&
-                game.getPhase() === GamePhase.play1) {
+                game.getPhase() === GamePhase.Play1) {
                 this.effect(card as Unit, game);
             }
             return params;
