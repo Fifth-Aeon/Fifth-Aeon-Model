@@ -28,12 +28,7 @@ export class MindControl extends Mechanic {
     public run(card: Card, game: Game) {
         let targets = this.targeter.getTargets(card, game);
         for (let target of targets) {
-            let enemyBoard = game.getBoard().getPlayerUnits(target.getOwner());
-            let ourBoard = game.getBoard().getPlayerUnits(card.getOwner());
-
-            target.setOwner(card.getOwner());
-            enemyBoard.splice(enemyBoard.indexOf(target), 1);
-            ourBoard.push(target);
+            game.changeUnitOwner(target);
         }
     }
 

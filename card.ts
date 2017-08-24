@@ -66,6 +66,7 @@ export class Card {
         let owner = game.getPlayer(this.owner);
         return game.isPlayerTurn(this.owner) &&
             game.canTakeAction() &&
+            game.isPlayPhase() &&
             owner.getPool().meetsReq(this.cost) &&
             (!this.targeter.needsInput() || this.targeter.optional() ||
                 this.targeter.getValidTargets(this, game).length > 0);

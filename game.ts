@@ -188,10 +188,11 @@ export class Game {
                     this.players[params.playerNo].addToHand(this.unpackCard(params.card))
                 break;
             case GameEventType.turnStart:
-                this.gameEvents.trigger(EventType.EndOfTurn, new Map());
-                this.turn = params.turn;
-                this.turnNum = params.turnNum
-                this.refresh();
+                if (this.turnNum == 1) {
+                    this.turn = params.turn;
+                    this.turnNum = params.turnNum
+                    this.refresh();
+                }
                 break;
             case GameEventType.playResource:
                 this.players[params.playerNo].playResource(params.resource);
@@ -212,14 +213,15 @@ export class Game {
                 }
                 break;
             case GameEventType.phaseChange:
-                this.phase = params.phase;
-                if (this.phase === GamePhase.Play2)
+                if (event.params.phase === GamePhase.Play2)
                     this.resolveCombat();
                 if (event.params.phase === GamePhase.End)
                     this.startEndPhase();
+                else
+                    this.changePhase(event.params.phase);
                 break;
             case GameEventType.ChoiceMade:
-                if (params.player != playerNumber && this.deferedChoice)
+                if (params.player != playerNumber)
                     this.makeDeferedChoice(this.idsToCards(params.choice));
                 break;
             case GameEventType.QueryResult:
@@ -249,8 +251,8 @@ export class Game {
 
     // Player choice =--------------------------------------------------------
     private deferChoice(player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) {
-        this.deferedChoice = callback;
-        this.waitingForPlayerChoice = player;
+        console.log('defer choice to player', player);
+        this.setDeferedChoice(player, callback);
     }
 
     public setDeferedChoice(player: number, callback: (cards: Card[]) => void) {
@@ -260,16 +262,14 @@ export class Game {
 
     public promptCardChoice: (player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) => void;
 
-    
     public makeDeferedChoice(cards: Card[]) {
-        if (this.deferedChoice == null) {
+        if (this.deferedChoice != null) {
+            this.deferedChoice(cards);
+        } else {
             console.error('Error, no defered choice handler for', cards);
-            return;
         }
-        this.deferedChoice(cards);
         this.waitingForPlayerChoice = null;
     }
-
 
     // Crypt logic -------------------------------------
     public addToCrypt(card: Card) {
@@ -370,8 +370,10 @@ export class Game {
     }
 
     private cardChoiceAction(act: GameAction): boolean {
-        if (act.player != this.waitingForPlayerChoice)
+        if (act.player != this.waitingForPlayerChoice) {
+            console.log('reject choice', this.waitingForPlayerChoice, act.player);
             return false;
+        }
         let cardIds = act.params.choice as string[];
         this.makeDeferedChoice(cardIds.map(id => this.getCardById(id)));
         this.addGameEvent(new SyncGameEvent(GameEventType.ChoiceMade, {
@@ -467,7 +469,7 @@ export class Game {
         this.nextPhase();
         return true;
     }
-    
+
     // Combat ------------------------------------------
     public playerCanAttack(playerNo: number) {
         return this.phase == GamePhase.Play1 && this.isActivePlayer(playerNo);
@@ -483,7 +485,7 @@ export class Game {
     }
 
     public getBlockers() {
-        return this.board.getPlayerUnits(this.getInactivePlayer())
+        return this.board.getPlayerUnits(this.getNonturnPlayer())
             .filter(unit => unit.getBlockedUnitId());
     }
 
@@ -497,7 +499,7 @@ export class Game {
             if (blocked)
                 blocked.fight(blocker);
             blocker.setBlocking(null);
-        })
+        });
 
         attackers.forEach(attacker => {
             if (!attacker.isExausted()) {
@@ -506,10 +508,12 @@ export class Game {
             }
             attacker.toggleAttacking();
         });
+
+        this.changePhase(GamePhase.Play2);
     }
 
     private blockersExist() {
-        let potentialBlockers = this.board.getPlayerUnits(this.getInactivePlayer());
+        let potentialBlockers = this.board.getPlayerUnits(this.getNonturnPlayer());
         let attackers = this.board.getPlayerUnits(this.getCurrentPlayer().getPlayerNumber())
             .filter(unit => unit.isAttacking());
 
@@ -530,7 +534,6 @@ export class Game {
                 this.changePhase(GamePhase.Block);
             } else {
                 this.resolveCombat();
-                this.changePhase(GamePhase.Play2);
             }
         } else {
             this.startEndPhase();
@@ -539,11 +542,11 @@ export class Game {
 
     private changePhase(nextPhase: GamePhase) {
         this.phase = nextPhase;
-        this.addGameEvent(new SyncGameEvent(GameEventType.phaseChange, { phase: nextPhase}));
+        this.addGameEvent(new SyncGameEvent(GameEventType.phaseChange, { phase: nextPhase }));
     }
 
     private startEndPhase() {
-        this.gameEvents.trigger(EventType.EndOfTurn, new Map());        
+        this.gameEvents.trigger(EventType.EndOfTurn, new Map());
         this.changePhase(GamePhase.End);
         this.getCurrentPlayer().discardExtra(this);
     }
@@ -558,7 +561,6 @@ export class Game {
                 break;
             case GamePhase.Block:
                 this.resolveCombat();
-                this.changePhase(GamePhase.Play2);
                 break;
         }
     }
@@ -566,7 +568,7 @@ export class Game {
     public nextTurn() {
         this.turn = this.getOtherPlayerNumber(this.turn);
         this.turnNum++;
-        //this.addGameEvent(new SyncGameEvent(GameEventType.turnStart, { turn: this.turn, turnNum: this.turnNum }));
+        this.addGameEvent(new SyncGameEvent(GameEventType.turnStart, { turn: this.turn, turnNum: this.turnNum }));
         this.refresh();
     }
 
@@ -584,6 +586,16 @@ export class Game {
     public playUnit(unit: Unit, owner: number) {
         if (this.board.canPlayUnit(unit))
             this.addUnit(unit, owner);
+    }
+
+    public changeUnitOwner(unit: Unit) {
+        let originalOwner = unit.getOwner();
+        let newOwner = this.getOtherPlayerNumber(originalOwner);
+
+        this.removeUnit(unit);
+        unit.setOwner(newOwner);
+        unit.getTargeter().setTargets([]);
+        unit.play(this);
     }
 
     public returnUnitToDeck(unit: Unit) {
@@ -632,8 +644,16 @@ export class Game {
         return this.board.getAllUnits().filter(unit => this.isPlayerTurn(unit.getOwner()));
     }
 
-    public getInactivePlayer() {
+    public getNonturnPlayer() {
         return this.getOtherPlayerNumber(this.turn);
+    }
+
+    public getActivePlayer() {
+        if (this.phase == GamePhase.Block) {
+            return this.getOtherPlayerNumber(this.turn);
+        } else {
+            return this.turn;
+        }
     }
 
     public getOtherPlayerNumber(playerNum: number): number {
@@ -673,10 +693,12 @@ export class Game {
     }
 
     public isActivePlayer(player: number) {
-        return this.phase != GamePhase.Block && this.isPlayerTurn(player) ||
-            this.phase == GamePhase.Block && !this.isPlayerTurn(player);
+        return this.phase == GamePhase.Block ? 
+            !this.isPlayerTurn(player) :
+            this.isPlayerTurn(player);
     }
 
-
-
+    public isPlayPhase() {
+        return this.phase == GamePhase.Play1 || this.phase == GamePhase.Play2;
+    }
 }
