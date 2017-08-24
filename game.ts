@@ -168,7 +168,6 @@ export class Game {
      */
     public syncServerEvent(playerNumber: number, event: SyncGameEvent) {
         let params = event.params;
-        //console.log('sync', GameEventType[event.type], event.params);
         this.events.push(event);
         switch (event.type) {
             case GameEventType.playCard:
@@ -216,6 +215,8 @@ export class Game {
                 this.phase = params.phase;
                 if (this.phase === GamePhase.Play2)
                     this.resolveCombat();
+                if (event.params.phase === GamePhase.End)
+                    this.startEndPhase();
                 break;
             case GameEventType.ChoiceMade:
                 if (params.player != playerNumber && this.deferedChoice)

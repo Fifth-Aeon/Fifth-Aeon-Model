@@ -18,7 +18,7 @@ export class Player extends Unit {
     public dataId = '';
 
     private hardHandLimit = 12;
-    private softHandLimit = 10;
+    private softHandLimit = 8;
 
     constructor(private parent: Game, cards: Array<Card>, private playerNumber: number, initResource: Resource, life: number) {
         super('Player', 'Player', '', UnitType.Player, new Resource(Infinity), null, 0, life, []);
@@ -138,7 +138,7 @@ export class Player extends Unit {
         });
     }
 
-    public discard(game: Game, count: number = 1, cb: (cards: Card[]) => void) {
+    public discard(game: Game, count: number = 1, cb?: (cards: Card[]) => void) {
         if (count >= this.hand.length) {
             this.hand = [];
             return;
@@ -148,14 +148,14 @@ export class Player extends Unit {
                 this.removeCardFromHand(card);
                 game.addToCrypt(card);
             });
-            cb(cards);
+            if (cb) cb(cards);
         });
     }
 
     public searchForCard(game: Game, count: number) {
         game.queryCards(
             (game: Game) => shuffle(game.getPlayer(this.playerNumber).getDeck()),
-            (deck) => {
+            (deck: Card[]) => {
                 game.promptCardChoice(this.playerNumber, deck, 1, (cards: Card[]) => {
                     cards.forEach(card => {
                         this.drawGeneratedCard(card);
@@ -172,7 +172,6 @@ export class Player extends Unit {
         remove(this.deck, drawn);
         if (!drawn)
             return;
-
         if (this.hand.length >= this.hardHandLimit) {
             this.parent.addToCrypt(drawn);
         } else {
@@ -181,11 +180,15 @@ export class Player extends Unit {
         this.parent.addGameEvent(new SyncGameEvent(GameEventType.draw, {
             playerNo: this.playerNumber,
             card: drawn.getPrototype(),
-            discarded: this.hand.length > this.hardHandLimit
+            discarded: this.hand.length >= this.hardHandLimit
         }));
     }
 
     public drawGeneratedCard(card: Card) {
-        this.addToHand(card);
+        if (this.hand.length >= this.hardHandLimit) {
+            this.parent.addToCrypt(card);
+        } else {
+            this.addToHand(card);
+        }
     }
 }
