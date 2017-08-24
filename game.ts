@@ -9,7 +9,6 @@ import { GameEvent, EventType, EventGroup } from './gameEvent';
 import { data } from './gameData';
 
 import { shuffle } from 'lodash';
-import { Serialize, Deserialize } from 'cerialize';
 
 export enum GamePhase {
     Play1, Block, Play2, End, Response
@@ -251,11 +250,11 @@ export class Game {
 
     // Player choice =--------------------------------------------------------
     private deferChoice(player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) {
-        console.log('defer choice to player', player);
         this.setDeferedChoice(player, callback);
     }
 
     public setDeferedChoice(player: number, callback: (cards: Card[]) => void) {
+        console.log('defer choice to player', player);        
         this.deferedChoice = callback;
         this.waitingForPlayerChoice = player;
     }
@@ -324,6 +323,7 @@ export class Game {
     public playGeneratedUnit(player: Player, card: Card) {
         card.setOwner(player.getPlayerNumber());
         card.setId(this.generatedCardId.toString(16));
+        this.cardPool.set(card.getId(), card);
         this.generatedCardId++;
         player.playCard(this, card, true);
     }
@@ -343,8 +343,10 @@ export class Game {
         let handeler = this.actionHandelers.get(action.type);
         if (!handeler)
             return [];
-        if (action.type != GameActionType.CardChoice && this.waitingForPlayerChoice != null)
+        if (action.type != GameActionType.CardChoice && this.waitingForPlayerChoice != null) {
+            console.error('Cant take action, waiting for', this.waitingForPlayerChoice);
             return null;
+        }
         let sig = handeler(action);
         if (sig != true)
             return null
@@ -371,7 +373,7 @@ export class Game {
 
     private cardChoiceAction(act: GameAction): boolean {
         if (act.player != this.waitingForPlayerChoice) {
-            console.log('reject choice', this.waitingForPlayerChoice, act.player);
+            console.log('Reject choice', this.waitingForPlayerChoice, act.player);
             return false;
         }
         let cardIds = act.params.choice as string[];
@@ -417,7 +419,7 @@ export class Game {
     private toggleAttackAction(act: GameAction): boolean {
         let player = this.players[act.player];
         let unit = this.getPlayerUnitById(act.player, act.params.unitId);
-        if (!this.isPlayerTurn(act.player) || this.phase != GamePhase.Play1 || !unit || !unit.canAttack())
+        if (!this.isPlayerTurn(act.player) || this.phase != GamePhase.Play1 || !unit || !unit.canAttack()) 
             return false;
         unit.toggleAttacking();
         this.addGameEvent(new SyncGameEvent(GameEventType.attackToggled, { player: act.player, unitId: act.params.unitId }));
@@ -464,8 +466,10 @@ export class Game {
     }
 
     private passAction(act: GameAction): boolean {
-        if (!this.isActivePlayer(act.player))
+        if (!this.isActivePlayer(act.player)) {
+            console.error('Cant pass, not active player player', this.getActivePlayer(), GamePhase[this.phase], this.turn);
             return false;
+        }
         this.nextPhase();
         return true;
     }

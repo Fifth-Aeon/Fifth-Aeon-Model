@@ -1,5 +1,3 @@
-import { serialize, serializeAs, deserialize } from 'cerialize';
-
 import { Resource } from './resource';
 import { Game } from './game';
 import { Player } from './player';
@@ -8,11 +6,9 @@ import { Targeter, Untargeted } from './targeter';
 import { remove } from 'lodash';
 import { Unit } from './unit';
 
-
 export enum Location {
     Deck, Hand, Board, Crypt
 }
-
 
 export class Card {
     public name: string;
@@ -42,10 +38,10 @@ export class Card {
         this.id = Math.random().toString(16)
     }
 
-
     public setLocation(location: Location) {
         this.location = location;
     }
+    
     public getLocation() {
         return this.location;
     }
