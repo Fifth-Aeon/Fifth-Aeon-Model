@@ -220,7 +220,7 @@ export class Game {
                 break;
             case GameEventType.ChoiceMade:
                 if (params.player != playerNumber && this.deferedChoice)
-                    this.makeDeferedChoice(params.choice);
+                    this.makeDeferedChoice(this.idsToCards(params.choice));
                 break;
             case GameEventType.QueryResult:
                 let cards = params.cards.map((proto: { id: string, data: string, owner: number }) => this.unpackCard(proto));
@@ -231,6 +231,10 @@ export class Game {
                 break;
 
         }
+    }
+
+    public idsToCards(ids: Array<string>) {
+        return ids.map(id => this.getCardById(id));
     }
 
     public unpackCard(proto: { id: string, data: string, owner: number }) {
@@ -249,18 +253,20 @@ export class Game {
         this.waitingForPlayerChoice = player;
     }
 
-    public promptCardChoice: (player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) => void;
-
-    public setDeferedChoice(callback: (cards: Card[]) => void) {
+    public setDeferedChoice(player: number, callback: (cards: Card[]) => void) {
         this.deferedChoice = callback;
+        this.waitingForPlayerChoice = player;
     }
 
-    private makeDeferedChoice(choiceIds: string[]) {
+    public promptCardChoice: (player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) => void;
+
+    
+    public makeDeferedChoice(cards: Card[]) {
         if (this.deferedChoice == null) {
-            console.error('Error, no defefred choice handler for', choiceIds);
+            console.error('Error, no defered choice handler for', cards);
             return;
         }
-        this.deferedChoice(choiceIds.map((id: string) => this.getCardById(id)));
+        this.deferedChoice(cards);
         this.waitingForPlayerChoice = null;
     }
 
@@ -345,6 +351,10 @@ export class Game {
         return this.events.slice(mark);
     }
 
+    public canTakeAction() {
+        return this.waitingForPlayerChoice == null;
+    }
+
     private addActionHandeler(type: GameActionType, cb: actionCb) {
         this.actionHandelers.set(type, cb.bind(this));
     }
@@ -362,7 +372,8 @@ export class Game {
     private cardChoiceAction(act: GameAction): boolean {
         if (act.player != this.waitingForPlayerChoice)
             return false;
-        this.makeDeferedChoice(act.params.choice);
+        let cardIds = act.params.choice as string[];
+        this.makeDeferedChoice(cardIds.map(id => this.getCardById(id)));
         this.addGameEvent(new SyncGameEvent(GameEventType.ChoiceMade, {
             player: act.player,
             choice: act.params.choice
@@ -453,15 +464,10 @@ export class Game {
     private passAction(act: GameAction): boolean {
         if (!this.isActivePlayer(act.player))
             return false;
-        this.nextPhase(act.player);
+        this.nextPhase();
         return true;
     }
     
-    public pass() {
-        this.nextPhase(this.turn);
-    }
-
-
     // Combat ------------------------------------------
     public playerCanAttack(playerNo: number) {
         return this.phase == GamePhase.Play1 && this.isActivePlayer(playerNo);
@@ -542,7 +548,7 @@ export class Game {
         this.getCurrentPlayer().discardExtra(this);
     }
 
-    private nextPhase(player: number) {
+    private nextPhase() {
         switch (this.phase) {
             case GamePhase.Play1:
                 this.endPhaseOne();
@@ -554,16 +560,13 @@ export class Game {
                 this.resolveCombat();
                 this.changePhase(GamePhase.Play2);
                 break;
-            case GamePhase.End:
-                this.nextTurn();
-                break;
         }
     }
 
     public nextTurn() {
         this.turn = this.getOtherPlayerNumber(this.turn);
         this.turnNum++;
-        this.addGameEvent(new SyncGameEvent(GameEventType.turnStart, { turn: this.turn, turnNum: this.turnNum }));
+        //this.addGameEvent(new SyncGameEvent(GameEventType.turnStart, { turn: this.turn, turnNum: this.turnNum }));
         this.refresh();
     }
 

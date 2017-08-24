@@ -58,7 +58,7 @@ export class Player extends Unit {
     }
 
     public canPlayResource(): boolean {
-        return !this.hasPlayedResource;
+        return this.parent.canTakeAction() && !this.hasPlayedResource;
     }
 
     public playResource(played: Resource) {
@@ -123,9 +123,9 @@ export class Player extends Unit {
     public discardExtra(game: Game) {
         let num = this.hand.length - this.softHandLimit;
         if (num > 0)
-            this.discard(game, num, () => game.pass());
+            this.discard(game, num, () => game.nextTurn());
         else
-            game.pass();
+            game.nextTurn();
     }
 
     public replace(game: Game, count: number) {
