@@ -6,6 +6,7 @@ import { Player } from './player';
 import { Mechanic } from './mechanic';
 import { Targeter, Untargeted } from './targeter';
 import { remove } from 'lodash';
+import { Unit } from './unit';
 
 
 export enum Location {
@@ -42,7 +43,7 @@ export class Card {
     }
 
 
-    public setLocation (location:Location) {
+    public setLocation(location: Location) {
         this.location = location;
     }
     public getLocation() {
@@ -66,7 +67,7 @@ export class Card {
         return game.isPlayerTurn(this.owner) &&
             owner.getPool().meetsReq(this.cost) &&
             (!this.targeter.needsInput() || this.targeter.optional() ||
-            this.targeter.getValidTargets(this, game).length > 0);
+                this.targeter.getValidTargets(this, game).length > 0);
     }
 
     public getPrototype() {
@@ -138,7 +139,7 @@ export class Card {
         return 0;
     }
 
-    public evaluateTarget(target) {
+    public evaluateTarget(target: Unit) {
         return this.mechanics.map(mechanic => mechanic.evaluateTarget(this.getOwner(), target)).reduce((a, b) => a + b);
     }
 }

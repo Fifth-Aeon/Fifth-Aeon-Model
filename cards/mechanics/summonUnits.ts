@@ -6,7 +6,7 @@ import { Unit } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
 export class SummonUnits extends Mechanic {
-    private name;
+    private name:string;
     constructor(private factory: () => Unit, private count: number = 1) {
         super();
         this.name = factory().getName();

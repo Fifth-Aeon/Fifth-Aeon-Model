@@ -254,19 +254,14 @@ export class Game {
     public setDeferedChoice(callback: (cards: Card[]) => void) {
         this.deferedChoice = callback;
     }
-    private makeDeferedChoice(choiceIds: string[]) {
-        this.deferedChoice(choiceIds.map((id: string) => this.getCardById(id)));
-    }
 
-    private makeCardChocie(act: GameAction): boolean {
-        if (act.player != this.waitingForPlayerChoice)
-            return false;
-        this.makeDeferedChoice(act.params.choice);
-        this.addGameEvent(new SyncGameEvent(GameEventType.ChoiceMade, {
-            player: act.player,
-            choice: act.params.choice
-        }));
-        return true;
+    private makeDeferedChoice(choiceIds: string[]) {
+        if (this.deferedChoice == null) {
+            console.error('Error, no defefred choice handler for', choiceIds);
+            return;
+        }
+        this.deferedChoice(choiceIds.map((id: string) => this.getCardById(id)));
+        this.waitingForPlayerChoice = null;
     }
 
 
@@ -342,6 +337,8 @@ export class Game {
         let handeler = this.actionHandelers.get(action.type);
         if (!handeler)
             return [];
+        if (action.type != GameActionType.CardChoice && this.waitingForPlayerChoice != null)
+            return null;
         let sig = handeler(action);
         if (sig != true)
             return null
@@ -358,8 +355,19 @@ export class Game {
         this.addActionHandeler(GameActionType.playCard, this.playCardAction);
         this.addActionHandeler(GameActionType.toggleAttack, this.toggleAttackAction);
         this.addActionHandeler(GameActionType.declareBlockers, this.declareBlockerAction);
-        this.addActionHandeler(GameActionType.CardChoice, this.makeCardChocie);
+        this.addActionHandeler(GameActionType.CardChoice, this.cardChoiceAction);
         this.addActionHandeler(GameActionType.Quit, this.quit);
+    }
+
+    private cardChoiceAction(act: GameAction): boolean {
+        if (act.player != this.waitingForPlayerChoice)
+            return false;
+        this.makeDeferedChoice(act.params.choice);
+        this.addGameEvent(new SyncGameEvent(GameEventType.ChoiceMade, {
+            player: act.player,
+            choice: act.params.choice
+        }));
+        return true;
     }
 
     /* Preconditions 
