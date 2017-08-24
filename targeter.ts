@@ -6,22 +6,34 @@ import { every } from 'lodash';
 
 export abstract class Targeter {
     protected targets: Array<Unit> = [];
+    
     public needsInput(): boolean {
         return true;
     }
+    
     public setTargets(target: Array<Unit>) {
         this.targets = target;
     }
+    
     public getTargets(card: Card, game: Game): Array<Unit> {
         return this.targets;
     }
+    
     abstract getText(): string;
+    
     public getValidTargets(card: Card, game: Game) {
         return new Array<Unit>();
     }
+    
+    public isTargetable(card:Card, game:Game): boolean {
+        return !this.needsInput() || this.optional() ||
+            this.getValidTargets(card, game).length > 0;
+    }
+    
     public optional(): boolean {
         return false;
     }
+    
     public targetsAreValid(card: Card, game: Game) {
         if (!this.needsInput() || this.optional())
             return true;
