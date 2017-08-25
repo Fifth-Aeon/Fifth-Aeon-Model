@@ -18,6 +18,10 @@ export abstract class Targeter {
     public getTargets(card: Card, game: Game): Array<Unit> {
         return this.targets;
     }
+
+    public getLastTargets() {
+        return this.targets;
+    }
     
     abstract getText(): string;
     
@@ -61,6 +65,7 @@ export class SingleUnit extends Targeter {
 }
 
 export class AllUnits extends Targeter {
+    protected lastTargets: Array<Unit>;
     public getText() {
         return 'all units';
     }
@@ -68,18 +73,20 @@ export class AllUnits extends Targeter {
         return false;
     }
     public getTargets(card: Card, game: Game): Array<Unit> {
-        return game.getBoard().getAllUnits();
+        this.lastTargets = game.getBoard().getAllUnits();
+        return this.lastTargets;
+    }
+    public getLastTargets() {
+        return this.lastTargets
     }
 }
 
-export class AllOtherUnits extends Targeter {
+export class AllOtherUnits extends AllUnits {
     public getText() {
         return 'all other units';
     }
-    public needsInput() {
-        return false;
-    }
     public getTargets(card: Card, game: Game): Array<Unit> {
-        return game.getBoard().getAllUnits().filter(unit => unit != card);
+        this.lastTargets = game.getBoard().getAllUnits().filter(unit => unit != card);
+        return this.lastTargets;
     }
 }

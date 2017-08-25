@@ -254,9 +254,10 @@ export class Game {
     }
 
     public setDeferedChoice(player: number, callback: (cards: Card[]) => void) {
-        console.log('defer choice to player', player);        
-        this.deferedChoice = callback;
-        this.waitingForPlayerChoice = player;
+        if (callback != null) {
+            this.deferedChoice = callback;
+            this.waitingForPlayerChoice = player;
+        }
     }
 
     public promptCardChoice: (player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) => void;
@@ -295,13 +296,13 @@ export class Game {
     }
 
     // Server Query Logic ---------------------------------------------------
+    private onQueryResult: (cards: Card[]) => void;
+
     private setQueryResult(cards: Card[]) {
         if (this.onQueryResult)
-            this.onQueryResult(cards)
-        else
-            console.error('Query result', cards, 'with no query handler');
+            this.onQueryResult(cards);
     }
-    private onQueryResult: (cards: Card[]) => void;
+
     public queryCards(getCards: (game: Game) => Card[], callback: (cards: Card[]) => void) {
         if (this.client) {
             this.onQueryResult = callback;
@@ -419,7 +420,7 @@ export class Game {
     private toggleAttackAction(act: GameAction): boolean {
         let player = this.players[act.player];
         let unit = this.getPlayerUnitById(act.player, act.params.unitId);
-        if (!this.isPlayerTurn(act.player) || this.phase != GamePhase.Play1 || !unit || !unit.canAttack()) 
+        if (!this.isPlayerTurn(act.player) || this.phase != GamePhase.Play1 || !unit || !unit.canAttack())
             return false;
         unit.toggleAttacking();
         this.addGameEvent(new SyncGameEvent(GameEventType.attackToggled, { player: act.player, unitId: act.params.unitId }));
@@ -697,7 +698,7 @@ export class Game {
     }
 
     public isActivePlayer(player: number) {
-        return this.phase == GamePhase.Block ? 
+        return this.phase == GamePhase.Block ?
             !this.isPlayerTurn(player) :
             this.isPlayerTurn(player);
     }

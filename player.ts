@@ -156,7 +156,7 @@ export class Player extends Unit {
         game.queryCards(
             (game: Game) => shuffle(game.getPlayer(this.playerNumber).getDeck()),
             (deck: Card[]) => {
-                game.promptCardChoice(this.playerNumber, deck, 1, (cards: Card[]) => {
+                game.promptCardChoice(this.playerNumber, deck, count, (cards: Card[]) => {
                     cards.forEach(card => {
                         this.drawGeneratedCard(card);
                         deck.splice(deck.indexOf(card), 1);

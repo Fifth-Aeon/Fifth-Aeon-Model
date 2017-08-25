@@ -255,7 +255,7 @@ export class Unit extends Card {
     }
 
     private dealDamage(target: Unit, amount: number): Damager {
-        return new Damager(amount, this, target);
+        return new Damager(Math.max(amount, 0), this, target);
     }
 
     private afterDamage(target: Unit) {
@@ -277,10 +277,12 @@ export class Unit extends Card {
 
     public leaveBoard(game: Game) {
         this.events.trigger(EventType.LeavesPlay, new Map([['leavingUnit', this]]));
+        this.refresh();
         this.blockedUnitId = null;
         this.life = this.maxLife;
         this.ready = false;
         this.exausted = false;
+        this.died = false;
         this.mechanics.forEach(mechanic => {
             mechanic.remove(this, game);
         });

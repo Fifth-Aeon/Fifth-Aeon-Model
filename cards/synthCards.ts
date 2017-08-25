@@ -145,7 +145,7 @@ export function paragon() {
             Growth: 0,
             Decay: 0,
             Renewal: 0,
-            Synthesis: 5
+            Synthesis: 4
         }),
         new Untargeted(), 
         4, 5,
