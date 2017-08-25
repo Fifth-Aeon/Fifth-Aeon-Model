@@ -11,7 +11,7 @@ export class GameFormat {
     public basicResources: Map<string, Resource> = new Map<string, Resource>();
 
     // Starting Values
-    public initialDraw: number[] = [3, 3]; // Number of cards each player draws on turn 1
+    public initialDraw: number[] = [3, 4]; // Number of cards each player draws on turn 1
     public initialLife: number[] = [25, 25]; // Number of life each player gets on turn 1
     public initalResource: Resource[] = [new Resource(0), new Resource(0)];
 

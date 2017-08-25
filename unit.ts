@@ -259,7 +259,7 @@ export class Unit extends Card {
     }
 
     private afterDamage(target: Unit) {
-        if (target.died) {
+        if (target.location == Location.Crypt) {
             this.events.trigger(EventType.KillUnit, new Map<string, any>([
                 ['source', this],
                 ['target', target]
