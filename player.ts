@@ -135,7 +135,7 @@ export class Player extends Unit {
                 this.addToDeck(card);
                 this.drawCard();
             });
-        });
+        }, 'to replace');
     }
 
     public discard(game: Game, count: number = 1, cb?: (cards: Card[]) => void) {
@@ -149,7 +149,7 @@ export class Player extends Unit {
                 game.addToCrypt(card);
             });
             if (cb) cb(cards);
-        });
+        }, 'to discard');
     }
 
     public searchForCard(game: Game, count: number) {
@@ -161,7 +161,7 @@ export class Player extends Unit {
                         this.drawGeneratedCard(card);
                         deck.splice(deck.indexOf(card), 1);
                     });
-                });
+                }, 'to draw');
             });
     }
 

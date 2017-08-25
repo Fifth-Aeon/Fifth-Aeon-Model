@@ -257,10 +257,10 @@ export class Game {
         if (callback != null) {
             this.deferedChoice = callback;
             this.waitingForPlayerChoice = player;
-        }
+        } 
     }
 
-    public promptCardChoice: (player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) => void;
+    public promptCardChoice: (player: number, choices: Card[], count: number, callback: (cards: Card[]) => void, message:string) => void;
 
     public makeDeferedChoice(cards: Card[]) {
         if (this.deferedChoice != null) {

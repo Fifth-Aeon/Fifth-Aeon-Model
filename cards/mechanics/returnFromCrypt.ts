@@ -18,7 +18,7 @@ export class ReturnFromCrypt extends Mechanic {
                 player.drawGeneratedCard(raisedCard);
                 crypt.splice(crypt.indexOf(raisedCard), 1);
             });
-        });
+        }, 'to draw');
     }
 
     public getText(card: Card) {

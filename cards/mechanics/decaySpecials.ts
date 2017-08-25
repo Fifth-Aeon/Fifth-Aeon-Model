@@ -47,7 +47,7 @@ export class AbominationConsume extends Mechanic {
                 unit.buff(eaten.getDamage(), eaten.getMaxLife());
                 remove(crypt, eaten);
             })
-        });
+        }, 'to combine');
     }
 
     public getText(card: Card) {
