@@ -36,16 +36,16 @@ export class Peek extends Mechanic {
 }
 
 export class Discard extends Mechanic {
-    constructor() {
+    constructor(private count: number) {
         super()
     }
     public run(card: Card, game: Game) {
         let target = game.getPlayer(game.getOtherPlayerNumber(card.getOwner()));
-        target.discard(game);
+        target.discard(game, this.count);
     }
 
     public getText(card: Card) {
-        return `Your opponent discards a card.`;
+        return `Your opponent discards ${this.count == 1 ? 'a card' : this.count + ' cards'}.`;
     }
 }
 

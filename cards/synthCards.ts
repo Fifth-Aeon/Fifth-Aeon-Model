@@ -1,18 +1,122 @@
 import { Mechanic } from '../mechanic';
 import { Card } from '../card';
-import { Unit, UnitType } from '../unit';
-import { SingleUnit, Untargeted, AllUnits } from '../targeter';
+import { Unit, UnitType, mechanical } from '../unit';
+import { SingleUnit, Untargeted, AllUnits, EnemyUnits } from '../targeter';
 import { ShuffleIntoDeck } from './mechanics/shuffleIntoDeck';
-import { AugarCard, Peek } from './mechanics/draw';
+import { AugarCard,DrawCard, Peek } from './mechanics/draw';
 import { EndOfTurn } from './mechanics/periodic';
 import { CannotAttack, CannotBlock } from './mechanics/cantAttack';
 import { UnitEntersPlay } from './mechanics/entersPlay';
 import { Flying, Lethal, Shielded, Relentless } from './mechanics/skills';
 import { friendlyLordship } from './mechanics/lordship';
 import { Annihilate } from './mechanics/removal';
+import { BuffTarget } from './mechanics/buff';
 import { Resource } from '../resource';
+import { SpyPower, DealSynthDamage } from './mechanics/synthSpecials';
+import { MechanicalUnit, BiologicalUnit } from './targeters/biotargeter';
+import { DealDamage } from './mechanics/dealDamage';
+import { Poisoned } from './mechanics/poison';
 
-const mechanical = new Set([UnitType.Automaton, UnitType.Structure, UnitType.Vehicle]);
+
+export function spy() {
+    return new Unit(
+        'spy',
+        'Spy',
+        'spy.png',
+        UnitType.Agent,
+        new Resource(2, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 1
+        }),
+        new Untargeted(),
+        1, 1,
+        [new SpyPower()]
+    );
+}
+
+export function carpetBombing() {
+    return new Card(
+        'BombingRun',
+        'Bombing Run',
+        'carpet-bombing.png',
+        new Resource(6, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 4
+        }),
+        new EnemyUnits(),
+        [new DealDamage(3)]
+    );
+}
+
+
+export function energyBeam() {
+    return new Card(
+        'EnergyBeam',
+        'Energy Beam',
+        'sinusoidal-beam.png',
+        new Resource(4, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 2
+        }),
+        new SingleUnit(),
+        [new DealSynthDamage()]
+    );
+}
+
+export function archivesSearch() {
+    return new Card(
+        'archivesSearch',
+        'Search the Archives',
+        'enlightenment.png',
+        new Resource(3, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 3
+        }),
+        new Untargeted(),
+        [new DrawCard(2)]
+    );
+}
+
+export function alloyTransmute() {
+    return new Card(
+        'alloyTransmute',
+        'Alloy Transmutation',
+        'materials-science.png',
+        new Resource(5, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 3
+        }),
+        new MechanicalUnit(),
+        [new BuffTarget(3, 6, [new Shielded()])]
+    );
+}
+
+
+export function dangerousInjection() {
+    return new Card(
+        'dangerousInjection',
+        'Unstable Injection',
+        'hypodermic-test.png',
+        new Resource(1, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 1
+        }),
+        new BiologicalUnit(),
+        [new BuffTarget(3, 1, [new Poisoned()])]
+    );
+}
 
 export function workbot() {
     return new Unit(
@@ -69,8 +173,8 @@ export function enhancmentChamber() {
         }),
         new Untargeted(),
         0, 5,
-        [   new CannotAttack(),
-            new UnitEntersPlay('When you play a biological unit give it +2/+2.', (source, unit) => {
+        [new CannotAttack(),
+        new UnitEntersPlay('When you play a biological unit give it +2/+2.', (source, unit) => {
             if (unit.getOwner() == source.getOwner() && !mechanical.has(unit.getType())) {
                 unit.buff(2, 2);
             }
@@ -147,7 +251,7 @@ export function paragon() {
             Renewal: 0,
             Synthesis: 4
         }),
-        new Untargeted(), 
+        new Untargeted(),
         4, 5,
         [new Lethal(), new Shielded(), new Relentless()]
     );

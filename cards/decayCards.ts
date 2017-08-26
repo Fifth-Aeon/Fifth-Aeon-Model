@@ -3,16 +3,126 @@ import { Card } from '../card';
 import { Unit, UnitType } from '../unit';
 import { Resource } from '../resource';
 
+// Targeters
+import { DamagedUnit } from './targeters/weakenedUnits';
 import { SingleUnit, Untargeted, AllUnits, AllOtherUnits } from '../targeter';
-import { Flying, Lethal, Lifesteal } from './mechanics/skills';
+
+// Mechanics
+import { Flying, Lethal, Lifesteal, Deathless } from './mechanics/skills';
 import { Discard } from './mechanics/draw';
 import { FinalBlow } from './mechanics/finalBlow';
+import { EndOfTurn } from './mechanics/periodic';
 import { CannotAttack } from './mechanics/cantAttack';
 import { PoisonTarget } from './mechanics/poison';
 import { ReturnFromCrypt } from './mechanics/returnFromCrypt';
-import { TransformDamaged, AbominationConsume } from './mechanics/decaySpecials';
-import { OnDeath } from './mechanics/death';
+import { TransformDamaged, AbominationConsume, DamageSpawnOnKill, SummonUnitForGrave } from './mechanics/decaySpecials';
+import { OnDeath, OnDeathAnyDeath } from './mechanics/death';
 import { KillTarget } from './mechanics/removal';
+
+
+export function skeleton() {
+    return new Unit(
+        'Skeleton',
+        'Skeleton',
+        'skeleton.png',
+        UnitType.Undead,
+        new Resource(1, 0, {
+            Growth: 0,
+            Decay: 1,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        1, 1,
+        [new Deathless()]
+    )
+}
+
+
+export function lich() {
+    return new Unit(
+        'Lich',
+        'Lich',
+        'crowned-skull.png',
+        UnitType.Undead,
+        new Resource(6, 0, {
+            Growth: 0,
+            Decay: 4,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        4, 4,
+        [new Deathless(), new OnDeathAnyDeath('play a Skeleton', (lich, dying, game) => {
+            game.playGeneratedUnit(lich.getOwner(), skeleton());
+        })]
+    )
+}
+
+export function Hemmorage() {
+    return new Card(
+        'Hemorrhage',
+        'Neural Hemorrhage',
+        'bleeding-eye.png',
+        new Resource(3, 0, {
+            Growth: 0,
+            Decay: 1,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        [new Discard(2)]
+    );
+}
+
+export function VampireBite() {
+    return new Card(
+        'VampireBite',
+        'Vampire Bite',
+        'neck-bite.png',
+        new Resource(4, 0, {
+            Growth: 0,
+            Decay: 2,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new SingleUnit(),
+        [new DamageSpawnOnKill(2, vampire)]
+    );
+}
+
+export function backstab() {
+    return new Card(
+        'Backstab',
+        'Backstab',
+        'backstab.png',
+        new Resource(2, 0, {
+            Growth: 0,
+            Decay: 2,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new DamagedUnit(),
+        [new KillTarget()]
+    );
+}
+
+export function raiseSkeletons() {
+    return new Card(
+        'raiseSeeleton',
+        'Raise Skeletons',
+        'raise-skeleton.png',
+        new Resource(5, 0, {
+            Growth: 0,
+            Decay: 3,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        [new SummonUnitForGrave(skeleton, 2)]
+    );
+}
+
 
 export function poison() {
     return new Card(
@@ -97,7 +207,7 @@ export function Saboteur() {
         }),
         new Untargeted(),
         2, 2,
-        [new Discard()]
+        [new Discard(1)]
     )
 }
 

@@ -1,7 +1,7 @@
 import { Mechanic, TargetedMechanic } from '../../mechanic';
 import { Game } from '../../Game';
 import { Targeter } from '../../targeter';
-import { Card } from '../../card';
+import { Card, Location } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
@@ -35,6 +35,28 @@ export class TransformDamaged extends Mechanic {
     }
 }
 
+export class DamageSpawnOnKill extends TargetedMechanic {
+    private name: string;
+    constructor(private amount: number, private factory: () => Unit) {
+        super();
+        this.name = factory().getName();
+    }
+
+    public run(card: Card, game: Game) {
+        for (let target of this.targeter.getTargets(card, game)) {
+            target.takeDamage(this.amount);
+            target.checkDeath();
+            if (target.getLocation() == Location.Crypt) {
+                game.playGeneratedUnit(card.getOwner(), this.factory());
+            }
+        }
+    }
+
+    public getText(card: Card) {
+        return `Deal ${this.amount} damage to ${this.targeter.getText()}. If it dies play a ${this.name}.`
+    }
+}
+
 
 export class AbominationConsume extends Mechanic {
     public run(card: Card, game: Game) {
@@ -52,5 +74,27 @@ export class AbominationConsume extends Mechanic {
 
     public getText(card: Card) {
         return `Remove up to two units from your crypt. This unit gains their stats.`;
+    }
+}
+
+export class SummonUnitForGrave extends Mechanic {
+    private name: string;
+    constructor(private factory: () => Unit, private factor: number) {
+        super();
+        this.name = factory().getName();
+    }
+
+    public run(card: Card, game: Game) {
+        let owner = game.getPlayer(card.getOwner());
+        let count = Math.floor(game.getCrypt(0)
+            .concat(game.getCrypt(1))
+            .filter(card => card.isUnit()).length / this.factor);
+        for (let i = 0; i < count; i++) {
+            game.playGeneratedUnit(owner, this.factory())
+        }
+    }
+
+    public getText(card: Card) {
+        return `Play a ${this.name} for each ${this.factor} units in any crypt (rounded down).`;
     }
 }

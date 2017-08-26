@@ -321,11 +321,22 @@ export class Game {
     }
 
     private generatedCardId = 1;
-    public playGeneratedUnit(player: Player, card: Card) {
+    public playGeneratedUnit(player: Player | number, card: Card) {
+        if (typeof player == "number")
+            player = this.getPlayer(player);
         card.setOwner(player.getPlayerNumber());
         card.setId(this.generatedCardId.toString(16));
         this.cardPool.set(card.getId(), card);
         this.generatedCardId++;
+        player.playCard(this, card, true);
+    }
+
+    public playFromCrypt(card: Card) {
+        let player = this.players[card.getOwner()];
+        let crypt = this.crypt[card.getOwner()];
+        if (crypt.indexOf(card) == -1)
+            return;
+        crypt.splice(crypt.indexOf(card), 1);        
         player.playCard(this, card, true);
     }
 
@@ -623,6 +634,9 @@ export class Game {
         unit.getEvents().addEvent(null, new GameEvent(EventType.Death, (params) => {
             this.removeUnit(unit);
             this.addToCrypt(unit);
+            this.gameEvents.trigger(EventType.UnitDies, new Map([
+                ['deadUnit', unit]
+            ]));
             return params;
         }));
         unit.getEvents().addEvent(null, new GameEvent(EventType.Annihilate, (params) => {

@@ -1,16 +1,131 @@
 import { Mechanic } from '../mechanic';
 import { Card } from '../card';
 import { Unit, UnitType } from '../unit';
-import { SingleUnit, Untargeted, AllUnits } from '../targeter';
-import { DealDamage } from './mechanics/dealDamage';
 import { Resource } from '../resource';
 
+
+import { SingleUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnit } from '../targeter';
+import { BiologicalUnit } from './targeters/biotargeter';
+
+import { DrawCardsFromUnit, WebTarget, BiteDamage } from './mechanics/growthSpecials';
+import { DealDamage } from './mechanics/dealDamage';
+import { SleepTarget } from './mechanics/sleep';
 import { BuffTarget } from './mechanics/buff';
 import { FinalBlow } from './mechanics/finalBlow';
 import { SummonUnits } from './mechanics/summonUnits';
 import { Flying, Relentless } from './mechanics/skills';
 import { Affinity } from './mechanics/affinity';
 import { Venomous } from './mechanics/poison';
+import { GainLife, GainResource } from './mechanics/playerAid';
+
+export function neuralResonance() {
+    return new Card(
+        'NeuralResonance',
+        'Synaptic Resonance',
+        'brain.png',
+        new Resource(6, 0, {
+            Growth: 3,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new FriendlyUnit(),
+        [new DrawCardsFromUnit(3)]
+    );
+}
+
+export function bounty() {
+    return new Card(
+        'NaturesBounty',
+        'Nature’s Bounty',
+        'fruiting.png',
+        new Resource(3, 0, {
+            Growth: 2,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        [new GainLife(2), new GainResource(new Resource(1, 1, {
+            Growth: 1,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }))],
+        'You gain 1 growth, 1 energy and 2 life.'
+    );
+}
+
+export function webspit() {
+    return new Card(
+        'webspit',
+        'Spit Web',
+        'web-spit.png',
+        new Resource(1, 0, {
+            Growth: 1,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new SingleUnit(),
+        [new WebTarget()]
+        
+    );
+}
+
+
+export function bite() {
+    return new Card(
+        'bite',
+        'Bite',
+        'fangs.png',
+        new Resource(2, 0, {
+            Growth: 2,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new SingleUnit(),
+        [new BiteDamage()]
+    );
+}
+
+
+export function SweetFragrance() {
+    return new Card(
+        'SweetFragrance',
+        'Soporific Pollen',
+        'fragrance.png',
+        new Resource(5, 0, {
+            Growth: 2,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new EnemyUnits(),
+        [new SleepTarget(1)]
+        
+    );
+}
+
+export function minotaur() {
+    return new Unit(
+        'Minotaur',
+        'Minotaur',
+        'minotaur.png',
+        UnitType.Spider,
+        new Resource(4, 0, {
+            Growth: 4,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        4, 5,
+        []
+    );
+}
+
 
 export function venomousSpiderling() {
     return new Unit(
@@ -154,7 +269,7 @@ export function mutation() {
             Renewal: 0,
             Synthesis: 0
         }),
-        new SingleUnit(),
+        new BiologicalUnit(),
         [new BuffTarget(3, 4, [new Relentless()])]
     );
 }
@@ -229,7 +344,7 @@ export function eruption() {
             Synthesis: 0
         }),
         new AllUnits(),
-        [new DealDamage(4)]
+        [new DealDamage(5)]
     );
 }
 

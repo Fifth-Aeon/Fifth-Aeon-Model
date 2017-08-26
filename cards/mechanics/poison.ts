@@ -26,7 +26,7 @@ export class CurePoisonTargeter extends Targeter {
 export class CurePoison extends TargetedMechanic {
     public run(card: Card, game: Game) {
         this.targeter.getTargets(card, game).forEach(target => {
-            target.removeMechanic('poison', target, game);
+            target.removeMechanic('poisoned', game);
         });
     }
 
@@ -60,7 +60,7 @@ export class Poisoned extends Mechanic {
     }
 
     public id() {
-        return 'poison';
+        return 'poisoned';
     }
 
     public getText(card: Card) {

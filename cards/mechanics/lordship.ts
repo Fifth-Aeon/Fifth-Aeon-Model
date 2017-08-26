@@ -62,11 +62,20 @@ export function friendlyLordship(attack: number, life: number) {
     );
 }
 
-export function unitTypeLordship(type: UnitType, attack: number, life: number) {
+export function unitTypeLordshipExclusive(type: UnitType, attack: number, life: number) {
     return new Lordship(
         `Other friendly ${UnitType[type]} have +${attack}/+${life}.`,
         (unit: Unit) => unit.buff(attack, life),
         (unit: Unit) => unit.buff(-attack, -life),
         (source: Unit, target: Unit) => source.getOwner() == target.getOwner() && source != target && type == target.getType()
+    );
+}
+
+export function unitTypeLordshipInclusive(type: UnitType, attack: number, life: number) {
+    return new Lordship(
+        `Friendly ${UnitType[type]} have +${attack}/+${life}.`,
+        (unit: Unit) => unit.buff(attack, life),
+        (unit: Unit) => unit.buff(-attack, -life),
+        (source: Unit, target: Unit) => source.getOwner() == target.getOwner() && type == target.getType()
     );
 }

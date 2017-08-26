@@ -3,15 +3,20 @@ import { Card } from '../card';
 import { Unit, UnitType } from '../unit';
 import { Resource } from '../resource';
 
-import { SingleUnit, Untargeted, AllUnits } from '../targeter';
-import { CannotAttack } from './mechanics/cantAttack';
+import { SingleUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnits } from '../targeter';
+import { CannotAttack, ImprisonTarget } from './mechanics/cantAttack';
 import { ShuffleIntoDeck } from './mechanics/shuffleIntoDeck';
 import { RenewalMCTargeter, MindControl } from './mechanics/mindControl';
-import { Lordship, unitTypeLordship } from './mechanics/lordship';
+import { Lordship, unitTypeLordshipExclusive, unitTypeLordshipInclusive } from './mechanics/lordship';
 import { Serenity } from './mechanics/serenity';
+import { EndOfTurn } from './mechanics/periodic';
 import { SummonUnits } from './mechanics/summonUnits';
+import { BuffTarget } from './mechanics/buff';
+import { RefreshTarget } from './mechanics/heal';
 import { Flying, Relentless } from './mechanics/skills';
 import { CurePoisonTargeter, CurePoison } from './mechanics/poison';
+import { UnitEntersPlay } from './mechanics/entersPlay';
+
 
 export function ruralMonk() {
     return new Unit(
@@ -28,6 +33,119 @@ export function ruralMonk() {
         new Untargeted(),
         1, 2,
         [new Serenity('Gain 1 life', (unit, game) => game.getPlayer(unit.getOwner()).addLife(1))]
+    );
+}
+
+export function blacksmith() {
+    return new Unit(
+        'blacksmith',
+        'Blacksmith',
+        'blacksmith.png',
+        UnitType.Human,
+        new Resource(2, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 2,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        1, 1,
+        [new UnitEntersPlay('When you play a unit give it +1/+0.', (source, unit) => {
+            if (unit != source && unit.getOwner()) {
+                unit.buff(1, 0);
+            }
+        })]
+    );
+}
+
+export function king() {
+    return new Unit(
+        'king',
+        'King',
+        'throne-king.png',
+        UnitType.Human,
+        new Resource(5, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 3,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        3, 5,
+        [unitTypeLordshipInclusive(UnitType.Soldier, 1, 1),
+        new EndOfTurn('play a Pikeman',
+            (king, game) => game.playGeneratedUnit(king.getOwner(), pikeman()))
+        ]
+    );
+}
+
+export function imprison() {
+    return new Card(
+        'Imprison',
+        'Imprison',
+        'dungeon-light.png',
+        new Resource(3, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 3,
+            Synthesis: 0
+        }),
+        new SingleUnit(),
+        [new ImprisonTarget()],
+        'Target unit becomes unable to attack or block.'
+    );
+}
+
+export function heal() {
+    return new Card(
+        'heal',
+        'Heal',
+        'caduceus.png',
+        new Resource(1, 0, {
+            Growth: 0,
+            Decay: 0, 
+            Renewal: 1,
+            Synthesis: 0
+        }),
+        new SingleUnit(),
+        [new RefreshTarget(), new CurePoison()],
+        'Refresh target unit. If that unit it is poisoned, cure it.'
+    );
+}
+
+export function gryphon() {
+    return new Unit(
+        'gryphon',
+        'Gryphon',
+        'griffin-symbol.png',
+        UnitType.Mammal,
+        new Resource(4, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 2,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        2, 4,
+        [new Flying()]
+    );
+}
+
+
+export function dawnbreak() {
+    return new Card(
+        'dawnbreak',
+        'Dawnbreak',
+        'sunbeams.png',
+        new Resource(6, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 3,
+            Synthesis: 0
+        }),
+        new FriendlyUnits(),
+        [new RefreshTarget(), new BuffTarget(1, 3, [])],
+        'Refresh all friendly units and give them +1/+3.'
     );
 }
 
@@ -61,9 +179,9 @@ export function unicorn() {
             Renewal: 1,
             Synthesis: 0
         }),
-        new Untargeted(),
-        2, 3,
-        []
+        new SingleUnit(true),
+        3, 2,
+        [new RefreshTarget()]
     );
 }
 
@@ -120,7 +238,7 @@ export function plaugeDoctor() {
             Synthesis: 0
         }),
         new CurePoisonTargeter(),
-        2, 2,
+        2, 3,
         [new CurePoison()]
     );
 }
@@ -198,7 +316,7 @@ export function angel() {
         'SentryAngel',
         'Sentry Angel',
         'angel-wings.png',
-        UnitType.Cleric, 
+        UnitType.Cleric,
         new Resource(6, 0, {
             Growth: 0,
             Decay: 0,
@@ -216,7 +334,7 @@ export function pontiff() {
         'Pontiff',
         'Pontiff',
         'pope-crown.png',
-        UnitType.Cleric, 
+        UnitType.Cleric,
         new Resource(4, 0, {
             Growth: 0,
             Decay: 0,
@@ -225,7 +343,7 @@ export function pontiff() {
         }),
         new Untargeted(),
         3, 3,
-        [unitTypeLordship(UnitType.Cleric, 1, 1)]
+        [unitTypeLordshipExclusive(UnitType.Cleric, 1, 1)]
     );
 }
 

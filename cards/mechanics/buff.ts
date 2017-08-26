@@ -11,6 +11,7 @@ export class BuffTarget extends TargetedMechanic {
     constructor(private damage: number, private life: number, private abilities: Mechanic[]) {
         super();
     }
+    
     public run(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game)) {
             target.buff(this.damage, this.life);
@@ -25,7 +26,9 @@ export class BuffTarget extends TargetedMechanic {
     }
 
     public getText(card: Card) {
-        return `Give ${this.targeter.getText()} +${this.damage}/+${this.life} and ${this.abilityString()}.`
+        if (this.abilities.length > 0)
+            return `Give ${this.targeter.getText()} +${this.damage}/+${this.life} and ${this.abilityString()}.`
+        return `Give ${this.targeter.getText()} +${this.damage}/+${this.life}.`
     }
 
     public evaluateTarget(owner: number, target: Unit) {

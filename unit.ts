@@ -11,6 +11,10 @@ export enum UnitType {
     Vampire, Cultist, Agent, Undead, Structure, Vehicle, Insect, Dragon
 }
 
+export const mechanical = new Set([UnitType.Automaton, UnitType.Structure, UnitType.Vehicle]);
+export function isBiological(unit: Unit) { return !mechanical.has(unit.getType()) }
+export function isMechanical(unit: Unit) { return mechanical.has(unit.getType()) }
+
 class Damager {
     private events: EventGroup;
     constructor(private amount: number, private source: Unit, private target: Unit) {
@@ -80,11 +84,11 @@ export class Unit extends Card {
         this.unitType = unit.unitType;
     }
 
-    public removeMechanic(id: string, card: Card, game: Game) {
+    public removeMechanic(id: string, game: Game) {
         let target = this.mechanics.find(mechanic => mechanic.id() == id);
         if (!target)
             return;
-        target.remove(card, game);
+        target.remove(this, game);
         this.mechanics.splice(this.mechanics.indexOf(target), 1);
     }
 

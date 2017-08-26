@@ -1,4 +1,4 @@
-import { Mechanic } from '../../mechanic';
+import { Mechanic, TargetedMechanic } from '../../mechanic';
 import { Game, GamePhase } from '../../Game';
 import { Targeter } from '../../targeter';
 import { Card } from '../../card';
@@ -33,3 +33,19 @@ export class CannotBlock extends Mechanic {
     }
 }
 
+export class ImprisonTarget extends TargetedMechanic {
+    public run(card: Card, game: Game) {
+        this.targeter.getTargets(card, game).forEach(target => {
+            target.addMechanic(new CannotAttack(), game);
+            target.addMechanic(new CannotBlock(), game);
+        });
+    }
+
+    public getText(card: Card) {
+        return `Cause ${this.targeter.getText()} to become unable to attack or block.`;        
+    }
+
+    public evaluateTarget(owner: number, unit: Unit) {
+        return unit.evaluate() * 1.25 * (unit.getOwner() == owner ? -1 : 1);
+    }
+}

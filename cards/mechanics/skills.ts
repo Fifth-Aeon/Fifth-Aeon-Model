@@ -133,3 +133,57 @@ export class Relentless extends Mechanic {
         return 'relentless';
     }
 }
+
+
+export class Deathless extends Mechanic {
+    public run(card: Card, game: Game) {
+        let unit = card as Unit;
+        unit.getEvents().addEvent(this, new GameEvent(EventType.Death, (params) => {
+            game.gameEvents.addEvent(this, new GameEvent(EventType.EndOfTurn, (params) => {
+                unit.removeMechanic(this.id(), game);
+                game.playFromCrypt(unit);
+                game.gameEvents.removeEvents(this);
+                return params;
+            }))
+            return params;
+        }));
+    }
+
+    public id() {
+        return 'deathless';
+    }
+
+    public remove(card: Card, game: Game) {
+        (card as Unit).getEvents().removeEvents(this);
+    }
+
+    public getText(card: Card) {
+        return `Deathless.`;
+    }
+}
+
+export class Immortal extends Mechanic {
+    public run(card: Card, game: Game) {
+        let unit = card as Unit;
+        unit.getEvents().addEvent(this, new GameEvent(EventType.Death, (params) => {
+            game.gameEvents.addEvent(this, new GameEvent(EventType.EndOfTurn, (params) => {
+                unit.removeMechanic(this.id(), game);
+                game.playFromCrypt(unit);
+                return params;
+            }))
+            return params;
+        }));
+    }
+
+    public id() {
+        return 'immortal';
+    }
+
+    public remove(card: Card, game: Game) {
+        (card as Unit).getEvents().removeEvents(this);
+    }
+
+    public getText(card: Card) {
+        return `Immortal.`;
+    }
+}

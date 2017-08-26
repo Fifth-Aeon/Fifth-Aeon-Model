@@ -23,10 +23,11 @@ export class Card {
     protected dataId: string;
     protected imageUrl: string;
     protected location: Location;
+    protected text:string = null;
 
     protected targeter: Targeter = new Untargeted();
 
-    constructor(dataId: string, name: string, imageUrl: string, cost: Resource, targeter: Targeter, mechanics: Array<Mechanic>) {
+    constructor(dataId: string, name: string, imageUrl: string, cost: Resource, targeter: Targeter, mechanics: Array<Mechanic>, text?) {
         this.dataId = dataId;
         this.name = name;
         this.imageUrl = imageUrl;
@@ -35,7 +36,8 @@ export class Card {
         this.mechanics = mechanics;
         this.mechanics.forEach(mechanic => mechanic.attach(this));
         this.location = Location.Deck;
-        this.id = Math.random().toString(16)
+        this.id = Math.random().toString(16);
+        this.text = text;
     }
 
     public setLocation(location: Location) {
@@ -100,6 +102,8 @@ export class Card {
     }
 
     public getText(): string {
+        if (this.text)
+            return this.text;
         return this.mechanics.map(mechanic => mechanic.getText(this)).join(' ');
     }
 
