@@ -113,7 +113,7 @@ export function minotaur() {
         'Minotaur',
         'Minotaur',
         'minotaur.png',
-        UnitType.Spider,
+        UnitType.Mammal,
         new Resource(4, 0, {
             Growth: 4,
             Decay: 0,

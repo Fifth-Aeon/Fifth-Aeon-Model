@@ -105,7 +105,7 @@ export function alloyTransmute() {
 export function dangerousInjection() {
     return new Card(
         'dangerousInjection',
-        'Unstable Injection',
+        'Dangerous Injection',
         'hypodermic-test.png',
         new Resource(1, 0, {
             Growth: 0,
@@ -114,7 +114,8 @@ export function dangerousInjection() {
             Synthesis: 1
         }),
         new BiologicalUnit(),
-        [new BuffTarget(3, 1, [new Poisoned()])]
+        [new BuffTarget(3, 2, [new Poisoned()])],
+        'Poison target biological unit and give it +3/+2.'
     );
 }
 
