@@ -6,28 +6,17 @@ import { ResourceTypeNames } from './resource';
 import { sample, sampleSize, remove, sum } from 'lodash';
 
 export class DeckList {
-
+    public name: string = 'New Deck';
+    public avatar: string = '';
     private records = new Map<string, number>();
     private cardCount: number = 0;
 
     constructor(private format: GameFormat) {
-        if (Math.random() > 0.5) {
-            this.generateTwoColorDeck();
-        } else {
-            this.generateOneColorDeck();
-        }
-    }
-
-    public toJson() {
-        return JSON.stringify([...Array.from(this.records.entries())]);
-    }
-
-    public fromJson(jsonStr:string) {
-        this.records = new Map(JSON.parse(jsonStr)) as Map<string, number>;
-        this.cardCount = sum(Array.from(this.records.values()))
+        this.generateRandomNColorDeck(Math.random() > 0.5 ? 1 : 2);
     }
 
     public randomDeckWithColors(colors: Set<string>) {
+        this.clear();
         let validCards = Array.from(allCards.values()).filter(factory => {
             return factory().getCost().isInColors(colors);
         });
@@ -40,14 +29,48 @@ export class DeckList {
             if (this.records.get(card.getDataId()) == this.format.cardsOfRarity[0])
                 remove(validCards, fact => fact == constr);
         }
+        this.genMetadata();
     }
 
-    public generateTwoColorDeck() {
-        this.randomDeckWithColors(new Set(sampleSize(ResourceTypeNames, 2) as Array<string>));
+    public genMetadata() {
+        let list = this.getRecordList();
+        this.avatar = list[list.length - 1].card.getImage();
+        this.name = Array.from(this.getColors().values()).join('-') + ' Deck';
     }
 
-    public generateOneColorDeck() {
-        this.randomDeckWithColors(new Set(sampleSize(ResourceTypeNames, 1) as Array<string>));
+    public getColors() {
+        let colors = new Set<string>();
+        for (let record of this.getRecordList()) {
+            record.card.getCost().getColors().forEach(color => colors.add(color));
+        }
+        return colors;
+    }
+
+    public clear() {
+        this.records = new Map<string, number>();
+        this.cardCount = 0;
+    }
+
+    public generateRandomNColorDeck(n: number) {
+        n = Math.max(Math.min(n, 4), 1);
+        this.randomDeckWithColors(new Set(sampleSize(ResourceTypeNames, n) as Array<string>));
+    }
+
+    public toJson() {
+        return JSON.stringify({
+            records: [...Array.from(this.records.entries())],
+            name: this.name,
+            avatar: this.avatar
+        })
+    }
+
+
+    public fromJson(jsonStr: string) {
+        let data = JSON.parse(jsonStr)
+        this.records = new Map(data.records) as Map<string, number>;
+        this.name = data.name;
+        this.avatar = data.avatar;
+        this.cardCount = sum(Array.from(this.records.values()))
     }
 
     public size() {
