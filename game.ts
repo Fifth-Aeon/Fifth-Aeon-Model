@@ -446,7 +446,7 @@ export class Game {
     private declareBlockerAction(act: GameAction) {
         let player = this.players[act.player];
         let blocker = this.getUnitById(act.params.blockerId);
-        let blocked = this.getUnitById(act.params.blockedId);
+        let blocked = this.getPlayerUnitById(this.turn, act.params.blockedId);
         if (this.isPlayerTurn(act.player) ||
             this.phase !== GamePhase.Block ||
             !blocker || !blocked || !blocker.canBlock(blocked))
@@ -488,7 +488,7 @@ export class Game {
 
     // Combat ------------------------------------------
     public playerCanAttack(playerNo: number) {
-        return this.phase == GamePhase.Play1 && this.isActivePlayer(playerNo);
+        return this.phase == GamePhase.Play1 && this.isActivePlayer(playerNo) && this.canTakeAction();
     }
 
     public isAttacking() {

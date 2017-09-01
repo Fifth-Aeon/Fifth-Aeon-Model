@@ -51,7 +51,7 @@ export function blacksmith() {
         new Untargeted(),
         1, 1,
         [new UnitEntersPlay('When you play a unit give it +1/+0.', (source, unit) => {
-            if (unit != source && unit.getOwner()) {
+            if (unit != source && unit.getOwner() == source.getOwner()) {
                 unit.buff(1, 0);
             }
         })]
@@ -109,7 +109,7 @@ export function heal() {
         }),
         new SingleUnit(),
         [new RefreshTarget(), new CurePoison()],
-        'Refresh target unit. If that unit it is poisoned, cure it.'
+        'Refresh target unit. If that unit is poisoned, cure it.'
     );
 }
 

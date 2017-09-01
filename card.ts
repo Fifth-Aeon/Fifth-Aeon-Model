@@ -40,6 +40,10 @@ export class Card {
         this.text = text;
     }
 
+    public setText(text:string) {
+        this.text = text;
+    }
+
     public setLocation(location: Location) {
         this.location = location;
     }
