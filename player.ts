@@ -2,7 +2,7 @@ import { Card, Location } from './card';
 import { Unit, UnitType } from './unit';
 import { sample, remove } from 'lodash';
 import { GameFormat } from './gameFormat';
-import { Game, SyncGameEvent, GameEventType } from './game';
+import { Game, GameSyncEvent, SyncEventType } from './game';
 import { Resource } from './resource';
 import { EventType } from './gameEvent';
 
@@ -177,7 +177,7 @@ export class Player extends Unit {
         } else {
             this.addToHand(drawn);
         }
-        this.parent.addGameEvent(new SyncGameEvent(GameEventType.draw, {
+        this.parent.addGameEvent(new GameSyncEvent(SyncEventType.Draw, {
             playerNo: this.playerNumber,
             card: drawn.getPrototype(),
             discarded: this.hand.length >= this.hardHandLimit

@@ -1,5 +1,5 @@
 
-import { Game, SyncGameEvent, GameEventType } from './game';
+import { Game, GameSyncEvent, SyncEventType } from './game';
 import { Card } from '../game_model/card';
 import { Unit } from '../game_model/unit';
 import { properList } from '../game_model/strings';
@@ -30,7 +30,7 @@ export class Log {
         });
     }
 
-    public addCardPlayed(event: SyncGameEvent) {
+    public addCardPlayed(event: GameSyncEvent) {
         this.items.unshift({
             image: this.getCardImage(this.getCard(event)),
             desc: this.makeCardPlayTooltip(event),
@@ -60,7 +60,7 @@ export class Log {
         this.game = game;
     }
 
-    public getCard(event: SyncGameEvent): Card {
+    public getCard(event: GameSyncEvent): Card {
         return this.game.getCardById(event.params.played.id);
     }
 
@@ -68,7 +68,7 @@ export class Log {
         return player != this.playerNo;
     }
 
-    private makeCardPlayTooltip(event: SyncGameEvent): string {
+    private makeCardPlayTooltip(event: GameSyncEvent): string {
         let name = this.isEnemy(event.params.playerNo) ? 'Your opponent' : 'You';
         let card = this.getCard(event);
         let targetString = '';

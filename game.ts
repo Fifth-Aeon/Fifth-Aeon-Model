@@ -15,17 +15,14 @@ export enum GamePhase {
     Play1, Block, Play2, End, Response
 }
 
-const game_phase_count = 4;
-
 export enum GameActionType {
-    mulligan, playResource, playCard, pass, concede, activateAbility,
-    toggleAttack, declareBlockers, distributeDamage, CardChoice,
-    declareTarget, Quit
+    Mulligan, PlayResource, PlayCard, Pass, Concede, ActivateAbility,
+    ToggleAttack, DeclareBlocker, DistributeDamage, CardChoice, Quit
 }
 
-export enum GameEventType {
-    start, attackToggled, turnStart, phaseChange, playResource, mulligan,
-    playCard, block, draw, ChoiceMade, QueryResult, Ended
+export enum SyncEventType {
+    Start, AttackToggled, TurnStart, PhaseChange, PlayResource, Mulligan,
+    PlayCard, Block, Draw, ChoiceMade, QueryResult, Ended
 }
 
 export interface GameAction {
@@ -34,11 +31,11 @@ export interface GameAction {
     params: any
 }
 
-export class SyncGameEvent {
-    constructor(public type: GameEventType, public params: any) { }
+export class GameSyncEvent {
+    constructor(public type: SyncEventType, public params: any) { }
 }
 
-type actionCb = (act: GameAction) => boolean;
+type ActionCb = (act: GameAction) => boolean;
 export class Game {
     // Id of the game on the server
     public id: string;
@@ -59,9 +56,9 @@ export class Game {
     // The previous phase (used to return from responce phases)
     private lastPhase: GamePhase;
     // A table of handlers used to respond to actions taken by players
-    private actionHandelers: Map<GameActionType, actionCb>
+    private actionHandelers: Map<GameActionType, ActionCb>
     // A list of all events that have taken place this game and need to be sent to clients
-    private events: SyncGameEvent[];
+    private events: GameSyncEvent[];
     // A list of  units currently attacking
     private attackers: Unit[];
     // A list of blocks by the defending player
@@ -74,6 +71,8 @@ export class Game {
     private deferedChoice: (cards: Card[]) => void;
     // Flag to tell us which player's choice we are waiting for (null if not waiting)
     private waitingForPlayerChoice: number | null = null;
+    // Handlers to syncronize events
+    private syncEventHandlers: Map<SyncEventType, (playerNo: number,  event: GameSyncEvent, params:any) => void>;
 
     /**
      * Constructs a game given a format. The format
@@ -88,7 +87,6 @@ export class Game {
         this.board = new Board(this.format.playerCount, this.format.boardSize);
         this.cardPool = new Map<string, Card>();
         this.turnNum = 1;
-        this.actionHandelers = new Map<GameActionType, actionCb>();
         this.events = [];
         this.attackers = [];
         this.blockers = [];
@@ -128,7 +126,10 @@ export class Game {
 
         this.promptCardChoice = this.deferChoice;
 
+        this.actionHandelers = new Map<GameActionType, ActionCb>();
         this.addActionHandelers();
+        this.syncEventHandlers = new Map<SyncEventType, (playerNo: number, event: GameSyncEvent) => void>();
+        this.addSyncHandlers();
     }
 
     // Game End Logic -----------------------------------------------
@@ -137,7 +138,7 @@ export class Game {
         if (this.winner != -1)
             return;
         this.winner = winningPlayer;
-        this.addGameEvent(new SyncGameEvent(GameEventType.Ended, { winner: winningPlayer, quit: quit }));
+        this.addGameEvent(new GameSyncEvent(SyncEventType.Ended, { winner: winningPlayer, quit: quit }));
     }
 
     private quit(action: GameAction) {
@@ -158,7 +159,7 @@ export class Game {
     }
 
     // Synchronization --------------------------------------------------------
-    public addGameEvent(event: SyncGameEvent) {
+    public addGameEvent(event: GameSyncEvent) {
         this.events.push(event);
     }
 
@@ -166,78 +167,16 @@ export class Game {
      * Syncs an event that happened on the server into the state of this game model
      * 
      * @param {number} playerNumber 
-     * @param {SyncGameEvent} event 
+     * @param {GameSyncEvent} event 
      * @memberof Game
      */
-    public syncServerEvent(playerNumber: number, event: SyncGameEvent) {
+    public syncServerEvent(playerNumber: number, event: GameSyncEvent) {
         let params = event.params;
         this.events.push(event);
-        switch (event.type) {
-            case GameEventType.playCard:
-                if (params.playerNo != playerNumber) {
-                    let player = this.players[params.playerNo];
-                    let card = this.unpackCard(params.played)
-                    if (params.targetIds)
-                        card.getTargeter().setTargets(params.targetIds
-                            .map((id: string) => this.getUnitById(id)));
-                    this.playCard(player, card);
-                }
-                if (this.log)
-                    this.log.addCardPlayed(event);
-                break;
-            case GameEventType.draw:
-                // Todo, information hiding 
-                if (params.discarded)
-                    this.addToCrypt(this.unpackCard(params.card));
-                else
-                    this.players[params.playerNo].addToHand(this.unpackCard(params.card))
-                break;
-            case GameEventType.turnStart:
-                if (this.turnNum == 1) {
-                    this.turn = params.turn;
-                    this.turnNum = params.turnNum
-                    this.refresh();
-                }
-                break;
-            case GameEventType.playResource:
-                this.players[params.playerNo].playResource(params.resource);
-                break;
-            case GameEventType.attackToggled:
-                if (!this.getUnitById(params.unitId))
-                    console.error('Cand find attacking unit with id', params.unitId, params, 'i see units', this.getBoard().getAllUnits())
-                if (params.player != playerNumber)
-                    this.getUnitById(params.unitId).toggleAttacking();
-                break;
-            case GameEventType.block:
-                if (params.player != playerNumber) {
-                    if (!this.getUnitById(params.blockerId))
-                        console.error('Cand find blocker unitwith id', params.blockerId, params, 'i see units', this.getBoard().getAllUnits());
-                    if (!this.getUnitById(params.blockedId))
-                        console.error('Cand find blocked unit with id', params.blockedId, params, 'i see units', this.getBoard().getAllUnits());
-                    this.getUnitById(params.blockerId).setBlocking(params.blockedId);
-                }
-                break;
-            case GameEventType.phaseChange:
-                if (event.params.phase === GamePhase.Play2)
-                    this.resolveCombat();
-                if (event.params.phase === GamePhase.End)
-                    this.startEndPhase();
-                else
-                    this.changePhase(event.params.phase);
-                break;
-            case GameEventType.ChoiceMade:
-                if (params.player != playerNumber)
-                    this.makeDeferedChoice(this.idsToCards(params.choice));
-                break;
-            case GameEventType.QueryResult:
-                let cards = params.cards.map((proto: { id: string, data: string, owner: number }) => this.unpackCard(proto));
-                this.setQueryResult(cards);
-                break;
-            case GameEventType.Ended:
-                this.winner = event.params.winner;
-                break;
-
-        }
+        let handler = this.syncEventHandlers.get(event.type);
+        console.log(event, 'handle', SyncEventType[event.type], 'with', handler);
+        if (handler)
+            handler(playerNumber, event, params);
     }
 
     public idsToCards(ids: Array<string>) {
@@ -253,6 +192,96 @@ export class Game {
         this.cardPool.set(proto.id, card);
         return card;
     }
+
+    private addSyncHandler(type: SyncEventType, cb: (playerNo: number, event: GameSyncEvent, params: any) => void) {
+        this.syncEventHandlers.set(type, cb.bind(this));
+    }
+
+    private addSyncHandlers() {
+        this.addSyncHandler(SyncEventType.PlayCard, this.syncCardEvent);
+        this.addSyncHandler(SyncEventType.Draw, this.syncDrawEvent);
+        this.addSyncHandler(SyncEventType.PlayResource, this.syncPlayResource);
+        this.addSyncHandler(SyncEventType.AttackToggled, this.syncAttackToggled);
+        this.addSyncHandler(SyncEventType.Block, this.syncBlock);
+        this.addSyncHandler(SyncEventType.TurnStart, this.syncTurnStart);
+        this.addSyncHandler(SyncEventType.PhaseChange, this.syncPhaseChange);
+        this.addSyncHandler(SyncEventType.ChoiceMade, this.syncChoiceMade);
+        this.addSyncHandler(SyncEventType.QueryResult, this.syncQueryResult);
+        this.addSyncHandler(SyncEventType.Ended, this.syncEnded);
+    }
+
+    public syncCardEvent(playerNumber: number, event: GameSyncEvent, params: any) {
+        if (params.playerNo != playerNumber) {
+            let player = this.players[params.playerNo];
+            let card = this.unpackCard(params.played)
+            if (params.targetIds)
+                card.getTargeter().setTargets(params.targetIds
+                    .map((id: string) => this.getUnitById(id)));
+            this.playCard(player, card);
+        }
+        if (this.log)
+            this.log.addCardPlayed(event);
+    }
+
+    public syncDrawEvent(playerNumber: number, event: GameSyncEvent, params: any) {
+        if (params.discarded)
+            this.addToCrypt(this.unpackCard(params.card));
+        else
+            this.players[params.playerNo].addToHand(this.unpackCard(params.card))
+    }
+
+    public syncTurnStart(playerNumber: number, event: GameSyncEvent, params: any) {
+        if (this.turnNum == 1) {
+            this.turn = params.turn;
+            this.turnNum = params.turnNum
+            this.refresh();
+        }
+    }
+
+    public syncPlayResource(playerNumber: number, event: GameSyncEvent, params: any) {
+        this.players[params.playerNo].playResource(params.resource);
+    }
+
+    public syncAttackToggled(playerNumber: number, event: GameSyncEvent, params: any) {
+        if (!this.getUnitById(params.unitId))
+            console.error('Cand find attacking unit with id', params.unitId, params, 'i see units', this.getBoard().getAllUnits())
+        if (params.player != playerNumber)
+            this.getUnitById(params.unitId).toggleAttacking();
+    }
+
+    public syncBlock(playerNumber: number, event: GameSyncEvent, params: any) {
+        if (params.player != playerNumber) {
+            if (!this.getUnitById(params.blockerId))
+                console.error('Cand find blocker unitwith id', params.blockerId, params, 'i see units', this.getBoard().getAllUnits());
+            if (!this.getUnitById(params.blockedId))
+                console.error('Cand find blocked unit with id', params.blockedId, params, 'i see units', this.getBoard().getAllUnits());
+            this.getUnitById(params.blockerId).setBlocking(params.blockedId);
+        }
+    }
+
+    public syncPhaseChange(playerNumber: number, event: GameSyncEvent, params: any) {
+        if (event.params.phase === GamePhase.Play2)
+            this.resolveCombat();
+        if (event.params.phase === GamePhase.End)
+            this.startEndPhase();
+        else
+            this.changePhase(event.params.phase);
+    }
+
+    public syncChoiceMade(playerNumber: number, event: GameSyncEvent, params: any) {
+        if (params.player != playerNumber)
+            this.makeDeferedChoice(this.idsToCards(params.choice));
+    }
+
+    public syncQueryResult(playerNumber: number, event: GameSyncEvent, params: any) {
+        let cards = params.cards.map((proto: { id: string, data: string, owner: number }) => this.unpackCard(proto));
+        this.setQueryResult(cards);
+    }
+
+    public syncEnded(playerNumber: number, event: GameSyncEvent, params: any) {
+        this.winner = event.params.winner;
+    }
+   
 
     // Player choice =--------------------------------------------------------
     private deferChoice(player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) {
@@ -277,7 +306,7 @@ export class Game {
         this.waitingForPlayerChoice = null;
     }
 
-    // Crypt logic -------------------------------------
+    // Crypt logic ----------------------------------------------------
     public addToCrypt(card: Card) {
         card.setLocation(Location.Crypt);
         this.crypt[card.getOwner()].push(card);
@@ -287,7 +316,7 @@ export class Game {
         return this.crypt[player];
     }
 
-    // Game Logic --------------------------------------------------------
+    // Game Logic -----------------------------------------------------
     public startGame() {
         this.turn = 0;
         for (let i = 0; i < this.players.length; i++) {
@@ -297,11 +326,11 @@ export class Game {
         this.getCurrentPlayerUnits().forEach(unit => unit.refresh());
         this.phase = GamePhase.Play1;
 
-        this.addGameEvent(new SyncGameEvent(GameEventType.turnStart, { turn: this.turn, turnNum: this.turnNum }));
+        this.addGameEvent(new GameSyncEvent(SyncEventType.TurnStart, { turn: this.turn, turnNum: this.turnNum }));
         return this.events;
     }
 
-    // Server Query Logic ---------------------------------------------------
+    // Server Query Logic ----------------------------------------------
     private onQueryResult: (cards: Card[]) => void;
 
     private setQueryResult(cards: Card[]) {
@@ -315,13 +344,13 @@ export class Game {
         } else {
             let cards = getCards(this);
             callback(cards);
-            this.addGameEvent(new SyncGameEvent(GameEventType.QueryResult, {
+            this.addGameEvent(new GameSyncEvent(SyncEventType.QueryResult, {
                 cards: cards.map(card => card.getPrototype())
             }));
         }
     }
 
-    // Card Play Logic -----------------------------------------------------------
+    // Card Play Logic ---------------------------------------------------
     public playCard(player: Player, card: Card) {
         player.playCard(this, card);
     }
@@ -346,17 +375,17 @@ export class Game {
         player.playCard(this, card, true);
     }
 
-    // Player Actions ---------------------------------------------------------
+    // Player Actions -----------------------------------------------------
 
     /**
    * Handles a players action and returns a list of events that
    * resulted from that aciton.
    * 
    * @param {GameAction} action 
-   * @returns {SyncGameEvent[]} 
+   * @returns {GameSyncEvent[]} 
    * @memberof Game
    */
-    public handleAction(action: GameAction): SyncGameEvent[] | null {
+    public handleAction(action: GameAction): GameSyncEvent[] | null {
         let mark = this.events.length;
         let handeler = this.actionHandelers.get(action.type);
         if (!handeler)
@@ -375,16 +404,16 @@ export class Game {
         return this.waitingForPlayerChoice == null;
     }
 
-    private addActionHandeler(type: GameActionType, cb: actionCb) {
+    private addActionHandeler(type: GameActionType, cb: ActionCb) {
         this.actionHandelers.set(type, cb.bind(this));
     }
 
     private addActionHandelers() {
-        this.addActionHandeler(GameActionType.pass, this.passAction);
-        this.addActionHandeler(GameActionType.playResource, this.playResourceAction);
-        this.addActionHandeler(GameActionType.playCard, this.playCardAction);
-        this.addActionHandeler(GameActionType.toggleAttack, this.toggleAttackAction);
-        this.addActionHandeler(GameActionType.declareBlockers, this.declareBlockerAction);
+        this.addActionHandeler(GameActionType.Pass, this.passAction);
+        this.addActionHandeler(GameActionType.PlayResource, this.playResourceAction);
+        this.addActionHandeler(GameActionType.PlayCard, this.playCardAction);
+        this.addActionHandeler(GameActionType.ToggleAttack, this.toggleAttackAction);
+        this.addActionHandeler(GameActionType.DeclareBlocker, this.declareBlockerAction);
         this.addActionHandeler(GameActionType.CardChoice, this.cardChoiceAction);
         this.addActionHandeler(GameActionType.Quit, this.quit);
     }
@@ -396,7 +425,7 @@ export class Game {
         }
         let cardIds = act.params.choice as string[];
         this.makeDeferedChoice(cardIds.map(id => this.getCardById(id)));
-        this.addGameEvent(new SyncGameEvent(GameEventType.ChoiceMade, {
+        this.addGameEvent(new GameSyncEvent(SyncEventType.ChoiceMade, {
             player: act.player,
             choice: act.params.choice
         }));
@@ -421,7 +450,7 @@ export class Game {
         if (!card.getTargeter().targetsAreValid(card, this))
             return false;
         this.playCard(player, card);
-        this.addGameEvent(new SyncGameEvent(GameEventType.playCard, {
+        this.addGameEvent(new GameSyncEvent(SyncEventType.PlayCard, {
             playerNo: act.player,
             played: card.getPrototype(),
             targetIds: act.params.targetIds
@@ -440,7 +469,7 @@ export class Game {
         if (!this.isPlayerTurn(act.player) || this.phase != GamePhase.Play1 || !unit || !unit.canAttack())
             return false;
         unit.toggleAttacking();
-        this.addGameEvent(new SyncGameEvent(GameEventType.attackToggled, { player: act.player, unitId: act.params.unitId }));
+        this.addGameEvent(new GameSyncEvent(SyncEventType.AttackToggled, { player: act.player, unitId: act.params.unitId }));
         return true;
     }
 
@@ -458,7 +487,7 @@ export class Game {
             !blocker || !blocked || !blocker.canBlock(blocked))
             return false;
         blocker.setBlocking(blocked ? blocked.getId() : null);
-        this.addGameEvent(new SyncGameEvent(GameEventType.block, {
+        this.addGameEvent(new GameSyncEvent(SyncEventType.Block, {
             player: act.player,
             blockerId: act.params.blockerId,
             blockedId: act.params.blockedId
@@ -479,7 +508,7 @@ export class Game {
         if (!res)
             return false;
         player.playResource(res);
-        this.addGameEvent(new SyncGameEvent(GameEventType.playResource, { playerNo: act.player, resource: res }));
+        this.addGameEvent(new GameSyncEvent(SyncEventType.PlayResource, { playerNo: act.player, resource: res }));
         return true;
     }
 
@@ -492,7 +521,7 @@ export class Game {
         return true;
     }
 
-    // Combat ------------------------------------------
+    // Combat -------------------------------------------------------------
     public playerCanAttack(playerNo: number) {
         return this.phase == GamePhase.Play1 && this.isActivePlayer(playerNo) && this.canTakeAction();
     }
@@ -567,7 +596,7 @@ export class Game {
 
     private changePhase(nextPhase: GamePhase) {
         this.phase = nextPhase;
-        this.addGameEvent(new SyncGameEvent(GameEventType.phaseChange, { phase: nextPhase }));
+        this.addGameEvent(new GameSyncEvent(SyncEventType.PhaseChange, { phase: nextPhase }));
     }
 
     private startEndPhase() {
@@ -593,7 +622,7 @@ export class Game {
     public nextTurn() {
         this.turn = this.getOtherPlayerNumber(this.turn);
         this.turnNum++;
-        this.addGameEvent(new SyncGameEvent(GameEventType.turnStart, { turn: this.turn, turnNum: this.turnNum }));
+        this.addGameEvent(new GameSyncEvent(SyncEventType.TurnStart, { turn: this.turn, turnNum: this.turnNum }));
         this.refresh();
     }
 
@@ -604,7 +633,7 @@ export class Game {
         this.players[this.turn].startTurn();
         this.gameEvents.trigger(EventType.StartOfTurn, new Map([
             ['player', this.turn]
-        ]))
+        ]));
     }
 
     // Unit Zone Changes ------------------------------------------------------
