@@ -7,6 +7,7 @@ import { DeckList } from './deckList';
 import { Resource } from './resource';
 import { GameEvent, EventType, EventGroup } from './gameEvent';
 import { data } from './gameData';
+import { Log } from './log';
 
 import { shuffle } from 'lodash';
 
@@ -82,7 +83,7 @@ export class Game {
      * @param {any} [format=standardFormat] 
      * @memberof Game
      */
-    constructor(format = standardFormat, private client: boolean = false, deckLists?: [DeckList, DeckList]) {
+    constructor(format = standardFormat, private client: boolean = false, private log?: Log, deckLists?: [DeckList, DeckList]) {
         this.format = format;
         this.board = new Board(this.format.playerCount, this.format.boardSize);
         this.cardPool = new Map<string, Card>();
@@ -93,6 +94,9 @@ export class Game {
         this.blockers = [];
         this.crypt = [[], []];
         this.gameEvents = new EventGroup();
+
+        if (log)
+            log.attachToGame(this);
 
         let decks: Card[][] = [[], []];
         if (!client) {
@@ -178,6 +182,8 @@ export class Game {
                             .map((id: string) => this.getUnitById(id)));
                     this.playCard(player, card);
                 }
+                if (this.log)
+                    this.log.addCardPlayed(event);
                 break;
             case GameEventType.draw:
                 // Todo, information hiding 
@@ -257,10 +263,10 @@ export class Game {
         if (callback != null) {
             this.deferedChoice = callback;
             this.waitingForPlayerChoice = player;
-        } 
+        }
     }
 
-    public promptCardChoice: (player: number, choices: Card[], count: number, callback: (cards: Card[]) => void, message:string) => void;
+    public promptCardChoice: (player: number, choices: Card[], count: number, callback: (cards: Card[]) => void, message: string) => void;
 
     public makeDeferedChoice(cards: Card[]) {
         if (this.deferedChoice != null) {
@@ -336,7 +342,7 @@ export class Game {
         let crypt = this.crypt[card.getOwner()];
         if (crypt.indexOf(card) == -1)
             return;
-        crypt.splice(crypt.indexOf(card), 1);        
+        crypt.splice(crypt.indexOf(card), 1);
         player.playCard(this, card, true);
     }
 
@@ -510,6 +516,9 @@ export class Game {
         let blockers = this.getBlockers();
         let defendingPlayer = this.players[this.getOtherPlayerNumber(this.getCurrentPlayer().getPlayerNumber())];
 
+        if (this.log)
+            this.log.addCombatResolved(attackers, blockers, defendingPlayer.getPlayerNumber());
+
         blockers.forEach(blocker => {
             let blocked = this.getPlayerUnitById(this.getCurrentPlayer().getPlayerNumber(), blocker.getBlockedUnitId());
             if (blocked)
@@ -651,6 +660,11 @@ export class Game {
     }
 
     // Misc Getters and setters ---------------------------------------------------
+
+    public getLog() {
+        return this.log;
+    }
+
     public getPlayer(playerNum: number) {
         return this.players[playerNum];
     }
