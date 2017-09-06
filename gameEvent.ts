@@ -50,13 +50,15 @@ export class EventGroup {
     public trigger(type: EventType, params: Map<string, any>) {
         let events = this.events.get(type) || [];
         events.forEach(event => {
-            event.trigger(params);
+            params = event.trigger(params);
         })
         return params;
     }
 
     public removeEvents(source: Mechanic | null) {
         let allEvents = Array.from(this.events.values());
-        allEvents.forEach(eventList => remove(eventList, event => event.source == source))
+        allEvents.forEach(eventList => remove(eventList, event => {
+            return event.source == source
+        }))
     }
 }

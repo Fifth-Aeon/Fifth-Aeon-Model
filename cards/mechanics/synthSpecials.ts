@@ -5,7 +5,31 @@ import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
+import { Sleeping } from './sleep';
+import { Poisoned } from './poison';
 
+
+const robotImmunities = [new Sleeping().id(), new Poisoned().id()];
+export class Robotic extends Mechanic {
+    public run(card: Card, game: Game) {
+        for (let immunity of robotImmunities) {
+            (card as Unit).addImmunity(immunity);
+        }
+    }  
+    public remove(card: Card, game: Game) {
+        for (let immunity of robotImmunities) {
+            (card as Unit).removeImmunity(immunity);
+        }
+    }
+
+    public id() {
+        return 'robotic';
+    }
+
+    public getText(card: Card) {
+        return `Robotic.`;
+    }
+}
 export class SpyPower extends Mechanic {
     public run(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(

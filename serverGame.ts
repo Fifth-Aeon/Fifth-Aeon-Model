@@ -56,7 +56,7 @@ export class ServerGame extends Game {
 
     protected cardChoiceAction(act: GameAction): boolean {
         if (act.player != this.waitingForPlayerChoice) {
-            console.log('Reject choice', this.waitingForPlayerChoice, act.player);
+            console.error('Reject choice from', act.player, 'wanted', this.waitingForPlayerChoice);
             return false;
         }
         let cardIds = act.params.choice as string[];

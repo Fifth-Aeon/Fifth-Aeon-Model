@@ -136,11 +136,17 @@ export class Relentless extends Mechanic {
 
 
 export class Deathless extends Mechanic {
+    constructor(private charges: number = 1) {
+        super();
+    }
+
     public run(card: Card, game: Game) {
         let unit = card as Unit;
         unit.getEvents().addEvent(this, new GameEvent(EventType.Death, (params) => {
             game.gameEvents.addEvent(this, new GameEvent(EventType.EndOfTurn, (params) => {
-                unit.removeMechanic(this.id(), game);
+                this.charges--;
+                if (this.charges <= 0)
+                    unit.removeMechanic(this.id(), game);
                 game.playFromCrypt(unit);
                 game.gameEvents.removeEvents(this);
                 return params;
@@ -158,7 +164,10 @@ export class Deathless extends Mechanic {
     }
 
     public getText(card: Card) {
-        return `Deathless.`;
+        if (this.charges == 1)
+            return 'Deathless.';
+        else
+            return `Deathless (${this.charges}).`;
     }
 }
 

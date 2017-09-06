@@ -49,7 +49,8 @@ export class Unit extends Card {
 
     // Misc
     protected events: EventGroup;
-    private unitType: UnitType
+    private unitType: UnitType;
+    private immunities: Set<string>;
 
     constructor(dataId: string, name: string, imageUrl: string, type: UnitType, cost: Resource, targeter: Targeter, damage: number, maxLife: number, mechanics: Array<Mechanic>) {
         super(dataId, name, imageUrl, cost, targeter, mechanics);
@@ -65,6 +66,7 @@ export class Unit extends Card {
         this.maxLife = maxLife;
         this.life = this.maxLife;
         this.died = false;
+        this.immunities = new Set();
     }
 
     public isPlayable(game: Game): boolean {
@@ -93,6 +95,8 @@ export class Unit extends Card {
     }
 
     public addMechanic(mechanic: Mechanic, game: Game | null = null) {
+        if (this.immunities.has(mechanic.id()))
+            return;
         if (mechanic.id() != null && this.hasMechanicWithId(mechanic.id())) {
             this.hasMechanicWithId(mechanic.id()).stack();
             return;
@@ -101,6 +105,14 @@ export class Unit extends Card {
         mechanic.attach(this);
         if (this.location == Location.Board && game != null)
             mechanic.run(this, game)
+    }
+
+    public addImmunity(id: string) {
+        this.immunities.add(id);
+    }
+
+    public removeImmunity(id: string) {
+        this.immunities.delete(id);
     }
 
     public hasMechanicWithId(id: string) {
@@ -292,11 +304,15 @@ export class Unit extends Card {
         });
     }
 
+    private dying: boolean = false;
     protected die() {
-        if (this.location != Location.Board)
+        if (this.location != Location.Board || this.dying)
             return;
+        this.dying = true;
         this.events.trigger(EventType.Death, new Map());
         this.location = Location.Crypt;
+        this.dying = false;
+        this.died = false;
     }
 
     public annihilate() {

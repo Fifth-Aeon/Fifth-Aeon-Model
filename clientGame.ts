@@ -18,7 +18,7 @@ export class ClientGame extends Game {
 
     public getLog() {
         return this.log;
-    }
+    }  
 
     /**
      * Syncs an event that happened on the server into the state of this game model

@@ -224,7 +224,7 @@ export abstract class Game {
     // Card Play Logic ---------------------------------------------------
     public playCard(player: Player, card: Card) {
         player.playCard(this, card);
-    }
+    } 
 
     protected generatedCardId = 1;
     public playGeneratedUnit(player: Player | number, card: Card) {
@@ -405,7 +405,7 @@ export abstract class Game {
                 ['deadUnit', unit]
             ]));
             return params;
-        }));
+        }, Infinity));
         unit.getEvents().addEvent(null, new GameEvent(EventType.Annihilate, (params) => {
             this.removeUnit(unit);
             return params;

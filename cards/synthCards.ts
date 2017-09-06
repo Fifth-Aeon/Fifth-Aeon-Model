@@ -1,7 +1,7 @@
 import { Mechanic } from '../mechanic';
 import { Card } from '../card';
 import { Unit, UnitType, mechanical } from '../unit';
-import { SingleUnit, Untargeted, AllUnits, EnemyUnits } from '../targeter';
+import { SingleUnit, Untargeted, AllUnits, EnemyUnits, Friends, Enemies, Everyone } from '../targeter';
 import { ShuffleIntoDeck } from './mechanics/shuffleIntoDeck';
 import { AugarCard,DrawCard, Peek } from './mechanics/draw';
 import { EndOfTurn } from './mechanics/periodic';
@@ -12,11 +12,45 @@ import { friendlyLordship } from './mechanics/lordship';
 import { Annihilate } from './mechanics/removal';
 import { BuffTarget } from './mechanics/buff';
 import { Resource } from '../resource';
-import { SpyPower, DealSynthDamage } from './mechanics/synthSpecials';
+import { Robotic, SpyPower, DealSynthDamage } from './mechanics/synthSpecials';
 import { MechanicalUnit, BiologicalUnit } from './targeters/biotargeter';
 import { DealDamage } from './mechanics/dealDamage';
 import { Poisoned } from './mechanics/poison';
 
+
+export function ultimateSaction() {
+    return new Card(
+        'ultimateSanction',
+        'Ultimate Sanction',
+        'mushroom-cloud.png',
+        new Resource(8, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 6
+        }),
+        new Everyone(),
+        [new DealDamage(10)]
+    );
+}
+
+export function titanmk2() {
+    return new Unit(
+        'titanmk2',
+        'Titan Mk. 2',
+        'megabot.png',
+        UnitType.Agent,
+        new Resource(7, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 5
+        }),
+        new Untargeted(),
+        7, 7,
+        [new Robotic(), new Shielded()]
+    );
+}
 
 export function spy() {
     return new Unit(
@@ -133,7 +167,8 @@ export function workbot() {
         }),
         new Untargeted(),
         1, 1,
-        [new UnitEntersPlay('When you play a mechanical unit give it +0/+1', (source, unit) => {
+        [new Robotic(),
+            new UnitEntersPlay('When you play a mechanical unit give it +0/+1', (source, unit) => {
             if (unit != source && unit.getOwner() == source.getOwner() && mechanical.has(unit.getType())) {
                 unit.buff(0, 1);
             }
@@ -236,7 +271,7 @@ export function golem() {
         }),
         new Untargeted(),
         3, 3,
-        []
+        [new Robotic()]
     );
 }
 
@@ -254,7 +289,7 @@ export function paragon() {
         }),
         new Untargeted(),
         4, 5,
-        [new Lethal(), new Shielded(), new Relentless()]
+        [new Robotic(), new Lethal(), new Shielded(), new Relentless()]
     );
 }
 

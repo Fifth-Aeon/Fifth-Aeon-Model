@@ -103,7 +103,7 @@ export function heal() {
         'caduceus.png',
         new Resource(1, 0, {
             Growth: 0,
-            Decay: 0, 
+            Decay: 0,
             Renewal: 1,
             Synthesis: 0
         }),

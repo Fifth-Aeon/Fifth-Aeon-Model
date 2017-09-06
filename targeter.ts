@@ -130,3 +130,39 @@ export class EnemyUnits extends AllUnits {
         return this.lastTargets;
     }
 }
+
+export class Everyone extends AllUnits {
+    public getText() {
+        return 'all units and players';
+    }
+    public getTargets(card: Card, game: Game): Array<Unit> {
+        this.lastTargets = game.getBoard().getAllUnits()
+            .concat(game.getPlayer(card.getOwner()))
+            .concat(game.getPlayer(game.getOtherPlayerNumber(card.getOwner())));
+        return this.lastTargets;
+    }
+}
+
+export class Friends extends AllUnits {
+    public getText() {
+        return 'all friendly units and players';
+    }
+    public getTargets(card: Card, game: Game): Array<Unit> {
+        this.lastTargets = game.getBoard().getAllUnits()
+            .filter(unit => unit.getOwner() == card.getOwner())
+            .concat(game.getPlayer(card.getOwner()));
+        return this.lastTargets;
+    }
+}
+
+export class Enemies extends AllUnits {
+    public getText() {
+        return 'all enemy units and players';
+    }
+    public getTargets(card: Card, game: Game): Array<Unit> {
+        this.lastTargets = game.getBoard().getAllUnits()
+            .filter(unit => unit.getOwner() != card.getOwner())
+            .concat(game.getPlayer(game.getOtherPlayerNumber(card.getOwner())));
+        return this.lastTargets;
+    }
+}

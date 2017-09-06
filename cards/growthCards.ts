@@ -13,10 +13,32 @@ import { SleepTarget } from './mechanics/sleep';
 import { BuffTarget } from './mechanics/buff';
 import { FinalBlow } from './mechanics/finalBlow';
 import { SummonUnits } from './mechanics/summonUnits';
-import { Flying, Relentless } from './mechanics/skills';
+import { Flying, Relentless, Deathless } from './mechanics/skills';
 import { Affinity } from './mechanics/affinity';
 import { Venomous } from './mechanics/poison';
 import { GainLife, GainResource } from './mechanics/playerAid';
+import { OnDeath } from './mechanics/death';
+
+
+
+
+export function hydra() {
+    return new Unit(
+        'Three headed Hydra',
+        'Hydra',
+        'hydra.png',
+        UnitType.Dragon,
+        new Resource(8, 0, {
+            Growth: 6,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        5, 5,
+        [new Flying(), new Deathless(3), new OnDeath('it gains +1/+1', (unit, game) => unit.buff(1, 1))]
+    );
+}
 
 export function neuralResonance() {
     return new Card(
