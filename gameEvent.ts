@@ -26,7 +26,7 @@ export class EventGroup {
         this.events = new Map<EventType, Array<GameEvent>>();
     }
 
-    public getSubgroup(type:EventType) {
+    public getSubgroup(type: EventType) {
         let subgroup = new EventGroup();
         let events = this.events.get(type) || [];
         events.forEach(event => {
@@ -49,9 +49,14 @@ export class EventGroup {
 
     public trigger(type: EventType, params: Map<string, any>) {
         let events = this.events.get(type) || [];
-        events.forEach(event => {
-            params = event.trigger(params);
-        })
+        let len = events.length;
+        for (let i = 0; i < events.length; i++) {
+            params = events[i].trigger(params);
+            if (events.length < len) {
+                i -= (len - events.length);
+                len = events.length;
+            }
+        }
         return params;
     }
 
