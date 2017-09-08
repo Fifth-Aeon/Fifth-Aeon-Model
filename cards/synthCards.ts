@@ -1,9 +1,9 @@
 import { Mechanic } from '../mechanic';
 import { Card } from '../card';
 import { Unit, UnitType, mechanical } from '../unit';
-import { SingleUnit, Untargeted, AllUnits, EnemyUnits, Friends, Enemies, Everyone } from '../targeter';
+import { SingleUnit, Untargeted, AllUnits, AllPlayers, EnemyUnits, Friends, Enemies, Everyone } from '../targeter';
 import { ShuffleIntoDeck } from './mechanics/shuffleIntoDeck';
-import { AugarCard,DrawCard, Peek } from './mechanics/draw';
+import { AugarCard, DrawCard, Peek } from './mechanics/draw';
 import { EndOfTurn } from './mechanics/periodic';
 import { CannotAttack, CannotBlock } from './mechanics/cantAttack';
 import { UnitEntersPlay } from './mechanics/entersPlay';
@@ -20,8 +20,8 @@ import { Poisoned } from './mechanics/poison';
 
 export function ultimateSaction() {
     return new Card(
-        'ultimateSanction',
-        'Ultimate Sanction',
+        'atomicStrike',
+        'Atomic Strike',
         'mushroom-cloud.png',
         new Resource(8, 0, {
             Growth: 0,
@@ -30,7 +30,8 @@ export function ultimateSaction() {
             Synthesis: 6
         }),
         new Everyone(),
-        [new DealDamage(10)]
+        [new DealDamage(10, new AllUnits()), new DealDamage(5, new AllPlayers())],
+        'Deal 10 damage to each unit and 5 to each player.'
     );
 }
 
@@ -168,7 +169,7 @@ export function workbot() {
         new Untargeted(),
         1, 1,
         [new Robotic(),
-            new UnitEntersPlay('When you play a mechanical unit give it +0/+1', (source, unit) => {
+        new UnitEntersPlay('When you play a mechanical unit give it +0/+1', (source, unit) => {
             if (unit != source && unit.getOwner() == source.getOwner() && mechanical.has(unit.getType())) {
                 unit.buff(0, 1);
             }

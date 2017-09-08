@@ -131,6 +131,19 @@ export class EnemyUnits extends AllUnits {
     }
 }
 
+export class AllPlayers extends AllUnits {
+    public getText() {
+        return 'all players';
+    }
+    public getTargets(card: Card, game: Game): Array<Unit> {
+        this.lastTargets = [
+            game.getPlayer(card.getOwner()),
+            game.getPlayer(game.getOtherPlayerNumber(card.getOwner()))
+        ];
+        return this.lastTargets;
+    }
+}
+
 export class Everyone extends AllUnits {
     public getText() {
         return 'all units and players';
