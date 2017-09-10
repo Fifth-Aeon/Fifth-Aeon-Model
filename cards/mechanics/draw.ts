@@ -19,6 +19,10 @@ export class DrawCard extends Mechanic {
             return 'Draw a card.';
         return `Draw ${this.count} cards.`;
     }
+
+    public evaluate() {
+        return this.count * 3;
+    }
 }
 
 export class Peek extends Mechanic {
@@ -47,6 +51,10 @@ export class Discard extends Mechanic {
     public getText(card: Card) {
         return `Your opponent discards ${this.count == 1 ? 'a card' : this.count + ' cards'}.`;
     }
+
+    public evaluate() {
+        return this.count * 2.5;
+    }
 }
 
 export class AugarCard extends Mechanic {
@@ -65,6 +73,10 @@ export class AugarCard extends Mechanic {
 
     public getText(card: Card) {
         return `If you have less than 4 synthesis, replace a card. If you have less than 8 draw one. Otherwise search for one.`;
+    }
+
+    public evaluate() {
+        return 2;
     }
 }
 

@@ -79,11 +79,11 @@ export class PoisonTarget extends TargetedMechanic {
     }
 
     public getText(card: Card) {
-        return `Poison ${this.targeter.getText()}.`
+        return `Poison ${this.targeter.getText()}.`;
     }
 
-    public evaluateTarget(owner: number, target: Unit) {
-        return target.evaluate() * 0.5 * (target.getOwner() == owner ? -1 : 1);
+    public evaluateTarget(source: Card, target: Unit, game:Game) {
+        return target.evaluate(game) * 0.5 * (target.getOwner() == source.getOwner() ? -1 : 1);
     }
 }
 

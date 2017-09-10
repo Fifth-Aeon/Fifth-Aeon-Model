@@ -16,8 +16,8 @@ export class Annihilate extends TargetedMechanic {
         return `Annihilate ${this.targeter.getText()}.`;
     }
 
-    public evaluateTarget(owner: number, unit: Unit) {
-        return unit.evaluate() * 1.25 * (unit.getOwner() == owner ? -1 : 1);
+    public evaluateTarget(source: Card, unit: Unit, game:Game) {
+        return unit.evaluate(game) * 1.25 * (unit.getOwner() == source.getOwner() ? -1 : 1);
     }
 }
 
@@ -32,8 +32,8 @@ export class KillTarget extends TargetedMechanic {
         return `Kill ${this.targeter.getText()}.`;
     }
 
-    public evaluateTarget(owner: number, unit: Unit) {
-        return unit.evaluate() * 1.0 * (unit.getOwner() == owner ? -1 : 1);
+    public evaluateTarget(source: Card, unit: Unit, game:Game) {
+        return unit.evaluate(game) * 1.0 * (unit.getOwner() == source.getOwner() ? -1 : 1);
     }
 }
 

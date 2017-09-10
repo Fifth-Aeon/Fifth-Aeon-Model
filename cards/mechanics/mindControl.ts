@@ -36,7 +36,7 @@ export class MindControl extends Mechanic {
         return `Take control of ${this.targeter.getText()}.`
     }
 
-    public evaluateTarget(owner: number, unit: Unit) {
-        return unit.evaluate() * 2 * (unit.getOwner() == owner ? -1 : 1);
+    public evaluateTarget(source: Card, unit: Unit, game:Game) {
+        return unit.evaluate(game) * 2 * (unit.getOwner() == source.getOwner() ? -1 : 1);
     }
 }

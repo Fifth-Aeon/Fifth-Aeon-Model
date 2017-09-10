@@ -3,8 +3,9 @@ import { Game } from './game';
 import { Player } from './player';
 import { Mechanic } from './mechanic';
 import { Targeter, Untargeted } from './targeter';
-import { remove } from 'lodash';
 import { Unit } from './unit';
+
+import { remove, sumBy } from 'lodash';
 
 export enum Location {
     Deck, Hand, Board, Crypt
@@ -141,11 +142,11 @@ export class Card {
         return `${this.name}: (${this.cost})`
     }
 
-    public evaluate() {
-        return 0;
+    public evaluate(game:Game) {
+        return sumBy(this.mechanics, (mechanic) => mechanic.evaluate(this, game));
     }
 
-    public evaluateTarget(target: Unit) {
-        return this.mechanics.map(mechanic => mechanic.evaluateTarget(this.getOwner(), target)).reduce((a, b) => a + b);
+    public evaluateTarget(target: Unit, game:Game) {
+        return this.mechanics.map(mechanic => mechanic.evaluateTarget(this.getOwner(), target, game)).reduce((a, b) => a + b);
     }
 }

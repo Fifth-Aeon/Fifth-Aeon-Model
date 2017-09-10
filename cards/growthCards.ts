@@ -1,12 +1,14 @@
+// Game Types
 import { Mechanic } from '../mechanic';
 import { Card } from '../card';
 import { Unit, UnitType } from '../unit';
 import { Resource } from '../resource';
 
-
+// Targeters
 import { SingleUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnit } from '../targeter';
 import { BiologicalUnit } from './targeters/biotargeter';
 
+// Mechanics
 import { DrawCardsFromUnit, WebTarget, BiteDamage } from './mechanics/growthSpecials';
 import { DealDamage } from './mechanics/dealDamage';
 import { SleepTarget } from './mechanics/sleep';
@@ -19,8 +21,23 @@ import { Venomous } from './mechanics/poison';
 import { GainLife, GainResource } from './mechanics/playerAid';
 import { OnDeath } from './mechanics/death';
 
-
-
+export function kraken() {
+    return new Unit(
+        'Kraken',
+        'Kraken',
+        'giant-squid.png',
+        UnitType.Monster,
+        new Resource(7, 0, {
+            Growth: 5,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        7, 7,
+        []
+    );
+}
 
 export function hydra() {
     return new Unit(
@@ -36,7 +53,8 @@ export function hydra() {
         }),
         new Untargeted(),
         5, 5,
-        [new Flying(), new Deathless(3), new OnDeath('it gains +1/+1', (unit, game) => unit.buff(1, 1))]
+        [new Flying(), new Deathless(3),
+        new OnDeath('it gains +1/+1', (unit, game) => unit.buff(1, 1))]
     );
 }
 
@@ -91,7 +109,7 @@ export function webspit() {
         }),
         new SingleUnit(),
         [new WebTarget()]
-        
+
     );
 }
 
@@ -112,7 +130,6 @@ export function bite() {
     );
 }
 
-
 export function SweetFragrance() {
     return new Card(
         'SweetFragrance',
@@ -126,7 +143,7 @@ export function SweetFragrance() {
         }),
         new EnemyUnits(),
         [new SleepTarget(1)]
-        
+
     );
 }
 
@@ -250,7 +267,7 @@ export function bear() {
     return new Unit(
         'Bear',
         'Bear',
-        'bear-head.png',
+        'polar-bear.png',
         UnitType.Mammal,
         new Resource(3, 0, {
             Growth: 3,

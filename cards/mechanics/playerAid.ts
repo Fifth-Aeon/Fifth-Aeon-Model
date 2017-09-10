@@ -22,6 +22,10 @@ export class GainLife extends Mechanic {
     public getText(card: Card) {
         return `You gain ${this.amount} life.`
     }
+
+    public evaluate() {
+        return this.amount * 0.75;
+    }
 }
 
 export class GainResource extends Mechanic {
@@ -36,5 +40,9 @@ export class GainResource extends Mechanic {
 
     public getText(card: Card) {
         return `Gain ${this.resource.asSentance()}.`
+    }
+
+    public evaluate() {
+        return this.resource.getNumeric() * 2;
     }
 }

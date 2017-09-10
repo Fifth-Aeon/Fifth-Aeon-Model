@@ -6,9 +6,11 @@ import { Unit } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
 export class SummonUnits extends Mechanic {
-    private name:string;
+    private name: string;
+    private unit: Unit;
     constructor(private factory: () => Unit, private count: number = 1) {
         super();
+        this.unit = factory();
         this.name = factory().getName();
     }
 
@@ -22,4 +24,10 @@ export class SummonUnits extends Mechanic {
     public getText(card: Card) {
         return `Summon ${this.count} ${this.name}.`;
     }
+
+    public evaluate(card: Card, game: Game) {
+        return this.unit.evaluate(game) * this.count;
+    }
+
+
 }

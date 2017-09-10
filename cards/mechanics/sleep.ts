@@ -62,7 +62,7 @@ export class SleepTarget extends TargetedMechanic {
         return `Put ${this.targeter.getText()} to sleep for ${this.turns == 1 ? 'a turn' : this.turns + ' turns'}.`
     }
 
-    public evaluateTarget(owner: number, target: Unit) {
-        return target.evaluate() * 0.5 * (target.getOwner() == owner ? -1 : 1);
+    public evaluateTarget(source: Card, target: Unit, game:Game) {
+        return target.evaluate(game) * 0.5 * (target.getOwner() == source.getOwner() ? -1 : 1);
     }
 }

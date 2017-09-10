@@ -18,7 +18,7 @@ export class RefreshTarget extends TargetedMechanic {
         return `Refresh ${this.targeter.getText()}.`
     }
 
-    public evaluateTarget(owner: number, target: Unit) {
-        return 0.1 * (target.getOwner() == owner ? 1 : -1);
+    public evaluateTarget(source: Card, target: Unit) {
+        return 0.1 * (target.getOwner() == source.getOwner() ? 1 : -1);
     }
 }

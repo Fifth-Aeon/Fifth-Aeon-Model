@@ -6,6 +6,8 @@ import { Resource } from './resource';
 import { Targeter } from './targeter';
 import { Mechanic } from './mechanic';
 
+
+
 export enum UnitType {
     Player, Human, Cleric, Wolf, Spider, Automaton, Monster, Mammal, Soldier,
     Vampire, Cultist, Agent, Undead, Structure, Vehicle, Insect, Dragon
@@ -133,6 +135,10 @@ export class Unit extends Card {
 
     public getDamage() {
         return this.damage;
+    }
+
+    public getStats() {
+        return this.maxLife + this.damage;
     }
 
     public setExausted(exausted: boolean) {
@@ -283,8 +289,9 @@ export class Unit extends Card {
         }
     }
 
-    public evaluate() {
-        return this.maxLife + this.damage;
+    public evaluate(game:Game) {
+        
+        return this.maxLife + this.damage + super.evaluate(game);
     }
 
     public dealAndApplyDamage(target: Unit, amount: number) {

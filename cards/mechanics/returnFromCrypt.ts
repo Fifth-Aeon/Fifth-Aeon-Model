@@ -24,4 +24,9 @@ export class ReturnFromCrypt extends Mechanic {
     public getText(card: Card) {
         return `Return a unit from your crypt to your hand.`
     }
+
+    public evaluate(card:Card, game:Game) {
+        let valid = game.getCrypt(card.getOwner()).filter(this.filter);
+        return valid.length > 1 ? 3 : 0;
+    }
 }

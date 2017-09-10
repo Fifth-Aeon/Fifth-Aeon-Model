@@ -40,7 +40,7 @@ export function titanmk2() {
         'titanmk2',
         'Titan Mk. 2',
         'megabot.png',
-        UnitType.Agent,
+        UnitType.Automaton,
         new Resource(7, 0, {
             Growth: 0,
             Decay: 0,

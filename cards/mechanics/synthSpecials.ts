@@ -29,6 +29,10 @@ export class Robotic extends Mechanic {
     public getText(card: Card) {
         return `Robotic.`;
     }
+
+    public evaluate() {
+        return 1;
+    }
 }
 export class SpyPower extends Mechanic {
     public run(card: Card, game: Game) {

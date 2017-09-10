@@ -51,6 +51,11 @@ export class Lifesteal extends Mechanic {
     public id() {
         return 'lifesteal';
     }
+
+    public evaluate(card: Card) {
+        let unit = card as Unit;
+        return unit.getDamage() * 0.25;
+    }
 }
 
 export class Lethal extends Mechanic {
@@ -75,6 +80,10 @@ export class Lethal extends Mechanic {
 
     public id() {
         return 'lethal';
+    }
+
+    public evaluate(card: Card) {
+        return 3;
     }
 
 }
@@ -108,6 +117,10 @@ export class Shielded extends Mechanic {
     public id() {
         return 'shielded';
     }
+
+    public evaluate(card: Card) {
+        return 3;
+    }
 }
 
 export class Relentless extends Mechanic {
@@ -131,6 +144,10 @@ export class Relentless extends Mechanic {
 
     public id() {
         return 'relentless';
+    }
+
+    public evaluate(card: Card) {
+        return 3;
     }
 }
 
@@ -168,6 +185,10 @@ export class Deathless extends Mechanic {
             return 'Deathless.';
         else
             return `Deathless (${this.charges}).`;
+    }
+
+    public evaluate(card: Card) {
+        return (card as Unit).getStats() * 0.5;
     }
 }
 

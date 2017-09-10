@@ -85,16 +85,16 @@ export class BasicAI extends AI {
 
     private getBestTarget(card: Card) {
         let targets = card.getTargeter().getValidTargets(card, this.game);
-        return maxBy(targets, target => card.evaluateTarget(target));
+        return maxBy(targets, target => card.evaluateTarget(target, this.game));
     }
 
     private evaluateCard(card: Card) {
         let score = 0;
         if (card.getTargeter().needsInput()) {
             let best = this.getBestTarget(card);
-            score += card.evaluateTarget(best);
+            score += card.evaluateTarget(best, this.game);
         }
-        return score + card.evaluate();
+        return score + card.evaluate(this.game);
     }
 
     private makeChoice(player: number, cards: Array<Card>, toPick: number = 1, callback: (cards: Card[]) => void = null) {
@@ -115,7 +115,7 @@ export class BasicAI extends AI {
 
     public handleGameEvent(event: GameSyncEvent) {
         this.game.syncServerEvent(this.playerNumber, event);
-        console.log('A.I event -', SyncEventType[event.type], event.params, this.eventHandlers.get(event.type));
+        //console.log('A.I event -', SyncEventType[event.type], event.params, this.eventHandlers.get(event.type));
         if (this.eventHandlers.has(event.type))
             this.eventHandlers.get(event.type)(event);
     }
@@ -132,9 +132,12 @@ export class BasicAI extends AI {
         let playable = this.aiPlayer.getHand().filter(card => card.isPlayable(this.game));
         console.log('hand', this.aiPlayer.getHand());
         if (playable.length > 0) {
-            console.log('eval', sortBy(playable, card => -this.evaluateCard(card))
-                .map(card => card.getName() + ' ' + this.evaluateCard(card)).join(' | '));
+
+            let evaluated = sortBy(playable, card => -this.evaluateCard(card));
+            console.log('eval', evaluated.map(card => card.getName() + ' ' + this.evaluateCard(card)).join(' | '));
             let toPlay = maxBy(playable, card => this.evaluateCard(card));
+            if (this.evaluateCard(evaluated[0]) <= 0)
+                return;
             if (toPlay.getTargeter().needsInput() && this.getBestTarget(toPlay))
                 this.playCard(toPlay, [this.getBestTarget(toPlay)]);
             else

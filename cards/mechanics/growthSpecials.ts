@@ -13,11 +13,18 @@ export class DrawCardsFromUnit extends TargetedMechanic {
         super();
     }
 
+    private getCards(target: Unit) {
+        return Math.floor((target.getStats()) / this.factor)
+    }
+
     public run(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game)) {
-            let num = Math.floor((target.getMaxLife() + target.getDamage()) / this.factor);
-            game.getPlayer(card.getOwner()).drawCards(num);
+            game.getPlayer(card.getOwner()).drawCards(this.getCards(target));
         }
+    }
+
+    public evaluateTarget(source: Card, target:Unit, game:Game) {
+        return this.getCards(target) * 3;
     }
 
     public getText(card: Card) {
@@ -25,19 +32,6 @@ export class DrawCardsFromUnit extends TargetedMechanic {
     }
 }
 
-export class BiteDamage extends TargetedMechanic {
-    public run(card: Card, game: Game) {
-        let dmg = Math.max(Math.max(...game.getBoard().getPlayerUnits(card.getOwner()).map(unit => unit.getDamage())), 0);
-        for (let target of this.targeter.getTargets(card, game)) {
-            target.takeDamage(dmg);
-            target.checkDeath();
-        }
-    }
-
-    public getText(card: Card) {
-        return `Deal damage to target unit equal to your highest attack unit.`;
-    }
-}
 
 export class WebTarget extends TargetedMechanic {
     public run(card: Card, game: Game) {
