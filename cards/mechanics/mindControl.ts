@@ -1,4 +1,4 @@
-import { Mechanic } from '../../mechanic';
+import { Mechanic, TargetedMechanic } from '../../mechanic';
 import { Game } from '../../Game';
 import { Targeter } from '../../targeter';
 import { Card } from '../../card';
@@ -20,11 +20,7 @@ export class RenewalMCTargeter extends Targeter {
     }
 }
 
-export class MindControl extends Mechanic {
-    constructor(private targeter: Targeter) {
-        super();
-    }
-
+export class MindControl extends TargetedMechanic {
     public run(card: Card, game: Game) {
         let targets = this.targeter.getTargets(card, game);
         for (let target of targets) {
@@ -32,7 +28,7 @@ export class MindControl extends Mechanic {
         }
     }
 
-    public getText(card: Card) {
+    public getText(card: Card, game:Game) {
         return `Take control of ${this.targeter.getText()}.`
     }
 

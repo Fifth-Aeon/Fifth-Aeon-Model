@@ -69,6 +69,10 @@ export class Poisoned extends Mechanic {
         else 
             return `Poisoned (${this.level}).`
     }
+
+    public evaluate(card:Card) {
+        return (card as Unit).getStats() * -0.75;
+    }
 }
 
 export class PoisonTarget extends TargetedMechanic {
@@ -106,5 +110,7 @@ export class Venomous extends Mechanic {
         return 'Venomous.';
     }
 
-
+    public evaluate() {
+        return 3;
+    }
 }

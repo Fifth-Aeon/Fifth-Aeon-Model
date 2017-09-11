@@ -15,7 +15,7 @@ export class Robotic extends Mechanic {
         for (let immunity of robotImmunities) {
             (card as Unit).addImmunity(immunity);
         }
-    }  
+    }
     public remove(card: Card, game: Game) {
         for (let immunity of robotImmunities) {
             (card as Unit).removeImmunity(immunity);
@@ -53,19 +53,9 @@ export class SpyPower extends Mechanic {
     public getText(card: Card) {
         return 'Whenever this damages your opponent draw a card.';
     }
-}
 
-
-export class DealSynthDamage extends TargetedMechanic {
-    public run(card: Card, game: Game) {
-        let amount = game.getPlayer(card.getOwner()).getPool().getOfType('Synthesis');
-        for (let target of this.targeter.getTargets(card, game)) {
-            target.takeDamage(amount);
-            target.checkDeath();
-        }
-    }
-
-    public getText(card: Card) {
-        return `Deal damage to ${this.targeter.getText()} equal to your synthesis.`
+    public evaluate() {
+        return 3;
     }
 }
+

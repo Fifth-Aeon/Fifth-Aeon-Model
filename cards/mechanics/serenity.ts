@@ -6,7 +6,7 @@ import { Unit } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
 export class Serenity extends Mechanic {
-    constructor(private effectText: string, private effect: (unit: Unit, game: Game) => void) {
+    constructor(private effectText: string, private value:number, private effect: (unit: Unit, game: Game) => void) {
         super();
     }
 
@@ -26,5 +26,9 @@ export class Serenity extends Mechanic {
 
     public getText(card: Card) {
         return `Serenity: ${this.effectText}.`;
+    }
+
+    public evaluate() {
+        return this.value;
     }
 }

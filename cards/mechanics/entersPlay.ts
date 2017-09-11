@@ -6,7 +6,7 @@ import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
 export class UnitEntersPlay extends Mechanic {
-    constructor(private text: string, private effect: (source: Unit, entering:Unit, game: Game) => void) {
+    constructor(private text: string, private value:number, private effect: (source: Unit, entering:Unit, game: Game) => void) {
         super();
     }
 
@@ -27,5 +27,9 @@ export class UnitEntersPlay extends Mechanic {
 
     public getText(card: Card) {
         return this.text;
+    }
+
+    public evaluate() {
+        return this.value;
     }
 }

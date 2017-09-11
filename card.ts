@@ -24,7 +24,7 @@ export class Card {
     protected dataId: string;
     protected imageUrl: string;
     protected location: Location;
-    protected text:string = null;
+    protected text: string = null;
 
     protected targeter: Targeter = new Untargeted();
 
@@ -41,14 +41,14 @@ export class Card {
         this.text = text;
     }
 
-    public setText(text:string) {
+    public setText(text: string) {
         this.text = text;
     }
 
     public setLocation(location: Location) {
         this.location = location;
     }
-    
+
     public getLocation() {
         return this.location;
     }
@@ -106,10 +106,10 @@ export class Card {
         }
     }
 
-    public getText(): string {
+    public getText(game: Game): string {
         if (this.text)
             return this.text;
-        return this.mechanics.map(mechanic => mechanic.getText(this)).join(' ');
+        return this.mechanics.map(mechanic => mechanic.getText(this, game)).join(' ');
     }
 
     public getTargeter() {
@@ -142,11 +142,11 @@ export class Card {
         return `${this.name}: (${this.cost})`
     }
 
-    public evaluate(game:Game) {
+    public evaluate(game: Game) {
         return sumBy(this.mechanics, (mechanic) => mechanic.evaluate(this, game));
     }
 
-    public evaluateTarget(target: Unit, game:Game) {
-        return this.mechanics.map(mechanic => mechanic.evaluateTarget(this.getOwner(), target, game)).reduce((a, b) => a + b);
+    public evaluateTarget(target: Unit, game: Game) {
+        return this.mechanics.map(mechanic => mechanic.evaluateTarget(this, target, game)).reduce((a, b) => a + b);
     }
 }

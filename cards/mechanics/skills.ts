@@ -28,6 +28,11 @@ export class Flying extends Mechanic {
     public id() {
         return 'flying';
     }
+
+    public evaluate(card:Card) {
+        let unit = card as Unit;
+        return unit.getDamage() * 0.75 + unit.getLife() * 0.25;
+    }
 }
 
 export class Lifesteal extends Mechanic {
@@ -54,7 +59,7 @@ export class Lifesteal extends Mechanic {
 
     public evaluate(card: Card) {
         let unit = card as Unit;
-        return unit.getDamage() * 0.25;
+        return unit.getDamage() * 0.4;
     }
 }
 
@@ -216,4 +221,8 @@ export class Immortal extends Mechanic {
     public getText(card: Card) {
         return `Immortal.`;
     }
-}
+
+    public evaluate(card: Card) {
+        return (card as Unit).getStats() * 2;
+    }
+} 

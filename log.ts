@@ -23,7 +23,7 @@ export class Log {
             tip += `${blockerName} blocked ${blockerList}.`
         }
         
-        this.items.unshift({
+        this.addItem({
             image: 'assets/png/crossed-sabres.png',
             desc: tip,
             color: !this.isEnemy(defender) ? 'crimson' : 'cornflowerblue',
@@ -31,7 +31,7 @@ export class Log {
     }
 
     public addCardPlayed(event: GameSyncEvent) {
-        this.items.unshift({
+        this.addItem({
             image: this.getCardImage(this.getCard(event)),
             desc: this.makeCardPlayTooltip(event),
             color: this.isEnemy(event.params.playerNo) ? 'crimson' : 'cornflowerblue'
@@ -78,7 +78,7 @@ export class Log {
             let targets = event.params.targetIds.map((id) => this.game.getCardById(id));
             targetString = ' targeting ' + targets.map(card => card ? card.getName() : 'unknown').join(' and ');
         }
-        let effectString = card.isUnit() ? '' : ` It has the effect "${card.getText()}"`;
+        let effectString = card.isUnit() ? '' : ` It has the effect "${card.getText(this.game)}"`;
         return `${name} played ${card.getName()}${targetString}.` + effectString;
     }
 

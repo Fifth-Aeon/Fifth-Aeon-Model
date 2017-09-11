@@ -7,6 +7,7 @@ import { GameEvent, EventType } from '../../gameEvent';
 
 export class Lordship extends Mechanic {
     constructor(private text: string,
+        private valuePerUnit: number,
         private addEffect: (unit: Unit, game: Game) => void,
         private removeEffect: (target: Unit, game: Game) => void,
         private filter: (source: Unit, target: Unit) => boolean) {
@@ -15,9 +16,8 @@ export class Lordship extends Mechanic {
 
     public run(card: Card, game: Game) {
         let source = card as Unit;
-        let targets = game.getBoard().getAllUnits()
-            .filter(target => this.filter(source, target))
-            .forEach(unit => this.applyToUnit(unit, game));
+        let targets = this.getTargets(source, game);
+        targets.forEach(unit => this.applyToUnit(unit, game));
 
         game.gameEvents.addEvent(this, new GameEvent(EventType.UnitEntersPlay, (params) => {
             let enteringUnit = params.get('enteringUnit') as Unit;
@@ -26,6 +26,12 @@ export class Lordship extends Mechanic {
             }
             return params;
         }));
+    }
+
+    private getTargets(source: Unit, game: Game) {
+        return game.getBoard().getAllUnits()
+            .filter(target => this.filter(source, target));
+            
     }
 
     private applyToUnit(unit: Unit, game: Game) {
@@ -51,11 +57,16 @@ export class Lordship extends Mechanic {
     public getText(card: Card) {
         return this.text;
     }
+
+    public evaluate(card:Card, game:Game) {
+        return this.getTargets(card as Unit, game).length * this.valuePerUnit;
+    }
 }
 
 export function friendlyLordship(attack: number, life: number) {
     return new Lordship(
         `Other friendly units have +${attack}/+${life}.`,
+        attack + life,
         (unit: Unit) => unit.buff(attack, life),
         (unit: Unit) => unit.buff(-attack, -life),
         (source: Unit, target: Unit) => source != target && source.getOwner() == target.getOwner()
@@ -65,6 +76,7 @@ export function friendlyLordship(attack: number, life: number) {
 export function unitTypeLordshipExclusive(type: UnitType, attack: number, life: number) {
     return new Lordship(
         `Other friendly ${UnitType[type]} have +${attack}/+${life}.`,
+        attack + life,
         (unit: Unit) => unit.buff(attack, life),
         (unit: Unit) => unit.buff(-attack, -life),
         (source: Unit, target: Unit) => source.getOwner() == target.getOwner() && source != target && type == target.getType()
@@ -74,6 +86,7 @@ export function unitTypeLordshipExclusive(type: UnitType, attack: number, life: 
 export function unitTypeLordshipInclusive(type: UnitType, attack: number, life: number) {
     return new Lordship(
         `Friendly ${UnitType[type]} have +${attack}/+${life}.`,
+        attack + life,
         (unit: Unit) => unit.buff(attack, life),
         (unit: Unit) => unit.buff(-attack, -life),
         (source: Unit, target: Unit) => source.getOwner() == target.getOwner() && type == target.getType()

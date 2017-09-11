@@ -45,6 +45,10 @@ export class Sleeping extends Mechanic {
         else 
             return `Sleeping (${this.turns}).`;
     }
+
+    public evaluate() {
+        return this.turns * -3;
+    }
 }
 
 export class SleepTarget extends TargetedMechanic {

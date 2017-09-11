@@ -9,8 +9,8 @@ import { SingleUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnit } from '../t
 import { BiologicalUnit } from './targeters/biotargeter';
 
 // Mechanics
-import { DrawCardsFromUnit, WebTarget, BiteDamage } from './mechanics/growthSpecials';
-import { DealDamage } from './mechanics/dealDamage';
+import { DrawCardsFromUnit, WebTarget} from './mechanics/growthSpecials';
+import { DealDamage, BiteDamage } from './mechanics/dealDamage';
 import { SleepTarget } from './mechanics/sleep';
 import { BuffTarget } from './mechanics/buff';
 import { FinalBlow } from './mechanics/finalBlow';
@@ -54,7 +54,7 @@ export function hydra() {
         new Untargeted(),
         5, 5,
         [new Flying(), new Deathless(3),
-        new OnDeath('it gains +1/+1', (unit, game) => unit.buff(1, 1))]
+        new OnDeath('it gains +1/+1', 2, (unit, game) => unit.buff(1, 1))]
     );
 }
 
@@ -198,7 +198,7 @@ export function wolfPup() {
         }),
         new Untargeted(),
         2, 1,
-        [new Affinity('Gain +0/+1', (unit, game) => unit.buff(0, 1))]
+        [new Affinity('Gain +0/+1', 0.5, (unit, game) => unit.buff(0, 1))]
     );
 }
 
@@ -216,7 +216,7 @@ export function spiderHatchling() {
         }),
         new Untargeted(),
         2, 3,
-        [new Affinity('Gain +1/+0', (unit, game) => unit.buff(1, 0))]
+        [new Affinity('Gain +1/+0',  0.5, (unit, game) => unit.buff(1, 0))]
     );
 }
 
@@ -253,11 +253,10 @@ export function werewolf() {
         }),
         new Untargeted(),
         3, 3,
-        [new Affinity('All your wolves get +1/+0', (unit, game) => {
+        [new Affinity('All your wolves get +1/+0', 2, (unit, game) => {
             game.getBoard().getPlayerUnits(unit.getOwner()).forEach(unit => {
                 if (unit.getType() == UnitType.Wolf)
                     unit.buff(1, 0);
-
             })
         })]
     );
@@ -327,7 +326,7 @@ export function spiderQueen() {
         }),
         new Untargeted(),
         3, 6,
-        [new FinalBlow('Play a Toxic Spiderling', (source, killed, game) =>
+        [new FinalBlow('Play a Toxic Spiderling', 4, (source, killed, game) =>
             game.playGeneratedUnit(game.getPlayer(source.getOwner()), venomousSpiderling()))
         ]
     );

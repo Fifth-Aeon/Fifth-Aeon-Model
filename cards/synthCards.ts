@@ -12,9 +12,9 @@ import { friendlyLordship } from './mechanics/lordship';
 import { Annihilate } from './mechanics/removal';
 import { BuffTarget } from './mechanics/buff';
 import { Resource } from '../resource';
-import { Robotic, SpyPower, DealSynthDamage } from './mechanics/synthSpecials';
+import { Robotic, SpyPower } from './mechanics/synthSpecials';
 import { MechanicalUnit, BiologicalUnit } from './targeters/biotargeter';
-import { DealDamage } from './mechanics/dealDamage';
+import { DealDamage, DealSynthDamage } from './mechanics/dealDamage';
 import { Poisoned } from './mechanics/poison';
 
 
@@ -169,7 +169,7 @@ export function workbot() {
         new Untargeted(),
         1, 1,
         [new Robotic(),
-        new UnitEntersPlay('When you play a mechanical unit give it +0/+1', (source, unit) => {
+        new UnitEntersPlay('When you play a mechanical unit give it +0/+1', 1, (source, unit) => {
             if (unit != source && unit.getOwner() == source.getOwner() && mechanical.has(unit.getType())) {
                 unit.buff(0, 1);
             }
@@ -211,7 +211,7 @@ export function enhancmentChamber() {
         new Untargeted(),
         0, 5,
         [new CannotAttack(),
-        new UnitEntersPlay('When you play a biological unit give it +2/+2.', (source, unit) => {
+        new UnitEntersPlay('When you play a biological unit give it +2/+2.', 5, (source, unit) => {
             if (unit.getOwner() == source.getOwner() && !mechanical.has(unit.getType())) {
                 unit.buff(2, 2);
             }
@@ -252,7 +252,7 @@ export function siegeArtillery() {
         }),
         new Untargeted(),
         1, 1,
-        [new EndOfTurn('deal 2 damage to your opponent', (gun, game) => {
+        [new EndOfTurn('deal 2 damage to your opponent', 3, (gun, game) => {
             game.getPlayer(game.getOtherPlayerNumber(gun.getOwner())).takeDamage(2);
         })]
     );
@@ -379,7 +379,7 @@ export function mine() {
         0, 3,
         [
             new CannotAttack(),
-            new EndOfTurn('draw a card and get -0/-1', (unit, game) => {
+            new EndOfTurn('draw a card and get -0/-1', 3, (unit, game) => {
                 game.getPlayer(unit.getOwner()).drawCard();
                 unit.buff(0, -1);
             })

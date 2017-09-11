@@ -32,7 +32,7 @@ export function ruralMonk() {
         }),
         new Untargeted(),
         1, 2,
-        [new Serenity('Gain 1 life', (unit, game) => game.getPlayer(unit.getOwner()).addLife(1))]
+        [new Serenity('Gain 1 life', 1, (unit, game) => game.getPlayer(unit.getOwner()).addLife(1))]
     );
 }
 
@@ -50,7 +50,7 @@ export function blacksmith() {
         }),
         new Untargeted(),
         1, 1,
-        [new UnitEntersPlay('When you play a unit give it +1/+0.', (source, unit) => {
+        [new UnitEntersPlay('When you play a unit give it +1/+0.', 3, (source, unit) => {
             if (unit != source && unit.getOwner() == source.getOwner()) {
                 unit.buff(1, 0);
             }
@@ -73,7 +73,7 @@ export function king() {
         new Untargeted(),
         3, 5,
         [unitTypeLordshipInclusive(UnitType.Soldier, 1, 1),
-        new EndOfTurn('play a Pikeman',
+        new EndOfTurn('play a Pikeman', 4,
             (king, game) => game.playGeneratedUnit(king.getOwner(), pikeman()))
         ]
     );
@@ -200,7 +200,7 @@ export function monestary() {
         new Untargeted(),
         0, 5,
         [new CannotAttack(),
-        new Serenity('Play a Traveling Monk', (unit, game) => {
+        new Serenity('Play a Traveling Monk', 5, (unit, game) => {
             let player = game.getPlayer(unit.getOwner());
             game.playGeneratedUnit(player, ruralMonk());
         })]

@@ -17,6 +17,10 @@ export class CannotAttack extends Mechanic {
     public getText(card: Card) {
         return `Cannot attack.`;
     }
+
+    evaluate() {
+        return -5;
+    }
 }
 
 export class CannotBlock extends Mechanic {
@@ -30,6 +34,10 @@ export class CannotBlock extends Mechanic {
 
     public getText(card: Card) {
         return `Cannot block.`;
+    }
+
+    evaluate() {
+        return -3;
     }
 }
 
@@ -46,6 +54,6 @@ export class ImprisonTarget extends TargetedMechanic {
     }
 
     public evaluateTarget(source: Card, unit: Unit, game:Game) {
-        return unit.evaluate(game) * 1.25 * (unit.getOwner() == source.getOwner() ? -1 : 1);
+        return unit.evaluate(game) * 0.9 * (unit.getOwner() == source.getOwner() ? -1 : 1);
     }
 }

@@ -8,11 +8,11 @@ import { sumBy } from 'lodash';
 export abstract class Mechanic {
     public attach(parent: Card) { };
     abstract run(parent: Card, game: Game): void;
-    abstract getText(parent: Card): string;
+    abstract getText(parent: Card, game: Game): string;
     public remove(card: Card, game: Game) { };
     public id(): string { return null };
-    public evaluate(card: Card, game: Game) { return 0; }
-    public evaluateTarget(source: Card, target: Unit, game:Game) { return 0; }
+    abstract evaluate(card: Card, game: Game);
+    public evaluateTarget(source: Card, target: Unit, game: Game) { return 0; }
     public stack() { }
 }
 
@@ -29,9 +29,5 @@ export abstract class TargetedMechanic extends Mechanic {
         return sumBy(this.targeter.getTargets(card, game),
             (target) => this.evaluateTarget(card, target, game));
     }
-
-    abstract run(parent: Card, game: Game): void;
-    abstract getText(parent: Card): string;
-    public remove(card: Card, game: Game) { };
-    public id() { return '' };
+    
 }

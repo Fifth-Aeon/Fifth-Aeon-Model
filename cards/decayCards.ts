@@ -15,7 +15,9 @@ import { EndOfTurn } from './mechanics/periodic';
 import { CannotAttack } from './mechanics/cantAttack';
 import { PoisonTarget } from './mechanics/poison';
 import { ReturnFromCrypt } from './mechanics/returnFromCrypt';
-import { TransformDamaged, AbominationConsume, DamageSpawnOnKill, SummonUnitForGrave } from './mechanics/decaySpecials';
+import { TransformDamaged, AbominationConsume } from './mechanics/decaySpecials';
+import { SummonUnitForGrave } from './mechanics/summonUnits';
+import { DamageSpawnOnKill } from './mechanics/dealDamage';
 import { OnDeath, OnDeathAnyDeath } from './mechanics/death';
 import { KillTarget } from './mechanics/removal';
 
@@ -53,7 +55,7 @@ export function lich() {
         }),
         new Untargeted(),
         4, 4,
-        [new Deathless(), new OnDeathAnyDeath('play a Skeleton', (lich, dying, game) => {
+        [new Deathless(), new OnDeathAnyDeath('play a Skeleton', 6, (lich, dying, game) => {
             game.playGeneratedUnit(lich.getOwner(), skeleton());
         })]
     )
@@ -172,7 +174,7 @@ export function rottingZombie() {
         }),
         new Untargeted(),
         2, 2,
-        [new OnDeath('play a Crawling Zombie', (unit, game) =>
+        [new OnDeath('play a Crawling Zombie', 3, (unit, game) =>
             game.playGeneratedUnit(game.getPlayer(unit.getOwner()), crawlingZombie()))]
     )
 }
@@ -263,7 +265,7 @@ export function vampire() {
         }),
         new Untargeted(),
         3, 3,
-        [new FinalBlow('Gain +1/+1', (unit) => {
+        [new FinalBlow('Gain +1/+1', 2, (unit) => {
             unit.buff(1, 1)
         })]
     )

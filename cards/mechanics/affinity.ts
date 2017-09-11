@@ -6,7 +6,7 @@ import { Unit } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
 export class Affinity extends Mechanic {
-    constructor(private effectText: string, private effect: (unit: Unit, game: Game) => void) {
+    constructor(private effectText: string, private value:number, private effect: (unit: Unit, game: Game) => void) {
         super();
     }
 
@@ -35,5 +35,11 @@ export class Affinity extends Mechanic {
         if (this.triggered)
             return '';
         return `Affinity: ${this.effectText}.`;
+    }
+
+    public evaluate() {
+        if (this.triggered)
+            return 0;
+        return this.value;
     }
 }

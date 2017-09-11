@@ -6,7 +6,7 @@ import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
 export class OnDeath extends Mechanic {
-    constructor(private effectText: string, private effect: (unit: Unit, game: Game) => void) {
+    constructor(private effectText: string, private value:number , private effect: (unit: Unit, game: Game) => void) {
         super();
     }
 
@@ -25,10 +25,14 @@ export class OnDeath extends Mechanic {
     public getText(card: Card) {
         return `When this unit dies ${this.effectText}.`;
     }
+
+    public evaluate() {
+        return this.value;
+    }
 }
 
 export class OnDeathAnyDeath extends Mechanic {
-    constructor(private effectText: string, private effect: (source: Unit, died: Unit, game: Game) => void) {
+    constructor(private effectText: string, private value:number, private effect: (source: Unit, died: Unit, game: Game) => void) {
         super();
     }
 
@@ -47,6 +51,10 @@ export class OnDeathAnyDeath extends Mechanic {
 
     public getText(card: Card) {
         return `Whenever a unit dies ${this.effectText}.`;
+    }
+
+    public evaluate() {
+        return this.value;
     }
 }
 
