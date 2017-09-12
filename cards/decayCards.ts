@@ -8,18 +8,57 @@ import { DamagedUnit } from './targeters/weakenedUnits';
 import { SingleUnit, Untargeted, AllUnits, AllOtherUnits } from '../targeter';
 
 // Mechanics
-import { Flying, Lethal, Lifesteal, Deathless } from './mechanics/skills';
-import { Discard } from './mechanics/draw';
+import { Flying, Lethal, Lifesteal, Deathless, Immortal, Relentless } from './mechanics/skills';
+import { Discard, DiscardOnDamage } from './mechanics/draw';
 import { FinalBlow } from './mechanics/finalBlow';
 import { EndOfTurn } from './mechanics/periodic';
 import { CannotAttack } from './mechanics/cantAttack';
-import { PoisonTarget } from './mechanics/poison';
+import { PoisonTarget, PoisonImmune } from './mechanics/poison';
 import { ReturnFromCrypt } from './mechanics/returnFromCrypt';
 import { TransformDamaged, AbominationConsume } from './mechanics/decaySpecials';
 import { SummonUnitForGrave } from './mechanics/summonUnits';
 import { DamageSpawnOnKill } from './mechanics/dealDamage';
 import { OnDeath, OnDeathAnyDeath } from './mechanics/death';
 import { KillTarget } from './mechanics/removal';
+
+
+
+export function reaper() {
+    return new Unit(
+        'Reaper',
+        'Reaper',
+        'grim-reaper.png',
+        UnitType.Undead,
+        new Resource(8, 0, {
+            Growth: 0,
+            Decay: 6,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        1, 1,
+        [new Immortal(), new Lethal(), new Relentless(), new PoisonImmune()]
+    )
+}
+
+export function specter() {
+    return new Unit(
+        'Spectre',
+        'Spectre',
+        'spectre.png',
+        UnitType.Undead,
+        new Resource(7, 0, {
+            Growth: 0,
+            Decay: 5,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        5, 3,
+        [new Flying(), new Deathless(), new DiscardOnDamage()]
+    )
+}
+
 
 
 export function skeleton() {

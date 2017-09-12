@@ -202,7 +202,6 @@ export class Immortal extends Mechanic {
         let unit = card as Unit;
         unit.getEvents().addEvent(this, new GameEvent(EventType.Death, (params) => {
             game.gameEvents.addEvent(this, new GameEvent(EventType.EndOfTurn, (params) => {
-                unit.removeMechanic(this.id(), game);
                 game.playFromCrypt(unit);
                 return params;
             }))

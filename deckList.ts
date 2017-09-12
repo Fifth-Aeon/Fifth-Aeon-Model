@@ -12,7 +12,7 @@ export class DeckList {
     private cardCount: number = 0;
 
     constructor(private format: GameFormat) {
-        this.generateRandomNColorDeck(Math.random() > 0.5 ? 1 : 2);
+        this.generateRandomNColorDeck(1);
     }
 
     public randomDeckWithColors(colors: Set<string>) {

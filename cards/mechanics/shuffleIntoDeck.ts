@@ -17,6 +17,6 @@ export class ShuffleIntoDeck extends TargetedMechanic {
     }
 
     public evaluateTarget(source: Card, target:Unit, game:Game) {
-        return target.evaluate(game) + (target.getOwner() == source.getOwner() ? -1 : 1); 
+        return target.evaluate(game) * (target.getOwner() == source.getOwner() ? -1 : 1); 
     }
 }

@@ -2,8 +2,10 @@ import { Mechanic } from '../../mechanic';
 import { Game } from '../../Game';
 import { Targeter } from '../../targeter';
 import { Card } from '../../card';
-import { Unit } from '../../unit';
+import { Unit, UnitType } from '../../unit';
 import { Player } from '../../player';
+import { GameEvent, EventType } from '../../gameEvent';
+
 
 export class DrawCard extends Mechanic {
     constructor(private count: number) {
@@ -58,6 +60,31 @@ export class Discard extends Mechanic {
 
     public evaluate() {
         return this.count * 2.5;
+    }
+}
+
+export class DiscardOnDamage extends Mechanic {
+    public run(card: Card, game: Game) {
+        (card as Unit).getEvents().addEvent(this, new GameEvent(
+            EventType.DealDamage, params => {
+                let target = params.get('target') as Unit;
+                if (target.getType() == UnitType.Player)
+                    game.getPlayer((target as Player).getPlayerNumber()).discard(game);
+                return params;
+            }
+        ))
+    }
+
+    public remove(card: Card, game: Game) {
+        (card as Unit).getEvents().removeEvents(this);
+    }
+
+    public getText(card: Card) {
+        return 'Whenever this damages a player, that player discards a card.';
+    }
+
+    public evaluate() {
+        return 3;
     }
 }
 

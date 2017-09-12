@@ -66,11 +66,11 @@ export class Poisoned extends Mechanic {
     public getText(card: Card) {
         if (this.level == 1)
             return 'Poisoned.';
-        else 
+        else
             return `Poisoned (${this.level}).`
     }
 
-    public evaluate(card:Card) {
+    public evaluate(card: Card) {
         return (card as Unit).getStats() * -0.75;
     }
 }
@@ -86,7 +86,7 @@ export class PoisonTarget extends TargetedMechanic {
         return `Poison ${this.targeter.getText()}.`;
     }
 
-    public evaluateTarget(source: Card, target: Unit, game:Game) {
+    public evaluateTarget(source: Card, target: Unit, game: Game) {
         return target.evaluate(game) * 0.5 * (target.getOwner() == source.getOwner() ? -1 : 1);
     }
 }
@@ -112,5 +112,23 @@ export class Venomous extends Mechanic {
 
     public evaluate() {
         return 3;
+    }
+}
+
+export class PoisonImmune extends Mechanic {
+    public run(card: Card, game: Game) {
+        (card as Unit).addImmunity('poisoned');
+    }
+
+    public remove(card: Card, game: Game) {
+        (card as Unit).removeImmunity('poisoned');
+    }
+
+    public getText(card: Card) {
+        return `Immune to poison.`;
+    }
+
+    public evaluate() {
+        return 0.5;
     }
 }

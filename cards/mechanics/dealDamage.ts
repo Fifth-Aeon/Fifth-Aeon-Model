@@ -17,11 +17,11 @@ export class DealDamage extends TargetedMechanic {
         }
     }
 
-    public getDamage(card: Card, game:Game) {
+    public getDamage(card: Card, game: Game) {
         return this.amount;
     }
 
-    public getText(card: Card, game:Game) {
+    public getText(card: Card, game: Game) {
         return `Deal ${this.amount} damage to ${this.targeter.getText()}.`
     }
 
@@ -32,16 +32,20 @@ export class DealDamage extends TargetedMechanic {
 }
 
 export class BiteDamage extends DealDamage {
-    constructor () {
+    constructor() {
         super(0);
     }
 
-    public getDamage(card: Card, game:Game) {
+    public getDamage(card: Card, game: Game) {
         return Math.max(Math.max(...game.getBoard().getPlayerUnits(card.getOwner()).map(unit => unit.getDamage())), 0);;
     }
 
-    public getText(card: Card) {
-        return `Deal damage to target unit equal to your highest attack unit.`;
+    public getText(card: Card, game: Game) {
+        if (game) 
+            return `Deal damage to target unit equal to your highest attack unit (${this.getDamage(card, game)}).`;
+        else
+            return `Deal damage to target unit equal to your highest attack unit.`;
+            
     }
 }
 
@@ -78,8 +82,8 @@ export class DealSynthDamage extends DealDamage {
 
     public getText(card: Card, game: Game) {
         if (game)
-            return `Deal damage to ${this.targeter.getText()} equal to your synthesis (${this.getDamage(card, game)}).` 
+            return `Deal damage to ${this.targeter.getText()} equal to your synthesis (${this.getDamage(card, game)}).`
         else
-            return `Deal damage to ${this.targeter.getText()} equal to your synthesis.`            
+            return `Deal damage to ${this.targeter.getText()} equal to your synthesis.`
     }
 }
