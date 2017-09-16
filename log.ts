@@ -75,7 +75,7 @@ export class Log {
         if (!card)
             return '';
         if (event.params.targetIds != null && event.params.targetIds.length > 0) {
-            let targets = event.params.targetIds.map((id) => this.game.getCardById(id));
+            let targets:Card[] = event.params.targetIds.map((id:string) => this.game.getCardById(id));
             targetString = ' targeting ' + targets.map(card => card ? card.getName() : 'unknown').join(' and ');
         }
         let effectString = card.isUnit() ? '' : ` It has the effect "${card.getText(this.game)}"`;

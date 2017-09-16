@@ -1,5 +1,5 @@
 import { GameActionType, GamePhase, GameAction, GameSyncEvent, SyncEventType } from './game';
-import { ClientGame} from './clientGame';
+import { ClientGame } from './clientGame';
 import { Resource, ResourceTypeNames } from './resource';
 import { Player } from './player';
 import { Card } from './card';
@@ -34,15 +34,15 @@ export abstract class AI {
         protected runGameAction: (type: GameActionType, params: any) => void
     ) { }
 
-    abstract handleGameEvent(event: GameSyncEvent);
-    abstract pulse();
+    abstract handleGameEvent(event: GameSyncEvent): void;
+    abstract pulse(): void;
 }
 
 export class BasicAI extends AI {
     private eventHandlers: Map<SyncEventType, (params: any) => void> = new Map();
     private enemyNumber: number;
     private aiPlayer: Player;
-    private actionSequence: LinkedList<() => void> = new LinkedList();
+    private actionSequence: LinkedList<() => void> = new LinkedList<() => void>();
 
     constructor(playerNumber: number, game: ClientGame, runGameAction: (type: GameActionType, params: any) => void) {
         super(playerNumber, game, runGameAction);
@@ -64,7 +64,7 @@ export class BasicAI extends AI {
     }
 
     private sequenceActions(actions: Array<() => void>) {
-        this.actionSequence = new LinkedList();
+        this.actionSequence = new LinkedList<() => void>();
         for (let action of actions) {
             this.addActionToSequence(action);
         }
