@@ -51,7 +51,12 @@ export class EventGroup {
         let events = this.events.get(type) || [];
         let len = events.length;
         for (let i = 0; i < events.length; i++) {
-            params = events[i].trigger(params);
+            let event = events[i]
+            if (!event) {
+                console.error(`event of type ${EventType[type]} undefined at ${i} events.length = ${events.length}, len=${len}`);
+                continue;
+            }
+            params = event.trigger(params);
             if (events.length < len) {
                 i -= (len - events.length);
                 len = events.length;

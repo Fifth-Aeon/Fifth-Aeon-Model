@@ -191,4 +191,8 @@ export class Player extends Unit {
             this.addToHand(card);
         }
     }
+
+    public evaluate() {
+        return 1000000;
+    }
 }

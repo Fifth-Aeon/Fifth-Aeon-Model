@@ -17,8 +17,7 @@ import { MechanicalUnit, BiologicalUnit } from './targeters/biotargeter';
 import { DealDamage, DealSynthDamage } from './mechanics/dealDamage';
 import { Poisoned } from './mechanics/poison';
 
-
-export function ultimateSaction() {
+export function atomicStrike() {
     return new Card(
         'atomicStrike',
         'Atomic Strike',
@@ -29,8 +28,8 @@ export function ultimateSaction() {
             Renewal: 0,
             Synthesis: 6
         }),
-        new Everyone(),
-        [new DealDamage(10, new AllUnits()), new DealDamage(5, new AllPlayers())],
+        new AllUnits(),
+        [new DealDamage(10), new DealDamage(5, new AllPlayers())],
         'Deal 10 damage to each unit and 5 to each player.'
     );
 }
@@ -252,8 +251,8 @@ export function siegeArtillery() {
         }),
         new Untargeted(),
         1, 1,
-        [new EndOfTurn('deal 2 damage to your opponent', 3, (gun, game) => {
-            game.getPlayer(game.getOtherPlayerNumber(gun.getOwner())).takeDamage(2);
+        [new EndOfTurn('deal 2 damage to your opponent', 3, (unit, game) => {
+            game.getPlayer(game.getOtherPlayerNumber(unit.getOwner())).takeDamage(2);
         })]
     );
 }

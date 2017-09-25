@@ -290,7 +290,6 @@ export class Unit extends Card {
     }
 
     public evaluate(game:Game) {
-        
         return this.maxLife + this.damage + super.evaluate(game);
     }
 

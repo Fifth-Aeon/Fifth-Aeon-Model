@@ -37,6 +37,10 @@ export class TransformDamaged extends Mechanic {
     public evaluate() {
         return 6;
     }
+
+    public id() {
+        return 'transfomTarget';
+    }
 }
 
 export class AbominationConsume extends Mechanic {

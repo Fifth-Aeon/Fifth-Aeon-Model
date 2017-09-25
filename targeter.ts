@@ -82,7 +82,7 @@ export class FriendlyUnit extends SingleUnit {
 }
 
 export class AllUnits extends Targeter {
-    protected lastTargets: Array<Unit>;
+    protected lastTargets: Array<Unit> = [];
     public getText() {
         return 'all units';
     }

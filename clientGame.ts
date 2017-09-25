@@ -3,11 +3,22 @@ import { data } from './gameData';
 import { GameFormat, standardFormat } from './gameFormat';
 import { Log } from './log';
 
+import { Player } from './player';
+import { Card } from './card';
+import { Unit } from './unit';
+import { Resource, ResourceTypeNames } from './resource';
+
+import {maxBy} from 'lodash'
+
 export class ClientGame extends Game {
     // Handlers to syncronize events
     protected syncEventHandlers: Map<SyncEventType, (playerNo: number, event: GameSyncEvent, params: any) => void>;
-
-    constructor(log: Log = null, format: GameFormat = standardFormat,) {
+    
+    constructor(
+        protected runGameAction: (type: GameActionType, params: any) => void,
+        log: Log = null, 
+        format: GameFormat = standardFormat
+    ) {
         super(format, true);
         this.log = log;
         if (this.log)
@@ -18,8 +29,46 @@ export class ClientGame extends Game {
 
     public getLog() {
         return this.log;
-    }  
+    }
 
+    // Game Actions ----------------------------------------------------------
+    public playCardExtern(card: Card, targets: Unit[] = []) {
+        let targetIds = targets.map(target => target.getId());
+        card.getTargeter().setTargets(targets);
+        this.runGameAction(GameActionType.PlayCard, { id: card.getId(), targetIds: targetIds });
+        this.playCard(this.players[card.getOwner()], card);
+    }
+
+    public declareAttacker(unit: Unit) {
+        unit.toggleAttacking();
+        this.runGameAction(GameActionType.ToggleAttack, { unitId: unit.getId() });
+    }
+
+    public declareBlocker(blocker: Unit, attacker: Unit | null) {
+        let attackerId = attacker ? attacker.getId() : null;
+        blocker.setBlocking(attackerId);
+        this.runGameAction(GameActionType.DeclareBlocker, {
+            blockerId: blocker.getId(),
+            blockedId: attackerId
+        });
+    }
+
+    public makeChoice(cards: Card[]) {
+        this.makeDeferedChoice(cards);
+        this.runGameAction(GameActionType.CardChoice, {
+            choice: cards.map(card => card.getId())
+        });
+    }
+
+    public playResource(type: string) {
+        this.runGameAction(GameActionType.PlayResource, { type: type });
+    }
+
+    public pass() {
+        this.runGameAction(GameActionType.Pass, {});
+    }
+
+    // Syncronization Logic --------------------------------------------------------
     /**
      * Syncs an event that happened on the server into the state of this game model
      * 
@@ -35,7 +84,7 @@ export class ClientGame extends Game {
             handler(playerNumber, event, params);
     }
 
-    public idsToCards(ids: Array<string>) {
+    private idsToCards(ids: Array<string>) {
         return ids.map(id => this.getCardById(id));
     }
 
@@ -66,7 +115,7 @@ export class ClientGame extends Game {
         this.addSyncHandler(SyncEventType.Ended, this.syncEnded);
     }
 
-    public syncCardEvent(playerNumber: number, event: GameSyncEvent, params: any) {
+    private syncCardEvent(playerNumber: number, event: GameSyncEvent, params: any) {
         if (params.playerNo != playerNumber) {
             let player = this.players[params.playerNo];
             let card = this.unpackCard(params.played)
@@ -79,14 +128,14 @@ export class ClientGame extends Game {
             this.log.addCardPlayed(event);
     }
 
-    public syncDrawEvent(playerNumber: number, event: GameSyncEvent, params: any) {
+    private syncDrawEvent(playerNumber: number, event: GameSyncEvent, params: any) {
         if (params.discarded)
             this.addToCrypt(this.unpackCard(params.card));
         else
             this.players[params.playerNo].addToHand(this.unpackCard(params.card))
     }
 
-    public syncTurnStart(playerNumber: number, event: GameSyncEvent, params: any) {
+    private syncTurnStart(playerNumber: number, event: GameSyncEvent, params: any) {
         if (this.turnNum == 1) {
             this.turn = params.turn;
             this.turnNum = params.turnNum
@@ -94,22 +143,22 @@ export class ClientGame extends Game {
         }
     }
 
-    public syncPlayResource(playerNumber: number, event: GameSyncEvent, params: any) {
+    private syncPlayResource(playerNumber: number, event: GameSyncEvent, params: any) {
         this.players[params.playerNo].playResource(params.resource);
     }
 
-    public syncAttackToggled(playerNumber: number, event: GameSyncEvent, params: any) {
+    private syncAttackToggled(playerNumber: number, event: GameSyncEvent, params: any) {
         if (params.player != playerNumber)
             this.getUnitById(params.unitId).toggleAttacking();
     }
 
-    public syncBlock(playerNumber: number, event: GameSyncEvent, params: any) {
+    private syncBlock(playerNumber: number, event: GameSyncEvent, params: any) {
         if (params.player != playerNumber) {
             this.getUnitById(params.blockerId).setBlocking(params.blockedId);
         }
     }
 
-    public syncPhaseChange(playerNumber: number, event: GameSyncEvent, params: any) {
+    private syncPhaseChange(playerNumber: number, event: GameSyncEvent, params: any) {
         if (event.params.phase === GamePhase.Play2)
             this.resolveCombat();
         if (event.params.phase === GamePhase.End)
@@ -118,17 +167,17 @@ export class ClientGame extends Game {
             this.changePhase(event.params.phase);
     }
 
-    public syncChoiceMade(playerNumber: number, event: GameSyncEvent, params: any) {
+    private syncChoiceMade(playerNumber: number, event: GameSyncEvent, params: any) {
         if (params.player != playerNumber)
             this.makeDeferedChoice(this.idsToCards(params.choice));
     }
 
-    public syncQueryResult(playerNumber: number, event: GameSyncEvent, params: any) {
+    private syncQueryResult(playerNumber: number, event: GameSyncEvent, params: any) {
         let cards = params.cards.map((proto: { id: string, data: string, owner: number }) => this.unpackCard(proto));
         this.setQueryResult(cards);
     }
 
-    public syncEnded(playerNumber: number, event: GameSyncEvent, params: any) {
+    private syncEnded(playerNumber: number, event: GameSyncEvent, params: any) {
         this.winner = event.params.winner;
     }
 }
