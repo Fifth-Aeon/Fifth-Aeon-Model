@@ -28,7 +28,7 @@ export class Card {
 
     protected targeter: Targeter = new Untargeted();
 
-    constructor(dataId: string, name: string, imageUrl: string, cost: Resource, targeter: Targeter, mechanics: Array<Mechanic>, text?) {
+    constructor(dataId: string, name: string, imageUrl: string, cost: Resource, targeter: Targeter, mechanics: Array<Mechanic>, text?:string) {
         this.dataId = dataId;
         this.name = name;
         this.imageUrl = imageUrl;
