@@ -251,8 +251,8 @@ export function siegeArtillery() {
         }),
         new Untargeted(),
         1, 1,
-        [new EndOfTurn('deal 2 damage to your opponent', 3, (unit, game) => {
-            game.getPlayer(game.getOtherPlayerNumber(unit.getOwner())).takeDamage(2);
+        [new EndOfTurn('deal 1 damage to your opponent', 3, (unit, game) => {
+            game.getPlayer(game.getOtherPlayerNumber(unit.getOwner())).takeDamage(1);
         })]
     );
 }
