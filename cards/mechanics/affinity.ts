@@ -18,7 +18,7 @@ export class Affinity extends Mechanic {
             let enteringUnit = params.get('enteringUnit') as Unit;
             if (enteringUnit != mutatingUnit &&
                 enteringUnit.getOwner() == mutatingUnit.getOwner() &&
-                enteringUnit.getType() == mutatingUnit.getType()) {
+                enteringUnit.getUnitType() == mutatingUnit.getUnitType()) {
                 this.effect(mutatingUnit, game);
                 game.gameEvents.removeEvents(this);
                 this.triggered = true;

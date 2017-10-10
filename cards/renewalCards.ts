@@ -1,9 +1,10 @@
 import { Mechanic } from '../mechanic';
 import { Card } from '../card';
 import { Unit, UnitType } from '../unit';
+import { Item} from '../item';
 import { Resource } from '../resource';
 
-import { SingleUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnits } from '../targeter';
+import { SingleUnit, FriendlyUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnits } from '../targeter';
 import { CannotAttack, ImprisonTarget } from './mechanics/cantAttack';
 import { ShuffleIntoDeck } from './mechanics/shuffleIntoDeck';
 import { RenewalMCTargeter, MindControl } from './mechanics/mindControl';
@@ -17,6 +18,24 @@ import { Flying, Relentless } from './mechanics/skills';
 import { CurePoisonTargeter, CurePoison } from './mechanics/poison';
 import { UnitEntersPlay } from './mechanics/entersPlay';
 
+
+export function breastPlate() {
+    return new Item(
+        'BrestPlate',
+        'Breast Plate',
+        'breastplate.png',
+        new Resource(1, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 1,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        new FriendlyUnit(),
+        2, 2,
+        []
+    )
+}
 
 export function ruralMonk() {
     return new Unit(

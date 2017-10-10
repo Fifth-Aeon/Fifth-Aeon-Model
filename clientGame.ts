@@ -4,19 +4,20 @@ import { GameFormat, standardFormat } from './gameFormat';
 import { Log } from './log';
 
 import { Player } from './player';
-import { Card } from './card';
+import { Card, CardType } from './card';
 import { Unit } from './unit';
+import { Item } from './item';
 import { Resource, ResourceTypeNames } from './resource';
 
-import {maxBy} from 'lodash'
+import { maxBy } from 'lodash'
 
 export class ClientGame extends Game {
     // Handlers to syncronize events
     protected syncEventHandlers: Map<SyncEventType, (playerNo: number, event: GameSyncEvent, params: any) => void>;
-    
+
     constructor(
         protected runGameAction: (type: GameActionType, params: any) => void,
-        log: Log = null, 
+        log: Log = null,
         format: GameFormat = standardFormat
     ) {
         super(format, true);
@@ -32,10 +33,18 @@ export class ClientGame extends Game {
     }
 
     // Game Actions ----------------------------------------------------------
-    public playCardExtern(card: Card, targets: Unit[] = []) {
+    public playCardExtern(card: Card, targets: Unit[] = [], host: Unit = null) {
         let targetIds = targets.map(target => target.getId());
         card.getTargeter().setTargets(targets);
-        this.runGameAction(GameActionType.PlayCard, { id: card.getId(), targetIds: targetIds });
+        if (card.getCardType() == CardType.Item) {
+            if (!host)
+                console.error('Item', card.getName(), 'requires a host.');
+            (card as Item).getHostTargeter().setTargets([host]);
+        }
+        this.runGameAction(GameActionType.PlayCard, {
+            id: card.getId(), targetIds: targetIds,
+            hostId: host ? host.getId() : null
+        });
         this.playCard(this.players[card.getOwner()], card);
     }
 
@@ -119,9 +128,13 @@ export class ClientGame extends Game {
         if (params.playerNo != playerNumber) {
             let player = this.players[params.playerNo];
             let card = this.unpackCard(params.played)
-            if (params.targetIds)
+            if (params.targetIds) {
                 card.getTargeter().setTargets(params.targetIds
                     .map((id: string) => this.getUnitById(id)));
+            }
+            if (card.getCardType() == CardType.Item) {
+                (card as Item).getHostTargeter().setTargets([this.getUnitById(params.hostId)]);
+            }
             this.playCard(player, card);
         }
         if (this.log)

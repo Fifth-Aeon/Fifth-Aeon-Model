@@ -68,7 +68,7 @@ export class DiscardOnDamage extends Mechanic {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.DealDamage, params => {
                 let target = params.get('target') as Unit;
-                if (target.getType() == UnitType.Player)
+                if (target.getUnitType() == UnitType.Player)
                     game.getPlayer((target as Player).getPlayerNumber()).discard(game);
                 return params;
             }

@@ -1,5 +1,7 @@
 import { Game, GamePhase, GameActionType, SyncEventType, GameAction, GameSyncEvent } from './game';
 import { GameFormat, standardFormat } from './gameFormat';
+import { CardType } from './card';
+import { Item } from './item';
 import { Unit } from './unit';
 import { DeckList } from './deckList';
 import { data } from './gameData';
@@ -81,15 +83,27 @@ export class ServerGame extends Game {
         let card = this.getPlayerCardById(player, act.params.id);
         if (!card || !card.isPlayable(this))
             return false;
+
+        // Standard Targets
         let targets: Unit[] = act.params.targetIds.map((id: string) => this.getUnitById(id));
         card.getTargeter().setTargets(targets);
         if (!card.getTargeter().targetsAreValid(card, this))
             return false;
+
+        // Item Host
+        if (card.getCardType() == CardType.Item) {
+            let item = card as Item;
+            item.getHostTargeter().setTargets([this.getUnitById(act.params.hostId)]);
+            if (!item.getHostTargeter().targetsAreValid(card, this))
+                return false;
+        }
+
         this.playCard(player, card);
         this.addGameEvent(new GameSyncEvent(SyncEventType.PlayCard, {
             playerNo: act.player,
             played: card.getPrototype(),
-            targetIds: act.params.targetIds
+            targetIds: act.params.targetIds,
+            hostId: act.params.hostId
         }));
         return true;
     }

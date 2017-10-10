@@ -11,6 +11,10 @@ export enum Location {
     Deck, Hand, Board, Crypt
 }
 
+export enum CardType {
+    Spell, Unit, Item, Enchantment
+}
+
 export class Card {
     public name: string;
     protected id: string;
@@ -28,7 +32,7 @@ export class Card {
 
     protected targeter: Targeter = new Untargeted();
 
-    constructor(dataId: string, name: string, imageUrl: string, cost: Resource, targeter: Targeter, mechanics: Array<Mechanic>, text?:string) {
+    constructor(dataId: string, name: string, imageUrl: string, cost: Resource, targeter: Targeter, mechanics: Array<Mechanic>, text?: string) {
         this.dataId = dataId;
         this.name = name;
         this.imageUrl = imageUrl;
@@ -39,6 +43,10 @@ export class Card {
         this.location = Location.Deck;
         this.id = Math.random().toString(16);
         this.text = text;
+    }
+
+    public getCardType(): CardType {
+        return CardType.Spell;
     }
 
     public setText(text: string) {
@@ -114,6 +122,10 @@ export class Card {
 
     public getTargeter() {
         return this.targeter;
+    }
+
+    public getTargeters(): Targeter[] {
+        return [this.targeter];
     }
 
     public setOwner(owner: number) {

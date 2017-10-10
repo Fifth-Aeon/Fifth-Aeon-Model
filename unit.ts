@@ -1,10 +1,13 @@
 import { Game } from './game';
 import { Player } from './player';
 import { Card, Location } from './card';
+import { Item } from './item';
 import { EventGroup, EventType } from './gameEvent';
 import { Resource } from './resource';
 import { Targeter } from './targeter';
 import { Mechanic } from './mechanic';
+
+import { remove } from 'lodash';
 
 
 
@@ -14,8 +17,8 @@ export enum UnitType {
 }
 
 export const mechanical = new Set([UnitType.Automaton, UnitType.Structure, UnitType.Vehicle]);
-export function isBiological(unit: Unit) { return !mechanical.has(unit.getType()) }
-export function isMechanical(unit: Unit) { return mechanical.has(unit.getType()) }
+export function isBiological(unit: Unit) { return !mechanical.has(unit.getUnitType()) }
+export function isMechanical(unit: Unit) { return mechanical.has(unit.getUnitType()) }
 
 class Damager {
     private events: EventGroup;
@@ -51,6 +54,7 @@ export class Unit extends Card {
 
     // Misc
     protected events: EventGroup;
+    protected items: Item[];
     private unitType: UnitType;
     private immunities: Set<string>;
 
@@ -69,6 +73,15 @@ export class Unit extends Card {
         this.life = this.maxLife;
         this.died = false;
         this.immunities = new Set();
+        this.items = [];
+    }
+
+    public addItem(item: Item) {
+        this.items.push(item);
+    }
+
+    public removeItem(item: Item) {
+        remove(this.items, item);
     }
 
     public isPlayable(game: Game): boolean {
@@ -121,7 +134,7 @@ export class Unit extends Card {
         return this.mechanics.find(mechanic => mechanic.id() == id);
     }
 
-    public getType() {
+    public getUnitType() {
         return this.unitType;
     }
 
@@ -289,7 +302,7 @@ export class Unit extends Card {
         }
     }
 
-    public evaluate(game:Game) {
+    public evaluate(game: Game) {
         return this.maxLife + this.damage + super.evaluate(game);
     }
 

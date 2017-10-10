@@ -79,7 +79,7 @@ export function unitTypeLordshipExclusive(type: UnitType, attack: number, life: 
         attack + life,
         (unit: Unit) => unit.buff(attack, life),
         (unit: Unit) => unit.buff(-attack, -life),
-        (source: Unit, target: Unit) => source.getOwner() == target.getOwner() && source != target && type == target.getType()
+        (source: Unit, target: Unit) => source.getOwner() == target.getOwner() && source != target && type == target.getUnitType()
     );
 }
 
@@ -89,6 +89,6 @@ export function unitTypeLordshipInclusive(type: UnitType, attack: number, life: 
         attack + life,
         (unit: Unit) => unit.buff(attack, life),
         (unit: Unit) => unit.buff(-attack, -life),
-        (source: Unit, target: Unit) => source.getOwner() == target.getOwner() && type == target.getType()
+        (source: Unit, target: Unit) => source.getOwner() == target.getOwner() && type == target.getUnitType()
     );
 }
