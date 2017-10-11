@@ -1,7 +1,7 @@
 import { Mechanic } from '../mechanic';
 import { Card } from '../card';
 import { Unit, UnitType } from '../unit';
-import { Item} from '../item';
+import { Item } from '../item';
 import { Resource } from '../resource';
 
 import { SingleUnit, FriendlyUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnits } from '../targeter';
@@ -18,11 +18,10 @@ import { Flying, Relentless } from './mechanics/skills';
 import { CurePoisonTargeter, CurePoison } from './mechanics/poison';
 import { UnitEntersPlay } from './mechanics/entersPlay';
 
-
-export function breastPlate() {
+export function breastplate() {
     return new Item(
-        'BrestPlate',
-        'Breast Plate',
+        'Breastplate',
+        'Breastplate',
         'breastplate.png',
         new Resource(1, 0, {
             Growth: 0,
@@ -149,7 +148,6 @@ export function gryphon() {
         [new Flying()]
     );
 }
-
 
 export function dawnbreak() {
     return new Card(
@@ -329,7 +327,6 @@ export function callOfJustice() {
     );
 }
 
-
 export function angel() {
     return new Unit(
         'SentryAngel',
@@ -365,5 +362,3 @@ export function pontiff() {
         [unitTypeLordshipExclusive(UnitType.Cleric, 1, 1)]
     );
 }
-
-

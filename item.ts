@@ -13,12 +13,17 @@ export class Item extends Card {
     private events: EventGroup;
     private hostTargeter: Targeter;
 
-    constructor(dataId: string, name: string, imageUrl: string, cost: Resource, targeter: Targeter, hostTargeter: Targeter, 
-         lifeBonus: number, damageBonus: number, mechanics: Mechanic[],) {
+    constructor(dataId: string, name: string, imageUrl: string, cost: Resource, targeter: Targeter, hostTargeter: Targeter,
+        lifeBonus: number, damageBonus: number, mechanics: Mechanic[]) {
         super(dataId, name, imageUrl, cost, targeter, mechanics);
         this.lifeBonus = lifeBonus;
         this.damageBonus = damageBonus;
         this.hostTargeter = hostTargeter;
+    }
+
+    public isPlayable(game: Game): boolean {
+        return super.isPlayable(game) &&
+            this.hostTargeter.getValidTargets(this, game).length > 0;
     }
 
     public getHostTargeter() {
