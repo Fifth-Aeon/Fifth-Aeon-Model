@@ -30,16 +30,22 @@ export abstract class Targeter {
     }
 
     public isTargetable(card: Card, game: Game): boolean {
-        return !this.needsInput() || this.optional() ||
+        return !this.needsInput() || this.isOptional() ||
             this.getValidTargets(card, game).length > 0;
     }
 
-    public optional(): boolean {
-        return false;
+    protected optional: boolean = false;
+    public isOptional(): boolean {
+        return this.optional;
+    }
+
+    public setOptional(val: boolean) {
+        this.optional = val;
+        return this;
     }
 
     public targetsAreValid(card: Card, game: Game) {
-        if (!this.needsInput() || this.optional())
+        if (!this.needsInput() || this.isOptional())
             return true;
         let valid = new Set(this.getValidTargets(card, game));
         return this.targets.length > 0 && every(this.targets, target => valid.has(target));
@@ -57,8 +63,10 @@ export class Untargeted extends Targeter {
 
 export class SingleUnit extends Targeter {
 
-    constructor(private isOptional: boolean = false) {
-        super()
+    constructor(optional: boolean = false) {
+        super();
+        this.optional = optional;
+
     }
     public getValidTargets(card: Card, game: Game) {
         return game.getBoard().getAllUnits();
@@ -66,8 +74,8 @@ export class SingleUnit extends Targeter {
     public getText() {
         return 'target unit';
     }
-    public optional() {
-        return this.isOptional
+    public isOptional() {
+        return this.optional
     }
 }
 
@@ -80,6 +88,16 @@ export class FriendlyUnit extends SingleUnit {
     }
 
 }
+
+export class EnemyUnit extends SingleUnit {
+    public getValidTargets(card: Card, game: Game) {
+        return game.getBoard().getAllUnits().filter(unit => unit.getOwner() != card.getOwner());
+    }
+    public getText() {
+        return 'target enemy unit';
+    }
+}
+
 
 export class AllUnits extends Targeter {
     protected lastTargets: Array<Unit> = [];

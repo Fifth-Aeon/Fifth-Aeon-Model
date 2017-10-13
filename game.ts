@@ -88,7 +88,6 @@ export abstract class Game {
         this.blockers = [];
         this.crypt = [[], []];
         this.gameEvents = new EventGroup();
-
     
         let decks: Card[][] = [[], []];
         if (!client) {
@@ -119,9 +118,6 @@ export abstract class Game {
         }
 
         this.promptCardChoice = this.deferChoice;
-
-        
-        
     }
 
     public addGameEvent(event: GameSyncEvent) {
@@ -401,6 +397,7 @@ export abstract class Game {
         unit.getEvents().addEvent(null, new GameEvent(EventType.Death, (params) => {
             this.removeUnit(unit);
             this.addToCrypt(unit);
+            unit.detachItems(this);
             this.gameEvents.trigger(EventType.UnitDies, new Map([
                 ['deadUnit', unit]
             ]));

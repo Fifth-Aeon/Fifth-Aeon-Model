@@ -11,7 +11,7 @@ export class BuffTarget extends TargetedMechanic {
     constructor(private damage: number, private life: number, private abilities: Mechanic[]) {
         super();
     }
-    
+
     public run(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game)) {
             target.buff(this.damage, this.life);
@@ -25,13 +25,21 @@ export class BuffTarget extends TargetedMechanic {
         return properList(this.abilities.map(ability => properCase(ability.id())));
     }
 
+    private symbol(number: number) {
+        return number > 0 ? '+' : '';
+    }
+
     public getText(card: Card) {
+        let buffText = `${this.symbol(this.damage)}${this.damage}/${this.symbol(this.life)}${this.life}`
         if (this.abilities.length > 0)
-            return `Give ${this.targeter.getText()} +${this.damage}/+${this.life} and ${this.abilityString()}.`
-        return `Give ${this.targeter.getText()} +${this.damage}/+${this.life}.`
+            return `Give ${this.targeter.getText()} ${buffText} and ${this.abilityString()}.`
+        return `Give ${this.targeter.getText()} ${buffText}.`
     }
 
     public evaluateTarget(source: Card, target: Unit) {
         return (this.life + this.damage) * 1.1 * (target.getOwner() == source.getOwner() ? 1 : -1);
     }
 }
+
+
+

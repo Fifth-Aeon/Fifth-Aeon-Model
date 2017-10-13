@@ -2,8 +2,9 @@ import { GameActionType, GamePhase, GameAction, GameSyncEvent, SyncEventType } f
 import { ClientGame } from './clientGame';
 import { Resource, ResourceTypeNames } from './resource';
 import { Player } from './player';
-import { Card } from './card';
+import { Card, CardType } from './card';
 import { Unit } from './unit';
+import { Item } from './item';
 
 import { minBy, sample, sampleSize, maxBy, sortBy, sumBy, remove } from 'lodash';
 import { LinkedList } from 'typescript-collections';
@@ -128,14 +129,23 @@ export class BasicAI extends AI {
             let evaluated = sortBy(playable, card => -this.evaluateCard(card));
             console.log('eval', evaluated.map(card => card.getName() + ' ' + this.evaluateCard(card)).join(' | '));
             let toPlay = evaluated[0];
+            console.log('play', toPlay.getName());
+
             if (this.evaluateCard(toPlay) <= 0)
                 return;
+            let targets = []
+            let host = null;
+            if (toPlay.getCardType() == CardType.Item)
+                host = this.getBestHost(toPlay as Item);
             if (toPlay.getTargeter().needsInput() && this.getBestTarget(toPlay))
-                this.game.playCardExtern(toPlay, [this.getBestTarget(toPlay)]);
-            else
-                this.game.playCardExtern(toPlay);
+                targets.push(this.getBestTarget(toPlay));
+            this.game.playCardExtern(toPlay, targets, host);
             this.addActionToSequence(this.selectCardToPlay, true);
         }
+    }
+
+    private getBestHost(item: Item): Unit {
+        return sample(this.game.getBoard().getPlayerUnits(this.playerNumber));
     }
 
     private playResource() {
@@ -145,7 +155,7 @@ export class BasicAI extends AI {
             total.add(card.getCost());
         }
         let toPlay = maxBy(ResourceTypeNames, type => total.getOfType(type));
-        this.game.playResource(toPlay);        
+        this.game.playResource(toPlay);
     }
 
     // Attacking/Blocking -------------------------------------------------------------------------

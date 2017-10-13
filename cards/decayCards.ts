@@ -1,16 +1,19 @@
 import { Mechanic } from '../mechanic';
 import { Card } from '../card';
 import { Unit, UnitType } from '../unit';
+import { Item } from '../item';
 import { Resource } from '../resource';
 
 // Targeters
 import { DamagedUnit } from './targeters/weakenedUnits';
-import { SingleUnit, Untargeted, AllUnits, AllOtherUnits } from '../targeter';
+import { PoisonableUnit, PoisonableUnits } from './targeters/poisonTargeter';
+import { SingleUnit, Untargeted, AllUnits, AllOtherUnits, FriendlyUnit, EnemyUnit } from '../targeter';
 
 // Mechanics
 import { Flying, Lethal, Lifesteal, Deathless, Immortal, Relentless } from './mechanics/skills';
 import { Discard, DiscardOnDamage } from './mechanics/draw';
 import { FinalBlow } from './mechanics/finalBlow';
+import { BuffTarget } from './mechanics/buff';
 import { EndOfTurn } from './mechanics/periodic';
 import { CannotAttack } from './mechanics/cantAttack';
 import { PoisonTarget, PoisonImmune } from './mechanics/poison';
@@ -21,6 +24,43 @@ import { DamageSpawnOnKill } from './mechanics/dealDamage';
 import { OnDeath, OnDeathAnyDeath } from './mechanics/death';
 import { KillTarget } from './mechanics/removal';
 
+
+
+export function whip() {
+    return new Item(
+        'WhipOfTorrment',
+        'Whip of Torment',
+        'whip.png',
+        new Resource(3, 0, {
+            Growth: 0,
+            Decay: 2,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new EnemyUnit(),
+        new FriendlyUnit(),
+        3, 0,
+        [new BuffTarget(-1, -1, [])]
+    )
+}
+
+export function assasinsDagger() {
+    return new Item(
+        'AssasinDagger',
+        'Assasin\'s dagger',
+        'dripping-blade.png',
+        new Resource(1, 0, {
+            Growth: 0,
+            Decay: 1,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        new FriendlyUnit(),
+        1, 1,
+        [new Lethal()]
+    )
+}
 
 
 export function reaper() {
@@ -176,7 +216,7 @@ export function poison() {
             Renewal: 0,
             Synthesis: 0
         }),
-        new SingleUnit(),
+        new PoisonableUnit(),
         [new PoisonTarget()]
     );
 }
@@ -252,7 +292,7 @@ export function Saboteur() {
     )
 }
 
-export function Abomination() {
+export function abomination() {
     return new Unit(
         'Abomination',
         'Abomination',
@@ -270,7 +310,7 @@ export function Abomination() {
     )
 }
 
-export function Assassin() {
+export function assassin() {
     return new Unit(
         'Assassin',
         'Assassin',
@@ -282,13 +322,11 @@ export function Assassin() {
             Renewal: 0,
             Synthesis: 0
         }),
-        new SingleUnit(),
+        new PoisonableUnit().setOptional(true),
         2, 2,
         [new PoisonTarget(), new Lethal()]
     )
 }
-
-
 
 export function vampire() {
     return new Unit(

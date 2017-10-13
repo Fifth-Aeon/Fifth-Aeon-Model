@@ -1,6 +1,7 @@
 // Game Types
 import { Mechanic } from '../mechanic';
 import { Card } from '../card';
+import { Item } from '../item';
 import { Unit, UnitType } from '../unit';
 import { Resource } from '../resource';
 

@@ -18,7 +18,7 @@ export class CurePoisonTargeter extends Targeter {
         return 'target posioned unit';
     }
 
-    public optional() {
+    public isOptional() {
         return true;
     }
 }

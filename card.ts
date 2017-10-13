@@ -79,7 +79,7 @@ export class Card {
             game.canTakeAction() &&
             game.isPlayPhase() &&
             owner.getPool().meetsReq(this.cost) &&
-            (!this.targeter.needsInput() || this.targeter.optional() ||
+            (!this.targeter.needsInput() || this.targeter.isOptional() ||
                 this.targeter.getValidTargets(this, game).length > 0);
     }
 

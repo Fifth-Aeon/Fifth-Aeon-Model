@@ -130,6 +130,10 @@ export class Unit extends Card {
         this.immunities.delete(id);
     }
 
+    public isImmune(id: string) {
+        return this.immunities.has(id);
+    }
+
     public hasMechanicWithId(id: string) {
         return this.mechanics.find(mechanic => mechanic.id() == id);
     }
@@ -332,6 +336,13 @@ export class Unit extends Card {
         this.location = Location.Crypt;
         this.dying = false;
         this.died = false;
+    }
+
+    public detachItems(game: Game) {
+        for (let item of this.items) {
+            item.detach();
+            game.addToCrypt(item);
+        }
     }
 
     public annihilate() {

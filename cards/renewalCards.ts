@@ -21,7 +21,7 @@ import { UnitEntersPlay } from './mechanics/entersPlay';
 export function breastplate() {
     return new Item(
         'Breastplate',
-        'Breastplate',
+        'Sturdy Breastplate',
         'breastplate.png',
         new Resource(1, 0, {
             Growth: 0,
@@ -31,7 +31,7 @@ export function breastplate() {
         }),
         new Untargeted(),
         new FriendlyUnit(),
-        2, 2,
+        0, 4,
         []
     )
 }

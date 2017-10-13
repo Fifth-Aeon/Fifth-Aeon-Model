@@ -1,4 +1,4 @@
-import { Card, CardType } from './card';
+import { Card, CardType, Location } from './card';
 import { Unit } from './unit';
 import { Mechanic } from './mechanic';
 import { Resource } from './resource';
@@ -14,11 +14,15 @@ export class Item extends Card {
     private hostTargeter: Targeter;
 
     constructor(dataId: string, name: string, imageUrl: string, cost: Resource, targeter: Targeter, hostTargeter: Targeter,
-        lifeBonus: number, damageBonus: number, mechanics: Mechanic[]) {
+        damageBonus: number, lifeBonus: number, mechanics: Mechanic[]) {
         super(dataId, name, imageUrl, cost, targeter, mechanics);
         this.lifeBonus = lifeBonus;
         this.damageBonus = damageBonus;
         this.hostTargeter = hostTargeter;
+    }
+
+    public evaluate(game: Game) {
+        return this.lifeBonus + this.damageBonus + super.evaluate(game);
     }
 
     public isPlayable(game: Game): boolean {
@@ -47,13 +51,13 @@ export class Item extends Card {
         unit.buff(this.damageBonus, this.lifeBonus);
         unit.addItem(this);
         this.host = unit;
+        this.location = Location.Board;
     }
 
     public detach() {
         this.host.buff(-this.damageBonus, -this.lifeBonus);
         this.host.removeItem(this);
         this.host = null;
+        this.location = Location.Crypt;
     }
-
-
 }

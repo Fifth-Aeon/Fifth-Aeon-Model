@@ -7,7 +7,7 @@ import { GameEvent, EventType } from '../../gameEvent';
 import { properCase, properList } from '../../strings';
 
 
-export class RefreshTarget extends TargetedMechanic {    
+export class RefreshTarget extends TargetedMechanic {
     public run(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game)) {
             target.refresh()
@@ -19,6 +19,6 @@ export class RefreshTarget extends TargetedMechanic {
     }
 
     public evaluateTarget(source: Card, target: Unit) {
-        return 0.1 * (target.getOwner() == source.getOwner() ? 1 : -1);
+        return 0.1 * (target.isExausted() ? 1 : 0) * (target.getOwner() == source.getOwner() ? 1 : -1);
     }
 }

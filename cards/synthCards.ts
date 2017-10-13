@@ -1,6 +1,10 @@
 import { Mechanic } from '../mechanic';
 import { Card } from '../card';
+import { Item } from '../item';
 import { Unit, UnitType, mechanical } from '../unit';
+import { Resource } from '../resource';
+
+// Mechanics
 import { SingleUnit, Untargeted, AllUnits, AllPlayers, EnemyUnits, Friends, Enemies, Everyone } from '../targeter';
 import { ShuffleIntoDeck } from './mechanics/shuffleIntoDeck';
 import { AugarCard, DrawCard, Peek } from './mechanics/draw';
@@ -11,7 +15,6 @@ import { Flying, Lethal, Shielded, Relentless } from './mechanics/skills';
 import { friendlyLordship } from './mechanics/lordship';
 import { Annihilate } from './mechanics/removal';
 import { BuffTarget } from './mechanics/buff';
-import { Resource } from '../resource';
 import { Robotic, SpyPower } from './mechanics/synthSpecials';
 import { MechanicalUnit, BiologicalUnit } from './targeters/biotargeter';
 import { DealDamage, DealSynthDamage } from './mechanics/dealDamage';
