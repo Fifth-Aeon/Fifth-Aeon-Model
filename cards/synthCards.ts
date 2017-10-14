@@ -5,13 +5,14 @@ import { Unit, UnitType, mechanical } from '../unit';
 import { Resource } from '../resource';
 
 // Mechanics
-import { SingleUnit, Untargeted, AllUnits, AllPlayers, EnemyUnits, Friends, Enemies, Everyone } from '../targeter';
+import { SingleUnit, Untargeted, AllUnits, AllPlayers, EnemyUnits, Friends, Enemies, Everyone,
+FriendlyUnit, EnemyUnit } from '../targeter';
 import { ShuffleIntoDeck } from './mechanics/shuffleIntoDeck';
 import { AugarCard, DrawCard, Peek } from './mechanics/draw';
 import { EndOfTurn } from './mechanics/periodic';
 import { CannotAttack, CannotBlock } from './mechanics/cantAttack';
 import { UnitEntersPlay } from './mechanics/entersPlay';
-import { Flying, Lethal, Shielded, Relentless } from './mechanics/skills';
+import { Flying, Ranged, Lethal, Shielded, Relentless } from './mechanics/skills';
 import { friendlyLordship } from './mechanics/lordship';
 import { Annihilate } from './mechanics/removal';
 import { BuffTarget } from './mechanics/buff';
@@ -19,6 +20,42 @@ import { Robotic, SpyPower } from './mechanics/synthSpecials';
 import { MechanicalUnit, BiologicalUnit } from './targeters/biotargeter';
 import { DealDamage, DealSynthDamage } from './mechanics/dealDamage';
 import { Poisoned } from './mechanics/poison';
+
+export function occularImplant() {
+    return new Item(
+        'OccularImplant',
+        'Occular Implant',
+        'cyber-eye.png',
+        new Resource(5, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 3
+        }),
+        new Untargeted(),
+        new FriendlyUnit(),
+        3, 3,
+        [new SpyPower()]
+    );
+}
+
+export function rifle() {
+    return new Item(
+        'Rifle',
+        'Marksman\'s Rifle',
+        'winchester-rifle.png',
+        new Resource(4, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 2
+        }),
+        new EnemyUnit(),
+        new FriendlyUnit(),
+        3, 2,
+        [new Ranged(), new DealDamage(2)]
+    );
+}
 
 export function atomicStrike() {
     return new Card(

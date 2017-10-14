@@ -10,7 +10,7 @@ export class Flying extends Mechanic {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.CheckBlock, params => {
                 let blocker = params.get('blocker') as Unit;
-                if (!blocker.hasMechanicWithId('flying'))
+                if (!blocker.hasMechanicWithId('flying') && !blocker.hasMechanicWithId('ranged'))
                     params.set('canBlock', false)
                 return params;
             }
@@ -32,6 +32,24 @@ export class Flying extends Mechanic {
     public evaluate(card:Card) {
         let unit = card as Unit;
         return unit.getDamage() * 0.75 + unit.getLife() * 0.25;
+    }
+}
+
+export class Ranged extends Mechanic {
+    public run(card: Card, game: Game) {}
+
+
+    public getText(card: Card) {
+        return `Ranged.`;
+    }
+
+    public id() {
+        return 'ranged';
+    }
+
+    public evaluate(card:Card) {
+        let unit = card as Unit;
+        return unit.getDamage() * 0.25 + unit.getLife() * 0.25;
     }
 }
 

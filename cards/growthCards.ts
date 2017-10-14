@@ -22,6 +22,26 @@ import { Venomous } from './mechanics/poison';
 import { GainLife, GainResource } from './mechanics/playerAid';
 import { OnDeath } from './mechanics/death';
 
+
+export function giantClub() {
+    return new Item(
+        'GiantClub',
+        'Giant Club',
+        'wood-club.png',
+        new Resource(5, 0, {
+            Growth: 3,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        new FriendlyUnit(),
+        6, 6,
+        []
+    );
+}
+
+
 export function kraken() {
     return new Unit(
         'Kraken',

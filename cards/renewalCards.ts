@@ -14,7 +14,7 @@ import { EndOfTurn } from './mechanics/periodic';
 import { SummonUnits } from './mechanics/summonUnits';
 import { BuffTarget } from './mechanics/buff';
 import { RefreshTarget } from './mechanics/heal';
-import { Flying, Relentless } from './mechanics/skills';
+import { Flying, Relentless, Ranged, Immortal } from './mechanics/skills';
 import { CurePoisonTargeter, CurePoison } from './mechanics/poison';
 import { UnitEntersPlay } from './mechanics/entersPlay';
 
@@ -33,7 +33,48 @@ export function breastplate() {
         new FriendlyUnit(),
         0, 4,
         []
-    )
+    );
+}
+
+export function crossbow() {
+    return new Item(
+        'Crossbow',
+        'Crossbow',
+        'crossbow.png',
+        new Resource(2, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 1,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        new FriendlyUnit(),
+        2, 2,
+        [new Ranged()]
+    );
+}
+
+export function ancientSage() {
+    return new Unit(
+        'AncientSage',
+        'Sage of Tranquility',
+        'meditation.png',
+        UnitType.Cleric,
+        new Resource(8, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 6,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        0, 4,
+        [new Immortal(),
+        new CannotAttack(),
+        new Serenity('Gain 2 life and draw a card', 1, (unit, game) => {
+            game.getPlayer(unit.getOwner()).addLife(2);
+            game.getPlayer(unit.getOwner()).drawCard();
+        })]
+    );
 }
 
 export function ruralMonk() {
