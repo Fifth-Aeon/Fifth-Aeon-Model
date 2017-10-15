@@ -24,3 +24,4 @@ export class ImprisonTarget extends TargetedMechanic {
         return unit.evaluate(game) * 1.25 * (unit.getOwner() == source.getOwner() ? -1 : 1);
     }
 }
+

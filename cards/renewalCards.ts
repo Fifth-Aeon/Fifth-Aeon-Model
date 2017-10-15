@@ -1,22 +1,44 @@
+// Game Types
 import { Mechanic } from '../mechanic';
 import { Card } from '../card';
 import { Unit, UnitType } from '../unit';
 import { Item } from '../item';
 import { Resource } from '../resource';
 
+// Targeters
 import { SingleUnit, FriendlyUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnits } from '../targeter';
+
+// Mecchanics
 import { CannotAttack, ImprisonTarget } from './mechanics/cantAttack';
 import { ShuffleIntoDeck } from './mechanics/shuffleIntoDeck';
 import { RenewalMCTargeter, MindControl } from './mechanics/mindControl';
 import { Lordship, unitTypeLordshipExclusive, unitTypeLordshipInclusive } from './mechanics/lordship';
 import { Serenity } from './mechanics/serenity';
 import { EndOfTurn } from './mechanics/periodic';
-import { SummonUnits } from './mechanics/summonUnits';
+import { SummonUnits, SummonUnitOnDamage} from './mechanics/summonUnits';
 import { BuffTarget } from './mechanics/buff';
 import { RefreshTarget } from './mechanics/heal';
-import { Flying, Relentless, Ranged, Immortal } from './mechanics/skills';
+import { Flying, Aquatic, Relentless, Ranged, Immortal } from './mechanics/skills';
 import { CurePoisonTargeter, CurePoison } from './mechanics/poison';
 import { UnitEntersPlay } from './mechanics/entersPlay';
+
+export function navalGalley() {
+    return new Unit(
+        'NavalGalley',
+        'Naval Galley',
+        'trireme.png',
+        UnitType.Vehicle,
+        new Resource(3, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 2,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        2, 3,
+        [new Aquatic()]
+    );
+}
 
 export function breastplate() {
     return new Item(

@@ -2,7 +2,7 @@ import { Mechanic } from '../../mechanic';
 import { Game, GamePhase } from '../../game';
 import { Targeter } from '../../targeter';
 import { Card } from '../../card';
-import { Unit } from '../../unit';
+import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
 export class SummonUnits extends Mechanic {
@@ -21,7 +21,7 @@ export class SummonUnits extends Mechanic {
         }
     }
 
-    public getUnitCount(card: Card, game: Game)  {
+    public getUnitCount(card: Card, game: Game) {
         return this.count;
     }
 
@@ -51,5 +51,38 @@ export class SummonUnitForGrave extends SummonUnits {
             return `Play a ${this.name} for each ${this.factor} units in any crypt (${this.getUnitCount(card, game)}).`;
         else
             return `Play a ${this.name} for each ${this.factor} units in any crypt (rounded down).`;
+    }
+}
+
+export class SummonUnitOnDamage extends Mechanic {
+    protected name: string;
+    constructor(protected factory: () => Unit) {
+        super();
+        this.name = factory().getName();
+    }
+
+    public run(card: Card, game: Game) {
+        (card as Unit).getEvents().addEvent(this, new GameEvent(
+            EventType.DealDamage, params => {
+                let target = params.get('target') as Unit;
+                if (target.getUnitType() == UnitType.Player) {
+                    let owner = game.getPlayer(card.getOwner());
+                    game.playGeneratedUnit(owner, this.factory())
+                }
+                return params;
+            }
+        ))
+    }
+
+    public remove(card: Card, game: Game) {
+        (card as Unit).getEvents().removeEvents(this);
+    }
+
+    public getText(card: Card) {
+        return `Whenever this damages your opponent summon a ${this.name}.`;
+    }
+
+    public evaluate() {
+        return 3;
     }
 }

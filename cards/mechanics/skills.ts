@@ -8,13 +8,13 @@ import { GameEvent, EventType } from '../../gameEvent';
 export class Flying extends Mechanic {
     public run(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
-            EventType.CheckBlock, params => {
+            EventType.CheckBlockable, params => {
                 let blocker = params.get('blocker') as Unit;
                 if (!blocker.hasMechanicWithId('flying') && !blocker.hasMechanicWithId('ranged'))
                     params.set('canBlock', false)
                 return params;
             }
-        ))
+        ));
     }
 
     public remove(card: Card, game: Game) {
@@ -29,14 +29,100 @@ export class Flying extends Mechanic {
         return 'flying';
     }
 
-    public evaluate(card:Card) {
+    public evaluate(card: Card) {
         let unit = card as Unit;
         return unit.getDamage() * 0.75 + unit.getLife() * 0.25;
     }
 }
 
+export class Unblockable extends Mechanic {
+    public run(card: Card, game: Game) {
+        (card as Unit).getEvents().addEvent(this, new GameEvent(
+            EventType.CheckBlockable, params => {
+                params.set('canBlock', false);
+                return params;
+            }
+        ));
+    }
+
+    public remove(card: Card, game: Game) {
+        (card as Unit).getEvents().removeEvents(this);
+    }
+
+    public getText(card: Card) {
+        return `Unblockable.`;
+    }
+
+    public id() {
+        return 'unblockable';
+    }
+
+    public evaluate(card: Card) {
+        let unit = card as Unit;
+        return unit.getDamage() * 1 + unit.getLife() * 0.25;
+    }
+}
+
+
+export class Rush extends Mechanic {
+    public run(card: Card, game: Game) {
+        (card as Unit).refresh();
+    }
+
+    public getText(card: Card) {
+        return `Rush.`;
+    }
+
+    public id() {
+        return 'rush';
+    }
+
+    public evaluate(card: Card) {
+        let unit = card as Unit;
+        return unit.getDamage() * 0.75;;
+    }
+}
+
+export class Aquatic extends Mechanic {
+    public run(card: Card, game: Game) {
+        (card as Unit).getEvents().addEvent(this, new GameEvent(
+            EventType.CheckBlockable, params => {
+                let blocker = params.get('blocker') as Unit;
+                if (!blocker.hasMechanicWithId('aquatic') && !blocker.hasMechanicWithId('flying'))
+                    params.set('canBlock', false)
+                return params;
+            }
+        ));
+        (card as Unit).getEvents().addEvent(this, new GameEvent(
+            EventType.CheckCanBlock, params => {
+                let attacker = params.get('attacker') as Unit;
+                if (!attacker.hasMechanicWithId('aquatic'))
+                    params.set('canBlock', false)
+                return params;
+            }
+        ));
+    }
+
+    public remove(card: Card, game: Game) {
+        (card as Unit).getEvents().removeEvents(this);
+    }
+
+    public getText(card: Card) {
+        return `Aquatic.`;
+    }
+
+    public id() {
+        return 'aquatic';
+    }
+
+    public evaluate(card: Card) {
+        let unit = card as Unit;
+        return unit.getDamage() * 0.4 + unit.getLife() * 0.25;
+    }
+}
+
 export class Ranged extends Mechanic {
-    public run(card: Card, game: Game) {}
+    public run(card: Card, game: Game) { }
 
 
     public getText(card: Card) {
@@ -47,7 +133,7 @@ export class Ranged extends Mechanic {
         return 'ranged';
     }
 
-    public evaluate(card:Card) {
+    public evaluate(card: Card) {
         let unit = card as Unit;
         return unit.getDamage() * 0.25 + unit.getLife() * 0.25;
     }
@@ -193,6 +279,10 @@ export class Deathless extends Mechanic {
             }))
             return params;
         }));
+    }
+
+    public clone() {
+        return new Deathless(this.charges);
     }
 
     public id() {

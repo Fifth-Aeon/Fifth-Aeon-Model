@@ -5,14 +5,17 @@ import { Unit, UnitType, mechanical } from '../unit';
 import { Resource } from '../resource';
 
 // Mechanics
-import { SingleUnit, Untargeted, AllUnits, AllPlayers, EnemyUnits, Friends, Enemies, Everyone,
-FriendlyUnit, EnemyUnit } from '../targeter';
+import {
+    SingleUnit, Untargeted, AllUnits, AllPlayers, EnemyUnits, Friends, Enemies, Everyone,
+    FriendlyUnit, EnemyUnit
+} from '../targeter';
+import { PoisonImmune } from './mechanics/poison';
 import { ShuffleIntoDeck } from './mechanics/shuffleIntoDeck';
 import { AugarCard, DrawCard, Peek } from './mechanics/draw';
 import { EndOfTurn } from './mechanics/periodic';
 import { CannotAttack, CannotBlock } from './mechanics/cantAttack';
 import { UnitEntersPlay } from './mechanics/entersPlay';
-import { Flying, Ranged, Lethal, Shielded, Relentless } from './mechanics/skills';
+import { Flying, Ranged, Lethal, Shielded, Relentless, Aquatic, Unblockable } from './mechanics/skills';
 import { friendlyLordship } from './mechanics/lordship';
 import { Annihilate } from './mechanics/removal';
 import { BuffTarget } from './mechanics/buff';
@@ -20,6 +23,63 @@ import { Robotic, SpyPower } from './mechanics/synthSpecials';
 import { MechanicalUnit, BiologicalUnit } from './targeters/biotargeter';
 import { DealDamage, DealSynthDamage } from './mechanics/dealDamage';
 import { Poisoned } from './mechanics/poison';
+
+
+export function gasMask() {
+    return new Item(
+        'GasMask',
+        'Gas Mask',
+        'gas-mask.png',
+        new Resource(1, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 1
+        }),
+        new Untargeted(),
+        new FriendlyUnit(),
+        1, 2,
+        [new PoisonImmune()]
+    );
+}
+
+export function battleship() {
+    return new Unit(
+        'Battleship',
+        'Battleship',
+        'battleship.png',
+        UnitType.Vehicle,
+        new Resource(7, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 4
+        }),
+        new Untargeted(),
+        7, 7,
+        [new Aquatic()]
+    );
+}
+
+
+
+export function submarine() {
+    return new Unit(
+        'Submarine',
+        'Submarine',
+        'submarine.png',
+        UnitType.Vehicle,
+        new Resource(6, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 3
+        }),
+        new Untargeted(),
+        3, 4,
+        [new Aquatic(), new Unblockable()]
+    );
+}
 
 export function occularImplant() {
     return new Item(
@@ -125,7 +185,6 @@ export function carpetBombing() {
         [new DealDamage(3)]
     );
 }
-
 
 export function energyBeam() {
     return new Card(

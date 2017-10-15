@@ -6,8 +6,9 @@ import { Unit, UnitType } from '../unit';
 import { Resource } from '../resource';
 
 // Targeters
-import { SingleUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnit } from '../targeter';
+import { SingleUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnit, AllOtherUnits } from '../targeter';
 import { BiologicalUnit } from './targeters/biotargeter';
+import { UnitWithAbility } from './targeters/mechanicTargeter';
 
 // Mechanics
 import { DrawCardsFromUnit, WebTarget} from './mechanics/growthSpecials';
@@ -16,12 +17,31 @@ import { SleepTarget } from './mechanics/sleep';
 import { BuffTarget } from './mechanics/buff';
 import { FinalBlow } from './mechanics/finalBlow';
 import { SummonUnits } from './mechanics/summonUnits';
-import { Flying, Relentless, Deathless } from './mechanics/skills';
+import { Flying, Lethal, Rush, Aquatic, Relentless, Deathless } from './mechanics/skills';
 import { Affinity } from './mechanics/affinity';
 import { Venomous } from './mechanics/poison';
 import { GainLife, GainResource } from './mechanics/playerAid';
 import { OnDeath } from './mechanics/death';
+import { KillTarget } from './mechanics/removal';
 
+
+export function fireElemental() {
+    return new Unit(
+        'Fire Elemental',
+        'Flame Ifrit',
+        'ifrit.png',
+        UnitType.Elemental,
+        new Resource(7, 0, {
+            Growth: 4,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new AllOtherUnits(),
+        8, 4,
+        [new DealDamage(3)]
+    );
+}
 
 export function giantClub() {
     return new Item(
@@ -36,16 +56,50 @@ export function giantClub() {
         }),
         new Untargeted(),
         new FriendlyUnit(),
-        6, 6,
+        5, 5,
         []
     );
 }
 
+export function cobra() {
+    return new Unit(
+        'Cobra',
+        'Snapping Cobra',
+        'cobra.png',
+        UnitType.Mammal,
+        new Resource(2, 0, {
+            Growth: 2,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted,
+        1, 2,
+        [new Lethal()]
+    );
+}
 
+export function greatWhale() {
+    return new Unit(
+        'GreatWhale',
+        'Great Whale',
+        'sperm-whale.png',
+        UnitType.Mammal,
+        new Resource(4, 0, {
+            Growth: 5,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new UnitWithAbility('aquatic', 'Aquatic').setOptional(true),
+        2, 5,
+        [new Aquatic(), new GainLife(2)]
+    );
+}
 export function kraken() {
     return new Unit(
         'Kraken',
-        'Kraken',
+        'Shipwrecker Kraken',
         'giant-squid.png',
         UnitType.Monster,
         new Resource(7, 0, {
@@ -54,9 +108,27 @@ export function kraken() {
             Renewal: 0,
             Synthesis: 0
         }),
-        new Untargeted(),
-        7, 7,
-        []
+        new UnitWithAbility('aquatic', 'Aquatic').setOptional(true),
+        5, 5,
+        [new Aquatic(), new KillTarget()]
+    );
+}
+
+export function tiger() {
+    return new Unit(
+        'ChargingTiger',
+        'Charging Tiger',
+        'tiger-head.png',
+        UnitType.Mammal,
+        new Resource(3, 0, {
+            Growth: 2,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted,
+        3, 2,
+        [new Rush()]
     );
 }
 

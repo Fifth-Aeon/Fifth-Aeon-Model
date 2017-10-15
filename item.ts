@@ -34,29 +34,51 @@ export class Item extends Card {
         return this.hostTargeter;
     }
 
+    public getDamage() {
+        return this.damageBonus;
+    }
+
+    public getLife() {
+        return this.lifeBonus;
+    }
+
+    public getStats() {
+        return this.damageBonus + this.lifeBonus;
+    }
+
     public getCardType() {
         return CardType.Item;
     }
 
     public play(game: Game) {
         let host = this.hostTargeter.getTargets(this, game)[0];
-        this.attach(host);
+        this.attach(host, game);
+    }
+
+    public getText(game: Game, hasPrefix: boolean = true): string {
+        let prefix = hasPrefix ? `Attaches to ${this.hostTargeter.getText()}. ` : '';
+        return prefix + this.mechanics.map(mechanic => mechanic.getText(this, game)).join(' ');
+    }
+
+    public attach(host: Unit, game: Game) {
+        host.buff(this.damageBonus, this.lifeBonus);
+        host.addItem(this);
+        this.host = host;
+        this.location = Location.Board;
         for (let mechanic of this.mechanics) {
-            host.addMechanic(mechanic);
-            mechanic.run(host, game);
+            let clone = mechanic.clone();
+            this.host.addMechanic(clone);
+            clone.run(host, game);
         }
     }
 
-    public attach(unit: Unit) {
-        unit.buff(this.damageBonus, this.lifeBonus);
-        unit.addItem(this);
-        this.host = unit;
-        this.location = Location.Board;
-    }
-
-    public detach() {
+    public detach(game: Game) {
         this.host.buff(-this.damageBonus, -this.lifeBonus);
         this.host.removeItem(this);
+        for (let mechanic of this.mechanics) {
+            this.host.removeMechanic(mechanic.id(), game);
+            mechanic.remove(this.host, game);
+        }
         this.host = null;
         this.location = Location.Crypt;
     }

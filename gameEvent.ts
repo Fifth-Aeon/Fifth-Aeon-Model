@@ -6,7 +6,8 @@ import { Game } from './game';
 
 export enum EventType {
     UnitEntersPlay, StartOfTurn, EndOfTurn,
-    Death, UnitDies, Attack, TakeDamage, DealDamage, CheckBlock, KillUnit,
+    Death, UnitDies, Attack, TakeDamage, DealDamage, 
+    CheckBlockable, CheckCanBlock, KillUnit,
     LeavesPlay, Annihilate
 }
 
@@ -48,8 +49,9 @@ export class EventGroup {
     }
 
     public trigger(type: EventType, params: Map<string, any>) {
-        let events = this.events.get(type) || [];
+        let events = sortBy(this.events.get(type) || [], event => event.priority);
         let len = events.length;
+        
         for (let i = 0; i < events.length; i++) {
             let event = events[i]
             if (!event) {

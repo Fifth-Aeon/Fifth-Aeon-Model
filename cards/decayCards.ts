@@ -10,7 +10,7 @@ import { PoisonableUnit, PoisonableUnits } from './targeters/poisonTargeter';
 import { SingleUnit, Untargeted, AllUnits, AllOtherUnits, FriendlyUnit, EnemyUnit } from '../targeter';
 
 // Mechanics
-import { Flying, Lethal, Lifesteal, Deathless, Immortal, Relentless } from './mechanics/skills';
+import { Flying,Rush,Aquatic, Lethal, Lifesteal, Deathless, Immortal, Relentless } from './mechanics/skills';
 import { Discard, DiscardOnDamage } from './mechanics/draw';
 import { FinalBlow } from './mechanics/finalBlow';
 import { BuffTarget } from './mechanics/buff';
@@ -19,11 +19,47 @@ import { CannotAttack } from './mechanics/cantAttack';
 import { PoisonTarget, PoisonImmune } from './mechanics/poison';
 import { ReturnFromCrypt } from './mechanics/returnFromCrypt';
 import { TransformDamaged, AbominationConsume } from './mechanics/decaySpecials';
-import { SummonUnitForGrave } from './mechanics/summonUnits';
+import { SummonUnitForGrave, SummonUnitOnDamage } from './mechanics/summonUnits';
 import { DamageSpawnOnKill } from './mechanics/dealDamage';
 import { OnDeath, OnDeathAnyDeath } from './mechanics/death';
 import { KillTarget } from './mechanics/removal';
 
+
+export function raider() {
+    return new Unit(
+        'raider',
+        'Raider',
+        'horned-helm.png',
+        UnitType.Human,
+        new Resource(2, 0, {
+            Growth: 0,
+            Decay: 2,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        2, 2,
+        [new Rush()]
+    );
+}
+
+export function raidShip() {
+    return new Unit(
+        'raidingShip',
+        'Raid Ship',
+        'drakkar.png',
+        UnitType.Vehicle,
+        new Resource(4, 0, {
+            Growth: 0,
+            Decay: 2,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        2, 2,
+        [new Aquatic(), new Rush(), new SummonUnitOnDamage(raider)]
+    );
+}
 
 
 export function whip() {
@@ -61,6 +97,27 @@ export function assasinsDagger() {
         [new Lethal()]
     )
 }
+
+
+export function NecromancerTome() {
+    return new Item(
+        'NecromancerTome',
+        'Necromancers\'s Tome',
+        'evil-book.png',
+        new Resource(5, 0, {
+            Growth: 0,
+            Decay: 3,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        new FriendlyUnit(),
+        4, 0,
+        [new Deathless()]
+    )
+}
+
+
 
 
 export function reaper() {

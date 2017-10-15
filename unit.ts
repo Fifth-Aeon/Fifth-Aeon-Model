@@ -9,11 +9,10 @@ import { Mechanic } from './mechanic';
 
 import { remove } from 'lodash';
 
-
-
 export enum UnitType {
-    Player, Human, Cleric, Wolf, Spider, Automaton, Monster, Mammal, Soldier,
-    Vampire, Cultist, Agent, Undead, Structure, Vehicle, Insect, Dragon
+    Player, Human, Cleric, Wolf, Spider, Snake, Automaton, Monster, Mammal, Soldier,
+    Vampire, Cultist, Agent, Undead, Structure, Vehicle, Insect, Dragon,
+    Elemental
 }
 
 export const mechanical = new Set([UnitType.Automaton, UnitType.Structure, UnitType.Vehicle]);
@@ -75,6 +74,12 @@ export class Unit extends Card {
         this.immunities = new Set();
         this.items = [];
     }
+
+    /*
+    public getText(game: Game): string {
+        return super.getText(game) + ' ' + this.items.map(item => item.getText(game, false)).join(' ');
+    }
+    */
 
     public addItem(item: Item) {
         this.items.push(item);
@@ -171,7 +176,11 @@ export class Unit extends Card {
             !this.blockDisabled &&
             !this.exausted &&
             (toBlock.isAttacking() || hypothetical) &&
-            toBlock.getEvents().trigger(EventType.CheckBlock, new Map<string, any>([
+            toBlock.getEvents().trigger(EventType.CheckCanBlock, new Map<string, any>([
+                ['attacker', toBlock],
+                ['canBlock', true]
+            ])).get('canBlock') &&
+            toBlock.getEvents().trigger(EventType.CheckBlockable, new Map<string, any>([
                 ['blocker', this],
                 ['canBlock', true]
             ])).get('canBlock');
@@ -228,6 +237,7 @@ export class Unit extends Card {
 
     public play(game: Game) {
         super.play(game);
+        this.exausted = false;
         this.location = Location.Board;
         game.playUnit(this, this.owner);
     }
@@ -340,7 +350,7 @@ export class Unit extends Card {
 
     public detachItems(game: Game) {
         for (let item of this.items) {
-            item.detach();
+            item.detach(game);
             game.addToCrypt(item);
         }
     }
