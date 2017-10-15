@@ -18,10 +18,66 @@ import { EndOfTurn } from './mechanics/periodic';
 import { SummonUnits, SummonUnitOnDamage} from './mechanics/summonUnits';
 import { BuffTarget } from './mechanics/buff';
 import { RefreshTarget } from './mechanics/heal';
-import { Flying, Aquatic, Relentless, Ranged, Immortal } from './mechanics/skills';
+import { Flying, Aquatic, Rush, Relentless, Ranged, Immortal } from './mechanics/skills';
 import { CurePoisonTargeter, CurePoison } from './mechanics/poison';
 import { UnitEntersPlay } from './mechanics/entersPlay';
 
+
+
+export function archer() {
+    return new Unit(
+        'Archer',
+        'Archer',
+        'bowman.png',
+        UnitType.Soldier,
+        new Resource(1, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 1,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        1, 2,
+        [new Ranged()]
+    );
+}
+
+export function general() {
+    return new Unit(
+        'General',
+        'Pretorian General',
+        'galea.png',
+        UnitType.Soldier,
+        new Resource(4, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 2,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        2, 2,
+        [unitTypeLordshipInclusive(UnitType.Soldier, 1, 1)]
+    );
+}
+
+
+export function elderblade() {
+    return new Item(
+        'ElderBlade',
+        'Lightsworn Blade',
+        'relic-blade.png',
+        new Resource(7, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 5,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        new FriendlyUnit(),
+        5, 5,
+        [new Flying(), new Rush(), new Relentless()]
+    );
+}
 export function navalGalley() {
     return new Unit(
         'NavalGalley',
