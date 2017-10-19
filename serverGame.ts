@@ -130,13 +130,17 @@ export class ServerGame extends Game {
     */
     protected declareBlockerAction(act: GameAction) {
         let player = this.players[act.player];
+        let isCanceling = act.params.blockedId == null;
         let blocker = this.getUnitById(act.params.blockerId);
-        let blocked = this.getPlayerUnitById(this.turn, act.params.blockedId);
+        let blocked = isCanceling ? null : this.getPlayerUnitById(this.turn, act.params.blockedId);
         if (this.isPlayerTurn(act.player) ||
             this.phase !== GamePhase.Block ||
-            !blocker || !blocked || !blocker.canBlock(blocked))
+            !blocker)
             return false;
-        blocker.setBlocking(blocked ? blocked.getId() : null);
+        if (!isCanceling && (!blocked ||
+            !blocker.canBlockTarget(blocked)))
+            return false;
+        blocker.setBlocking(isCanceling ? null : blocked.getId() );
         this.addGameEvent(new GameSyncEvent(SyncEventType.Block, {
             player: act.player,
             blockerId: act.params.blockerId,

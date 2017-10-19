@@ -171,7 +171,12 @@ export class Unit extends Card {
         this.blockedUnitId = blockedId;
     }
 
-    public canBlock(toBlock: Unit, hypothetical: boolean = false) {
+    public canBlock() {
+        return !this.blockDisabled &&
+            !this.exausted;
+    }
+
+    public canBlockTarget(toBlock: Unit, hypothetical: boolean = false) {
         return toBlock == null ||
             !this.blockDisabled &&
             !this.exausted &&

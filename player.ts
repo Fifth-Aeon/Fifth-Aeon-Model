@@ -172,7 +172,7 @@ export class Player extends Unit {
         remove(this.deck, drawn);
         if (!drawn)
             return;
-        if (this.hand.length >= this.hardHandLimit) {
+        if (this.hand.length > this.hardHandLimit) {
             this.parent.addToCrypt(drawn);
         } else {
             this.addToHand(drawn);
@@ -180,12 +180,12 @@ export class Player extends Unit {
         this.parent.addGameEvent(new GameSyncEvent(SyncEventType.Draw, {
             playerNo: this.playerNumber,
             card: drawn.getPrototype(),
-            discarded: this.hand.length >= this.hardHandLimit
+            discarded: this.hand.length > this.hardHandLimit
         }));
     }
 
     public drawGeneratedCard(card: Card) {
-        if (this.hand.length >= this.hardHandLimit) {
+        if (this.hand.length > this.hardHandLimit) {
             this.parent.addToCrypt(card);
         } else {
             this.addToHand(card);

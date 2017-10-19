@@ -24,7 +24,6 @@ import { GainLife, GainResource } from './mechanics/playerAid';
 import { OnDeath } from './mechanics/death';
 import { KillTarget } from './mechanics/removal';
 
-
 export function fireElemental() {
     return new Unit(
         'Fire Elemental',
@@ -66,7 +65,7 @@ export function cobra() {
         'Cobra',
         'Snapping Cobra',
         'cobra.png',
-        UnitType.Mammal,
+        UnitType.Snake,
         new Resource(2, 0, {
             Growth: 2,
             Decay: 0,
@@ -96,6 +95,7 @@ export function greatWhale() {
         [new Aquatic(), new GainLife(2)]
     );
 }
+
 export function kraken() {
     return new Unit(
         'Kraken',
@@ -206,7 +206,6 @@ export function webspit() {
     );
 }
 
-
 export function bite() {
     return new Card(
         'bite',
@@ -257,7 +256,6 @@ export function minotaur() {
         []
     );
 }
-
 
 export function venomousSpiderling() {
     return new Unit(
@@ -330,7 +328,6 @@ export function wasp() {
         [new Flying(), new Venomous()]
     );
 }
-
 
 export function werewolf() {
     return new Unit(
@@ -443,7 +440,6 @@ export function ancientBeast() {
     );
 }
 
-
 export function dragon() {
     return new Unit(
         'Dragon',
@@ -462,7 +458,6 @@ export function dragon() {
     );
 }
 
-
 export function eruption() {
     return new Card(
         'Eruption',
@@ -478,5 +473,3 @@ export function eruption() {
         [new DealDamage(5)]
     );
 }
-
-

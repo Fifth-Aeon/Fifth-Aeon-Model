@@ -182,7 +182,7 @@ export class BasicAI extends AI {
     }
 
     private canFavorablyBlock(attacker: Unit, blocker: Unit) {
-        if (!blocker.canBlock(attacker, true))
+        if (!blocker.canBlockTarget(attacker, true))
             return false;
         let type = this.categorizeBlock(attacker, blocker);
         return type == BlockType.AttackerDies ||
@@ -225,7 +225,7 @@ export class BasicAI extends AI {
         for (let attacker of attackers) {
             let options = [] as { blocker: Unit, attacker: Unit, type: BlockType, tradeScore: number }[];
             for (let blocker of potentialBlockers) {
-                if (blocker.canBlock(attacker)) {
+                if (blocker.canBlockTarget(attacker)) {
                     options.push({
                         blocker: blocker,
                         attacker: attacker,

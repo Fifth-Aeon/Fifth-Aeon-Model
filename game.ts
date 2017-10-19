@@ -298,7 +298,7 @@ export abstract class Game {
 
         for (let blocker of potentialBlockers) {
             for (let attacker of attackers) {
-                if (blocker.canBlock(attacker)) {
+                if (blocker.canBlockTarget(attacker)) {
                     return true;
                 }
             }
