@@ -75,12 +75,6 @@ export class Unit extends Card {
         this.items = [];
     }
 
-    /*
-    public getText(game: Game): string {
-        return super.getText(game) + ' ' + this.items.map(item => item.getText(game, false)).join(' ');
-    }
-    */
-
     public addItem(item: Item) {
         this.items.push(item);
     }
@@ -97,13 +91,14 @@ export class Unit extends Card {
     public transform(unit: Unit, game: Game) {
         this.cost = unit.cost;
         this.name = unit.name;
-        this.imageUrl = unit.imageUrl;
+        this.imageUrl = unit.imageUrl; 
         this.maxLife = unit.maxLife;
         this.life = unit.life;
         this.damage = unit.damage;
         this.mechanics.forEach(mechanic => mechanic.remove(this, game));
         this.mechanics = unit.mechanics;
         this.unitType = unit.unitType;
+        this.mechanics.forEach(mechanic => mechanic.run(this, game))
     }
 
     public removeMechanic(id: string, game: Game) {
