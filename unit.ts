@@ -1,6 +1,7 @@
 import { Game } from './game';
 import { Player } from './player';
-import { Card, Location } from './card';
+import { Permanent } from './permanent';
+import { Card, CardType, Location } from './card';
 import { Item } from './item';
 import { EventGroup, EventType } from './gameEvent';
 import { Resource } from './resource';
@@ -36,7 +37,7 @@ class Damager {
     }
 }
 
-export class Unit extends Card {
+export class Unit extends Permanent {
     // Stats
     protected life: number;
     protected maxLife: number;
@@ -52,7 +53,6 @@ export class Unit extends Card {
     protected blockDisabled: boolean;
 
     // Misc
-    protected events: EventGroup;
     protected items: Item[];
     private unitType: UnitType;
     private immunities: Set<string>;
@@ -85,19 +85,22 @@ export class Unit extends Card {
 
     public isPlayable(game: Game): boolean {
         return super.isPlayable(game) &&
-            game.getBoard().canPlayUnit(this);
+            game.getBoard().canPlayPermanant(this);
     }
 
     public transform(unit: Unit, game: Game) {
         this.cost = unit.cost;
         this.name = unit.name;
-        this.imageUrl = unit.imageUrl; 
+        this.imageUrl = unit.imageUrl;
         this.maxLife = unit.maxLife;
         this.life = unit.life;
         this.damage = unit.damage;
-        this.mechanics.forEach(mechanic => mechanic.remove(this, game));
-        this.mechanics = unit.mechanics;
         this.unitType = unit.unitType;
+        this.mechanics.forEach(mechanic => {
+            mechanic.remove(this, game);
+            this.mechanics.push(mechanic);
+            mechanic.attach(this);
+        });
         this.mechanics.forEach(mechanic => mechanic.run(this, game))
     }
 
@@ -220,9 +223,7 @@ export class Unit extends Card {
         return !this.attackDisabled && this.ready && !this.exausted;
     }
 
-    public getEvents() {
-        return this.events;
-    }
+
 
     public getBlockedUnitId() {
         return this.blockedUnitId;
@@ -239,7 +240,7 @@ export class Unit extends Card {
         super.play(game);
         this.exausted = false;
         this.location = Location.Board;
-        game.playUnit(this, this.owner);
+        game.playPermanent(this, this.owner);
     }
 
     public refresh() {
@@ -247,6 +248,10 @@ export class Unit extends Card {
         this.exausted = false;
         this.life = this.maxLife;
         this.setBlocking(null);
+    }
+
+    public getCardType() {
+        return CardType.Unit;
     }
 
     public canActivate(): boolean {
@@ -338,7 +343,7 @@ export class Unit extends Card {
     }
 
     private dying: boolean = false;
-    protected die() {
+    public die() {
         if (this.location != Location.Board || this.dying)
             return;
         this.dying = true;

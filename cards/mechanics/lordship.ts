@@ -92,3 +92,22 @@ export function unitTypeLordshipInclusive(type: UnitType, attack: number, life: 
         (source: Unit, target: Unit) => source.getOwner() == target.getOwner() && type == target.getUnitType()
     );
 }
+export function unitTypeLordshipAll(type: UnitType, attack: number, life: number) {
+    return new Lordship(
+        `${UnitType[type]} have +${attack}/+${life}.`,
+        attack + life,
+        (unit: Unit) => unit.buff(attack, life),
+        (unit: Unit) => unit.buff(-attack, -life),
+        (source: Unit, target: Unit) => type == target.getUnitType()
+    );
+} 
+
+export function notUnitLordship(type: UnitType, attack: number, life: number) {
+    return new Lordship(
+        `Non-${UnitType[type]} have +${attack}/+${life}.`,
+        attack + life,
+        (unit: Unit) => unit.buff(attack, life),
+        (unit: Unit) => unit.buff(-attack, -life),
+        (source: Unit, target: Unit) => type != target.getUnitType()
+    );
+}

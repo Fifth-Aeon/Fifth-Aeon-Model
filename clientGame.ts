@@ -7,6 +7,7 @@ import { Player } from './player';
 import { Card, CardType } from './card';
 import { Unit } from './unit';
 import { Item } from './item';
+import { Enchantment } from './enchantment';
 import { Resource, ResourceTypeNames } from './resource';
 
 import { maxBy } from 'lodash'
@@ -46,6 +47,13 @@ export class ClientGame extends Game {
             hostId: host ? host.getId() : null
         });
         this.playCard(this.players[card.getOwner()], card);
+    }
+
+    public modifyEnchantment(player: Player, enchantment: Enchantment) {
+        if (!enchantment.canChangePower(player, this))
+            return;
+        enchantment.empowerOrDiminish(player, this);
+        this.runGameAction(GameActionType.ModifyEnchantment, { enchantmentId: enchantment.getId() });
     }
 
     public declareAttacker(unit: Unit) {
@@ -139,6 +147,13 @@ export class ClientGame extends Game {
         }
         if (this.log)
             this.log.addCardPlayed(event);
+    }
+
+    private syncModifyEnchantment(playerNumber: number, event: GameSyncEvent, params: any) {
+        if (playerNumber == this.getCurrentPlayer().getPlayerNumber())
+            return;
+        let enchantment = this.getCardById(params.params.enchantmentId) as Enchantment;
+        enchantment.empowerOrDiminish(this.getCurrentPlayer(), this);
     }
 
     private syncDrawEvent(playerNumber: number, event: GameSyncEvent, params: any) {

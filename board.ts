@@ -1,4 +1,6 @@
+import { Permanent } from './permanent';
 import { Unit } from './unit';
+import { Enchantment } from './enchantment';
 
 /**
  * A simple board where each side can place up to a fixed number of units without any positoning.
@@ -7,7 +9,7 @@ import { Unit } from './unit';
  * @class Board
  */
 export class Board {
-    private spaces: Unit[][];
+    private spaces: Permanent[][];
 
     constructor(playerCount: number, private spaceCount: number) {
         this.spaces = new Array(playerCount);
@@ -16,36 +18,41 @@ export class Board {
         }
     }
 
-    public canPlayUnit(playerOrUnit: number | Unit) {
-        if (typeof playerOrUnit != 'object') {
-            return this.spaces[playerOrUnit].length < this.spaceCount;
+    public canPlayPermanant(playerOrPerm: number | Permanent) {
+        if (typeof playerOrPerm != 'object') {
+            return this.spaces[playerOrPerm].length < this.spaceCount;
         } else {
-            return this.spaces[playerOrUnit.getOwner()].length < this.spaceCount;
+            return this.spaces[playerOrPerm.getOwner()].length < this.spaceCount;
         }
     }
 
-    public addUnit(unit: Unit) {
-        this.spaces[unit.getOwner()].push(unit);
+    public addPermanent(permanent: Permanent) {
+        this.spaces[permanent.getOwner()].push(permanent);
     }
 
     public getAllUnits(): Array<Unit> {
-        let res = [];
+        let res: Unit[] = [];
         for (let i = 0; i < this.spaces.length; i++) {
             for (let j = 0; j < this.spaces[i].length; j++) {
-                res.push(this.spaces[i][j]);
+                if (this.spaces[i][j].isUnit())
+                    res.push(this.spaces[i][j] as Unit);
             }
         }
         return res;
     }
 
-    public getPlayerUnits(playerNumber: number) {
+    public getPlayerUnits(playerNumber: number): Unit[] {
+        return this.spaces[playerNumber].filter(perm => perm.isUnit()) as Unit[];
+    }
+
+    public getPlayerPermanants(playerNumber:number) {
         return this.spaces[playerNumber];
     }
 
-    public removeUnit(unit: Unit) {
+    public removePermanant(perm: Permanent) {
         for (let i = 0; i < this.spaces.length; i++) {
             for (let j = 0; j < this.spaces[i].length; j++) {
-                if (this.spaces[i][j] === unit)
+                if (this.spaces[i][j] === perm)
                     this.spaces[i].splice(j, 1);
             }
         }

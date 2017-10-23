@@ -8,7 +8,7 @@ export class ShuffleIntoDeck extends TargetedMechanic {
     public run(card: Card, game: Game) {
         let targets = this.targeter.getTargets(card, game);
         for (let target of targets) {
-            game.returnUnitToDeck(target);
+            game.returnPermanentToDeck(target);
         }
     }
 

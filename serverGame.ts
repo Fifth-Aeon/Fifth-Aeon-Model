@@ -1,5 +1,7 @@
 import { Game, GamePhase, GameActionType, SyncEventType, GameAction, GameSyncEvent } from './game';
 import { GameFormat, standardFormat } from './gameFormat';
+
+import { Enchantment } from './enchantment';
 import { CardType } from './card';
 import { Item } from './item';
 import { Unit } from './unit';
@@ -53,7 +55,18 @@ export class ServerGame extends Game {
         this.addActionHandeler(GameActionType.ToggleAttack, this.toggleAttackAction);
         this.addActionHandeler(GameActionType.DeclareBlocker, this.declareBlockerAction);
         this.addActionHandeler(GameActionType.CardChoice, this.cardChoiceAction);
+        this.addActionHandeler(GameActionType.ModifyEnchantment, this.modifyEnchantmentAction);
         this.addActionHandeler(GameActionType.Quit, this.quit);
+    }
+
+    protected modifyEnchantmentAction(act: GameAction): boolean {
+        if (!this.isPlayerTurn(act.player))
+            return false;
+        let enchantment = this.getCardById(act.params.enchantmentId) as Enchantment;
+        if (!enchantment || enchantment.getCardType() != CardType.Enchantment || !enchantment.canChangePower(this.getCurrentPlayer(), this))
+            return false;
+        enchantment.empowerOrDiminish(this.getCurrentPlayer(), this);
+        return true;
     }
 
     protected cardChoiceAction(act: GameAction): boolean {
@@ -140,7 +153,7 @@ export class ServerGame extends Game {
         if (!isCanceling && (!blocked ||
             !blocker.canBlockTarget(blocked)))
             return false;
-        blocker.setBlocking(isCanceling ? null : blocked.getId() );
+        blocker.setBlocking(isCanceling ? null : blocked.getId());
         this.addGameEvent(new GameSyncEvent(SyncEventType.Block, {
             player: act.player,
             blockerId: act.params.blockerId,
