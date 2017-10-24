@@ -12,7 +12,7 @@ export class DealDamage extends TargetedMechanic {
     public run(card: Card, game: Game) {
         let dmg = this.getDamage(card, game);
         for (let target of this.targeter.getTargets(card, game)) {
-            target.takeDamage(dmg);
+            target.takeDamage(dmg, card);
             target.checkDeath();
         }
     }
@@ -58,7 +58,7 @@ export class DamageSpawnOnKill extends DealDamage {
 
     public run(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game)) {
-            target.takeDamage(this.amount);
+            target.takeDamage(this.amount, card);
             target.checkDeath();
             if (target.getLocation() == Location.Crypt) {
                 game.playGeneratedUnit(card.getOwner(), this.factory());

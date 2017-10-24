@@ -66,6 +66,7 @@ export class ServerGame extends Game {
         if (!enchantment || enchantment.getCardType() != CardType.Enchantment || !enchantment.canChangePower(this.getCurrentPlayer(), this))
             return false;
         enchantment.empowerOrDiminish(this.getCurrentPlayer(), this);
+        this.addGameEvent(new GameSyncEvent(SyncEventType.EnchantmentModified, act.params));
         return true;
     }
 

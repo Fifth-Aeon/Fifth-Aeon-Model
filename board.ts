@@ -1,4 +1,5 @@
 import { Permanent } from './permanent';
+import { CardType } from './card';
 import { Unit } from './unit';
 import { Enchantment } from './enchantment';
 
@@ -36,6 +37,17 @@ export class Board {
             for (let j = 0; j < this.spaces[i].length; j++) {
                 if (this.spaces[i][j].isUnit())
                     res.push(this.spaces[i][j] as Unit);
+            }
+        }
+        return res;
+    }
+
+    public getAllEnchantments(): Array<Enchantment> {
+        let res: Enchantment[] = [];
+        for (let i = 0; i < this.spaces.length; i++) {
+            for (let j = 0; j < this.spaces[i].length; j++) {
+                if (this.spaces[i][j].getCardType() == CardType.Enchantment)
+                    res.push(this.spaces[i][j] as Enchantment);
             }
         }
         return res;

@@ -11,6 +11,8 @@ import { Game } from './game';
 export class Enchantment extends Permanent {
     private power: number;
     private costResource: Resource;
+    private canBeEmpowered: boolean = true;
+    private canBeDiminished: boolean = true;
 
     constructor(dataId: string, name: string, imageUrl: string, cost: Resource, targeter: Targeter,
         private changeCost: number,
@@ -24,10 +26,25 @@ export class Enchantment extends Permanent {
 
     public getModifyCost() {
         return this.costResource;
-    } 
+    }
 
     public canChangePower(player: Player, game: Game) {
-        return (game.getCurrentPlayer() == player && player.getPool().meetsReq(this.costResource));
+        return game.getCurrentPlayer() == player &&
+            player.getPool().meetsReq(this.costResource) &&
+            (player.getPlayerNumber() == this.owner ?
+                this.canBeEmpowered : this.canBeDiminished);
+    }
+
+    public setEmpowerable(val:boolean) {
+        this.canBeEmpowered = val;
+    }
+
+    public setDiminishable(val:boolean) {
+        this.canBeDiminished = val;
+    }
+
+    public getPower() {
+        return this.power;
     }
 
     public empowerOrDiminish(player: Player, game: Game) {
@@ -35,7 +52,7 @@ export class Enchantment extends Permanent {
         this.changePower(player.getPlayerNumber() == this.owner ? 1 : -1);
     }
 
-    private changePower(diff: number) {
+    public changePower(diff: number) {
         this.power += diff;
         if (this.power <= 0) {
             this.die();
@@ -66,12 +83,7 @@ export class Enchantment extends Permanent {
         super.play(game);
         this.power = this.basePower;
         this.location = Location.Board;
-        game.gameEvents.addEvent(null, new GameEvent(EventType.StartOfTurn, (params) => {
-            let player = params.get('player') as number;
-            if (player == this.getOwner())
-                this.changePower(-1);
-            return params;
-        }));
+
         game.playPermanent(this, this.owner);
     }
 }

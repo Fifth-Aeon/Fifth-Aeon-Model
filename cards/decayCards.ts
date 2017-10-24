@@ -11,6 +11,7 @@ import { PoisonableUnit, PoisonableUnits } from './targeters/poisonTargeter';
 import { SingleUnit, Untargeted, AllUnits, AllOtherUnits, FriendlyUnit, EnemyUnit } from '../targeter';
 
 // Mechanics
+import { Discharge, Recharge } from './mechanics/enchantmentCounters';
 import { Flying, Rush, Aquatic, Lethal, Lifesteal, Deathless, Immortal, Relentless } from './mechanics/skills';
 import { Discard, DiscardOnDamage } from './mechanics/draw';
 import { FinalBlow } from './mechanics/finalBlow';
@@ -25,6 +26,26 @@ import { DamageSpawnOnKill } from './mechanics/dealDamage';
 import { OnDeath, OnDeathAnyDeath } from './mechanics/death';
 import { unitTypeLordshipInclusive, unitTypeLordshipAll, notUnitLordship } from './mechanics/lordship';
 import { KillTarget } from './mechanics/removal';
+import { DeathCounter } from './mechanics/shieldEnchantments';
+
+
+
+export function abyssalVengeance() {
+    return new Enchantment(
+        'AbyssalShield',
+        'Abyssal Shield',
+        'skull-shield.png',
+        new Resource(7, 0, {
+            Growth: 0,
+            Decay: 3,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        8, 4,
+        [new DeathCounter()]
+    );
+}
 
 export function deathAscendancy() {
     return new Enchantment(
@@ -40,11 +61,14 @@ export function deathAscendancy() {
         new Untargeted(),
         3, 4,
         [
+            new Discharge(1),
             unitTypeLordshipAll(UnitType.Undead, 1, 1),
             notUnitLordship(UnitType.Undead, -1, -1)
         ]
     );
 }
+
+
 
 export function raider() {
     return new Unit(

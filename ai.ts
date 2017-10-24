@@ -81,6 +81,10 @@ export class BasicAI extends AI {
         next();
     }
 
+    private pass() {
+        this.game.pass();
+    }
+
     private getBestTarget(card: Card) {
         let targets = card.getTargeter().getValidTargets(card, this.game);
         return maxBy(targets, target => card.evaluateTarget(target, this.game));
@@ -119,7 +123,7 @@ export class BasicAI extends AI {
         if (this.playerNumber !== params.turn)
             return;
         this.playResource();
-        this.sequenceActions([this.selectCardToPlay, this.attack]);
+        this.sequenceActions([this.selectCardToPlay, this.attack, this.pass, this.modifyEnchantments]);
     }
 
     private selectCardToPlay() {
@@ -142,6 +146,21 @@ export class BasicAI extends AI {
             this.game.playCardExtern(toPlay, targets, host);
             this.addActionToSequence(this.selectCardToPlay, true);
         }
+    }
+
+    private modifyEnchantments() {
+        let player = this.game.getPlayer(this.playerNumber);
+        let res = player.getPool();
+        let enchantments = this.game.getBoard()
+            .getAllEnchantments()
+            .filter(enchant => res.meetsReq(enchant.getModifyCost()));
+
+        if (enchantments.length == 0)
+            return;
+        let lowest = minBy(enchantments, (enchant) => enchant.getModifyCost().getNumeric());
+        this.game.modifyEnchantment(player, lowest);
+        this.addActionToSequence(this.modifyEnchantments, true);
+
     }
 
     private getBestHost(item: Item): Unit {

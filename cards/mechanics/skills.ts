@@ -1,11 +1,16 @@
 import { Mechanic } from '../../mechanic';
 import { Game, GamePhase } from '../../Game';
 import { Targeter } from '../../targeter';
-import { Card } from '../../card';
+import { Card, CardType } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
-export class Flying extends Mechanic {
+
+abstract class Skill extends Mechanic {
+    protected validCardTypes = new Set([CardType.Unit, CardType.Item]);
+}
+
+export class Flying extends Skill {
     public run(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.CheckBlockable, params => {
@@ -35,7 +40,7 @@ export class Flying extends Mechanic {
     }
 }
 
-export class Unblockable extends Mechanic {
+export class Unblockable extends Skill {
     public run(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.CheckBlockable, params => {
@@ -64,7 +69,7 @@ export class Unblockable extends Mechanic {
 }
 
 
-export class Rush extends Mechanic {
+export class Rush extends Skill {
     public run(card: Card, game: Game) {
         (card as Unit).refresh();
     }
@@ -83,7 +88,7 @@ export class Rush extends Mechanic {
     }
 }
 
-export class Aquatic extends Mechanic {
+export class Aquatic extends Skill {
     public run(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.CheckBlockable, params => {
@@ -121,7 +126,7 @@ export class Aquatic extends Mechanic {
     }
 }
 
-export class Ranged extends Mechanic {
+export class Ranged extends Skill {
     public run(card: Card, game: Game) { }
 
 
@@ -139,7 +144,7 @@ export class Ranged extends Mechanic {
     }
 }
 
-export class Lifesteal extends Mechanic {
+export class Lifesteal extends Skill {
     public run(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.DealDamage, params => {
@@ -167,7 +172,7 @@ export class Lifesteal extends Mechanic {
     }
 }
 
-export class Lethal extends Mechanic {
+export class Lethal extends Skill {
     public run(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.DealDamage, params => {
@@ -197,7 +202,8 @@ export class Lethal extends Mechanic {
 
 }
 
-export class Shielded extends Mechanic {
+export class Shielded extends Skill {
+    protected validCardTypes = new Set([CardType.Unit, CardType.Item]);
     private depleted: boolean = false;
     public run(card: Card, game: Game) {
         this.depleted = false;
@@ -232,7 +238,7 @@ export class Shielded extends Mechanic {
     }
 }
 
-export class Relentless extends Mechanic {
+export class Relentless extends Skill {
     public run(card: Card, game: Game) {
         game.gameEvents.addEvent(this, new GameEvent(
             EventType.EndOfTurn, params => {
@@ -261,7 +267,7 @@ export class Relentless extends Mechanic {
 }
 
 
-export class Deathless extends Mechanic {
+export class Deathless extends Skill {
     constructor(private charges: number = 1) {
         super();
     }
@@ -305,7 +311,7 @@ export class Deathless extends Mechanic {
     }
 }
 
-export class Immortal extends Mechanic {
+export class Immortal extends Skill {
     public run(card: Card, game: Game) {
         let unit = card as Unit;
         unit.getEvents().addEvent(this, new GameEvent(EventType.Death, (params) => {

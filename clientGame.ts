@@ -130,6 +130,7 @@ export class ClientGame extends Game {
         this.addSyncHandler(SyncEventType.ChoiceMade, this.syncChoiceMade);
         this.addSyncHandler(SyncEventType.QueryResult, this.syncQueryResult);
         this.addSyncHandler(SyncEventType.Ended, this.syncEnded);
+        this.addSyncHandler(SyncEventType.EnchantmentModified, this.syncModifyEnchantment);
     }
 
     private syncCardEvent(playerNumber: number, event: GameSyncEvent, params: any) {
@@ -152,7 +153,7 @@ export class ClientGame extends Game {
     private syncModifyEnchantment(playerNumber: number, event: GameSyncEvent, params: any) {
         if (playerNumber == this.getCurrentPlayer().getPlayerNumber())
             return;
-        let enchantment = this.getCardById(params.params.enchantmentId) as Enchantment;
+        let enchantment = this.getCardById(params.enchantmentId) as Enchantment;
         enchantment.empowerOrDiminish(this.getCurrentPlayer(), this);
     }
 

@@ -24,7 +24,7 @@ export enum GameActionType {
 
 export enum SyncEventType {
     Start, AttackToggled, TurnStart, PhaseChange, PlayResource, Mulligan,
-    PlayCard, Block, Draw, ChoiceMade, QueryResult, Ended
+    PlayCard, Block, Draw, ChoiceMade, QueryResult, Ended, EnchantmentModified
 }
 
 export interface GameAction {

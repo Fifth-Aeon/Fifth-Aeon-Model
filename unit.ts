@@ -26,7 +26,7 @@ class Damager {
         this.events = source.getEvents().getSubgroup(EventType.DealDamage)
     }
     public run() {
-        let result = this.target.takeDamage(this.amount);
+        let result = this.target.takeDamage(this.amount, this.source);
         if (result > 0) {
             this.events.trigger(EventType.DealDamage, new Map<string, any>([
                 ['source', this.source],
@@ -283,9 +283,10 @@ export class Unit extends Permanent {
         target.setExausted(true);
     }
 
-    public takeDamage(amount: number): number {
+    public takeDamage(amount: number, source:Card): number {
         amount = this.events.trigger(EventType.TakeDamage, new Map<string, any>([
             ['target', this],
+            ['source', source],
             ['amount', amount]
         ])).get('amount');
         this.life -= amount;

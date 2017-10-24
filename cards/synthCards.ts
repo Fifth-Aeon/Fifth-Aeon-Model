@@ -1,6 +1,7 @@
 import { Mechanic } from '../mechanic';
 import { Card } from '../card';
 import { Item } from '../item';
+import { Enchantment } from '../enchantment';
 import { Unit, UnitType, mechanical } from '../unit';
 import { Resource } from '../resource';
 
@@ -23,7 +24,26 @@ import { Robotic, SpyPower } from './mechanics/synthSpecials';
 import { MechanicalUnit, BiologicalUnit } from './targeters/biotargeter';
 import { DealDamage, DealSynthDamage } from './mechanics/dealDamage';
 import { Poisoned } from './mechanics/poison';
+import { Recharge } from './mechanics/enchantmentCounters';
+import { ForceField } from './mechanics/shieldEnchantments';
 
+
+export function forceField() {
+    return new Enchantment(
+        'ForceField',
+        'Forcefield Matrix',
+        'nested-hexagons.png',
+        new Resource(6, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 3
+        }),
+        new Untargeted(),
+        1, 12,
+        [new ForceField()]
+    );
+}
 
 export function gasMask() {
     return new Item(
@@ -351,7 +371,7 @@ export function siegeArtillery() {
         new Untargeted(),
         1, 1,
         [new EndOfTurn('deal 1 damage to your opponent', 3, (unit, game) => {
-            game.getPlayer(game.getOtherPlayerNumber(unit.getOwner())).takeDamage(1);
+            game.getPlayer(game.getOtherPlayerNumber(unit.getOwner())).takeDamage(1, unit);
         })]
     );
 }
