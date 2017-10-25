@@ -5,11 +5,20 @@ import { Card } from './card';
 import { ResourceTypeNames } from './resource';
 import { sample, sampleSize, remove, sum } from 'lodash';
 
+export interface SavedDeck {
+    records: [string, number][];
+    name: string;
+    avatar: string;
+    customMetadata: boolean;
+}
+
 export class DeckList {
     public name: string = 'New Deck';
     public avatar: string = '';
+    public customMetadata: boolean = false;
     private records = new Map<string, number>();
     private cardCount: number = 0;
+    
 
     constructor(private format: GameFormat = standardFormat) {
         this.generateRandomNColorDeck(1);
@@ -33,6 +42,8 @@ export class DeckList {
     }
 
     public genMetadata() {
+        if (this.customMetadata)
+            return;
         let list = this.getRecordList();
         this.avatar = list[list.length - 1].card.getImage();
         this.name = Array.from(this.getColors().values()).join('-') + ' Deck';
@@ -57,23 +68,36 @@ export class DeckList {
     }
 
     public toJson() {
-        return JSON.stringify(this.getSavable())
+        return JSON.stringify(this.getSavable());
     }
 
-    public getSavable() {
+    public clone() {
+        let clone = new DeckList(this.format);
+        clone.fromJson(this.toJson());
+        return clone;
+    }
+
+    public getSavable(): SavedDeck {
         return {
             records: [...Array.from(this.records.entries())],
             name: this.name,
-            avatar: this.avatar
-        }
+            avatar: this.avatar,
+            customMetadata: this.customMetadata
+        };
+    }
+
+    public fromSavable(saveData: SavedDeck) {
+        console;
+        this.records = new Map(saveData.records) as Map<string, number>;
+        this.name = saveData.name;
+        this.avatar = saveData.avatar;
+        this.cardCount = sum(Array.from(this.records.values()));
+        this.customMetadata = saveData.customMetadata;
     }
 
     public fromJson(jsonStr: string) {
-        let data = JSON.parse(jsonStr)
-        this.records = new Map(data.records) as Map<string, number>;
-        this.name = data.name;
-        this.avatar = data.avatar;
-        this.cardCount = sum(Array.from(this.records.values()))
+        let data = JSON.parse(jsonStr) as SavedDeck;
+        this.fromSavable(data);
     }
 
     public size() {
@@ -82,9 +106,9 @@ export class DeckList {
 
     public addCard(card: Card) {
         let currValue = this.records.get(card.getDataId()) || 0;
-        let limit = this.format.cardsOfRarity[0]
+        let limit = this.format.cardsOfRarity[0];
         if (currValue < limit) {
-            this.records.set(card.getDataId(), currValue + 1)
+            this.records.set(card.getDataId(), currValue + 1);
             this.cardCount++;
         }
     }
@@ -100,7 +124,7 @@ export class DeckList {
         if (currValue == 1)
             this.records.delete(card.getDataId());
         else
-            this.records.set(card.getDataId(), currValue - 1)
+            this.records.set(card.getDataId(), currValue - 1);
         this.cardCount--;
     }
 
@@ -119,7 +143,7 @@ export class DeckList {
             return {
                 card: allCards.get(entry[0])(),
                 number: entry[1]
-            }
+            };
         }).sort((rec1, rec2) => rec1.card.getCost().getNumeric() - rec2.card.getCost().getNumeric());
     }
 }
