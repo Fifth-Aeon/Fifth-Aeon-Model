@@ -2,6 +2,7 @@ import { Mechanic } from '../mechanic';
 import { Card } from '../card';
 import { Unit, UnitType } from '../unit';
 import { Item } from '../item';
+import { Enchantment } from '../enchantment';
 import { Resource } from '../resource';
 
 // Targeters
@@ -10,7 +11,8 @@ import { PoisonableUnit, PoisonableUnits } from './targeters/poisonTargeter';
 import { SingleUnit, Untargeted, AllUnits, AllOtherUnits, FriendlyUnit, EnemyUnit } from '../targeter';
 
 // Mechanics
-import { Flying,Rush,Aquatic, Lethal, Lifesteal, Deathless, Immortal, Relentless } from './mechanics/skills';
+import { Discharge, Recharge } from './mechanics/enchantmentCounters';
+import { Flying, Rush, Aquatic, Lethal, Lifesteal, Deathless, Immortal, Relentless } from './mechanics/skills';
 import { Discard, DiscardOnDamage } from './mechanics/draw';
 import { FinalBlow } from './mechanics/finalBlow';
 import { BuffTarget } from './mechanics/buff';
@@ -22,7 +24,50 @@ import { TransformDamaged, AbominationConsume } from './mechanics/decaySpecials'
 import { SummonUnitForGrave, SummonUnitOnDamage } from './mechanics/summonUnits';
 import { DamageSpawnOnKill } from './mechanics/dealDamage';
 import { OnDeath, OnDeathAnyDeath } from './mechanics/death';
+import { unitTypeLordshipInclusive, unitTypeLordshipAll, notUnitLordship } from './mechanics/lordship';
 import { KillTarget } from './mechanics/removal';
+import { DeathCounter } from './mechanics/shieldEnchantments';
+
+
+
+export function abyssalVengeance() {
+    return new Enchantment(
+        'AbyssalShield',
+        'Abyssal Shield',
+        'skull-shield.png',
+        new Resource(7, 0, {
+            Growth: 0,
+            Decay: 3,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        8, 4,
+        [new DeathCounter()]
+    );
+}
+
+export function deathAscendancy() {
+    return new Enchantment(
+        'DeathAscendancy',
+        'Death’s Ascendancy',
+        'reaper-scythe.png',
+        new Resource(5, 0, {
+            Growth: 0,
+            Decay: 2,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        3, 4,
+        [
+            new Discharge(1),
+            unitTypeLordshipAll(UnitType.Undead, 1, 1),
+            notUnitLordship(UnitType.Undead, -1, -1)
+        ]
+    );
+}
+
 
 
 export function raider() {
@@ -77,7 +122,7 @@ export function whip() {
         new FriendlyUnit(),
         3, 0,
         [new BuffTarget(-1, -1, [])]
-    )
+    );
 }
 
 export function assasinsDagger() {
@@ -95,7 +140,7 @@ export function assasinsDagger() {
         new FriendlyUnit(),
         1, 1,
         [new Lethal()]
-    )
+    );
 }
 
 
@@ -114,7 +159,7 @@ export function NecromancerTome() {
         new FriendlyUnit(),
         4, 0,
         [new Deathless()]
-    )
+    );
 }
 
 
@@ -135,7 +180,7 @@ export function reaper() {
         new Untargeted(),
         1, 1,
         [new Immortal(), new Lethal(), new Relentless(), new PoisonImmune()]
-    )
+    );
 }
 
 export function specter() {
@@ -153,7 +198,7 @@ export function specter() {
         new Untargeted(),
         5, 3,
         [new Flying(), new Deathless(), new DiscardOnDamage()]
-    )
+    );
 }
 
 
@@ -173,7 +218,7 @@ export function skeleton() {
         new Untargeted(),
         1, 1,
         [new Deathless()]
-    )
+    );
 }
 
 
@@ -194,7 +239,7 @@ export function lich() {
         [new Deathless(), new OnDeathAnyDeath('play a Skeleton', 6, (lich, dying, game) => {
             game.playGeneratedUnit(lich.getOwner(), skeleton());
         })]
-    )
+    );
 }
 
 export function Hemmorage() {
@@ -293,7 +338,7 @@ export function crawlingZombie() {
         new Untargeted(),
         2, 1,
         []
-    )
+    );
 }
 
 export function rottingZombie() {
@@ -312,7 +357,7 @@ export function rottingZombie() {
         2, 2,
         [new OnDeath('play a Crawling Zombie', 3, (unit, game) =>
             game.playGeneratedUnit(game.getPlayer(unit.getOwner()), crawlingZombie()))]
-    )
+    );
 }
 
 export function decapitate() {
@@ -328,7 +373,7 @@ export function decapitate() {
         }),
         new SingleUnit(),
         [new KillTarget()]
-    )
+    );
 }
 
 export function Saboteur() {
@@ -346,7 +391,7 @@ export function Saboteur() {
         new Untargeted(),
         2, 2,
         [new Discard(1)]
-    )
+    );
 }
 
 export function abomination() {
@@ -364,7 +409,7 @@ export function abomination() {
         new Untargeted(),
         0, 1,
         [new AbominationConsume()]
-    )
+    );
 }
 
 export function assassin() {
@@ -382,7 +427,7 @@ export function assassin() {
         new PoisonableUnit().setOptional(true),
         2, 2,
         [new PoisonTarget(), new Lethal()]
-    )
+    );
 }
 
 export function vampire() {
@@ -400,9 +445,9 @@ export function vampire() {
         new Untargeted(),
         3, 3,
         [new FinalBlow('Gain +1/+1', 2, (unit) => {
-            unit.buff(1, 1)
+            unit.buff(1, 1);
         })]
-    )
+    );
 }
 
 export function bat() {
@@ -420,7 +465,7 @@ export function bat() {
         new Untargeted(),
         1, 2,
         [new Flying(), new Lifesteal()]
-    )
+    );
 }
 
 export function princeOfDecay() {
@@ -438,7 +483,7 @@ export function princeOfDecay() {
         new AllOtherUnits(),
         4, 4,
         [new PoisonTarget()]
-    )
+    );
 }
 
 function statue() {
@@ -456,7 +501,7 @@ function statue() {
         new Untargeted(),
         0, 1,
         [new CannotAttack()]
-    )
+    );
 }
 
 export function gorgon() {
@@ -474,7 +519,7 @@ export function gorgon() {
         new Untargeted(),
         3, 7,
         [new TransformDamaged(statue)]
-    )
+    );
 }
 
 export function unbury() {
@@ -490,7 +535,7 @@ export function unbury() {
         }),
         new Untargeted(),
         [new ReturnFromCrypt((card) => card.isUnit())]
-    )
+    );
 }
 
 

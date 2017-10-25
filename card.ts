@@ -1,7 +1,7 @@
 import { Resource } from './resource';
 import { Game } from './game';
 import { Player } from './player';
-import { Mechanic } from './mechanic';
+import { Mechanic, EvalContext } from './mechanic';
 import { Targeter, Untargeted } from './targeter';
 import { Unit } from './unit';
 
@@ -154,8 +154,8 @@ export class Card {
         return `${this.name}: (${this.cost})`
     }
 
-    public evaluate(game: Game) {
-        return sumBy(this.mechanics, (mechanic) => mechanic.evaluate(this, game));
+    public evaluate(game: Game, context:EvalContext ) {
+        return sumBy(this.mechanics, (mechanic) => mechanic.evaluate(this, game, context));
     }
 
     public evaluateTarget(target: Unit, game: Game) {

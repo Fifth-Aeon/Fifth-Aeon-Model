@@ -31,8 +31,8 @@ export class Peek extends Mechanic {
     public run(card: Card, game: Game) {
         game.queryCards(
             (game: Game) => game.getPlayer(game.getOtherPlayerNumber(card.getOwner())).getHand(),
-            (deck) => {
-                game.promptCardChoice(card.getOwner(), deck, 0, null, '');
+            (hand) => {
+                game.promptCardChoice(card.getOwner(), hand, 0, null, '');
             });
     }
 

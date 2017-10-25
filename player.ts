@@ -105,10 +105,10 @@ export class Player extends Unit {
         remove(this.hand, (toRem: Card) => toRem === card);
         if (!free)
             this.reduceResource(card.getCost());
-        card.play(game);
+        card.play(game); 
     }
 
-    protected die() {
+    public die() {
         this.events.trigger(EventType.Death, new Map());
     }
 

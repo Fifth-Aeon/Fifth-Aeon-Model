@@ -5,6 +5,10 @@ import { Player } from './player';
 import { Card, CardType } from './card';
 import { Unit } from './unit';
 import { Item } from './item';
+import { EvalContext } from './mechanic';
+
+// Mechanics to worry about
+import { Shielded } from './cards/mechanics/skills';
 
 import { minBy, sample, sampleSize, maxBy, sortBy, sumBy, remove } from 'lodash';
 import { LinkedList } from 'typescript-collections';
@@ -81,31 +85,24 @@ export class BasicAI extends AI {
         next();
     }
 
-    private getBestTarget(card: Card) {
-        let targets = card.getTargeter().getValidTargets(card, this.game);
-        return maxBy(targets, target => card.evaluateTarget(target, this.game));
+    private pass() {
+        this.game.pass();
     }
 
-    private evaluateCard(card: Card) {
-        let score = 0;
-        if (card.getTargeter().needsInput()) {
-            let best = this.getBestTarget(card);
-            score += card.evaluateTarget(best, this.game);
-        }
-        return score + card.evaluate(this.game);
-    }
 
     private makeChoice(player: number, cards: Array<Card>, toPick: number = 1, callback: (cards: Card[]) => void = null) {
-        this.game.setDeferedChoice(this.playerNumber, callback);
+        if (!callback) {
+            console.log('A.I skip choice (doesn\'t need input)');
+            return
+        }
+        this.game.deferChoice(this.playerNumber, cards, toPick, callback);        
         if (player != this.playerNumber) {
-            console.log('A.I skip choice', player, this.playerNumber);
+            console.log('A.I skip choice (choice is for player)', player, this.playerNumber);
             return;
         }
         let choice = sampleSize(cards, toPick);
-        console.log('A.I make choice', choice)
-        if (callback) {
-            this.game.makeChoice(choice);
-        }
+        console.log('A.I make choice', choice);
+        this.game.makeChoice(choice);
     }
 
     public handleGameEvent(event: GameSyncEvent) {
@@ -119,29 +116,77 @@ export class BasicAI extends AI {
         if (this.playerNumber !== params.turn)
             return;
         this.playResource();
-        this.sequenceActions([this.selectCardToPlay, this.attack]);
+        this.sequenceActions([this.selectCardToPlay, this.modifyEnchantments, this.attack]);
+    }
+
+
+    private getBestTarget(card: Card) {
+        let targets = card.getTargeter().getValidTargets(card, this.game);
+        if (targets.length == 0)
+            return { score: 0, target: null }
+        let best = maxBy(targets, target => card.evaluateTarget(target, this.game));
+        return { target: best, score: card.evaluateTarget(best, this.game) }
+    }
+
+    private evaluateCard(card: Card) {
+        let score = 0;
+        if (card.getTargeter().needsInput()) {
+            let best = this.getBestTarget(card);
+            if (best.score > 0 || !card.getTargeter().isOptional())
+                score += best.score;
+        }
+        return score + card.evaluate(this.game, EvalContext.Play);
     }
 
     private selectCardToPlay() {
         let playable = this.aiPlayer.getHand().filter(card => card.isPlayable(this.game));
         console.log('hand', this.aiPlayer.getHand());
         if (playable.length > 0) {
-            let evaluated = sortBy(playable, card => -this.evaluateCard(card));
+            let evaluated = sortBy(playable, card => {
+                try {
+                    return -this.evaluateCard(card)
+                } catch (e) {
+                    console.error('Error while evaluating', card, 'got', e);
+                    return 0;
+                }
+            });
             console.log('eval', evaluated.map(card => card.getName() + ' ' + this.evaluateCard(card)).join(' | '));
             let toPlay = evaluated[0];
             console.log('play', toPlay.getName());
 
             if (this.evaluateCard(toPlay) <= 0)
                 return;
-            let targets = []
+            let targets: Unit[] = [];
             let host = null;
             if (toPlay.getCardType() == CardType.Item)
                 host = this.getBestHost(toPlay as Item);
-            if (toPlay.getTargeter().needsInput() && this.getBestTarget(toPlay))
-                targets.push(this.getBestTarget(toPlay));
+            if (toPlay.getTargeter().needsInput()) {
+                let best = this.getBestTarget(toPlay);
+                if (!toPlay.getTargeter().isOptional() ||
+                    best.score) {
+                    targets.push(best.target);
+                }
+            }
             this.game.playCardExtern(toPlay, targets, host);
             this.addActionToSequence(this.selectCardToPlay, true);
         }
+    }
+
+    private modifyEnchantments() {
+        console.log('A.I mod enchants');
+        let player = this.game.getPlayer(this.playerNumber);
+        let res = player.getPool();
+        let enchantments = this.game.getBoard()
+            .getAllEnchantments()
+            .filter(enchant => res.meetsReq(enchant.getModifyCost()));
+        console.log('valid', enchantments);
+
+        if (enchantments.length == 0)
+            return;
+        let lowest = minBy(enchantments, (enchant) => enchant.getModifyCost().getNumeric());
+        console.log('modify', lowest.getName());
+        this.game.modifyEnchantment(player, lowest);
+        this.addActionToSequence(this.modifyEnchantments, true);
     }
 
     private getBestHost(item: Item): Unit {
@@ -188,14 +233,20 @@ export class BasicAI extends AI {
         return type == BlockType.AttackerDies ||
             type == BlockType.NeitherDies ||
             (type == BlockType.BothDie &&
-                attacker.evaluate(this.game) > blocker.evaluate(this.game))
+                attacker.evaluate(this.game, EvalContext.LethalRemoval) > blocker.evaluate(this.game, EvalContext.LethalRemoval));
     }
 
     private categorizeBlock(attacker: Unit, blocker: Unit): BlockType {
         let isAttackerLethal = attacker.hasMechanicWithId('lethal') || attacker.hasMechanicWithId('transfomTarget');
         let isBlockerLethal = blocker.hasMechanicWithId('lethal') || blocker.hasMechanicWithId('transfomTarget');
-        let attackerDies = isBlockerLethal || blocker.getDamage() >= attacker.getLife();
-        let blockerDies = isAttackerLethal || attacker.getDamage() >= blocker.getLife();
+
+        let shield = (attacker.hasMechanicWithId('shielded') as Shielded);
+        let isAttackerShilded = shield && !shield.isDepleted();
+        shield = (blocker.hasMechanicWithId('shielded') as Shielded);
+        let isBlockerShilded = shield && !shield.isDepleted();
+
+        let attackerDies = !isAttackerShilded && (isBlockerLethal || blocker.getDamage() >= attacker.getLife());
+        let blockerDies = !isBlockerShilded && (isAttackerLethal || attacker.getDamage() >= blocker.getLife());
 
         if (attackerDies && blockerDies) {
             return BlockType.BothDie;
@@ -211,7 +262,7 @@ export class BasicAI extends AI {
     private makeBlockAction(params: { blocker: Unit, attacker: Unit }) {
         return () => {
             this.game.declareBlocker(params.blocker, params.attacker);
-        }
+        };
     }
 
     private block() {
@@ -220,7 +271,7 @@ export class BasicAI extends AI {
         let potentialBlockers = this.game.getBoard().getPlayerUnits(this.playerNumber)
             .filter(unit => !unit.isExausted());
         let totalDamage = sumBy(attackers, (attacker) => attacker.getDamage());
-        let life = this.aiPlayer.getLife()
+        let life = this.aiPlayer.getLife();
         let blocks = [];
         for (let attacker of attackers) {
             let options = [] as { blocker: Unit, attacker: Unit, type: BlockType, tradeScore: number }[];
@@ -230,11 +281,12 @@ export class BasicAI extends AI {
                         blocker: blocker,
                         attacker: attacker,
                         type: this.categorizeBlock(attacker, blocker),
-                        tradeScore: blocker.evaluate(this.game) - attacker.evaluate(this.game)
+                        tradeScore: blocker.evaluate(this.game, EvalContext.LethalRemoval) -
+                        attacker.evaluate(this.game, EvalContext.LethalRemoval)
                     });
                 }
             }
-            let best = minBy(options, option => option.type * 100000 + option.tradeScore)
+            let best = minBy(options, option => option.type * 100000 + option.tradeScore);
             console.log('options', options, 'best', best);
             if (best != undefined && (
                 totalDamage >= life ||
@@ -246,14 +298,14 @@ export class BasicAI extends AI {
             }
         }
         let actions = blocks.map(block => {
-            return this.makeBlockAction(block)
+            return this.makeBlockAction(block);
         });
         this.sequenceActions(actions);
     }
 
     private onPhaseChange(params: any) {
         if (params.phase === GamePhase.Block && this.game.isActivePlayer(this.playerNumber))
-            this.block()
+            this.block();
         if (params.phase === GamePhase.Play2 && this.game.isActivePlayer(this.playerNumber)) {
             this.game.pass();
         }

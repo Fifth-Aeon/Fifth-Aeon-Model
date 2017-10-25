@@ -1,4 +1,4 @@
-import { Mechanic } from '../../mechanic';
+import { Mechanic, EvalContext } from '../../mechanic';
 import { Game, GamePhase } from '../../game';
 import { Targeter } from '../../targeter';
 import { Card } from '../../card';
@@ -30,10 +30,10 @@ export class SummonUnits extends Mechanic {
     }
 
     public evaluate(card: Card, game: Game) {
-        return this.unit.evaluate(game) * this.getUnitCount(card, game);
+        return this.unit.evaluate(game, EvalContext.Play) * Math.min(this.getUnitCount(card, game),
+            game.getBoard().getRemainingSpace(card.getOwner()));
     }
 }
-
 
 export class SummonUnitForGrave extends SummonUnits {
     constructor(factory: () => Unit, private factor: number) {
@@ -56,9 +56,13 @@ export class SummonUnitForGrave extends SummonUnits {
 
 export class SummonUnitOnDamage extends Mechanic {
     protected name: string;
+    protected unit: Unit;
+
     constructor(protected factory: () => Unit) {
         super();
-        this.name = factory().getName();
+
+        this.unit = factory();
+        this.name = this.unit.getName();
     }
 
     public run(card: Card, game: Game) {
@@ -82,7 +86,9 @@ export class SummonUnitOnDamage extends Mechanic {
         return `Whenever this damages your opponent summon a ${this.name}.`;
     }
 
-    public evaluate() {
-        return 3;
+    public evaluate(card:Card, game:Game) {
+        // TODO something cleverer
+        // Look at hether opponetn can Block?
+        return this.unit.evaluate(game, EvalContext.Play);
     }
 }

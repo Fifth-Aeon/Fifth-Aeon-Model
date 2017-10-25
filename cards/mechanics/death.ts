@@ -1,4 +1,4 @@
-import { Mechanic, TargetedMechanic } from '../../mechanic';
+import { Mechanic, TargetedMechanic, EvalContext } from '../../mechanic';
 import { Game } from '../../Game';
 import { Targeter } from '../../targeter';
 import { Card } from '../../card';
@@ -6,7 +6,7 @@ import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
 export class OnDeath extends Mechanic {
-    constructor(private effectText: string, private value:number , private effect: (unit: Unit, game: Game) => void) {
+    constructor(private effectText: string, private value: number, private effect: (unit: Unit, game: Game) => void) {
         super();
     }
 
@@ -26,13 +26,15 @@ export class OnDeath extends Mechanic {
         return `When this unit dies ${this.effectText}.`;
     }
 
-    public evaluate() {
+    public evaluate(card: Card, game: Game, context: EvalContext) {
+        if (context == EvalContext.LethalRemoval)
+            return -this.value;
         return this.value;
     }
 }
 
 export class OnDeathAnyDeath extends Mechanic {
-    constructor(private effectText: string, private value:number, private effect: (source: Unit, died: Unit, game: Game) => void) {
+    constructor(private effectText: string, private value: number, private effect: (source: Unit, died: Unit, game: Game) => void) {
         super();
     }
 

@@ -227,8 +227,8 @@ export function SweetFragrance() {
         'SweetFragrance',
         'Soporific Pollen',
         'fragrance.png',
-        new Resource(5, 0, {
-            Growth: 2,
+        new Resource(6, 0, {
+            Growth: 3,
             Decay: 0,
             Renewal: 0,
             Synthesis: 0
@@ -398,7 +398,7 @@ export function mutation() {
             Synthesis: 0
         }),
         new BiologicalUnit(),
-        [new BuffTarget(3, 4, [new Relentless()])]
+        [new BuffTarget(2, 2, [new Relentless()])]
     );
 }
 
@@ -453,7 +453,7 @@ export function dragon() {
             Synthesis: 0
         }),
         new Untargeted(),
-        6, 6,
+        6, 4,
         [new Flying()]
     );
 }

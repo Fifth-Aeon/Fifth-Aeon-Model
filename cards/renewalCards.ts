@@ -2,6 +2,8 @@
 import { Mechanic } from '../mechanic';
 import { Card } from '../card';
 import { Unit, UnitType } from '../unit';
+import { Enchantment } from '../enchantment';
+
 import { Item } from '../item';
 import { Resource } from '../resource';
 
@@ -21,8 +23,26 @@ import { RefreshTarget } from './mechanics/heal';
 import { Flying, Aquatic, Rush, Relentless, Ranged, Immortal } from './mechanics/skills';
 import { CurePoisonTargeter, CurePoison } from './mechanics/poison';
 import { UnitEntersPlay } from './mechanics/entersPlay';
+import { Recharge, Discharge, CannotBeEmpowered} from './mechanics/enchantmentCounters';
+import { PreventAllDamage } from './mechanics/shieldEnchantments';
 
 
+export function supremeAgeis() {
+    return new Enchantment(
+        'SupremeAgeis',
+        'Supreme Ageis',
+        'rosa-shield.png',
+        new Resource(7, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 6,
+            Synthesis: 0 
+        }),
+        new Untargeted(), 
+        10, 4,
+        [new Discharge(1), new CannotBeEmpowered(), new PreventAllDamage()]
+    );
+}
 
 export function archer() {
     return new Unit(

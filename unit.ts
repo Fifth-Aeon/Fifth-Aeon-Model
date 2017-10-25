@@ -1,11 +1,12 @@
 import { Game } from './game';
 import { Player } from './player';
-import { Card, Location } from './card';
+import { Permanent } from './permanent';
+import { Card, CardType, Location } from './card';
 import { Item } from './item';
 import { EventGroup, EventType } from './gameEvent';
 import { Resource } from './resource';
 import { Targeter } from './targeter';
-import { Mechanic } from './mechanic';
+import { Mechanic, EvalContext } from './mechanic';
 
 import { remove } from 'lodash';
 
@@ -25,7 +26,7 @@ class Damager {
         this.events = source.getEvents().getSubgroup(EventType.DealDamage)
     }
     public run() {
-        let result = this.target.takeDamage(this.amount);
+        let result = this.target.takeDamage(this.amount, this.source);
         if (result > 0) {
             this.events.trigger(EventType.DealDamage, new Map<string, any>([
                 ['source', this.source],
@@ -36,7 +37,7 @@ class Damager {
     }
 }
 
-export class Unit extends Card {
+export class Unit extends Permanent {
     // Stats
     protected life: number;
     protected maxLife: number;
@@ -52,7 +53,6 @@ export class Unit extends Card {
     protected blockDisabled: boolean;
 
     // Misc
-    protected events: EventGroup;
     protected items: Item[];
     private unitType: UnitType;
     private immunities: Set<string>;
@@ -75,12 +75,6 @@ export class Unit extends Card {
         this.items = [];
     }
 
-    /*
-    public getText(game: Game): string {
-        return super.getText(game) + ' ' + this.items.map(item => item.getText(game, false)).join(' ');
-    }
-    */
-
     public addItem(item: Item) {
         this.items.push(item);
     }
@@ -91,7 +85,7 @@ export class Unit extends Card {
 
     public isPlayable(game: Game): boolean {
         return super.isPlayable(game) &&
-            game.getBoard().canPlayUnit(this);
+            game.getBoard().canPlayPermanant(this);
     }
 
     public transform(unit: Unit, game: Game) {
@@ -101,9 +95,13 @@ export class Unit extends Card {
         this.maxLife = unit.maxLife;
         this.life = unit.life;
         this.damage = unit.damage;
-        this.mechanics.forEach(mechanic => mechanic.remove(this, game));
-        this.mechanics = unit.mechanics;
         this.unitType = unit.unitType;
+        this.mechanics.forEach(mechanic => {
+            mechanic.remove(this, game);
+            this.mechanics.push(mechanic);
+            mechanic.attach(this);
+        });
+        this.mechanics.forEach(mechanic => mechanic.run(this, game))
     }
 
     public removeMechanic(id: string, game: Game) {
@@ -225,9 +223,7 @@ export class Unit extends Card {
         return !this.attackDisabled && this.ready && !this.exausted;
     }
 
-    public getEvents() {
-        return this.events;
-    }
+
 
     public getBlockedUnitId() {
         return this.blockedUnitId;
@@ -244,7 +240,7 @@ export class Unit extends Card {
         super.play(game);
         this.exausted = false;
         this.location = Location.Board;
-        game.playUnit(this, this.owner);
+        game.playPermanent(this, this.owner);
     }
 
     public refresh() {
@@ -252,6 +248,10 @@ export class Unit extends Card {
         this.exausted = false;
         this.life = this.maxLife;
         this.setBlocking(null);
+    }
+
+    public getCardType() {
+        return CardType.Unit;
     }
 
     public canActivate(): boolean {
@@ -283,9 +283,10 @@ export class Unit extends Card {
         target.setExausted(true);
     }
 
-    public takeDamage(amount: number): number {
+    public takeDamage(amount: number, source: Card): number {
         amount = this.events.trigger(EventType.TakeDamage, new Map<string, any>([
             ['target', this],
+            ['source', source],
             ['amount', amount]
         ])).get('amount');
         this.life -= amount;
@@ -321,8 +322,8 @@ export class Unit extends Card {
         }
     }
 
-    public evaluate(game: Game) {
-        return this.maxLife + this.damage + super.evaluate(game);
+    public evaluate(game: Game, context: EvalContext) {
+        return this.maxLife + this.damage + super.evaluate(game, context);
     }
 
     public dealAndApplyDamage(target: Unit, amount: number) {
@@ -343,7 +344,7 @@ export class Unit extends Card {
     }
 
     private dying: boolean = false;
-    protected die() {
+    public die() {
         if (this.location != Location.Board || this.dying)
             return;
         this.dying = true;

@@ -1,10 +1,13 @@
 import { Game, GamePhase, GameActionType, SyncEventType, GameAction, GameSyncEvent } from './game';
 import { GameFormat, standardFormat } from './gameFormat';
+
+import { Enchantment } from './enchantment';
 import { CardType } from './card';
 import { Item } from './item';
 import { Unit } from './unit';
 import { DeckList } from './deckList';
 import { data } from './gameData';
+
 
 type ActionCb = (act: GameAction) => boolean;
 export class ServerGame extends Game {
@@ -32,8 +35,8 @@ export class ServerGame extends Game {
         let handeler = this.actionHandelers.get(action.type);
         if (!handeler)
             return [];
-        if (action.type != GameActionType.CardChoice && this.waitingForPlayerChoice != null) {
-            console.error('Cant take action, waiting for', this.waitingForPlayerChoice);
+        if (action.type != GameActionType.CardChoice && this.currentChoice != null) {
+            console.error('Cant take action, waiting for', this.currentChoice);
             return null;
         }
         let sig = handeler(action);
@@ -53,16 +56,41 @@ export class ServerGame extends Game {
         this.addActionHandeler(GameActionType.ToggleAttack, this.toggleAttackAction);
         this.addActionHandeler(GameActionType.DeclareBlocker, this.declareBlockerAction);
         this.addActionHandeler(GameActionType.CardChoice, this.cardChoiceAction);
+        this.addActionHandeler(GameActionType.ModifyEnchantment, this.modifyEnchantmentAction);
         this.addActionHandeler(GameActionType.Quit, this.quit);
     }
 
+    protected modifyEnchantmentAction(act: GameAction): boolean {
+        if (!this.isPlayerTurn(act.player))
+            return false;
+        let enchantment = this.getCardById(act.params.enchantmentId) as Enchantment;
+        if (!enchantment || enchantment.getCardType() != CardType.Enchantment || !enchantment.canChangePower(this.getCurrentPlayer(), this))
+            return false;
+        enchantment.empowerOrDiminish(this.getCurrentPlayer(), this);
+        this.addGameEvent(new GameSyncEvent(SyncEventType.EnchantmentModified, act.params));
+        return true;
+    }
+
     protected cardChoiceAction(act: GameAction): boolean {
-        if (act.player != this.waitingForPlayerChoice) {
-            console.error('Reject choice from', act.player, 'wanted', this.waitingForPlayerChoice);
+        if (!this.currentChoice) {
+            console.error('Reject choice from', act.player, '. No choice requested');
+            return false;
+        } if (this.currentChoice.player != act.player) {
+            console.error('Reject choice from', act.player, 'wanted', this.currentChoice.player);
             return false;
         }
         let cardIds = act.params.choice as string[];
-        this.makeDeferedChoice(cardIds.map(id => this.getCardById(id)));
+        let cards = cardIds.map(id => this.getCardById(id));
+        let wanted = Math.min(this.currentChoice.validCards.size, this.currentChoice.count)
+        if (cards.length != wanted) {
+            console.error(`Reject choice. Wanted ${wanted} cards but only got ${cards.length}.`)
+            return false;
+        }
+        if (!cards.every(card => this.currentChoice.validCards.has(card))) {
+            console.error(`Reject choice. Included invalid options.`, cards, this.currentChoice.validCards)
+            return false;
+        }
+        this.makeDeferedChoice(cards);
         this.addGameEvent(new GameSyncEvent(SyncEventType.ChoiceMade, {
             player: act.player,
             choice: act.params.choice
@@ -140,7 +168,7 @@ export class ServerGame extends Game {
         if (!isCanceling && (!blocked ||
             !blocker.canBlockTarget(blocked)))
             return false;
-        blocker.setBlocking(isCanceling ? null : blocked.getId() );
+        blocker.setBlocking(isCanceling ? null : blocked.getId());
         this.addGameEvent(new GameSyncEvent(SyncEventType.Block, {
             player: act.player,
             blockerId: act.params.blockerId,

@@ -1,4 +1,4 @@
-import { Mechanic, TargetedMechanic } from '../../mechanic';
+import { Mechanic, TargetedMechanic, EvalContext } from '../../mechanic';
 import { Game } from '../../Game';
 import { Targeter } from '../../targeter';
 import { Card, Location } from '../../card';
@@ -12,7 +12,7 @@ export class DealDamage extends TargetedMechanic {
     public run(card: Card, game: Game) {
         let dmg = this.getDamage(card, game);
         for (let target of this.targeter.getTargets(card, game)) {
-            target.takeDamage(dmg);
+            target.takeDamage(dmg, card);
             target.checkDeath();
         }
     }
@@ -22,12 +22,12 @@ export class DealDamage extends TargetedMechanic {
     }
 
     public getText(card: Card, game: Game) {
-        return `Deal ${this.amount} damage to ${this.targeter.getText()}.`
+        return `Deal ${this.amount} damage to ${this.targeter.getText()}.`;
     }
 
     public evaluateTarget(source: Card, target: Unit, game: Game) {
         let isEnemy = target.getOwner() == source.getOwner() ? -1 : 1;
-        return target.getLife() < this.getDamage(source, game) ? target.evaluate(game) * isEnemy : 0;
+        return target.getLife() < this.getDamage(source, game) ? target.evaluate(game, EvalContext.LethalRemoval) * isEnemy : 0;
     }
 }
 
@@ -58,7 +58,7 @@ export class DamageSpawnOnKill extends DealDamage {
 
     public run(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game)) {
-            target.takeDamage(this.amount);
+            target.takeDamage(this.amount, card);
             target.checkDeath();
             if (target.getLocation() == Location.Crypt) {
                 game.playGeneratedUnit(card.getOwner(), this.factory());
@@ -67,7 +67,7 @@ export class DamageSpawnOnKill extends DealDamage {
     }
 
     public getText(card: Card) {
-        return `Deal ${this.amount} damage to ${this.targeter.getText()}. If it dies play a ${this.name}.`
+        return `Deal ${this.amount} damage to ${this.targeter.getText()}. If it dies play a ${this.name}.`;
     }
 }
 
@@ -77,13 +77,13 @@ export class DealSynthDamage extends DealDamage {
         super(0);
     }
     public getDamage(card: Card, game: Game) {
-        return game.getPlayer(card.getOwner()).getPool().getOfType('Synthesis')
+        return game.getPlayer(card.getOwner()).getPool().getOfType('Synthesis');
     }
 
     public getText(card: Card, game: Game) {
         if (game)
-            return `Deal damage to ${this.targeter.getText()} equal to your synthesis (${this.getDamage(card, game)}).`
+            return `Deal damage to ${this.targeter.getText()} equal to your synthesis (${this.getDamage(card, game)}).`;
         else
-            return `Deal damage to ${this.targeter.getText()} equal to your synthesis.`
+            return `Deal damage to ${this.targeter.getText()} equal to your synthesis.`;
     }
 }

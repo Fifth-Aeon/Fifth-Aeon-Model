@@ -1,7 +1,9 @@
 import { Board } from './board';
 import { Player } from './player';
-import { Card, Location } from './card';
+import { Card, CardType, Location } from './card';
 import { Unit } from './unit';
+import { Enchantment } from './enchantment';
+import { Permanent } from './permanent';
 import { GameFormat, standardFormat } from './gameFormat';
 import { DeckList } from './deckList';
 import { Resource } from './resource';
@@ -16,19 +18,26 @@ export enum GamePhase {
 }
 
 export enum GameActionType {
-    Mulligan, PlayResource, PlayCard, Pass, Concede, ActivateAbility,
+    Mulligan, PlayResource, PlayCard, Pass, Concede, ActivateAbility, ModifyEnchantment,
     ToggleAttack, DeclareBlocker, DistributeDamage, CardChoice, Quit
 }
 
 export enum SyncEventType {
     Start, AttackToggled, TurnStart, PhaseChange, PlayResource, Mulligan,
-    PlayCard, Block, Draw, ChoiceMade, QueryResult, Ended
+    PlayCard, Block, Draw, ChoiceMade, QueryResult, Ended, EnchantmentModified
 }
 
 export interface GameAction {
     type: GameActionType,
     player: number,
     params: any
+}
+
+interface Choice {
+    player: number,
+    validCards: Set<Card>,
+    count: number,
+    callback: (cards: Card[]) => void
 }
 
 export class GameSyncEvent {
@@ -64,12 +73,10 @@ export abstract class Game {
     protected cardPool: Map<string, Card>;
     // A group of game logic events that are not connected to any individual unit
     public gameEvents: EventGroup;
-    // A callback to be run when the result of a player's choice becomes known
-    protected deferedChoice: (cards: Card[]) => void;
     // Flag to tell us which player's choice we are waiting for (null if not waiting)
-    protected waitingForPlayerChoice: number | null = null;
-    protected log:Log;
-    
+    protected currentChoice: Choice | null = null;
+    protected log: Log;
+
     /**
      * Constructs a game given a format. The format
      * informs how the game is initlized eg how
@@ -78,7 +85,7 @@ export abstract class Game {
      * @param {any} [format=standardFormat] 
      * @memberof Game
      */
-    constructor(format = standardFormat, protected client: boolean = false,  deckLists?: [DeckList, DeckList]) {
+    constructor(format = standardFormat, protected client: boolean = false, deckLists?: [DeckList, DeckList]) {
         this.format = format;
         this.board = new Board(this.format.playerCount, this.format.boardSize);
         this.cardPool = new Map<string, Card>();
@@ -88,7 +95,7 @@ export abstract class Game {
         this.blockers = [];
         this.crypt = [[], []];
         this.gameEvents = new EventGroup();
-    
+
         let decks: Card[][] = [[], []];
         if (!client) {
             decks = deckLists.map(deckList => {
@@ -151,26 +158,26 @@ export abstract class Game {
     }
 
     // Player choice =--------------------------------------------------------
-    protected deferChoice(player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) {
-        this.setDeferedChoice(player, callback);
-    }
-
-    public setDeferedChoice(player: number, callback: (cards: Card[]) => void) {
-        if (callback != null) {
-            this.deferedChoice = callback;
-            this.waitingForPlayerChoice = player;
+    public deferChoice(player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) {
+        if (!callback)
+            return;
+        this.currentChoice = {
+            player: player,
+            validCards: new Set(choices),
+            count: count,
+            callback: callback
         }
     }
 
     public promptCardChoice: (player: number, choices: Card[], count: number, callback: (cards: Card[]) => void, message: string) => void;
 
-    public makeDeferedChoice(cards: Card[]) {
-        if (this.deferedChoice != null) {
-            this.deferedChoice(cards);
+    protected makeDeferedChoice(cards: Card[]) {
+        if (this.currentChoice != null) {
+            this.currentChoice.callback(cards);
         } else {
-            console.error('Error, no defered choice handler for', cards);
+            console.trace('Error, no defered choice handler for', cards);
         }
-        this.waitingForPlayerChoice = null;
+        this.currentChoice = null;
     }
 
     // Crypt logic ----------------------------------------------------
@@ -220,7 +227,7 @@ export abstract class Game {
     // Card Play Logic ---------------------------------------------------
     public playCard(player: Player, card: Card) {
         player.playCard(this, card);
-    } 
+    }
 
     protected generatedCardId = 1;
     public playGeneratedUnit(player: Player | number, card: Card) {
@@ -243,7 +250,7 @@ export abstract class Game {
     }
 
     public canTakeAction() {
-        return this.waitingForPlayerChoice == null;
+        return this.currentChoice == null;
     }
 
     // Combat -------------------------------------------------------------
@@ -362,40 +369,57 @@ export abstract class Game {
     }
 
     // Unit Zone Changes ------------------------------------------------------
-    public playUnit(unit: Unit, owner: number) {
-        if (this.board.canPlayUnit(unit))
-            this.addUnit(unit, owner);
+    public playPermanent(permanent: Permanent, owner: number) {
+        if (!this.board.canPlayPermanant(permanent))
+            return;
+        switch (permanent.getCardType()) {
+            case CardType.Unit:
+                this.addUnit(permanent as Unit, owner);
+                break;
+            case CardType.Enchantment:
+                this.addEnchantment(permanent as Enchantment, owner);
+                break;
+        }
     }
 
     public changeUnitOwner(unit: Unit) {
         let originalOwner = unit.getOwner();
         let newOwner = this.getOtherPlayerNumber(originalOwner);
 
-        this.removeUnit(unit);
+        this.removePermanant(unit);
         unit.setOwner(newOwner);
         unit.getTargeter().setTargets([]);
         unit.play(this);
     }
 
-    public returnUnitToDeck(unit: Unit) {
-        this.removeUnit(unit);
-        this.players[unit.getOwner()].addToDeck(unit);
+    public returnPermanentToDeck(perm: Permanent) {
+        this.removePermanant(perm);
+        this.players[perm.getOwner()].addToDeck(perm);
     }
 
-    public returnUnitToHand(unit: Unit) {
-        this.removeUnit(unit);
-        this.players[unit.getOwner()].addToHand(unit);
+    public returnPermanentToHand(perm: Permanent) {
+        this.removePermanant(perm);
+        this.players[perm.getOwner()].addToHand(perm);
     }
 
-    protected removeUnit(unit: Unit) {
-        unit.leaveBoard(this);
-        unit.getEvents().removeEvents(null);
-        this.board.removeUnit(unit);
+    protected removePermanant(perm: Permanent) {
+        perm.leaveBoard(this);
+        perm.getEvents().removeEvents(null);
+        this.board.removePermanant(perm);
+    }
+
+    public addEnchantment(enchantment: Enchantment, owner: number) {
+        enchantment.getEvents().addEvent(null, new GameEvent(EventType.Death, (params) => {
+            this.removePermanant(enchantment);
+            this.addToCrypt(enchantment);
+            return params;
+        }, Infinity));
+        this.board.addPermanent(enchantment);
     }
 
     public addUnit(unit: Unit, owner: number) {
         unit.getEvents().addEvent(null, new GameEvent(EventType.Death, (params) => {
-            this.removeUnit(unit);
+            this.removePermanant(unit);
             this.addToCrypt(unit);
             unit.detachItems(this);
             this.gameEvents.trigger(EventType.UnitDies, new Map([
@@ -404,10 +428,10 @@ export abstract class Game {
             return params;
         }, Infinity));
         unit.getEvents().addEvent(null, new GameEvent(EventType.Annihilate, (params) => {
-            this.removeUnit(unit);
+            this.removePermanant(unit);
             return params;
         }));
-        this.board.addUnit(unit);
+        this.board.addPermanent(unit);
         this.gameEvents.trigger(EventType.UnitEntersPlay, new Map<string, any>([
             ['enteringUnit', unit]
         ]));

@@ -1,4 +1,4 @@
-import { TargetedMechanic } from '../../mechanic';
+import { TargetedMechanic, EvalContext } from '../../mechanic';
 import { Game } from '../../Game';
 import { Targeter } from '../../targeter';
 import { Card } from '../../card';
@@ -16,8 +16,8 @@ export class Annihilate extends TargetedMechanic {
         return `Annihilate ${this.targeter.getText()}.`;
     }
 
-    public evaluateTarget(source: Card, unit: Unit, game:Game) {
-        return unit.evaluate(game) * 1.25 * (unit.getOwner() == source.getOwner() ? -1 : 1);
+    public evaluateTarget(source: Card, target: Unit, game:Game) {
+        return target.evaluate(game, EvalContext.NonlethalRemoval) * 1.25 * (target.getOwner() == source.getOwner() ? -1 : 1);
     }
 }
 
@@ -32,8 +32,8 @@ export class KillTarget extends TargetedMechanic {
         return `Kill ${this.targeter.getText()}.`;
     }
 
-    public evaluateTarget(source: Card, unit: Unit, game:Game) {
-        return unit.evaluate(game) * 1.0 * (unit.getOwner() == source.getOwner() ? -1 : 1);
+    public evaluateTarget(source: Card, target: Unit, game:Game) {
+        return target.evaluate(game, EvalContext.LethalRemoval) * 1.0 * (target.getOwner() == source.getOwner() ? -1 : 1);
     }
 }
 
