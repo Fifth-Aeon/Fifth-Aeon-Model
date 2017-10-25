@@ -1,4 +1,4 @@
-import { Card, CardType, Location } from './card';
+import { Card, CardType, GameZone } from './card';
 import { Permanent } from './permanent';
 import { Player } from './player';
 import { Unit } from './unit';
@@ -61,10 +61,10 @@ export class Enchantment extends Permanent {
     }
 
     public die() {
-        if (this.location != Location.Board)
+        if (this.location != GameZone.Board)
             return;
         this.events.trigger(EventType.Death, new Map());
-        this.location = Location.Crypt;
+        this.location = GameZone.Crypt;
     }
 
     public evaluate(game: Game) {
@@ -83,7 +83,7 @@ export class Enchantment extends Permanent {
     public play(game: Game) {
         super.play(game);
         this.power = this.basePower;
-        this.location = Location.Board;
+        this.location = GameZone.Board;
 
         game.playPermanent(this, this.owner);
     }

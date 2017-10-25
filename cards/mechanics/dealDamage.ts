@@ -1,7 +1,7 @@
 import { Mechanic, TargetedMechanic, EvalContext } from '../../mechanic';
 import { Game } from '../../Game';
 import { Targeter } from '../../targeter';
-import { Card, Location } from '../../card';
+import { Card, GameZone } from '../../card';
 import { Unit } from '../../unit';
 
 export class DealDamage extends TargetedMechanic {
@@ -60,7 +60,7 @@ export class DamageSpawnOnKill extends DealDamage {
         for (let target of this.targeter.getTargets(card, game)) {
             target.takeDamage(this.amount, card);
             target.checkDeath();
-            if (target.getLocation() == Location.Crypt) {
+            if (target.getLocation() == GameZone.Crypt) {
                 game.playGeneratedUnit(card.getOwner(), this.factory());
             }
         }

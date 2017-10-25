@@ -1,5 +1,5 @@
 import { Game } from './game';
-import { Card, CardType, Location } from './card';
+import { Card, CardType, GameZone } from './card';
 import { Unit } from './unit';
 import { Targeter } from './targeter';
 
@@ -42,7 +42,7 @@ export abstract class TargetedMechanic extends Mechanic {
     }
 
     public evaluate(card: Card, game: Game) {
-        if (card.getLocation() == Location.Hand)
+        if (card.getLocation() == GameZone.Hand)
             return sumBy(this.targeter.getTargets(card, game),
                 (target) => this.evaluateTarget(card, target, game));
         return 0;

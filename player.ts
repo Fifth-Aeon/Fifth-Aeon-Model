@@ -1,4 +1,4 @@
-import { Card, Location } from './card';
+import { Card, GameZone } from './card';
 import { Unit, UnitType } from './unit';
 import { sample, remove } from 'lodash';
 import { GameFormat } from './gameFormat';
@@ -45,7 +45,7 @@ export class Player extends Unit {
 
     public addToHand(card: Card) {
         card.setOwner(this.playerNumber);
-        card.setLocation(Location.Hand);
+        card.setLocation(GameZone.Hand);
         this.hand.push(card);
     }
 

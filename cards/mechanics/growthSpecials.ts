@@ -1,7 +1,7 @@
 import { Mechanic, TargetedMechanic } from '../../mechanic';
 import { Game } from '../../Game';
 import { Targeter } from '../../targeter';
-import { Card, Location } from '../../card';
+import { Card, GameZone } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { Resource } from '../../resource';
 import { GameEvent, EventType } from '../../gameEvent';

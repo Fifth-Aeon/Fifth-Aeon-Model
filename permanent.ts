@@ -1,6 +1,6 @@
 import { Game } from './game';
 import { Player } from './player';
-import { Card, Location } from './card';
+import { Card, GameZone } from './card';
 import { Item } from './item';
 import { EventGroup, EventType } from './gameEvent';
 import { Resource } from './resource';
@@ -22,9 +22,9 @@ export class Permanent extends Card {
     }
         
     public die() {
-        if (this.location != Location.Board)
+        if (this.location != GameZone.Board)
             return;
         this.events.trigger(EventType.Death, new Map());
-        this.location = Location.Crypt;
+        this.location = GameZone.Crypt;
     }
 }

@@ -7,7 +7,7 @@ import { Unit } from './unit';
 
 import { remove, sumBy } from 'lodash';
 
-export enum Location {
+export enum GameZone {
     Deck, Hand, Board, Crypt
 }
 
@@ -27,7 +27,7 @@ export class Card {
     protected owner: number;
     protected dataId: string;
     protected imageUrl: string;
-    protected location: Location;
+    protected location: GameZone;
     protected text: string = null;
 
     protected targeter: Targeter = new Untargeted();
@@ -40,7 +40,7 @@ export class Card {
         this.targeter = targeter;
         this.mechanics = mechanics;
         this.mechanics.forEach(mechanic => mechanic.attach(this));
-        this.location = Location.Deck;
+        this.location = GameZone.Deck;
         this.id = Math.random().toString(16);
         this.text = text;
     }
@@ -53,7 +53,7 @@ export class Card {
         this.text = text;
     }
 
-    public setLocation(location: Location) {
+    public setLocation(location: GameZone) {
         this.location = location;
     }
 
@@ -62,7 +62,7 @@ export class Card {
     }
 
     public draw() {
-        this.location = Location.Hand;
+        this.location = GameZone.Hand;
     }
 
     public getCost() {

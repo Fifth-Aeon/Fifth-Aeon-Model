@@ -1,4 +1,4 @@
-import { Card, CardType, Location } from './card';
+import { Card, CardType, GameZone } from './card';
 import { Unit } from './unit';
 import { Mechanic } from './mechanic';
 import { Resource } from './resource';
@@ -65,7 +65,7 @@ export class Item extends Card {
         host.buff(this.damageBonus, this.lifeBonus);
         host.addItem(this);
         this.host = host;
-        this.location = Location.Board;
+        this.location = GameZone.Board;
         for (let mechanic of this.mechanics) {
             let clone = mechanic.clone();
             this.host.addMechanic(clone);
@@ -81,6 +81,6 @@ export class Item extends Card {
             mechanic.remove(this.host, game);
         }
         this.host = null;
-        this.location = Location.Crypt;
+        this.location = GameZone.Crypt;
     }
 }

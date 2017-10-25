@@ -1,6 +1,6 @@
 import { Board } from './board';
 import { Player } from './player';
-import { Card, CardType, Location } from './card';
+import { Card, CardType, GameZone } from './card';
 import { Unit } from './unit';
 import { Enchantment } from './enchantment';
 import { Permanent } from './permanent';
@@ -182,7 +182,7 @@ export abstract class Game {
 
     // Crypt logic ----------------------------------------------------
     public addToCrypt(card: Card) {
-        card.setLocation(Location.Crypt);
+        card.setLocation(GameZone.Crypt);
         this.crypt[card.getOwner()].push(card);
     }
 

@@ -1,7 +1,7 @@
 import { Game } from './game';
 import { Player } from './player';
 import { Permanent } from './permanent';
-import { Card, CardType, Location } from './card';
+import { Card, CardType, GameZone } from './card';
 import { Item } from './item';
 import { EventGroup, EventType } from './gameEvent';
 import { Resource } from './resource';
@@ -121,7 +121,7 @@ export class Unit extends Permanent {
         }
         this.mechanics.push(mechanic);
         mechanic.attach(this);
-        if (this.location == Location.Board && game != null)
+        if (this.location == GameZone.Board && game != null)
             mechanic.run(this, game)
     }
 
@@ -239,7 +239,7 @@ export class Unit extends Permanent {
     public play(game: Game) {
         super.play(game);
         this.exausted = false;
-        this.location = Location.Board;
+        this.location = GameZone.Board;
         game.playPermanent(this, this.owner);
     }
 
@@ -314,7 +314,7 @@ export class Unit extends Permanent {
     }
 
     private afterDamage(target: Unit) {
-        if (target.location == Location.Crypt) {
+        if (target.location == GameZone.Crypt) {
             this.events.trigger(EventType.KillUnit, new Map<string, any>([
                 ['source', this],
                 ['target', target]
@@ -345,11 +345,11 @@ export class Unit extends Permanent {
 
     private dying: boolean = false;
     public die() {
-        if (this.location != Location.Board || this.dying)
+        if (this.location != GameZone.Board || this.dying)
             return;
         this.dying = true;
         this.events.trigger(EventType.Death, new Map());
-        this.location = Location.Crypt;
+        this.location = GameZone.Crypt;
         this.dying = false;
         this.died = false;
     }

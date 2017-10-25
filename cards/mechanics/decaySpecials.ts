@@ -1,7 +1,7 @@
 import { Mechanic, TargetedMechanic } from '../../mechanic';
 import { Game } from '../../Game';
 import { Targeter } from '../../targeter';
-import { Card, Location } from '../../card';
+import { Card, GameZone } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
@@ -67,7 +67,7 @@ export class AbominationConsume extends Mechanic {
     }
 
     public evaluate(card: Card, game: Game) {
-        if (card.getLocation() == Location.Board)
+        if (card.getLocation() == GameZone.Board)
             return 0;
         let valid = this.getValidPool(card, game).sort((unitA, unitB) => unitB.getStats() - unitA.getStats());
         return sumBy(take(valid, 2), (unit) => unit.getStats());
