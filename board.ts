@@ -19,6 +19,11 @@ export class Board {
         }
     }
 
+    public getRemainingSpace(player: number) {
+        return this.spaceCount - this.spaces[player].length;
+
+    }
+
     public canPlayPermanant(playerOrPerm: number | Permanent) {
         if (typeof playerOrPerm != 'object') {
             return this.spaces[playerOrPerm].length < this.spaceCount;
@@ -57,7 +62,7 @@ export class Board {
         return this.spaces[playerNumber].filter(perm => perm.isUnit()) as Unit[];
     }
 
-    public getPlayerPermanants(playerNumber:number) {
+    public getPlayerPermanants(playerNumber: number) {
         return this.spaces[playerNumber];
     }
 

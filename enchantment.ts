@@ -7,6 +7,7 @@ import { Resource } from './resource';
 import { Targeter } from './targeter';
 import { EventGroup, EventType, GameEvent } from './gameEvent';
 import { Game } from './game';
+import { EvalContext } from './mechanic';
 
 export class Enchantment extends Permanent {
     private power: number;
@@ -67,7 +68,7 @@ export class Enchantment extends Permanent {
     }
 
     public evaluate(game: Game) {
-        return super.evaluate(game);
+        return super.evaluate(game, EvalContext.Play);
     }
 
     public isPlayable(game: Game): boolean {

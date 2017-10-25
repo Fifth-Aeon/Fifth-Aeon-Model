@@ -14,7 +14,7 @@ abstract class ShieldEnchantment extends Mechanic {
     public run(card: Card, game: Game) {
         let enchantment = card as Enchantment;
         game.getPlayer(enchantment.getOwner()).getEvents()
-            .addEvent(null, new GameEvent(EventType.TakeDamage, (params) => {
+            .addEvent(this, new GameEvent(EventType.TakeDamage, (params) => {
                 let player = params.get('target') as Player;
                 let amount = params.get('amount') as number;
                 let source = params.get('source') as Card;
@@ -24,7 +24,8 @@ abstract class ShieldEnchantment extends Mechanic {
     }
 
     public remove(card: Card, game: Game) {
-        game.getPlayer(card.getOwner()).getEvents()
+        game.getPlayer(card.getOwner())
+            .getEvents()
             .removeEvents(this);
     }
 }

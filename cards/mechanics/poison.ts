@@ -1,4 +1,4 @@
-import { Mechanic, TargetedMechanic } from '../../mechanic';
+import { Mechanic, TargetedMechanic, EvalContext } from '../../mechanic';
 import { Game } from '../../Game';
 import { Targeter } from '../../targeter';
 import { Card } from '../../card';
@@ -87,7 +87,7 @@ export class PoisonTarget extends TargetedMechanic {
     }
 
     public evaluateTarget(source: Card, target: Unit, game: Game) {
-        return target.evaluate(game) * 0.5 * (target.getOwner() == source.getOwner() ? -1 : 1);
+        return target.evaluate(game, EvalContext.NonlethalRemoval) * 0.5 * (target.getOwner() == source.getOwner() ? -1 : 1);
     }
 }
 

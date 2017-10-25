@@ -5,6 +5,7 @@ import { Resource } from './resource';
 import { Targeter } from './targeter';
 import { EventGroup } from './gameEvent';
 import { Game } from './game';
+import { EvalContext } from './mechanic';
 
 export class Item extends Card {
     private host: Unit;
@@ -22,7 +23,7 @@ export class Item extends Card {
     }
 
     public evaluate(game: Game) {
-        return this.lifeBonus + this.damageBonus + super.evaluate(game);
+        return this.lifeBonus + this.damageBonus + super.evaluate(game, EvalContext.Play);
     }
 
     public isPlayable(game: Game): boolean {

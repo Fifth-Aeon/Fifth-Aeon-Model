@@ -1,4 +1,4 @@
-import { Mechanic, TargetedMechanic } from '../../mechanic';
+import { Mechanic, TargetedMechanic, EvalContext } from '../../mechanic';
 import { Game } from '../../Game';
 import { Targeter } from '../../targeter';
 import { Card } from '../../card';
@@ -33,6 +33,6 @@ export class MindControl extends TargetedMechanic {
     }
 
     public evaluateTarget(source: Card, unit: Unit, game:Game) {
-        return unit.evaluate(game) * 2 * (unit.getOwner() == source.getOwner() ? -1 : 1);
+        return unit.evaluate(game, EvalContext.NonlethalRemoval) * 2 * (unit.getOwner() == source.getOwner() ? -1 : 1);
     }
 }

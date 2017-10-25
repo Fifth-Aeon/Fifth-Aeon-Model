@@ -1,4 +1,4 @@
-import { Mechanic } from '../../mechanic';
+import { Mechanic, EvalContext } from '../../mechanic';
 import { Game, GamePhase } from '../../Game';
 import { Targeter } from '../../targeter';
 import { Card, CardType } from '../../card';
@@ -236,6 +236,10 @@ export class Shielded extends Skill {
     public evaluate(card: Card) {
         return 3;
     }
+
+    public isDepleted() {
+        return this.depleted;
+    }
 }
 
 export class Relentless extends Skill {
@@ -335,7 +339,9 @@ export class Immortal extends Skill {
         return `Immortal.`;
     }
 
-    public evaluate(card: Card) {
+    public evaluate(card: Card, game, context:EvalContext) {
+        if (context == EvalContext.LethalRemoval)
+            return (card as Unit).getStats() * -2;
         return (card as Unit).getStats() * 2;
     }
 } 

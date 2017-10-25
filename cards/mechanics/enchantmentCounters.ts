@@ -14,7 +14,7 @@ export class Recharge extends Mechanic {
 
     public run(card: Card, game: Game) {
         let enchantment = card as Enchantment;
-        game.gameEvents.addEvent(null, new GameEvent(EventType.StartOfTurn, (params) => {
+        game.gameEvents.addEvent(this, new GameEvent(EventType.StartOfTurn, (params) => {
             let player = params.get('player') as number;
             if (player == enchantment.getOwner())
                 enchantment.changePower(this.amountPerTurn);
@@ -38,7 +38,7 @@ export class Recharge extends Mechanic {
 export class Discharge extends Recharge {
     public run(card: Card, game: Game) {
         let enchantment = card as Enchantment;
-        game.gameEvents.addEvent(null, new GameEvent(EventType.StartOfTurn, (params) => {
+        game.gameEvents.addEvent(this, new GameEvent(EventType.StartOfTurn, (params) => {
             let player = params.get('player') as number;
             if (player == enchantment.getOwner())
                 enchantment.changePower(-this.amountPerTurn);

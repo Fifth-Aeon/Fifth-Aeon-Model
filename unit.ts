@@ -6,7 +6,7 @@ import { Item } from './item';
 import { EventGroup, EventType } from './gameEvent';
 import { Resource } from './resource';
 import { Targeter } from './targeter';
-import { Mechanic } from './mechanic';
+import { Mechanic, EvalContext } from './mechanic';
 
 import { remove } from 'lodash';
 
@@ -283,7 +283,7 @@ export class Unit extends Permanent {
         target.setExausted(true);
     }
 
-    public takeDamage(amount: number, source:Card): number {
+    public takeDamage(amount: number, source: Card): number {
         amount = this.events.trigger(EventType.TakeDamage, new Map<string, any>([
             ['target', this],
             ['source', source],
@@ -322,8 +322,8 @@ export class Unit extends Permanent {
         }
     }
 
-    public evaluate(game: Game) {
-        return this.maxLife + this.damage + super.evaluate(game);
+    public evaluate(game: Game, context: EvalContext) {
+        return this.maxLife + this.damage + super.evaluate(game, context);
     }
 
     public dealAndApplyDamage(target: Unit, amount: number) {
