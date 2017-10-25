@@ -91,16 +91,18 @@ export class BasicAI extends AI {
 
 
     private makeChoice(player: number, cards: Array<Card>, toPick: number = 1, callback: (cards: Card[]) => void = null) {
-        this.game.setDeferedChoice(this.playerNumber, callback);
+        if (!callback) {
+            console.log('A.I skip choice (doesn\'t need input)');
+            return
+        }
+        this.game.deferChoice(this.playerNumber, cards, toPick, callback);        
         if (player != this.playerNumber) {
-            console.log('A.I skip choice', player, this.playerNumber);
+            console.log('A.I skip choice (choice is for player)', player, this.playerNumber);
             return;
         }
         let choice = sampleSize(cards, toPick);
         console.log('A.I make choice', choice);
-        if (callback) {
-            this.game.makeChoice(choice);
-        }
+        this.game.makeChoice(choice);
     }
 
     public handleGameEvent(event: GameSyncEvent) {
@@ -154,7 +156,7 @@ export class BasicAI extends AI {
 
             if (this.evaluateCard(toPlay) <= 0)
                 return;
-            let targets:Unit[] = [];
+            let targets: Unit[] = [];
             let host = null;
             if (toPlay.getCardType() == CardType.Item)
                 host = this.getBestHost(toPlay as Item);

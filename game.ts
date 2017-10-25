@@ -33,6 +33,13 @@ export interface GameAction {
     params: any
 }
 
+interface Choice {
+    player: number,
+    validCards: Set<Card>,
+    count: number,
+    callback: (cards: Card[]) => void
+}
+
 export class GameSyncEvent {
     constructor(public type: SyncEventType, public params: any) { }
 }
@@ -66,10 +73,8 @@ export abstract class Game {
     protected cardPool: Map<string, Card>;
     // A group of game logic events that are not connected to any individual unit
     public gameEvents: EventGroup;
-    // A callback to be run when the result of a player's choice becomes known
-    protected deferedChoice: (cards: Card[]) => void;
     // Flag to tell us which player's choice we are waiting for (null if not waiting)
-    protected waitingForPlayerChoice: number | null = null;
+    protected currentChoice: Choice | null = null;
     protected log: Log;
 
     /**
@@ -153,26 +158,26 @@ export abstract class Game {
     }
 
     // Player choice =--------------------------------------------------------
-    protected deferChoice(player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) {
-        this.setDeferedChoice(player, callback);
-    }
-
-    public setDeferedChoice(player: number, callback: (cards: Card[]) => void) {
-        if (callback != null) {
-            this.deferedChoice = callback;
-            this.waitingForPlayerChoice = player;
+    public deferChoice(player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) {
+        if (!callback)
+            return;
+        this.currentChoice = {
+            player: player,
+            validCards: new Set(choices),
+            count: count,
+            callback: callback
         }
     }
 
     public promptCardChoice: (player: number, choices: Card[], count: number, callback: (cards: Card[]) => void, message: string) => void;
 
-    public makeDeferedChoice(cards: Card[]) {
-        if (this.deferedChoice != null) {
-            this.deferedChoice(cards);
+    protected makeDeferedChoice(cards: Card[]) {
+        if (this.currentChoice != null) {
+            this.currentChoice.callback(cards);
         } else {
-            console.error('Error, no defered choice handler for', cards);
+            console.trace('Error, no defered choice handler for', cards);
         }
-        this.waitingForPlayerChoice = null;
+        this.currentChoice = null;
     }
 
     // Crypt logic ----------------------------------------------------
@@ -245,7 +250,7 @@ export abstract class Game {
     }
 
     public canTakeAction() {
-        return this.waitingForPlayerChoice == null;
+        return this.currentChoice == null;
     }
 
     // Combat -------------------------------------------------------------

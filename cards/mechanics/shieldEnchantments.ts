@@ -40,7 +40,7 @@ export class PreventAllDamage extends ShieldEnchantment {
     }
 
     public evaluate(card: Card) {
-        return 15;
+        return (card as Enchantment).getPower() * 7        
     }
 }
 

@@ -8,6 +8,7 @@ import { Unit } from './unit';
 import { DeckList } from './deckList';
 import { data } from './gameData';
 
+
 type ActionCb = (act: GameAction) => boolean;
 export class ServerGame extends Game {
     // A table of handlers used to respond to actions taken by players
@@ -34,8 +35,8 @@ export class ServerGame extends Game {
         let handeler = this.actionHandelers.get(action.type);
         if (!handeler)
             return [];
-        if (action.type != GameActionType.CardChoice && this.waitingForPlayerChoice != null) {
-            console.error('Cant take action, waiting for', this.waitingForPlayerChoice);
+        if (action.type != GameActionType.CardChoice && this.currentChoice != null) {
+            console.error('Cant take action, waiting for', this.currentChoice);
             return null;
         }
         let sig = handeler(action);
@@ -71,12 +72,25 @@ export class ServerGame extends Game {
     }
 
     protected cardChoiceAction(act: GameAction): boolean {
-        if (act.player != this.waitingForPlayerChoice) {
-            console.error('Reject choice from', act.player, 'wanted', this.waitingForPlayerChoice);
+        if (!this.currentChoice) {
+            console.error('Reject choice from', act.player, '. No choice requested');
+            return false;
+        } if (this.currentChoice.player != act.player) {
+            console.error('Reject choice from', act.player, 'wanted', this.currentChoice.player);
             return false;
         }
         let cardIds = act.params.choice as string[];
-        this.makeDeferedChoice(cardIds.map(id => this.getCardById(id)));
+        let cards = cardIds.map(id => this.getCardById(id));
+        let wanted = Math.min(this.currentChoice.validCards.size, this.currentChoice.count)
+        if (cards.length != wanted) {
+            console.error(`Reject choice. Wanted ${wanted} cards but only got ${cards.length}.`)
+            return false;
+        }
+        if (!cards.every(card => this.currentChoice.validCards.has(card))) {
+            console.error(`Reject choice. Included invalid options.`, cards, this.currentChoice.validCards)
+            return false;
+        }
+        this.makeDeferedChoice(cards);
         this.addGameEvent(new GameSyncEvent(SyncEventType.ChoiceMade, {
             player: act.player,
             choice: act.params.choice
