@@ -1,4 +1,4 @@
-import { GameFormat } from './gameFormat';
+import { GameFormat, standardFormat } from './gameFormat';
 import { allCards, CardFactory } from './cards/allCards';
 import { Card } from './card';
 
@@ -11,7 +11,7 @@ export class DeckList {
     private records = new Map<string, number>();
     private cardCount: number = 0;
 
-    constructor(private format: GameFormat) {
+    constructor(private format: GameFormat = standardFormat) {
         this.generateRandomNColorDeck(1);
     }
 
@@ -57,13 +57,16 @@ export class DeckList {
     }
 
     public toJson() {
-        return JSON.stringify({
+        return JSON.stringify(this.getSavable())
+    }
+
+    public getSavable() {
+        return {
             records: [...Array.from(this.records.entries())],
             name: this.name,
             avatar: this.avatar
-        })
+        }
     }
-
 
     public fromJson(jsonStr: string) {
         let data = JSON.parse(jsonStr)
