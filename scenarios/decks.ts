@@ -1,14 +1,14 @@
-import { DeckList, SavedDeck } from '../decklist';
+import { DeckList, SavedDeck } from '../deckList';
 import { standardFormat } from '../gameFormat';
 import { camelCase } from 'lodash';
 
-export const deckLists: DeckList[] = [];
+export const allDecks: DeckList[] = [];
 export const deckMap = new Map<string, DeckList>();
 
 function addDeck(deck: SavedDeck) {
     let list = new DeckList(standardFormat);
     list.fromSavable(deck);
-    deckLists.push(list)
+    allDecks.push(list)
     deckMap.set(camelCase(deck.name), list);
 }
 

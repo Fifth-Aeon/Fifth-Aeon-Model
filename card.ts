@@ -41,8 +41,12 @@ export class Card {
         this.mechanics = mechanics;
         this.mechanics.forEach(mechanic => mechanic.attach(this));
         this.location = GameZone.Deck;
-        this.id = Math.random().toString(16);
+        this.id = this.generateId();
         this.text = text;
+    }
+
+    private generateId(): string {
+        return Math.random().toString(16).substring(2);
     }
 
     public getCardType(): CardType {
@@ -154,8 +158,8 @@ export class Card {
         return `${this.name}: (${this.cost})`
     }
 
-    public evaluate(game: Game, context:EvalContext ) {
-        return sumBy(this.mechanics, (mechanic) => mechanic.evaluate(this, game, context));
+    public evaluate(game: Game, context: EvalContext) {
+        return Mechanic.sumValues(this.mechanics.map(mechanic => mechanic.evaluate(this, game, context)));
     }
 
     public evaluateTarget(target: Unit, game: Game) {

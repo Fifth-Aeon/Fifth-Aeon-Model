@@ -1,10 +1,9 @@
-import { Mechanic, EvalContext } from '../../mechanic';
+import { Mechanic, EvalContext, EvalOperator } from '../../mechanic';
 import { Game, GamePhase } from '../../Game';
 import { Targeter } from '../../targeter';
 import { Card, CardType } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
-
 
 abstract class Skill extends Mechanic {
     protected validCardTypes = new Set([CardType.Unit, CardType.Item]);
@@ -35,8 +34,7 @@ export class Flying extends Skill {
     }
 
     public evaluate(card: Card) {
-        let unit = card as Unit;
-        return unit.getDamage() * 0.75 + unit.getLife() * 0.25;
+        return { addend: 0, multiplier: 1.3 }
     }
 }
 
@@ -63,8 +61,7 @@ export class Unblockable extends Skill {
     }
 
     public evaluate(card: Card) {
-        let unit = card as Unit;
-        return unit.getDamage() * 1 + unit.getLife() * 0.25;
+        return { addend: 0, multiplier: 1.75 };
     }
 }
 
@@ -82,9 +79,10 @@ export class Rush extends Skill {
         return 'rush';
     }
 
-    public evaluate(card: Card) {
-        let unit = card as Unit;
-        return unit.getDamage() * 0.75;;
+    public evaluate(card: Card, game: Game, context: EvalContext) {
+        if (context == EvalContext.Play)
+            return { addend: 0, multiplier: 1.2 };
+        return 0;
     }
 }
 
@@ -121,8 +119,7 @@ export class Aquatic extends Skill {
     }
 
     public evaluate(card: Card) {
-        let unit = card as Unit;
-        return unit.getDamage() * 0.4 + unit.getLife() * 0.25;
+        return { addend: 0, multiplier: 1.1 };
     }
 }
 
@@ -139,8 +136,7 @@ export class Ranged extends Skill {
     }
 
     public evaluate(card: Card) {
-        let unit = card as Unit;
-        return unit.getDamage() * 0.25 + unit.getLife() * 0.25;
+        return { addend: 0, multiplier: 1.1 }
     }
 }
 
@@ -167,8 +163,7 @@ export class Lifesteal extends Skill {
     }
 
     public evaluate(card: Card) {
-        let unit = card as Unit;
-        return unit.getDamage() * 0.4;
+        return { addend: 0, multiplier: 1.3 }
     }
 }
 
@@ -199,7 +194,6 @@ export class Lethal extends Skill {
     public evaluate(card: Card) {
         return 3;
     }
-
 }
 
 export class Shielded extends Skill {
@@ -233,12 +227,14 @@ export class Shielded extends Skill {
         return 'shielded';
     }
 
-    public evaluate(card: Card) {
-        return 3;
-    }
-
     public isDepleted() {
         return this.depleted;
+    }
+
+    public evaluate(card: Card) {
+        if (!this.depleted)
+            return { addend: 0, multiplier: 1.25 };
+        return 0;
     }
 }
 
@@ -266,7 +262,7 @@ export class Relentless extends Skill {
     }
 
     public evaluate(card: Card) {
-        return 3;
+        return { addend: 0, multiplier: 1.25 }
     }
 }
 
@@ -310,8 +306,10 @@ export class Deathless extends Skill {
             return `Deathless (${this.charges}).`;
     }
 
-    public evaluate(card: Card) {
-        return (card as Unit).getStats() * 0.5;
+    public evaluate(card: Card, game, context: EvalContext) {
+        if (context == EvalContext.LethalRemoval)
+            return { addend: 0, multiplier: 0.5 };
+        return { addend: 0, multiplier: 1.5 };
     }
 }
 
@@ -339,9 +337,9 @@ export class Immortal extends Skill {
         return `Immortal.`;
     }
 
-    public evaluate(card: Card, game, context:EvalContext) {
+    public evaluate(card: Card, game:Game, context: EvalContext) {
         if (context == EvalContext.LethalRemoval)
-            return (card as Unit).getStats() * -2;
-        return (card as Unit).getStats() * 2;
+            return { addend: 0, multiplier: 0.1 };
+        return { addend: 0, multiplier: 3 };
     }
 } 
