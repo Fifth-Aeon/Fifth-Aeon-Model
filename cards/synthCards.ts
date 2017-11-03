@@ -22,10 +22,47 @@ import { Annihilate } from './mechanics/removal';
 import { BuffTarget } from './mechanics/buff';
 import { Robotic, SpyPower } from './mechanics/synthSpecials';
 import { MechanicalUnit, BiologicalUnit } from './targeters/biotargeter';
-import { DealDamage, DealSynthDamage } from './mechanics/dealDamage';
+import { DealDamage, DealSynthDamage, DamageOnBlock} from './mechanics/dealDamage';
 import { Poisoned } from './mechanics/poison';
 import { Recharge } from './mechanics/enchantmentCounters';
 import { ForceField } from './mechanics/shieldEnchantments';
+
+
+export function automatedInfantry() {
+    return new Unit(
+        'automatedInfantry',
+        'Automated Infantry',
+        'battle-mech.png',
+        UnitType.Automaton,
+        new Resource(1, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 1
+        }),
+        new Untargeted(),
+        1, 2,
+        [new Robotic()]
+    );
+}
+
+export function interceptor() {
+    return new Unit(
+        'interceptor',
+        'Prototype Interceptor',
+        'biplane.png',
+        UnitType.Vehicle,
+        new Resource(3, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 3
+        }),
+        new Untargeted(),
+        1, 2,
+        [new Flying(), new DamageOnBlock(3)]
+    );
+}
 
 
 export function forceField() {

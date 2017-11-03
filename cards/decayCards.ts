@@ -30,6 +30,24 @@ import { DeathCounter } from './mechanics/shieldEnchantments';
 
 
 
+export function tombGuardian() {
+    return new Unit(
+        'tombGuardian',
+        'Tomb Guardian',
+        'mummy-head.png',
+        UnitType.Undead,
+        new Resource(4, 0, {
+            Growth: 0,
+            Decay: 2,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        1, 2,
+        [new Deathless(), new Lethal()]
+    );
+}
+
 export function abyssalVengeance() {
     return new Enchantment(
         'AbyssalShield',

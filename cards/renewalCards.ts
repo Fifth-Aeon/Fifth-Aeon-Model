@@ -221,7 +221,7 @@ export function king() {
         'King',
         'throne-king.png',
         UnitType.Human,
-        new Resource(5, 0, {
+        new Resource(6, 0, {
             Growth: 0,
             Decay: 0,
             Renewal: 3,
@@ -241,7 +241,7 @@ export function imprison() {
         'Imprison',
         'Imprison',
         'dungeon-light.png',
-        new Resource(3, 0, {
+        new Resource(4, 0, {
             Growth: 0,
             Decay: 0,
             Renewal: 3,
@@ -461,8 +461,8 @@ export function callOfJustice() {
             Renewal: 3,
             Synthesis: 0
         }),
-        targeter,
-        [new MindControl(targeter)]
+        new RenewalMCTargeter(),
+        [new MindControl()]
     );
 }
 

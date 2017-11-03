@@ -9,7 +9,7 @@ export enum EventType {
     UnitEntersPlay, StartOfTurn, EndOfTurn,
 
     // Unit Events
-    Death, UnitDies, Attack, TakeDamage, DealDamage, 
+    Death, UnitDies, Attack, Block, TakeDamage, DealDamage, 
     CheckBlockable, CheckCanBlock, KillUnit,
     LeavesPlay, Annihilate
 }

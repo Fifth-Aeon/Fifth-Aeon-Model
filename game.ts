@@ -282,8 +282,12 @@ export abstract class Game {
 
         blockers.forEach(blocker => {
             let blocked = this.getPlayerUnitById(this.getCurrentPlayer().getPlayerNumber(), blocker.getBlockedUnitId());
-            if (blocked)
-                blocked.fight(blocker);
+            if (blocked) {
+                blocker.getEvents().trigger(EventType.Block, new Map([['attacker', blocked]]));
+                blocker.getEvents().trigger(EventType.Attack, new Map([['blocker', blocker]]));
+                if (blocker.getLocation() == GameZone.Board && blocked.getLocation() == GameZone.Board)
+                    blocked.fight(blocker);
+            }
             blocker.setBlocking(null);
         });
 

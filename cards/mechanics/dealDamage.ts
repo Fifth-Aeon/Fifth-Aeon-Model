@@ -1,8 +1,39 @@
 import { Mechanic, TargetedMechanic, EvalContext } from '../../mechanic';
 import { Game } from '../../Game';
 import { Targeter } from '../../targeter';
-import { Card, GameZone } from '../../card';
+import { Card, CardType, GameZone } from '../../card';
 import { Unit } from '../../unit';
+import { GameEvent, EventType } from '../../gameEvent';
+
+export class DamageOnBlock extends Mechanic {
+    protected validCardTypes = new Set([CardType.Unit, CardType.Item]);
+
+    constructor(protected damage: number) {
+        super();
+    }
+
+    public run(card: Card, game: Game) {
+        (card as Unit).getEvents().addEvent(this, new GameEvent(
+            EventType.Block, params => {
+                let attacker = params.get('attacker') as Unit;
+                attacker.takeDamage(this.damage, card);
+                return params;
+            }
+        ));
+    }
+
+    public remove(card: Card, game: Game) {
+        (card as Unit).getEvents().removeEvents(this);
+    }
+
+    public evaluate(card: Card) {
+        return this.damage * 2;
+    }
+
+    public getText(card: Card, game: Game) {
+        return `Whenever this blocks another unit deal ${this.damage} damage to that unit (before combat damage).`;
+    }
+}
 
 export class DealDamage extends TargetedMechanic {
     constructor(protected amount: number, targeter?: Targeter) {
@@ -41,11 +72,11 @@ export class BiteDamage extends DealDamage {
     }
 
     public getText(card: Card, game: Game) {
-        if (game) 
+        if (game)
             return `Deal damage to target unit equal to your highest attack unit (${this.getDamage(card, game)}).`;
         else
             return `Deal damage to target unit equal to your highest attack unit.`;
-            
+
     }
 }
 

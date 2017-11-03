@@ -223,8 +223,6 @@ export class Unit extends Permanent {
         return !this.attackDisabled && this.ready && !this.exausted;
     }
 
-
-
     public getBlockedUnitId() {
         return this.blockedUnitId;
     }
