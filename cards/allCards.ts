@@ -1,6 +1,6 @@
 import { Card } from '../card';
 
-import {values} from 'lodash';
+import { values } from 'lodash';
 
 export type CardFactory = () => Card;
 
@@ -13,13 +13,13 @@ function addFactory(...factories: CardFactory[]) {
 }
 
 import * as renewal from './renewalCards';
-addFactory(...(values(renewal) as CardFactory[])); 
+addFactory(...(values(renewal) as CardFactory[]));
 
 import * as growth from './growthCards';
-addFactory(...(values(growth) as CardFactory[])); 
+addFactory(...(values(growth) as CardFactory[]));
 
 import * as decay from './decayCards';
-addFactory(...(values(decay) as CardFactory[])); 
+addFactory(...(values(decay) as CardFactory[]));
 
 import * as synthesis from './synthCards';
 addFactory(...(values(synthesis) as CardFactory[])); 

@@ -30,6 +30,24 @@ import { DeathCounter } from './mechanics/shieldEnchantments';
 
 
 
+export function gargoyle() {
+    return new Unit(
+        'gargoyle',
+        'Gargoyle Sentry',
+        'gargoyle.png',
+        UnitType.Monster,
+        new Resource(4, 0, {
+            Growth: 0,
+            Decay: 3,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        4, 4,
+        [new Flying(), new CannotAttack()]
+    );
+}
+
 export function tombGuardian() {
     return new Unit(
         'tombGuardian',
@@ -85,8 +103,6 @@ export function deathAscendancy() {
         ]
     );
 }
-
-
 
 export function raider() {
     return new Unit(

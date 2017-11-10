@@ -17,13 +17,13 @@ import { RenewalMCTargeter, MindControl } from './mechanics/mindControl';
 import { Lordship, unitTypeLordshipExclusive, unitTypeLordshipInclusive } from './mechanics/lordship';
 import { Serenity } from './mechanics/serenity';
 import { EndOfTurn } from './mechanics/periodic';
-import { SummonUnits, SummonUnitOnDamage} from './mechanics/summonUnits';
+import { SummonUnits, SummonUnitOnDamage } from './mechanics/summonUnits';
 import { BuffTarget } from './mechanics/buff';
 import { RefreshTarget } from './mechanics/heal';
 import { Flying, Aquatic, Rush, Relentless, Ranged, Immortal } from './mechanics/skills';
 import { CurePoisonTargeter, CurePoison } from './mechanics/poison';
 import { UnitEntersPlay } from './mechanics/entersPlay';
-import { Recharge, Discharge, CannotBeEmpowered} from './mechanics/enchantmentCounters';
+import { Recharge, Discharge, CannotBeEmpowered } from './mechanics/enchantmentCounters';
 import { PreventAllDamage } from './mechanics/shieldEnchantments';
 
 
@@ -36,9 +36,9 @@ export function supremeAgeis() {
             Growth: 0,
             Decay: 0,
             Renewal: 6,
-            Synthesis: 0 
+            Synthesis: 0
         }),
-        new Untargeted(), 
+        new Untargeted(),
         10, 4,
         [new Discharge(1), new CannotBeEmpowered(), new PreventAllDamage()]
     );
@@ -215,7 +215,7 @@ export function blacksmith() {
     );
 }
 
-export function king() {
+export function kingUnit() {
     return new Unit(
         'king',
         'King',
@@ -450,7 +450,6 @@ export function armstice() {
 }
 
 export function callOfJustice() {
-    let targeter = new RenewalMCTargeter();
     return new Card(
         'CallOfJustice',
         'Call of Justice',
@@ -469,7 +468,7 @@ export function callOfJustice() {
 export function angel() {
     return new Unit(
         'SentryAngel',
-        'Sentry Angel',
+        'Angelic Protector',
         'angel-wings.png',
         UnitType.Cleric,
         new Resource(6, 0, {

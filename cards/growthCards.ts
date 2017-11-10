@@ -7,11 +7,12 @@ import { Resource } from '../resource';
 
 // Targeters
 import { SingleUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnit, AllOtherUnits } from '../targeter';
+import { SleepableUnit } from './targeters/poisonTargeter';
 import { BiologicalUnit } from './targeters/biotargeter';
 import { UnitWithAbility } from './targeters/mechanicTargeter';
 
 // Mechanics
-import { DrawCardsFromUnit, WebTarget} from './mechanics/growthSpecials';
+import { DrawCardsFromUnit, WebTarget } from './mechanics/growthSpecials';
 import { DealDamage, BiteDamage } from './mechanics/dealDamage';
 import { SleepTarget } from './mechanics/sleep';
 import { BuffTarget } from './mechanics/buff';
@@ -23,6 +24,23 @@ import { Venomous } from './mechanics/poison';
 import { GainLife, GainResource } from './mechanics/playerAid';
 import { OnDeath } from './mechanics/death';
 import { KillTarget } from './mechanics/removal';
+
+
+export function SleepDart() {
+    return new Card(
+        'SleepDart',
+        'Sleep Dart',
+        'dart.png',
+        new Resource(1, 0, {
+            Growth: 1,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new SleepableUnit(),
+        [new SleepTarget(3)]
+    );
+}
 
 export function fireElemental() {
     return new Unit(
@@ -307,7 +325,7 @@ export function spiderHatchling() {
         }),
         new Untargeted(),
         2, 3,
-        [new Affinity('Gain +1/+0',  0.5, (unit, game) => unit.buff(1, 0))]
+        [new Affinity('Gain +1/+0', 0.5, (unit, game) => unit.buff(1, 0))]
     );
 }
 

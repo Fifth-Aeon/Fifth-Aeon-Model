@@ -12,6 +12,16 @@ export class PoisonableUnit extends Targeter {
     }
 }
 
+export class SleepableUnit extends Targeter {
+    public getValidTargets(card: Card, game: Game) {
+        return game.getBoard().getAllUnits().filter(unit => !unit.isImmune('sleeping'));
+    }
+    public getText() {
+        return 'target unit';
+    }
+}
+
+
 
 export class PoisonableUnits extends AllUnits {
     public getTargets(card: Card, game: Game): Array<Unit> {
