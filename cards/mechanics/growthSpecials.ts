@@ -23,7 +23,7 @@ export class DrawCardsFromUnit extends TargetedMechanic {
         }
     }
 
-    public evaluateTarget(source: Card, target:Unit, game:Game) {
+    public evaluateTarget(source: Card, target: Unit, game: Game) {
         return this.getCards(target) * 3;
     }
 

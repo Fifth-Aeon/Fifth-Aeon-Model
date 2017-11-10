@@ -1,13 +1,13 @@
 import { Resource, ResourceType, ResourceTypeGroup } from './resource';
 
 export class GameFormat {
-    public name: string = "Standard";
-    public zoneNames: ["Board", "Hand", "Crypt"];
+    public name = 'Standard';
+    public zoneNames: ['Board', 'Hand', 'Crypt'];
 
     // General Gameplay
-    public boardSize: number = 7;
-    public playerCount: number = 2; // Number of players in format
-    public rarityNames: string[] = ["Common", "Rare", "Epic", "Legendary"];
+    public boardSize = 7;
+    public playerCount = 2; // Number of players in format
+    public rarityNames: string[] = ['Common', 'Rare', 'Epic', 'Legendary'];
     public basicResources: Map<string, Resource> = new Map<string, Resource>();
 
     // Starting Values

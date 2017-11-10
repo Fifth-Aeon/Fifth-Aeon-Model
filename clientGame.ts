@@ -37,7 +37,7 @@ export class ClientGame extends Game {
     public playCardExtern(card: Card, targets: Unit[] = [], host: Unit = null) {
         let targetIds = targets.map(target => target.getId());
         card.getTargeter().setTargets(targets);
-        if (card.getCardType() == CardType.Item) {
+        if (card.getCardType() === CardType.Item) {
             if (!host)
                 console.error('Item', card.getName(), 'requires a host.');
             (card as Item).getHostTargeter().setTargets([host]);
@@ -88,9 +88,9 @@ export class ClientGame extends Game {
     // Syncronization Logic --------------------------------------------------------
     /**
      * Syncs an event that happened on the server into the state of this game model
-     * 
-     * @param {number} playerNumber 
-     * @param {GameSyncEvent} event 
+     *
+     * @param {number} playerNumber
+     * @param {GameSyncEvent} event
      * @memberof Game
      */
     public syncServerEvent(playerNumber: number, event: GameSyncEvent) {
@@ -134,14 +134,14 @@ export class ClientGame extends Game {
     }
 
     private syncCardEvent(playerNumber: number, event: GameSyncEvent, params: any) {
-        if (params.playerNo != playerNumber) {
+        if (params.playerNo !== playerNumber) {
             let player = this.players[params.playerNo];
             let card = this.unpackCard(params.played)
             if (params.targetIds) {
                 card.getTargeter().setTargets(params.targetIds
                     .map((id: string) => this.getUnitById(id)));
             }
-            if (card.getCardType() == CardType.Item) {
+            if (card.getCardType() === CardType.Item) {
                 (card as Item).getHostTargeter().setTargets([this.getUnitById(params.hostId)]);
             }
             this.playCard(player, card);
@@ -151,7 +151,7 @@ export class ClientGame extends Game {
     }
 
     private syncModifyEnchantment(playerNumber: number, event: GameSyncEvent, params: any) {
-        if (playerNumber == this.getCurrentPlayer().getPlayerNumber())
+        if (playerNumber === this.getCurrentPlayer().getPlayerNumber())
             return;
         let enchantment = this.getCardById(params.enchantmentId) as Enchantment;
         enchantment.empowerOrDiminish(this.getCurrentPlayer(), this);
@@ -165,7 +165,7 @@ export class ClientGame extends Game {
     }
 
     private syncTurnStart(playerNumber: number, event: GameSyncEvent, params: any) {
-        if (this.turnNum == 1) {
+        if (this.turnNum === 1) {
             this.turn = params.turn;
             this.turnNum = params.turnNum
             this.refresh();
@@ -177,12 +177,12 @@ export class ClientGame extends Game {
     }
 
     private syncAttackToggled(playerNumber: number, event: GameSyncEvent, params: any) {
-        if (params.player != playerNumber)
+        if (params.player !== playerNumber)
             this.getUnitById(params.unitId).toggleAttacking();
     }
 
     private syncBlock(playerNumber: number, event: GameSyncEvent, params: any) {
-        if (params.player != playerNumber) {
+        if (params.player !== playerNumber) {
             this.getUnitById(params.blockerId).setBlocking(params.blockedId);
         }
     }
@@ -197,7 +197,7 @@ export class ClientGame extends Game {
     }
 
     private syncChoiceMade(playerNumber: number, event: GameSyncEvent, params: any) {
-        if (params.player != playerNumber)
+        if (params.player !== playerNumber)
             this.makeDeferedChoice(this.idsToCards(params.choice));
     }
 

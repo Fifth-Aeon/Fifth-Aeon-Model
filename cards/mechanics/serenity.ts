@@ -6,13 +6,13 @@ import { Unit } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
 export class Serenity extends Mechanic {
-    constructor(private effectText: string, private value:number, private effect: (unit: Unit, game: Game) => void) {
+    constructor(private effectText: string, private value: number, private effect: (unit: Unit, game: Game) => void) {
         super();
     }
 
     public run(card: Card, game: Game) {
         game.gameEvents.addEvent(this, new GameEvent(EventType.EndOfTurn, (params) => {
-            if (game.getCurrentPlayer().getPlayerNumber() == card.getOwner() &&
+            if (game.getCurrentPlayer().getPlayerNumber() === card.getOwner() &&
                 game.getPhase() === GamePhase.Play1) {
                 this.effect(card as Unit, game);
             }

@@ -208,7 +208,7 @@ export function blacksmith() {
         new Untargeted(),
         1, 1,
         [new UnitEntersPlay('When you play a unit give it +1/+0.', 3, (source, unit) => {
-            if (unit != source && unit.getOwner() == source.getOwner()) {
+            if (unit !== source && unit.getOwner() === source.getOwner()) {
                 unit.buff(1, 0);
             }
         })]

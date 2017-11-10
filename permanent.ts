@@ -20,9 +20,9 @@ export class Permanent extends Card {
             mechanic.remove(this, game);
         });
     }
-        
+
     public die() {
-        if (this.location != GameZone.Board)
+        if (this.location !== GameZone.Board)
             return;
         this.events.trigger(EventType.Death, new Map());
         this.location = GameZone.Crypt;

@@ -6,13 +6,13 @@ import { Unit } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
 export class EndOfTurn extends Mechanic {
-    constructor(private effectText: string, private value:number, private effect: (unit: Unit, game: Game) => void) {
+    constructor(private effectText: string, private value: number, private effect: (unit: Unit, game: Game) => void) {
         super();
     }
 
     public run(card: Card, game: Game) {
         game.gameEvents.addEvent(this, new GameEvent(EventType.EndOfTurn, (params) => {
-            if (game.getCurrentPlayer().getPlayerNumber() == card.getOwner()) {
+            if (game.getCurrentPlayer().getPlayerNumber() === card.getOwner()) {
                 this.effect(card as Unit, game);
             }
             return params;
@@ -33,13 +33,13 @@ export class EndOfTurn extends Mechanic {
 }
 
 export class StartOfTurn extends Mechanic {
-    constructor(private effectText: string, private value:number, private effect: (unit: Unit, game: Game) => void) {
+    constructor(private effectText: string, private value: number, private effect: (unit: Unit, game: Game) => void) {
         super();
     }
 
     public run(card: Card, game: Game) {
         game.gameEvents.addEvent(this, new GameEvent(EventType.StartOfTurn, (params) => {
-            if (game.getCurrentPlayer().getPlayerNumber() == card.getOwner()) {
+            if (game.getCurrentPlayer().getPlayerNumber() === card.getOwner()) {
                 this.effect(card as Unit, game);
             }
             return params;

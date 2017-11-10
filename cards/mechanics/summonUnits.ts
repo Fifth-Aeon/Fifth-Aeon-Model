@@ -43,7 +43,7 @@ export class SummonUnitForGrave extends SummonUnits {
     public getUnitCount(card: Card, game: Game) {
         return Math.floor(game.getCrypt(0)
             .concat(game.getCrypt(1))
-            .filter(card => card.isUnit()).length / this.factor);
+            .filter(cryptCard => cryptCard.isUnit()).length / this.factor);
     }
 
     public getText(card: Card, game: Game) {
@@ -69,7 +69,7 @@ export class SummonUnitOnDamage extends Mechanic {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.DealDamage, params => {
                 let target = params.get('target') as Unit;
-                if (target.getUnitType() == UnitType.Player) {
+                if (target.getUnitType() === UnitType.Player) {
                     let owner = game.getPlayer(card.getOwner());
                     game.playGeneratedUnit(owner, this.factory())
                 }
@@ -86,7 +86,7 @@ export class SummonUnitOnDamage extends Mechanic {
         return `Whenever this damages your opponent summon a ${this.name}.`;
     }
 
-    public evaluate(card:Card, game:Game) {
+    public evaluate(card: Card, game: Game) {
         // TODO something cleverer
         // Look at hether opponetn can Block?
         return this.unit.evaluate(game, EvalContext.Play);

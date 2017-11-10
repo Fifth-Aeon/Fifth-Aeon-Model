@@ -15,6 +15,22 @@ export interface EvalOperator {
 }
 
 export abstract class Mechanic {
+    protected validCardTypes = new Set([CardType.Spell, CardType.Enchantment, CardType.Unit, CardType.Item]);
+
+    static getMultiplier(vals: Array<number | EvalOperator>) {
+        let multipliers = (vals.filter(val => typeof val === 'object') as EvalOperator[])
+            .map(op => op.multiplier);
+        return reduce(multipliers, multiply, 1);
+
+    }
+    static sumValues(vals: Array<number | EvalOperator>) {
+        let multiplier = Mechanic.getMultiplier(vals);
+        return multiplier * sumBy(vals, val => {
+            if (typeof val === 'object')
+                return (val as EvalOperator).addend;
+            return val as number;
+        });
+    }
     public attach(parent: Card) {
         if (!this.canAttach(parent))
             throw new Error(`Cannot attach  mechanic ${this.id()} to ${parent.getName()} it is not of the right card type.`);
@@ -30,24 +46,8 @@ export abstract class Mechanic {
     public stack() { }
     public clone(): Mechanic { return this; }
 
-    protected validCardTypes = new Set([CardType.Spell, CardType.Enchantment, CardType.Unit, CardType.Item]);
     public canAttach(card: Card) {
         return this.validCardTypes.has(card.getCardType());
-    }
-
-    static getMultiplier(vals: Array<number | EvalOperator>) {
-        let multipliers = (vals.filter(val => typeof val == 'object') as EvalOperator[])
-            .map(op => op.multiplier);
-        return reduce(multipliers, multiply, 1);
-
-    }
-    static sumValues(vals: Array<number | EvalOperator>) {
-        let multiplier = Mechanic.getMultiplier(vals);
-        return multiplier * sumBy(vals, val => {
-            if (typeof val == 'object')
-                return (val as EvalOperator).addend;
-            return val as number;
-        });
     }
 }
 
@@ -62,10 +62,9 @@ export abstract class TargetedMechanic extends Mechanic {
     }
 
     public evaluate(card: Card, game: Game) {
-        if (card.getLocation() == GameZone.Hand)
+        if (card.getLocation() === GameZone.Hand)
             return sumBy(this.targeter.getTargets(card, game),
                 (target) => this.evaluateTarget(card, target, game));
         return 0;
     }
-
 }

@@ -16,7 +16,7 @@ export class Sleeping extends Mechanic {
         unit.setExausted(true);
         game.gameEvents.addEvent(this, new GameEvent(EventType.StartOfTurn, (params) => {
             let player = params.get('player') as number;
-            if (player == unit.getOwner()) {
+            if (player === unit.getOwner()) {
                 unit.setExausted(true);
                 this.turns--;
                 if (this.turns < 1) {
@@ -40,9 +40,9 @@ export class Sleeping extends Mechanic {
     }
 
     public getText(card: Card) {
-        if (this.turns == 1)
+        if (this.turns === 1)
             return 'Sleeping.';
-        else 
+        else
             return `Sleeping (${this.turns}).`;
     }
 
@@ -52,7 +52,7 @@ export class Sleeping extends Mechanic {
 }
 
 export class SleepTarget extends TargetedMechanic {
-    constructor(private turns:number) {
+    constructor(private turns: number) {
         super();
     }
 
@@ -63,10 +63,10 @@ export class SleepTarget extends TargetedMechanic {
     }
 
     public getText(card: Card) {
-        return `Put ${this.targeter.getText()} to sleep for ${this.turns == 1 ? 'a turn' : this.turns + ' turns'}.`
+        return `Put ${this.targeter.getText()} to sleep for ${this.turns === 1 ? 'a turn' : this.turns + ' turns'}.`
     }
 
-    public evaluateTarget(source: Card, target: Unit, game:Game) {
-        return target.evaluate(game, EvalContext.NonlethalRemoval) * 0.5 * (target.getOwner() == source.getOwner() ? -1 : 1);
+    public evaluateTarget(source: Card, target: Unit, game: Game) {
+        return target.evaluate(game, EvalContext.NonlethalRemoval) * 0.5 * (target.getOwner() === source.getOwner() ? -1 : 1);
     }
 }

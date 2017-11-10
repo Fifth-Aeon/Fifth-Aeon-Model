@@ -14,8 +14,9 @@ export class Player extends Unit {
     private deck: Array<Card>;
     private resource: Resource;
     protected life: number;
-    private hasPlayedResource: boolean = false;
+    private hasPlayedResource = false;
     public dataId = '';
+    private drawDisabled = false;
 
     private hardHandLimit = 12;
     private softHandLimit = 8;
@@ -30,7 +31,6 @@ export class Player extends Unit {
         this.resource.add(initResource);
     }
 
-    private drawDisabled: boolean = false;
     public disableDraw() {
         this.drawDisabled = true;
     }
@@ -91,7 +91,7 @@ export class Player extends Unit {
     }
 
     public queryCards(query: string, cards: Card[]): Card | null {
-        let index = parseInt(query);
+        let index = parseInt(query, 10);
         if (!isNaN(index)) {
             if (cards[index])
                 return cards[index];
@@ -105,7 +105,7 @@ export class Player extends Unit {
         remove(this.hand, (toRem: Card) => toRem === card);
         if (!free)
             this.reduceResource(card.getCost());
-        card.play(game); 
+        card.play(game);
     }
 
     public die() {
@@ -154,7 +154,7 @@ export class Player extends Unit {
 
     public searchForCard(game: Game, count: number) {
         game.queryCards(
-            (game: Game) => shuffle(game.getPlayer(this.playerNumber).getDeck()),
+            (queried: Game) => shuffle(queried.getPlayer(this.playerNumber).getDeck()),
             (deck: Card[]) => {
                 game.promptCardChoice(this.playerNumber, deck, count, (cards: Card[]) => {
                     cards.forEach(card => {

@@ -16,7 +16,7 @@ export class Recharge extends Mechanic {
         let enchantment = card as Enchantment;
         game.gameEvents.addEvent(this, new GameEvent(EventType.StartOfTurn, (params) => {
             let player = params.get('player') as number;
-            if (player == enchantment.getOwner())
+            if (player === enchantment.getOwner())
                 enchantment.changePower(this.amountPerTurn);
             return params;
         }));
@@ -40,7 +40,7 @@ export class Discharge extends Recharge {
         let enchantment = card as Enchantment;
         game.gameEvents.addEvent(this, new GameEvent(EventType.StartOfTurn, (params) => {
             let player = params.get('player') as number;
-            if (player == enchantment.getOwner())
+            if (player === enchantment.getOwner())
                 enchantment.changePower(-this.amountPerTurn);
             return params;
         }));
@@ -61,7 +61,7 @@ export class Discharge extends Recharge {
 
 export class CannotBeEmpowered extends Mechanic {
     protected validCardTypes = new Set([CardType.Enchantment]);
-    
+
     public run(card: Card, game: Game) {
         (card as Enchantment).setEmpowerable(false);
     }
@@ -69,7 +69,7 @@ export class CannotBeEmpowered extends Mechanic {
     public remove(card: Card, game: Game) {
         (card as Enchantment).setEmpowerable(true);
     }
- 
+
     public getText(card: Card) {
         return `Cannot be empowered.`;
     }
@@ -82,7 +82,7 @@ export class CannotBeEmpowered extends Mechanic {
 
 export class CannotBeDiminished extends Mechanic {
     protected validCardTypes = new Set([CardType.Enchantment]);
-    
+
     public run(card: Card, game: Game) {
         (card as Enchantment).setDiminishable(false);
     }

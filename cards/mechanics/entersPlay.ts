@@ -6,11 +6,12 @@ import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
 export class UnitEntersPlay extends Mechanic {
-    constructor(private text: string, private value:number, private effect: (source: Unit, entering:Unit, game: Game) => void) {
+    private triggered = false;
+
+    constructor(private text: string, private value: number, private effect: (source: Unit, entering: Unit, game: Game) => void) {
         super();
     }
 
-    private triggered: boolean = false;
 
     public run(card: Card, game: Game) {
         let source = card as Unit;

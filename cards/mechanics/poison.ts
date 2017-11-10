@@ -45,7 +45,7 @@ export class Poisoned extends Mechanic {
         let unit = card as Unit;
         game.gameEvents.addEvent(this, new GameEvent(EventType.StartOfTurn, (params) => {
             let player = params.get('player') as number;
-            if (player == unit.getOwner())
+            if (player === unit.getOwner())
                 unit.buff(-this.level, -this.level);
             return params;
         }));
@@ -64,7 +64,7 @@ export class Poisoned extends Mechanic {
     }
 
     public getText(card: Card) {
-        if (this.level == 1)
+        if (this.level === 1)
             return 'Poisoned.';
         else
             return `Poisoned (${this.level}).`
@@ -87,7 +87,7 @@ export class PoisonTarget extends TargetedMechanic {
     }
 
     public evaluateTarget(source: Card, target: Unit, game: Game) {
-        return target.evaluate(game, EvalContext.NonlethalRemoval) * 0.5 * (target.getOwner() == source.getOwner() ? -1 : 1);
+        return target.evaluate(game, EvalContext.NonlethalRemoval) * 0.5 * (target.getOwner() === source.getOwner() ? -1 : 1);
     }
 }
 
@@ -96,7 +96,7 @@ export class Venomous extends Mechanic {
         let unit = card as Unit;
         unit.getEvents().addEvent(this, new GameEvent(EventType.DealDamage, (params) => {
             let target = params.get('target') as Unit;
-            if (target.getUnitType() != UnitType.Player)
+            if (target.getUnitType() !== UnitType.Player)
                 target.addMechanic(new Poisoned(), game)
             return params;
         }));

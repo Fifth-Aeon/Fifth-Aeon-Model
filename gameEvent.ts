@@ -9,7 +9,7 @@ export enum EventType {
     UnitEntersPlay, StartOfTurn, EndOfTurn,
 
     // Unit Events
-    Death, UnitDies, Attack, Block, TakeDamage, DealDamage, 
+    Death, UnitDies, Attack, Block, TakeDamage, DealDamage,
     CheckBlockable, CheckCanBlock, KillUnit,
     LeavesPlay, Annihilate
 }
@@ -47,14 +47,13 @@ export class EventGroup {
             events = this.events.get(event.type) || [];
         }
         events.push(event);
-        events = sortBy(events, (event: GameEvent) => event.priority);
+        events = sortBy(events, (ev: GameEvent) => ev.priority);
         event.source = source;
     }
 
     public trigger(type: EventType, params: Map<string, any>) {
         let events = sortBy(this.events.get(type) || [], event => event.priority);
         let len = events.length;
-        
         for (let i = 0; i < events.length; i++) {
             let event = events[i]
             if (!event) {
@@ -73,7 +72,7 @@ export class EventGroup {
     public removeEvents(source: Mechanic | null) {
         let allEvents = Array.from(this.events.values());
         allEvents.forEach(eventList => remove(eventList, event => {
-            return event.source == source
+            return event.source === source
         }))
     }
 }

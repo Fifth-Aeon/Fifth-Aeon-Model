@@ -17,7 +17,7 @@ export class DrawCard extends Mechanic {
     }
 
     public getText(card: Card) {
-        if (this.count == 1)
+        if (this.count === 1)
             return 'Draw a card.';
         return `Draw ${this.count} cards.`;
     }
@@ -30,7 +30,7 @@ export class DrawCard extends Mechanic {
 export class Peek extends Mechanic {
     public run(card: Card, game: Game) {
         game.queryCards(
-            (game: Game) => game.getPlayer(game.getOtherPlayerNumber(card.getOwner())).getHand(),
+            (queried: Game) => queried.getPlayer(queried.getOtherPlayerNumber(card.getOwner())).getHand(),
             (hand) => {
                 game.promptCardChoice(card.getOwner(), hand, 0, null, '');
             });
@@ -55,7 +55,7 @@ export class Discard extends Mechanic {
     }
 
     public getText(card: Card) {
-        return `Your opponent discards ${this.count == 1 ? 'a card' : this.count + ' cards'}.`;
+        return `Your opponent discards ${this.count === 1 ? 'a card' : this.count + ' cards'}.`;
     }
 
     public evaluate() {
@@ -68,7 +68,7 @@ export class DiscardOnDamage extends Mechanic {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.DealDamage, params => {
                 let target = params.get('target') as Unit;
-                if (target.getUnitType() == UnitType.Player)
+                if (target.getUnitType() === UnitType.Player)
                     game.getPlayer((target as Player).getPlayerNumber()).discard(game);
                 return params;
             }

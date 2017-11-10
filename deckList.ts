@@ -13,12 +13,12 @@ export interface SavedDeck {
 }
 
 export class DeckList {
-    public name: string = 'New Deck';
-    public avatar: string = '';
-    public customMetadata: boolean = false;
+    public name = 'New Deck';
+    public avatar = '';
+    public customMetadata = false;
     private records = new Map<string, number>();
-    private cardCount: number = 0;
-    
+    private cardCount = 0;
+
 
     constructor(private format: GameFormat = standardFormat) {
         this.generateRandomNColorDeck(1);
@@ -32,11 +32,11 @@ export class DeckList {
         for (let i = 0; i < this.format.minDeckSize; i++) {
             let constr = sample(validCards);
             if (!constr)
-                throw new Error("No cards to construct");
+                throw new Error('No cards to construct');
             let card = constr();
             this.addCard(card);
-            if (this.records.get(card.getDataId()) == this.format.cardsOfRarity[0])
-                remove(validCards, fact => fact == constr);
+            if (this.records.get(card.getDataId()) === this.format.cardsOfRarity[0])
+                remove(validCards, fact => fact === constr);
         }
         this.genMetadata();
     }
@@ -87,7 +87,6 @@ export class DeckList {
     }
 
     public fromSavable(saveData: SavedDeck) {
-        console;
         this.records = new Map(saveData.records) as Map<string, number>;
         this.name = saveData.name;
         this.avatar = saveData.avatar;
@@ -121,7 +120,7 @@ export class DeckList {
         if (!this.records.has(card.getDataId()))
             return;
         let currValue = this.records.get(card.getDataId());
-        if (currValue == 1)
+        if (currValue === 1)
             this.records.delete(card.getDataId());
         else
             this.records.set(card.getDataId(), currValue - 1);

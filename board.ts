@@ -5,7 +5,7 @@ import { Enchantment } from './enchantment';
 
 /**
  * A simple board where each side can place up to a fixed number of units without any positoning.
- * 
+ *
  * @export
  * @class Board
  */
@@ -21,11 +21,10 @@ export class Board {
 
     public getRemainingSpace(player: number) {
         return this.spaceCount - this.spaces[player].length;
-
     }
 
     public canPlayPermanant(playerOrPerm: number | Permanent) {
-        if (typeof playerOrPerm != 'object') {
+        if (typeof playerOrPerm !== 'object') {
             return this.spaces[playerOrPerm].length < this.spaceCount;
         } else {
             return this.spaces[playerOrPerm.getOwner()].length < this.spaceCount;
@@ -51,7 +50,7 @@ export class Board {
         let res: Enchantment[] = [];
         for (let i = 0; i < this.spaces.length; i++) {
             for (let j = 0; j < this.spaces[i].length; j++) {
-                if (this.spaces[i][j].getCardType() == CardType.Enchantment)
+                if (this.spaces[i][j].getCardType() === CardType.Enchantment)
                     res.push(this.spaces[i][j] as Enchantment);
             }
         }

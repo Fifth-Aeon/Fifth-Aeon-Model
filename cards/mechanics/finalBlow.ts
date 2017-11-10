@@ -6,7 +6,7 @@ import { Unit } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
 export class FinalBlow extends Mechanic {
-    constructor(private effectText: string, private value:number, private effect: (unit: Unit, killid: Unit, game: Game) => void) {
+    constructor(private effectText: string, private value: number, private effect: (unit: Unit, killid: Unit, game: Game) => void) {
         super();
     }
 
@@ -17,7 +17,7 @@ export class FinalBlow extends Mechanic {
             return params;
         }));
     }
- 
+
     public remove(card: Card, game: Game) {
         game.gameEvents.removeEvents(this);
     }

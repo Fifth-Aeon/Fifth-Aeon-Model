@@ -76,13 +76,19 @@ export abstract class Game {
     // Flag to tell us which player's choice we are waiting for (null if not waiting)
     protected currentChoice: Choice | null = null;
     protected log: Log;
+    protected winner = -1;
+    protected generatedCardId = 1;
+    public promptCardChoice: (player: number, choices: Card[], count: number,
+        callback: (cards: Card[]) => void, message: string) => void;
+    protected onQueryResult: (cards: Card[]) => void;
+
 
     /**
      * Constructs a game given a format. The format
      * informs how the game is initlized eg how
      * much health each player starts with.
-     * 
-     * @param {any} [format=standardFormat] 
+     *
+     * @param {any} [format=standardFormat]
      * @memberof Game
      */
     constructor(format = standardFormat, protected client: boolean = false, deckLists?: [DeckList, DeckList]) {
@@ -132,9 +138,8 @@ export abstract class Game {
     }
 
     // Game End Logic -----------------------------------------------
-    protected winner = -1;
     protected endGame(winningPlayer: number, quit: boolean = false) {
-        if (this.winner != -1)
+        if (this.winner !== -1)
             return;
         this.winner = winningPlayer;
         this.addGameEvent(new GameSyncEvent(SyncEventType.Ended, { winner: winningPlayer, quit: quit }));
@@ -146,11 +151,11 @@ export abstract class Game {
     }
 
     /**
-    * 
+    *
     * Returns the number of the player who has won the game.
     * If it is still in progress it will return -1;
-    * 
-    * @returns 
+    *
+    * @returns
     * @memberof Game
     */
     public getWinner() {
@@ -169,10 +174,9 @@ export abstract class Game {
         }
     }
 
-    public promptCardChoice: (player: number, choices: Card[], count: number, callback: (cards: Card[]) => void, message: string) => void;
 
     protected makeDeferedChoice(cards: Card[]) {
-        if (this.currentChoice != null) {
+        if (this.currentChoice !== null) {
             this.currentChoice.callback(cards);
         } else {
             console.trace('Error, no defered choice handler for', cards);
@@ -205,7 +209,6 @@ export abstract class Game {
     }
 
     // Server Query Logic ----------------------------------------------
-    protected onQueryResult: (cards: Card[]) => void;
 
     protected setQueryResult(cards: Card[]) {
         if (this.onQueryResult)
@@ -229,9 +232,8 @@ export abstract class Game {
         player.playCard(this, card);
     }
 
-    protected generatedCardId = 1;
     public playGeneratedUnit(player: Player | number, card: Card) {
-        if (typeof player == "number")
+        if (typeof player === 'number')
             player = this.getPlayer(player);
         card.setOwner(player.getPlayerNumber());
         card.setId(this.generatedCardId.toString(16));
@@ -243,19 +245,19 @@ export abstract class Game {
     public playFromCrypt(card: Card) {
         let player = this.players[card.getOwner()];
         let crypt = this.crypt[card.getOwner()];
-        if (crypt.indexOf(card) == -1)
+        if (crypt.indexOf(card) === -1)
             return;
         crypt.splice(crypt.indexOf(card), 1);
         player.playCard(this, card, true);
     }
 
     public canTakeAction() {
-        return this.currentChoice == null;
+        return this.currentChoice === null;
     }
 
     // Combat -------------------------------------------------------------
     public playerCanAttack(playerNo: number) {
-        return this.phase == GamePhase.Play1 && this.isActivePlayer(playerNo) && this.canTakeAction();
+        return this.phase === GamePhase.Play1 && this.isActivePlayer(playerNo) && this.canTakeAction();
     }
 
     public isAttacking() {
@@ -285,7 +287,7 @@ export abstract class Game {
             if (blocked) {
                 blocker.getEvents().trigger(EventType.Block, new Map([['attacker', blocked]]));
                 blocker.getEvents().trigger(EventType.Attack, new Map([['blocker', blocker]]));
-                if (blocker.getLocation() == GameZone.Board && blocked.getLocation() == GameZone.Board)
+                if (blocker.getLocation() === GameZone.Board && blocked.getLocation() === GameZone.Board)
                     blocked.fight(blocker);
             }
             blocker.setBlocking(null);
@@ -465,7 +467,7 @@ export abstract class Game {
     }
 
     public getActivePlayer() {
-        if (this.phase == GamePhase.Block) {
+        if (this.phase === GamePhase.Block) {
             return this.getOtherPlayerNumber(this.turn);
         } else {
             return this.turn;
@@ -481,7 +483,7 @@ export abstract class Game {
     }
 
     protected getPlayerCardById(player: Player, id: string): Card | undefined {
-        return player.getHand().find(card => card.getId() == id);
+        return player.getHand().find(card => card.getId() === id);
     }
 
     public getCardById(id: string): Card | undefined {
@@ -489,11 +491,11 @@ export abstract class Game {
     }
 
     public getUnitById(id: string): Unit | undefined {
-        return this.board.getAllUnits().find(unit => unit.getId() == id);
+        return this.board.getAllUnits().find(unit => unit.getId() === id);
     }
 
     protected getPlayerUnitById(playerNo: number, id: string): Unit | undefined {
-        return this.board.getPlayerUnits(playerNo).find(unit => unit.getId() == id);
+        return this.board.getPlayerUnits(playerNo).find(unit => unit.getId() === id);
     }
 
     public getPhase() {
@@ -509,12 +511,12 @@ export abstract class Game {
     }
 
     public isActivePlayer(player: number) {
-        return this.phase == GamePhase.Block ?
+        return this.phase === GamePhase.Block ?
             !this.isPlayerTurn(player) :
             this.isPlayerTurn(player);
     }
 
     public isPlayPhase() {
-        return this.phase == GamePhase.Play1 || this.phase == GamePhase.Play2;
+        return this.phase === GamePhase.Play1 || this.phase === GamePhase.Play2;
     }
 }

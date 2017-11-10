@@ -2,12 +2,12 @@ import { properList } from './strings';
 import { toPairs } from 'lodash';
 
 export const ResourceType = {
-    "Synthesis": "Synthesis",
-    "Growth": "Growth",
-    "Decay": "Decay",
-    "Renewal": "Renewal"
+    'Synthesis': 'Synthesis',
+    'Growth': 'Growth',
+    'Decay': 'Decay',
+    'Renewal': 'Renewal'
 }
-export const ResourceTypeNames = ["Synthesis", "Growth", "Decay", "Renewal"]
+export const ResourceTypeNames = ['Synthesis', 'Growth', 'Decay', 'Renewal']
 export interface ResourceTypeGroup {
     [type: string]: number
     Synthesis: number
@@ -16,9 +16,11 @@ export interface ResourceTypeGroup {
     Renewal: number
 }
 
-const colors = [new Set(['Synthesis']), new Set(['Growth']), new Set(['Decay']), new Set(['Renewal']), new Set(['Synthesis', 'Growth']), new Set(['Synthesis', 'Decay']), new Set(['Synthesis', 'Renewal']), new Set(['Growth', 'Decay']), new Set(['Growth', 'Renewal']), new Set(['Decay', 'Renewal']), new
-    Set(['Synthesis', 'Growth', 'Decay']), new Set(['Synthesis', 'Growth', 'Renewal']), new Set(['Synthesis', 'Decay', 'Renewal']), new Set(['Growth'
-        , 'Decay', 'Renewal']), new Set(['Synthesis', 'Growth', 'Decay', 'Renewal'])];
+const colors = [new Set(['Synthesis']), new Set(['Growth']), new Set(['Decay']), new Set(['Renewal']),
+new Set(['Synthesis', 'Growth']), new Set(['Synthesis', 'Decay']), new Set(['Synthesis', 'Renewal']),
+new Set(['Growth', 'Decay']), new Set(['Growth', 'Renewal']), new Set(['Decay', 'Renewal']),
+new Set(['Synthesis', 'Growth', 'Decay']), new Set(['Synthesis', 'Growth', 'Renewal']),
+new Set(['Synthesis', 'Decay', 'Renewal']), new Set(['Growth', 'Decay', 'Renewal']), new Set(['Synthesis', 'Growth', 'Decay', 'Renewal'])];
 
 export class Resource {
     private types: ResourceTypeGroup;
@@ -47,14 +49,13 @@ export class Resource {
     }
 
     public asSentance() {
-        let base = this.numeric + ' energy';
-        let reqs: Array<[string, number]> = toPairs(this.types).filter(pair => pair[1] > 0);
+        const base = this.numeric + ' energy';
+        const reqs: Array<[string, number]> = toPairs(this.types).filter(pair => pair[1] > 0);
         if (reqs.length === 0)
             return `costs ${this.numeric} energy.`;
         else
             return `costs ${this.numeric} energy. It also requires ${
-                properList(reqs.map(pair => `${pair[1]} ${pair[0].toLowerCase()}`))
-                }`;;
+                properList(reqs.map(pair => `${pair[1]} ${pair[0].toLowerCase()}`))}`;
     }
 
     public getColor() {
@@ -64,10 +65,10 @@ export class Resource {
         }
     }
 
-    public isInColors(colors: Set<string>) {
+    public isInColors(colorsToCheck: Set<string>) {
         let resColors = this.getColors();
-        for (let value of Array.from(resColors.values())) {
-            if (!colors.has(value))
+        for (const value of Array.from(resColors.values())) {
+            if (!colorsToCheck.has(value))
                 return false;
         }
         return true;
@@ -86,10 +87,10 @@ export class Resource {
         return this.numeric;
     }
 
-    public getMaxNumeric() { 
+    public getMaxNumeric() {
         return this.maxNumeric;
     }
-        
+
 
     public getTyped() {
         return Object.keys(this.types).map(key => key[0].repeat(this.types[key])).join('').split('');

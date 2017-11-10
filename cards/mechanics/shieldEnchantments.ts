@@ -40,7 +40,7 @@ export class PreventAllDamage extends ShieldEnchantment {
     }
 
     public evaluate(card: Card) {
-        return (card as Enchantment).getPower() * 7        
+        return (card as Enchantment).getPower() * 7;
     }
 }
 
@@ -63,7 +63,7 @@ export class ForceField extends ShieldEnchantment {
 
 export class DeathCounter extends ShieldEnchantment {
     protected effect(enchantment: Enchantment, owner: Player, amount: number, source: Card) {
-        if (source.getCardType() == CardType.Unit) {
+        if (source.getCardType() === CardType.Unit) {
             (source as Unit).kill(true);
             enchantment.changePower(-1);
         }

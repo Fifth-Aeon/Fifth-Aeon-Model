@@ -10,7 +10,7 @@ import { remove } from 'lodash';
 
 
 export class GainLife extends Mechanic {
-    constructor(private amount:number) {
+    constructor(private amount: number) {
         super();
     }
 
@@ -29,7 +29,7 @@ export class GainLife extends Mechanic {
 }
 
 export class GainResource extends Mechanic {
-    constructor(private resource:Resource) {
+    constructor(private resource: Resource) {
         super();
     }
 

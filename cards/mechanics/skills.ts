@@ -80,7 +80,7 @@ export class Rush extends Skill {
     }
 
     public evaluate(card: Card, game: Game, context: EvalContext) {
-        if (context == EvalContext.Play)
+        if (context === EvalContext.Play)
             return { addend: 0, multiplier: 1.2 };
         return 0;
     }
@@ -172,7 +172,7 @@ export class Lethal extends Skill {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.DealDamage, params => {
                 let target = params.get('target') as Unit;
-                if (target.getUnitType() != UnitType.Player)
+                if (target.getUnitType() !== UnitType.Player)
                     target.kill(true);
                 return params;
             }
@@ -198,12 +198,12 @@ export class Lethal extends Skill {
 
 export class Shielded extends Skill {
     protected validCardTypes = new Set([CardType.Unit, CardType.Item]);
-    private depleted: boolean = false;
+    private depleted = false;
     public run(card: Card, game: Game) {
         this.depleted = false;
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.TakeDamage, params => {
-                if (this.depleted || params.get('amount') == 0)
+                if (this.depleted || params.get('amount') === 0)
                     return params;
                 params.set('amount', 0);
                 this.depleted = true;
@@ -275,13 +275,13 @@ export class Deathless extends Skill {
     public run(card: Card, game: Game) {
         let unit = card as Unit;
         unit.getEvents().addEvent(this, new GameEvent(EventType.Death, (params) => {
-            game.gameEvents.addEvent(this, new GameEvent(EventType.EndOfTurn, (params) => {
+            game.gameEvents.addEvent(this, new GameEvent(EventType.EndOfTurn, (eotParams) => {
                 this.charges--;
                 if (this.charges <= 0)
                     unit.removeMechanic(this.id(), game);
                 game.playFromCrypt(unit);
                 game.gameEvents.removeEvents(this);
-                return params;
+                return eotParams;
             }))
             return params;
         }));
@@ -300,14 +300,14 @@ export class Deathless extends Skill {
     }
 
     public getText(card: Card) {
-        if (this.charges == 1)
+        if (this.charges === 1)
             return 'Deathless.';
         else
             return `Deathless (${this.charges}).`;
     }
 
     public evaluate(card: Card, game, context: EvalContext) {
-        if (context == EvalContext.LethalRemoval)
+        if (context === EvalContext.LethalRemoval)
             return { addend: 0, multiplier: 0.5 };
         return { addend: 0, multiplier: 1.5 };
     }
@@ -317,9 +317,9 @@ export class Immortal extends Skill {
     public run(card: Card, game: Game) {
         let unit = card as Unit;
         unit.getEvents().addEvent(this, new GameEvent(EventType.Death, (params) => {
-            game.gameEvents.addEvent(this, new GameEvent(EventType.EndOfTurn, (params) => {
+            game.gameEvents.addEvent(this, new GameEvent(EventType.EndOfTurn, (eotParams) => {
                 game.playFromCrypt(unit);
-                return params;
+                return eotParams;
             }))
             return params;
         }));
@@ -337,9 +337,9 @@ export class Immortal extends Skill {
         return `Immortal.`;
     }
 
-    public evaluate(card: Card, game:Game, context: EvalContext) {
-        if (context == EvalContext.LethalRemoval)
+    public evaluate(card: Card, game: Game, context: EvalContext) {
+        if (context === EvalContext.LethalRemoval)
             return { addend: 0, multiplier: 0.1 };
         return { addend: 0, multiplier: 3 };
     }
-} 
+}

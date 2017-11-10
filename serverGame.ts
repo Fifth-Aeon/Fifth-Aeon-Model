@@ -25,9 +25,9 @@ export class ServerGame extends Game {
     /**
    * Handles a players action and returns a list of events that
    * resulted from that aciton.
-   * 
-   * @param {GameAction} action 
-   * @returns {GameSyncEvent[]} 
+   *
+   * @param {GameAction} action
+   * @returns {GameSyncEvent[]}
    * @memberof Game
    */
     public handleAction(action: GameAction): GameSyncEvent[] | null {
@@ -35,12 +35,12 @@ export class ServerGame extends Game {
         let handeler = this.actionHandelers.get(action.type);
         if (!handeler)
             return [];
-        if (action.type != GameActionType.CardChoice && this.currentChoice != null) {
+        if (action.type !== GameActionType.CardChoice && this.currentChoice !== null) {
             console.error('Cant take action, waiting for', this.currentChoice);
             return null;
         }
         let sig = handeler(action);
-        if (sig != true)
+        if (sig !== true)
             return null
         return this.events.slice(mark);
     }
@@ -64,7 +64,8 @@ export class ServerGame extends Game {
         if (!this.isPlayerTurn(act.player))
             return false;
         let enchantment = this.getCardById(act.params.enchantmentId) as Enchantment;
-        if (!enchantment || enchantment.getCardType() != CardType.Enchantment || !enchantment.canChangePower(this.getCurrentPlayer(), this))
+        if (!enchantment || enchantment.getCardType() !== CardType.Enchantment ||
+            !enchantment.canChangePower(this.getCurrentPlayer(), this))
             return false;
         enchantment.empowerOrDiminish(this.getCurrentPlayer(), this);
         this.addGameEvent(new GameSyncEvent(SyncEventType.EnchantmentModified, act.params));
@@ -75,14 +76,14 @@ export class ServerGame extends Game {
         if (!this.currentChoice) {
             console.error('Reject choice from', act.player, '. No choice requested');
             return false;
-        } if (this.currentChoice.player != act.player) {
+        } if (this.currentChoice.player !== act.player) {
             console.error('Reject choice from', act.player, 'wanted', this.currentChoice.player);
             return false;
         }
         let cardIds = act.params.choice as string[];
         let cards = cardIds.map(id => this.getCardById(id));
         let wanted = Math.min(this.currentChoice.validCards.size, this.currentChoice.count)
-        if (cards.length != wanted) {
+        if (cards.length !== wanted) {
             console.error(`Reject choice. Wanted ${wanted} cards but only got ${cards.length}.`)
             return false;
         }
@@ -98,11 +99,11 @@ export class ServerGame extends Game {
         return true;
     }
 
-    /* Preconditions 
+    /* Preconditions
         - Its the owners turn
-        - Owner has has card in hand, 
+        - Owner has has card in hand,
         - Owner can can afford to play card
-        - The target given for the card is valid 
+        - The target given for the card is valid
     */
     protected playCardAction(act: GameAction): boolean {
         let player = this.players[act.player];
@@ -119,7 +120,7 @@ export class ServerGame extends Game {
             return false;
 
         // Item Host
-        if (card.getCardType() == CardType.Item) {
+        if (card.getCardType() === CardType.Item) {
             let item = card as Item;
             item.getHostTargeter().setTargets([this.getUnitById(act.params.hostId)]);
             if (!item.getHostTargeter().targetsAreValid(card, this))
@@ -136,29 +137,29 @@ export class ServerGame extends Game {
         return true;
     }
 
-    /* Preconditions 
+    /* Preconditions
         - It is the first phase of the acitng players turn
-        - Unit is on the battlfield, 
+        - Unit is on the battlfield,
         - Unit can attack
     */
     protected toggleAttackAction(act: GameAction): boolean {
         let player = this.players[act.player];
         let unit = this.getPlayerUnitById(act.player, act.params.unitId);
-        if (!this.isPlayerTurn(act.player) || this.phase != GamePhase.Play1 || !unit || !unit.canAttack())
+        if (!this.isPlayerTurn(act.player) || this.phase !== GamePhase.Play1 || !unit || !unit.canAttack())
             return false;
         unit.toggleAttacking();
         this.addGameEvent(new GameSyncEvent(SyncEventType.AttackToggled, { player: act.player, unitId: act.params.unitId }));
         return true;
     }
 
-    /* Preconditions 
+    /* Preconditions
        - It is the block phase of the opposing players turn
-       - Unit is on the battlfield, 
+       - Unit is on the battlfield,
        - Unit can attack
     */
     protected declareBlockerAction(act: GameAction) {
         let player = this.players[act.player];
-        let isCanceling = act.params.blockedId == null;
+        let isCanceling = act.params.blockedId === null;
         let blocker = this.getUnitById(act.params.blockerId);
         let blocked = isCanceling ? null : this.getPlayerUnitById(this.turn, act.params.blockedId);
         if (this.isPlayerTurn(act.player) ||
@@ -177,7 +178,7 @@ export class ServerGame extends Game {
         return true;
     }
 
-    /* Preconditions 
+    /* Preconditions
        - It is the acting player's turn
        - Player has not already played a resource
        - Requested resource type is valid

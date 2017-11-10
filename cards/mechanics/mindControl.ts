@@ -34,6 +34,6 @@ export class MindControl extends TargetedMechanic {
     }
 
     public evaluateTarget(source: Card, unit: Unit, game:Game) {
-        return unit.evaluate(game, EvalContext.NonlethalRemoval) * 2 * (unit.getOwner() == source.getOwner() ? -1 : 1);
+        return unit.evaluate(game, EvalContext.NonlethalRemoval) * 2 * (unit.getOwner() === source.getOwner() ? -1 : 1);
     }
 }

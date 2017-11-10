@@ -22,7 +22,7 @@ export class Log {
         if (blockers.length > 0) {
             tip += `${blockerName} blocked ${blockerList}.`
         }
-        
+
         this.addItem({
             image: 'assets/png/crossed-sabres.png',
             desc: tip,
@@ -65,7 +65,7 @@ export class Log {
     }
 
     public isEnemy(player: number) {
-        return player != this.playerNo;
+        return player !== this.playerNo;
     }
 
     private makeCardPlayTooltip(event: GameSyncEvent): string {
@@ -74,9 +74,9 @@ export class Log {
         let targetString = '';
         if (!card)
             return '';
-        if (event.params.targetIds != null && event.params.targetIds.length > 0) {
-            let targets:Card[] = event.params.targetIds.map((id:string) => this.game.getCardById(id));
-            targetString = ' targeting ' + targets.map(card => card ? card.getName() : 'unknown').join(' and ');
+        if (event.params.targetIds !== null && event.params.targetIds.length > 0) {
+            let targets: Card[] = event.params.targetIds.map((id: string) => this.game.getCardById(id));
+            targetString = ' targeting ' + targets.map(target => target ? target.getName() : 'unknown').join(' and ');
         }
         let effectString = card.isUnit() ? '' : ` It has the effect "${card.getText(this.game)}"`;
         return `${name} played ${card.getName()}${targetString}.` + effectString;

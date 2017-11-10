@@ -19,7 +19,7 @@ export class TransformDamaged extends Mechanic {
         let unit = card as Unit;
         unit.getEvents().addEvent(this, new GameEvent(EventType.DealDamage, (params) => {
             let target = params.get('target') as Unit;
-            if (target.getUnitType() == UnitType.Player)
+            if (target.getUnitType() === UnitType.Player)
                 return params;
             target.transform(this.transformation(), game)
             return params;
@@ -46,11 +46,11 @@ export class TransformDamaged extends Mechanic {
 export class AbominationConsume extends Mechanic {
     public run(card: Card, game: Game) {
         let crypt = game.getCrypt(card.getOwner());
-        let valid = crypt.filter(card => card.isUnit());
+        let valid = crypt.filter(cryptCard => cryptCard.isUnit());
         let unit = card as Unit;
         game.promptCardChoice(card.getOwner(), valid, 2, (raised: Card[]) => {
-            raised.forEach(card => {
-                let eaten = card as Unit;
+            raised.forEach(toRaise => {
+                let eaten = toRaise as Unit;
                 unit.buff(eaten.getDamage(), eaten.getMaxLife());
                 remove(crypt, eaten);
             })
@@ -59,7 +59,7 @@ export class AbominationConsume extends Mechanic {
 
     private getValidPool(card: Card, game: Game): Unit[] {
         return game.getCrypt(card.getOwner())
-            .filter(card => card.isUnit()) as Unit[];
+            .filter(cryptCard => cryptCard.isUnit()) as Unit[];
     }
 
     public getText(card: Card) {
@@ -67,7 +67,7 @@ export class AbominationConsume extends Mechanic {
     }
 
     public evaluate(card: Card, game: Game) {
-        if (card.getLocation() == GameZone.Board)
+        if (card.getLocation() === GameZone.Board)
             return 0;
         let valid = this.getValidPool(card, game).sort((unitA, unitB) => unitB.getStats() - unitA.getStats());
         return sumBy(take(valid, 2), (unit) => unit.getStats());

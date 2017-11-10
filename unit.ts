@@ -43,6 +43,7 @@ export class Unit extends Permanent {
     protected maxLife: number;
     protected damage: number;
     protected died: boolean;
+    private dying = false;
 
     // Actions
     protected exausted: boolean;
@@ -57,7 +58,8 @@ export class Unit extends Permanent {
     private unitType: UnitType;
     private immunities: Set<string>;
 
-    constructor(dataId: string, name: string, imageUrl: string, type: UnitType, cost: Resource, targeter: Targeter, damage: number, maxLife: number, mechanics: Array<Mechanic>) {
+    constructor(dataId: string, name: string, imageUrl: string, type: UnitType,
+        cost: Resource, targeter: Targeter, damage: number, maxLife: number, mechanics: Array<Mechanic>) {
         super(dataId, name, imageUrl, cost, targeter, mechanics);
         this.unitType = type;
         this.events = new EventGroup();
@@ -105,7 +107,7 @@ export class Unit extends Permanent {
     }
 
     public removeMechanic(id: string, game: Game) {
-        let target = this.mechanics.find(mechanic => mechanic.id() == id);
+        let target = this.mechanics.find(mechanic => mechanic.id() === id);
         if (!target)
             return;
         target.remove(this, game);
@@ -115,13 +117,13 @@ export class Unit extends Permanent {
     public addMechanic(mechanic: Mechanic, game: Game | null = null) {
         if (this.immunities.has(mechanic.id()))
             return;
-        if (mechanic.id() != null && this.hasMechanicWithId(mechanic.id())) {
+        if (mechanic.id() !== null && this.hasMechanicWithId(mechanic.id())) {
             this.hasMechanicWithId(mechanic.id()).stack();
             return;
         }
         this.mechanics.push(mechanic);
         mechanic.attach(this);
-        if (this.location == GameZone.Board && game != null)
+        if (this.location === GameZone.Board && game !== null)
             mechanic.run(this, game)
     }
 
@@ -138,7 +140,7 @@ export class Unit extends Permanent {
     }
 
     public hasMechanicWithId(id: string) {
-        return this.mechanics.find(mechanic => mechanic.id() == id);
+        return this.mechanics.find(mechanic => mechanic.id() === id);
     }
 
     public getUnitType() {
@@ -175,7 +177,7 @@ export class Unit extends Permanent {
     }
 
     public canBlockTarget(toBlock: Unit, hypothetical: boolean = false) {
-        return toBlock == null ||
+        return toBlock === null ||
             !this.blockDisabled &&
             !this.exausted &&
             (toBlock.isAttacking() || hypothetical) &&
@@ -198,7 +200,7 @@ export class Unit extends Permanent {
     }
 
     public isBlocking() {
-        return this.blockedUnitId != null;
+        return this.blockedUnitId !== null;
     }
 
     public isExausted() {
@@ -312,7 +314,7 @@ export class Unit extends Permanent {
     }
 
     private afterDamage(target: Unit) {
-        if (target.location == GameZone.Crypt) {
+        if (target.location === GameZone.Crypt) {
             this.events.trigger(EventType.KillUnit, new Map<string, any>([
                 ['source', this],
                 ['target', target]
@@ -341,9 +343,8 @@ export class Unit extends Permanent {
         });
     }
 
-    private dying: boolean = false;
     public die() {
-        if (this.location != GameZone.Board || this.dying)
+        if (this.location !== GameZone.Board || this.dying)
             return;
         this.dying = true;
         this.events.trigger(EventType.Death, new Map());

@@ -12,8 +12,8 @@ import { EvalContext } from './mechanic';
 export class Enchantment extends Permanent {
     private power: number;
     private costResource: Resource;
-    private canBeEmpowered: boolean = true;
-    private canBeDiminished: boolean = true;
+    private canBeEmpowered = true;
+    private canBeDiminished = true;
 
     constructor(dataId: string, name: string, imageUrl: string, cost: Resource, targeter: Targeter,
         private changeCost: number,
@@ -30,17 +30,17 @@ export class Enchantment extends Permanent {
     }
 
     public canChangePower(player: Player, game: Game) {
-        return game.getCurrentPlayer() == player &&
+        return game.getCurrentPlayer() === player &&
             player.getPool().meetsReq(this.costResource) &&
-            (player.getPlayerNumber() == this.owner ?
+            (player.getPlayerNumber() === this.owner ?
                 this.canBeEmpowered : this.canBeDiminished);
     }
 
-    public setEmpowerable(val:boolean) {
+    public setEmpowerable(val: boolean) {
         this.canBeEmpowered = val;
     }
 
-    public setDiminishable(val:boolean) {
+    public setDiminishable(val: boolean) {
         this.canBeDiminished = val;
     }
 
@@ -50,7 +50,7 @@ export class Enchantment extends Permanent {
 
     public empowerOrDiminish(player: Player, game: Game) {
         player.reduceResource(new Resource(this.changeCost));
-        this.changePower(player.getPlayerNumber() == this.owner ? 1 : -1);
+        this.changePower(player.getPlayerNumber() === this.owner ? 1 : -1);
     }
 
     public changePower(diff: number) {
@@ -61,7 +61,7 @@ export class Enchantment extends Permanent {
     }
 
     public die() {
-        if (this.location != GameZone.Board)
+        if (this.location !== GameZone.Board)
             return;
         this.events.trigger(EventType.Death, new Map());
         this.location = GameZone.Crypt;

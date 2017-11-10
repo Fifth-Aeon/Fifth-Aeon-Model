@@ -27,7 +27,7 @@ export class OnDeath extends Mechanic {
     }
 
     public evaluate(card: Card, game: Game, context: EvalContext) {
-        if (context == EvalContext.LethalRemoval)
+        if (context === EvalContext.LethalRemoval)
             return -this.value;
         return this.value;
     }

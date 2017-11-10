@@ -362,10 +362,10 @@ export function werewolf() {
         new Untargeted(),
         3, 3,
         [new Affinity('All your wolves get +1/+0', 2, (unit, game) => {
-            game.getBoard().getPlayerUnits(unit.getOwner()).forEach(unit => {
-                if (unit.getUnitType() == UnitType.Wolf)
-                    unit.buff(1, 0);
-            })
+            game.getBoard().getPlayerUnits(unit.getOwner()).forEach(ally => {
+                if (ally.getUnitType() === UnitType.Wolf)
+                    ally.buff(1, 0);
+            });
         })]
     );
 }

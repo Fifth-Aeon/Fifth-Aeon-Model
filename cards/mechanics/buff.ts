@@ -37,7 +37,7 @@ export class BuffTarget extends TargetedMechanic {
     }
 
     public evaluateTarget(source: Card, target: Unit) {
-        return (this.life + this.damage) * 1.1 * (target.getOwner() == source.getOwner() ? 1 : -1);
+        return (this.life + this.damage) * 1.1 * (target.getOwner() === source.getOwner() ? 1 : -1);
     }
 }
 

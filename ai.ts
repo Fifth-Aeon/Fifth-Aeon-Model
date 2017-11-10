@@ -95,8 +95,8 @@ export class BasicAI extends AI {
             console.log('A.I skip choice (doesn\'t need input)');
             return
         }
-        this.game.deferChoice(this.playerNumber, cards, toPick, callback);        
-        if (player != this.playerNumber) {
+        this.game.deferChoice(this.playerNumber, cards, toPick, callback);
+        if (player !== this.playerNumber) {
             console.log('A.I skip choice (choice is for player)', player, this.playerNumber);
             return;
         }
@@ -107,7 +107,6 @@ export class BasicAI extends AI {
 
     public handleGameEvent(event: GameSyncEvent) {
         this.game.syncServerEvent(this.playerNumber, event);
-        //console.log('A.I event -', SyncEventType[event.type], event.params, this.eventHandlers.get(event.type));
         if (this.eventHandlers.has(event.type))
             this.eventHandlers.get(event.type)(event);
     }
@@ -122,7 +121,7 @@ export class BasicAI extends AI {
 
     private getBestTarget(card: Card) {
         let targets = card.getTargeter().getValidTargets(card, this.game);
-        if (targets.length == 0)
+        if (targets.length === 0)
             return { score: 0, target: null }
         let best = maxBy(targets, target => card.evaluateTarget(target, this.game));
         return { target: best, score: card.evaluateTarget(best, this.game) }
@@ -158,7 +157,7 @@ export class BasicAI extends AI {
                 return;
             let targets: Unit[] = [];
             let host = null;
-            if (toPlay.getCardType() == CardType.Item)
+            if (toPlay.getCardType() === CardType.Item)
                 host = this.getBestHost(toPlay as Item);
             if (toPlay.getTargeter().needsInput()) {
                 let best = this.getBestTarget(toPlay);
@@ -181,7 +180,7 @@ export class BasicAI extends AI {
             .filter(enchant => res.meetsReq(enchant.getModifyCost()));
         console.log('valid', enchantments);
 
-        if (enchantments.length == 0)
+        if (enchantments.length === 0)
             return;
         let lowest = minBy(enchantments, (enchant) => enchant.getModifyCost().getNumeric());
         console.log('modify', lowest.getName());
@@ -230,9 +229,9 @@ export class BasicAI extends AI {
         if (!blocker.canBlockTarget(attacker, true))
             return false;
         let type = this.categorizeBlock(attacker, blocker);
-        return type == BlockType.AttackerDies ||
-            type == BlockType.NeitherDies ||
-            (type == BlockType.BothDie &&
+        return type === BlockType.AttackerDies ||
+            type === BlockType.NeitherDies ||
+            (type === BlockType.BothDie &&
                 attacker.evaluate(this.game, EvalContext.LethalRemoval) > blocker.evaluate(this.game, EvalContext.LethalRemoval));
     }
 
@@ -267,7 +266,7 @@ export class BasicAI extends AI {
 
     private block() {
         let attackers = sortBy(this.game.getAttackers(), (attacker) =>
-            -(attacker.getDamage() + (attacker.hasMechanicWithId('flying') != undefined ? 1000 : 0)));
+            -(attacker.getDamage() + (attacker.hasMechanicWithId('flying') !== undefined ? 1000 : 0)));
         let potentialBlockers = this.game.getBoard().getPlayerUnits(this.playerNumber)
             .filter(unit => !unit.isExausted());
         let totalDamage = sumBy(attackers, (attacker) => attacker.getDamage());
@@ -288,13 +287,13 @@ export class BasicAI extends AI {
             }
             let best = minBy(options, option => option.type * 100000 + option.tradeScore);
             console.log('options', options, 'best', best);
-            if (best != undefined && (
+            if (best !== undefined && (
                 totalDamage >= life ||
                 best.type < BlockType.BothDie ||
-                best.type == BlockType.BothDie && best.tradeScore <= 0)) {
+                best.type === BlockType.BothDie && best.tradeScore <= 0)) {
                 blocks.push(best);
                 totalDamage -= best.attacker.getDamage();
-                remove(potentialBlockers, (unit) => unit == best.blocker);
+                remove(potentialBlockers, (unit) => unit === best.blocker);
             }
         }
         let actions = blocks.map(block => {

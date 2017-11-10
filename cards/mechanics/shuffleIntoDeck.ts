@@ -16,7 +16,7 @@ export class ShuffleIntoDeck extends TargetedMechanic {
         return `Shuffle ${this.targeter.getText()} into their owner's deck.`
     }
 
-    public evaluateTarget(source: Card, target:Unit, game:Game) {
-        return target.evaluate(game, EvalContext.NonlethalRemoval) * (target.getOwner() == source.getOwner() ? -1 : 1); 
+    public evaluateTarget(source: Card, target: Unit, game: Game) {
+        return target.evaluate(game, EvalContext.NonlethalRemoval) * (target.getOwner() === source.getOwner() ? -1 : 1);
     }
 }

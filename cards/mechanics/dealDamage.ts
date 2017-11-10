@@ -57,7 +57,7 @@ export class DealDamage extends TargetedMechanic {
     }
 
     public evaluateTarget(source: Card, target: Unit, game: Game) {
-        let isEnemy = target.getOwner() == source.getOwner() ? -1 : 1;
+        let isEnemy = target.getOwner() === source.getOwner() ? -1 : 1;
         return target.getLife() < this.getDamage(source, game) ? target.evaluate(game, EvalContext.LethalRemoval) * isEnemy : 0;
     }
 }
@@ -68,7 +68,7 @@ export class BiteDamage extends DealDamage {
     }
 
     public getDamage(card: Card, game: Game) {
-        return Math.max(Math.max(...game.getBoard().getPlayerUnits(card.getOwner()).map(unit => unit.getDamage())), 0);;
+        return Math.max(Math.max(...game.getBoard().getPlayerUnits(card.getOwner()).map(unit => unit.getDamage())), 0); ;
     }
 
     public getText(card: Card, game: Game) {
@@ -91,7 +91,7 @@ export class DamageSpawnOnKill extends DealDamage {
         for (let target of this.targeter.getTargets(card, game)) {
             target.takeDamage(this.amount, card);
             target.checkDeath();
-            if (target.getLocation() == GameZone.Crypt) {
+            if (target.getLocation() === GameZone.Crypt) {
                 game.playGeneratedUnit(card.getOwner(), this.factory());
             }
         }

@@ -22,4 +22,4 @@ import * as decay from './decayCards';
 addFactory(...(values(decay) as CardFactory[]));
 
 import * as synthesis from './synthCards';
-addFactory(...(values(synthesis) as CardFactory[])); 
+addFactory(...(values(synthesis) as CardFactory[]));

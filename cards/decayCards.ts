@@ -270,8 +270,8 @@ export function lich() {
         }),
         new Untargeted(),
         4, 4,
-        [new Deathless(), new OnDeathAnyDeath('play a Skeleton', 6, (lich, dying, game) => {
-            game.playGeneratedUnit(lich.getOwner(), skeleton());
+        [new Deathless(), new OnDeathAnyDeath('play a Skeleton', 6, (unit, dying, game) => {
+            game.playGeneratedUnit(unit.getOwner(), skeleton());
         })]
     );
 }

@@ -6,6 +6,7 @@ import { every } from 'lodash';
 
 export abstract class Targeter {
     protected targets: Array<Unit> = [];
+    protected optional = false;
 
     public needsInput(): boolean {
         return true;
@@ -34,7 +35,6 @@ export abstract class Targeter {
             this.getValidTargets(card, game).length > 0;
     }
 
-    protected optional: boolean = false;
     public isOptional(): boolean {
         return this.optional;
     }
@@ -81,7 +81,7 @@ export class SingleUnit extends Targeter {
 
 export class FriendlyUnit extends SingleUnit {
     public getValidTargets(card: Card, game: Game) {
-        return game.getBoard().getAllUnits().filter(unit => unit.getOwner() == card.getOwner());
+        return game.getBoard().getAllUnits().filter(unit => unit.getOwner() === card.getOwner());
     }
     public getText() {
         return 'target friendly unit';
@@ -91,7 +91,7 @@ export class FriendlyUnit extends SingleUnit {
 
 export class EnemyUnit extends SingleUnit {
     public getValidTargets(card: Card, game: Game) {
-        return game.getBoard().getAllUnits().filter(unit => unit.getOwner() != card.getOwner());
+        return game.getBoard().getAllUnits().filter(unit => unit.getOwner() !== card.getOwner());
     }
     public getText() {
         return 'target enemy unit';
@@ -121,7 +121,7 @@ export class AllOtherUnits extends AllUnits {
         return 'all other units';
     }
     public getTargets(card: Card, game: Game): Array<Unit> {
-        this.lastTargets = game.getBoard().getAllUnits().filter(unit => unit != card);
+        this.lastTargets = game.getBoard().getAllUnits().filter(unit => unit !== card);
         return this.lastTargets;
     }
 }
@@ -133,7 +133,7 @@ export class FriendlyUnits extends AllUnits {
     }
     public getTargets(card: Card, game: Game): Array<Unit> {
         this.lastTargets = game.getBoard().getAllUnits()
-            .filter(unit => unit.getOwner() == card.getOwner());
+            .filter(unit => unit.getOwner() === card.getOwner());
         return this.lastTargets;
     }
 }
@@ -144,7 +144,7 @@ export class EnemyUnits extends AllUnits {
     }
     public getTargets(card: Card, game: Game): Array<Unit> {
         this.lastTargets = game.getBoard().getAllUnits()
-            .filter(unit => unit.getOwner() != card.getOwner());
+            .filter(unit => unit.getOwner() !== card.getOwner());
         return this.lastTargets;
     }
 }
@@ -180,7 +180,7 @@ export class Friends extends AllUnits {
     }
     public getTargets(card: Card, game: Game): Array<Unit> {
         this.lastTargets = game.getBoard().getAllUnits()
-            .filter(unit => unit.getOwner() == card.getOwner())
+            .filter(unit => unit.getOwner() === card.getOwner())
             .concat(game.getPlayer(card.getOwner()));
         return this.lastTargets;
     }
@@ -192,7 +192,7 @@ export class Enemies extends AllUnits {
     }
     public getTargets(card: Card, game: Game): Array<Unit> {
         this.lastTargets = game.getBoard().getAllUnits()
-            .filter(unit => unit.getOwner() != card.getOwner())
+            .filter(unit => unit.getOwner() !== card.getOwner())
             .concat(game.getPlayer(game.getOtherPlayerNumber(card.getOwner())));
         return this.lastTargets;
     }

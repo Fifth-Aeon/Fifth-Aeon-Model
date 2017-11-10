@@ -70,7 +70,7 @@ export function friendlyLordship(attack: number, life: number) {
         attack + life,
         (unit: Unit) => unit.buff(attack, life),
         (unit: Unit) => unit.buff(-attack, -life),
-        (source: Unit, target: Unit) => source != target && source.getOwner() == target.getOwner()
+        (source: Unit, target: Unit) => source !== target && source.getOwner() === target.getOwner()
     );
 }
 
@@ -80,7 +80,7 @@ export function unitTypeLordshipExclusive(type: UnitType, attack: number, life: 
         attack + life,
         (unit: Unit) => unit.buff(attack, life),
         (unit: Unit) => unit.buff(-attack, -life),
-        (source: Unit, target: Unit) => source.getOwner() == target.getOwner() && source != target && type == target.getUnitType()
+        (source: Unit, target: Unit) => source.getOwner() === target.getOwner() && source !== target && type === target.getUnitType()
     );
 }
 
@@ -90,7 +90,7 @@ export function unitTypeLordshipInclusive(type: UnitType, attack: number, life: 
         attack + life,
         (unit: Unit) => unit.buff(attack, life),
         (unit: Unit) => unit.buff(-attack, -life),
-        (source: Unit, target: Unit) => source.getOwner() == target.getOwner() && type == target.getUnitType()
+        (source: Unit, target: Unit) => source.getOwner() === target.getOwner() && type === target.getUnitType()
     );
 }
 export function unitTypeLordshipAll(type: UnitType, attack: number, life: number) {
@@ -99,7 +99,7 @@ export function unitTypeLordshipAll(type: UnitType, attack: number, life: number
         attack + life,
         (unit: Unit) => unit.buff(attack, life),
         (unit: Unit) => unit.buff(-attack, -life),
-        (source: Unit, target: Unit) => type == target.getUnitType()
+        (source: Unit, target: Unit) => type === target.getUnitType()
     );
 }
 
@@ -109,6 +109,6 @@ export function notUnitLordship(type: UnitType, attack: number, life: number) {
         attack + life,
         (unit: Unit) => unit.buff(attack, life),
         (unit: Unit) => unit.buff(-attack, -life),
-        (source: Unit, target: Unit) => type != target.getUnitType()
+        (source: Unit, target: Unit) => type !== target.getUnitType()
     );
 }
