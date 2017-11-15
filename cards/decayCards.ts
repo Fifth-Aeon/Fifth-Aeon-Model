@@ -15,7 +15,7 @@ import { Discharge, Recharge } from './mechanics/enchantmentCounters';
 import { Flying, Rush, Aquatic, Lethal, Lifesteal, Deathless, Immortal, Relentless } from './mechanics/skills';
 import { Discard, DiscardOnDamage } from './mechanics/draw';
 import { FinalBlow } from './mechanics/finalBlow';
-import { BuffTarget } from './mechanics/buff';
+import { BuffTargetAndGrant } from './mechanics/buff';
 import { EndOfTurn } from './mechanics/periodic';
 import { CannotAttack } from './mechanics/cantAttack';
 import { PoisonTarget, PoisonImmune } from './mechanics/poison';
@@ -155,7 +155,7 @@ export function whip() {
         new EnemyUnit(),
         new FriendlyUnit(),
         3, 0,
-        [new BuffTarget(-1, -1, [])]
+        [new BuffTargetAndGrant(-1, -1, [])]
     );
 }
 

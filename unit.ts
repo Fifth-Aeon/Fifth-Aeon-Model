@@ -77,6 +77,7 @@ export class Unit extends Permanent {
         this.items = [];
     }
 
+   
     public addItem(item: Item) {
         this.items.push(item);
     }
@@ -103,7 +104,7 @@ export class Unit extends Permanent {
             this.mechanics.push(mechanic);
             mechanic.attach(this);
         });
-        this.mechanics.forEach(mechanic => mechanic.run(this, game))
+        this.mechanics.forEach(mechanic => mechanic.enter(this, game))
     }
 
     public removeMechanic(id: string, game: Game) {
@@ -124,7 +125,7 @@ export class Unit extends Permanent {
         this.mechanics.push(mechanic);
         mechanic.attach(this);
         if (this.location === GameZone.Board && game !== null)
-            mechanic.run(this, game)
+            mechanic.enter(this, game)
     }
 
     public addImmunity(id: string) {

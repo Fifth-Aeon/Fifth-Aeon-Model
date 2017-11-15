@@ -8,11 +8,6 @@ import { Targeter } from './targeter';
 import { Mechanic } from './mechanic';
 
 export class Permanent extends Card {
-    protected events: EventGroup = new EventGroup();
-
-    public getEvents() {
-        return this.events;
-    }
 
     public leaveBoard(game: Game) {
         this.events.trigger(EventType.LeavesPlay, new Map([['leavingUnit', this]]));

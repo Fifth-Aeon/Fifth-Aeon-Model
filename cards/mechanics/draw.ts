@@ -12,7 +12,7 @@ export class DrawCard extends Mechanic {
         super();
     }
 
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         game.getPlayer(card.getOwner()).drawCards(this.count);
     }
 
@@ -28,7 +28,7 @@ export class DrawCard extends Mechanic {
 }
 
 export class Peek extends Mechanic {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         game.queryCards(
             (queried: Game) => queried.getPlayer(queried.getOtherPlayerNumber(card.getOwner())).getHand(),
             (hand) => {
@@ -49,7 +49,7 @@ export class Discard extends Mechanic {
     constructor(private count: number) {
         super()
     }
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         let target = game.getPlayer(game.getOtherPlayerNumber(card.getOwner()));
         target.discard(game, this.count);
     }
@@ -64,7 +64,7 @@ export class Discard extends Mechanic {
 }
 
 export class DiscardOnDamage extends Mechanic {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.DealDamage, params => {
                 let target = params.get('target') as Unit;
@@ -89,7 +89,7 @@ export class DiscardOnDamage extends Mechanic {
 }
 
 export class AugarCard extends Mechanic {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         let owner = game.getPlayer(card.getOwner());
         let synth = owner.getPool().getOfType('Synthesis');
 

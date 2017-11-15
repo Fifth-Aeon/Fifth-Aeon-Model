@@ -4,6 +4,8 @@ import { Player } from './player';
 import { Mechanic, EvalContext } from './mechanic';
 import { Targeter, Untargeted } from './targeter';
 import { Unit } from './unit';
+import { EventGroup, EventType } from './gameEvent';
+
 
 import { remove, sumBy } from 'lodash';
 
@@ -29,6 +31,7 @@ export class Card {
     protected imageUrl: string;
     protected location: GameZone;
     protected text: string = null;
+    protected events: EventGroup = new EventGroup();
 
     protected targeter: Targeter = new Untargeted();
 
@@ -44,6 +47,10 @@ export class Card {
         this.location = GameZone.Deck;
         this.id = this.generateId();
         this.text = text;
+    }
+
+    public getEvents() {
+        return this.events;
     }
 
     private generateId(): string {
@@ -113,7 +120,11 @@ export class Card {
     }
 
     public play(game: Game) {
-        this.mechanics.forEach(mechanic => mechanic.run(this, game));
+        this.mechanics.forEach(mechanic => {
+            mechanic.getTrigger().register(this, game);
+            mechanic.enter(this, game);
+        });
+        this.events.trigger(EventType.Played, new Map());
         if (!this.isUnit()) {
             game.addToCrypt(this);
         }

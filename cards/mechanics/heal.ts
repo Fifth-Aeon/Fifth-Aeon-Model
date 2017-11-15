@@ -8,7 +8,7 @@ import { properCase, properList } from '../../strings';
 
 
 export class RefreshTarget extends TargetedMechanic {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game)) {
             target.refresh()
         }

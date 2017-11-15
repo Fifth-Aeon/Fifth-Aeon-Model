@@ -24,7 +24,7 @@ export class CurePoisonTargeter extends Targeter {
 }
 
 export class CurePoison extends TargetedMechanic {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         this.targeter.getTargets(card, game).forEach(target => {
             target.removeMechanic('poisoned', game);
         });
@@ -41,7 +41,7 @@ export class CurePoison extends TargetedMechanic {
 
 export class Poisoned extends Mechanic {
     private level = 1;
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         let unit = card as Unit;
         game.gameEvents.addEvent(this, new GameEvent(EventType.StartOfTurn, (params) => {
             let player = params.get('player') as number;
@@ -76,7 +76,7 @@ export class Poisoned extends Mechanic {
 }
 
 export class PoisonTarget extends TargetedMechanic {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game)) {
             target.addMechanic(new Poisoned(), game);
         }
@@ -92,7 +92,7 @@ export class PoisonTarget extends TargetedMechanic {
 }
 
 export class Venomous extends Mechanic {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         let unit = card as Unit;
         unit.getEvents().addEvent(this, new GameEvent(EventType.DealDamage, (params) => {
             let target = params.get('target') as Unit;
@@ -116,7 +116,7 @@ export class Venomous extends Mechanic {
 }
 
 export class PoisonImmune extends Mechanic {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         (card as Unit).addImmunity('poisoned');
     }
 

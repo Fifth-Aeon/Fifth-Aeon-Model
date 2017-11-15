@@ -11,7 +11,7 @@ import { Poisoned } from './poison';
 
 const robotImmunities = [new Sleeping().id(), new Poisoned().id()];
 export class Robotic extends Mechanic {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         for (let immunity of robotImmunities) {
             (card as Unit).addImmunity(immunity);
         }
@@ -35,7 +35,7 @@ export class Robotic extends Mechanic {
     }
 }
 export class SpyPower extends Mechanic {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.DealDamage, params => {
                 let target = params.get('target') as Unit;

@@ -10,7 +10,7 @@ export class OnDeath extends Mechanic {
         super();
     }
 
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         let unit = card as Unit;
         unit.getEvents().addEvent(this, new GameEvent(EventType.Death, (params) => {
             this.effect(unit, game);
@@ -38,7 +38,7 @@ export class OnDeathAnyDeath extends Mechanic {
         super();
     }
 
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         let unit = card as Unit;
         game.gameEvents.addEvent(this, new GameEvent(EventType.UnitDies, (params) => {
             let died = params.get('deadUnit') as Unit;

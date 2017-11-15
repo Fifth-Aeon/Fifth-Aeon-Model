@@ -10,7 +10,7 @@ export class EndOfTurn extends Mechanic {
         super();
     }
 
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         game.gameEvents.addEvent(this, new GameEvent(EventType.EndOfTurn, (params) => {
             if (game.getCurrentPlayer().getPlayerNumber() === card.getOwner()) {
                 this.effect(card as Unit, game);
@@ -37,7 +37,7 @@ export class StartOfTurn extends Mechanic {
         super();
     }
 
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         game.gameEvents.addEvent(this, new GameEvent(EventType.StartOfTurn, (params) => {
             if (game.getCurrentPlayer().getPlayerNumber() === card.getOwner()) {
                 this.effect(card as Unit, game);

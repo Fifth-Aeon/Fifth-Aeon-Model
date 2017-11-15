@@ -6,7 +6,7 @@ import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
 export class Annihilate extends TargetedMechanic {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         this.targeter.getTargets(card, game).forEach(target => {
             target.annihilate();
         });
@@ -22,7 +22,7 @@ export class Annihilate extends TargetedMechanic {
 }
 
 export class KillTarget extends TargetedMechanic {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         this.targeter.getTargets(card, game).forEach(target => {
             target.kill(true);
         });

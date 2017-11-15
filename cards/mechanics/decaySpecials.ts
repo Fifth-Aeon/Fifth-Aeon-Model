@@ -15,7 +15,7 @@ export class TransformDamaged extends Mechanic {
         this.unitDesc = unit.getName();
     }
 
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         let unit = card as Unit;
         unit.getEvents().addEvent(this, new GameEvent(EventType.DealDamage, (params) => {
             let target = params.get('target') as Unit;
@@ -44,7 +44,7 @@ export class TransformDamaged extends Mechanic {
 }
 
 export class AbominationConsume extends Mechanic {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         let crypt = game.getCrypt(card.getOwner());
         let valid = crypt.filter(cryptCard => cryptCard.isUnit());
         let unit = card as Unit;

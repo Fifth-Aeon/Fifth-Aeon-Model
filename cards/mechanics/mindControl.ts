@@ -22,7 +22,7 @@ export class RenewalMCTargeter extends Targeter {
 }
 
 export class MindControl extends TargetedMechanic {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         let targets = this.targeter.getTargets(card, game);
         for (let target of targets) {
             game.changeUnitOwner(target);

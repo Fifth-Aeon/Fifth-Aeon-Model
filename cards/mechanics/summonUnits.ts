@@ -14,7 +14,7 @@ export class SummonUnits extends Mechanic {
         this.name = factory().getName();
     }
 
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         let owner = game.getPlayer(card.getOwner());
         for (let i = 0; i < this.getUnitCount(card, game); i++) {
             game.playGeneratedUnit(owner, this.factory())
@@ -65,7 +65,7 @@ export class SummonUnitOnDamage extends Mechanic {
         this.name = this.unit.getName();
     }
 
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.DealDamage, params => {
                 let target = params.get('target') as Unit;

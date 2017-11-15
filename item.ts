@@ -11,7 +11,6 @@ export class Item extends Card {
     private host: Unit;
     private lifeBonus: number;
     private damageBonus: number;
-    private events: EventGroup;
     private hostTargeter: Targeter;
 
     constructor(dataId: string, name: string, imageUrl: string, cost: Resource, targeter: Targeter, hostTargeter: Targeter,
@@ -69,7 +68,7 @@ export class Item extends Card {
         for (let mechanic of this.mechanics) {
             let clone = mechanic.clone();
             this.host.addMechanic(clone);
-            clone.run(host, game);
+            clone.enter(host, game);
         }
     }
 

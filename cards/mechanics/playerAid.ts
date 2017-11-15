@@ -14,7 +14,7 @@ export class GainLife extends Mechanic {
         super();
     }
 
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         let player = game.getPlayer(card.getOwner());
         player.addLife(this.amount);
     }
@@ -33,7 +33,7 @@ export class GainResource extends Mechanic {
         super();
     }
 
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         let player = game.getPlayer(card.getOwner());
         player.getPool().add(this.resource)
     }

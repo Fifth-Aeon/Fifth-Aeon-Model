@@ -6,13 +6,37 @@ import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 import { properCase, properList } from '../../strings';
 
-
 export class BuffTarget extends TargetedMechanic {
+    constructor(private damage: number, private life: number) {
+        super();
+    }
+
+    public onTrigger(card: Card, game: Game) {
+        for (let target of this.targeter.getTargets(card, game)) {
+            target.buff(this.damage, this.life);
+        }
+    }
+
+    private symbol(number: number) {
+        return number > 0 ? '+' : '';
+    }
+
+    public getText(card: Card) {
+        let buffText = `${this.symbol(this.damage)}${this.damage}/${this.symbol(this.life)}${this.life}`
+        return `Give ${this.targeter.getText()} ${buffText}.`
+    }
+
+    public evaluateTarget(source: Card, target: Unit) {
+        return (this.life + this.damage) * 1.1 * (target.getOwner() === source.getOwner() ? 1 : -1);
+    }
+}
+
+export class BuffTargetAndGrant extends TargetedMechanic {
     constructor(private damage: number, private life: number, private abilities: Mechanic[]) {
         super();
     }
 
-    public run(card: Card, game: Game) {
+    public onTrigger(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game)) {
             target.buff(this.damage, this.life);
             for (let ability of this.abilities) {

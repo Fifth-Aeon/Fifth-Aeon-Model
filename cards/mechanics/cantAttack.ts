@@ -6,7 +6,7 @@ import { Unit } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
 export class CannotAttack extends Mechanic {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         (card as Unit).setAttackDisabled(true);
     }
 
@@ -24,7 +24,7 @@ export class CannotAttack extends Mechanic {
 }
 
 export class CannotBlock extends Mechanic {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         (card as Unit).setBlockDisabled(true);
     }
 
@@ -42,7 +42,7 @@ export class CannotBlock extends Mechanic {
 }
 
 export class ImprisonTarget extends TargetedMechanic {
-    public run(card: Card, game: Game) {
+    public onTrigger(card: Card, game: Game) {
         this.targeter.getTargets(card, game).forEach(target => {
             target.addMechanic(new CannotAttack(), game);
             target.addMechanic(new CannotBlock(), game);

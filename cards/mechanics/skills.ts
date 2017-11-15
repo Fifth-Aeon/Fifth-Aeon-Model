@@ -10,7 +10,7 @@ abstract class Skill extends Mechanic {
 }
 
 export class Flying extends Skill {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.CheckBlockable, params => {
                 let blocker = params.get('blocker') as Unit;
@@ -39,7 +39,7 @@ export class Flying extends Skill {
 }
 
 export class Unblockable extends Skill {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.CheckBlockable, params => {
                 params.set('canBlock', false);
@@ -67,7 +67,7 @@ export class Unblockable extends Skill {
 
 
 export class Rush extends Skill {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         (card as Unit).refresh();
     }
 
@@ -87,7 +87,7 @@ export class Rush extends Skill {
 }
 
 export class Aquatic extends Skill {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.CheckBlockable, params => {
                 let blocker = params.get('blocker') as Unit;
@@ -124,7 +124,7 @@ export class Aquatic extends Skill {
 }
 
 export class Ranged extends Skill {
-    public run(card: Card, game: Game) { }
+    public enter(card: Card, game: Game) { }
 
 
     public getText(card: Card) {
@@ -141,7 +141,7 @@ export class Ranged extends Skill {
 }
 
 export class Lifesteal extends Skill {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.DealDamage, params => {
                 game.getPlayer(card.getOwner()).addLife(params.get('amount'));
@@ -168,7 +168,7 @@ export class Lifesteal extends Skill {
 }
 
 export class Lethal extends Skill {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.DealDamage, params => {
                 let target = params.get('target') as Unit;
@@ -199,7 +199,7 @@ export class Lethal extends Skill {
 export class Shielded extends Skill {
     protected validCardTypes = new Set([CardType.Unit, CardType.Item]);
     private depleted = false;
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         this.depleted = false;
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.TakeDamage, params => {
@@ -239,7 +239,7 @@ export class Shielded extends Skill {
 }
 
 export class Relentless extends Skill {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         game.gameEvents.addEvent(this, new GameEvent(
             EventType.EndOfTurn, params => {
                 let target = card as Unit;
@@ -272,7 +272,7 @@ export class Deathless extends Skill {
         super();
     }
 
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         let unit = card as Unit;
         unit.getEvents().addEvent(this, new GameEvent(EventType.Death, (params) => {
             game.gameEvents.addEvent(this, new GameEvent(EventType.EndOfTurn, (eotParams) => {
@@ -314,7 +314,7 @@ export class Deathless extends Skill {
 }
 
 export class Immortal extends Skill {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         let unit = card as Unit;
         unit.getEvents().addEvent(this, new GameEvent(EventType.Death, (params) => {
             game.gameEvents.addEvent(this, new GameEvent(EventType.EndOfTurn, (eotParams) => {

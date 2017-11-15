@@ -15,7 +15,7 @@ export class Lordship extends Mechanic {
         super();
     }
 
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         let source = card as Unit;
         let targets = this.getTargets(source, game);
         targets.forEach(unit => this.applyToUnit(unit, game));

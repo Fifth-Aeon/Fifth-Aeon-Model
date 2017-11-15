@@ -15,15 +15,16 @@ import { UnitWithAbility } from './targeters/mechanicTargeter';
 import { DrawCardsFromUnit, WebTarget } from './mechanics/growthSpecials';
 import { DealDamage, BiteDamage } from './mechanics/dealDamage';
 import { SleepTarget } from './mechanics/sleep';
-import { BuffTarget } from './mechanics/buff';
+import { BuffTargetAndGrant } from './mechanics/buff';
 import { FinalBlow } from './mechanics/finalBlow';
 import { SummonUnits } from './mechanics/summonUnits';
 import { Flying, Lethal, Rush, Aquatic, Relentless, Deathless } from './mechanics/skills';
-import { Affinity } from './mechanics/affinity';
 import { Venomous } from './mechanics/poison';
 import { GainLife, GainResource } from './mechanics/playerAid';
 import { OnDeath } from './mechanics/death';
 import { KillTarget } from './mechanics/removal';
+import { Affinity } from 'app/game_model/cards/triggers/affinity';
+import { UnitsOfType } from 'app/game_model/cards/targeters/unitTypeTargeter';
 
 
 export function SleepDart() {
@@ -307,7 +308,7 @@ export function wolfPup() {
         }),
         new Untargeted(),
         2, 1,
-        [new Affinity('Gain +0/+1', 0.5, (unit, game) => unit.buff(0, 1))]
+        [new BuffTargetAndGrant(0, 1, []).setTrigger(new Affinity())]
     );
 }
 
@@ -325,7 +326,7 @@ export function spiderHatchling() {
         }),
         new Untargeted(),
         2, 3,
-        [new Affinity('Gain +1/+0', 0.5, (unit, game) => unit.buff(1, 0))]
+        [new BuffTargetAndGrant(1, 0, []).setTrigger(new Affinity())]
     );
 }
 
@@ -361,12 +362,9 @@ export function werewolf() {
         }),
         new Untargeted(),
         3, 3,
-        [new Affinity('All your wolves get +1/+0', 2, (unit, game) => {
-            game.getBoard().getPlayerUnits(unit.getOwner()).forEach(ally => {
-                if (ally.getUnitType() === UnitType.Wolf)
-                    ally.buff(1, 0);
-            });
-        })]
+        [new BuffTargetAndGrant(1, 0, [])
+            .setTrigger(new Affinity())
+            .setTargeter(new UnitsOfType(UnitType.Wolf))]
     );
 }
 
@@ -416,7 +414,7 @@ export function mutation() {
             Synthesis: 0
         }),
         new BiologicalUnit(),
-        [new BuffTarget(2, 2, [new Relentless()])]
+        [new BuffTargetAndGrant(2, 2, [new Relentless()])]
     );
 }
 

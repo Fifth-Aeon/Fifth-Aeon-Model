@@ -5,7 +5,7 @@ import { Card } from '../../card';
 import { Unit } from '../../unit';
 
 export class ShuffleIntoDeck extends TargetedMechanic {
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         let targets = this.targeter.getTargets(card, game);
         for (let target of targets) {
             game.returnPermanentToDeck(target);

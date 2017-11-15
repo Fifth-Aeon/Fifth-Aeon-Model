@@ -13,7 +13,7 @@ export class UnitEntersPlay extends Mechanic {
     }
 
 
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         let source = card as Unit;
         game.gameEvents.addEvent(this, new GameEvent(EventType.UnitEntersPlay, (params) => {
             let enteringUnit = params.get('enteringUnit') as Unit;

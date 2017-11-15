@@ -4,7 +4,7 @@ import { Unit } from '../../unit';
 import { Game } from '../../game';
 
 export class UnitWithAbility extends Targeter {
-    constructor(private abilityId:string, private desc:string) {
+    constructor(private abilityId: string, private desc: string) {
         super();
     }
     public getValidTargets(card: Card, game: Game) {

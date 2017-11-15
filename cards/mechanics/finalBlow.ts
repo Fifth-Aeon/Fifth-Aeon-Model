@@ -10,7 +10,7 @@ export class FinalBlow extends Mechanic {
         super();
     }
 
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         let unit = card as Unit;
         unit.getEvents().addEvent(this, new GameEvent(EventType.KillUnit, (params) => {
             this.effect(card as Unit, params.get('target'), game);

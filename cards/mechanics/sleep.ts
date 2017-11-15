@@ -11,7 +11,7 @@ export class Sleeping extends Mechanic {
     constructor(private turns: number = 1) {
         super();
     }
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         let unit = card as Unit;
         unit.setExausted(true);
         game.gameEvents.addEvent(this, new GameEvent(EventType.StartOfTurn, (params) => {
@@ -56,7 +56,7 @@ export class SleepTarget extends TargetedMechanic {
         super();
     }
 
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game)) {
             target.addMechanic(new Sleeping(this.turns), game);
         }

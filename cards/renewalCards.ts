@@ -10,21 +10,26 @@ import { Resource } from '../resource';
 // Targeters
 import { SingleUnit, FriendlyUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnits } from '../targeter';
 
+// Trigers
+import { Serenity } from './triggers/serenity'
+
 // Mecchanics
 import { CannotAttack, ImprisonTarget } from './mechanics/cantAttack';
 import { ShuffleIntoDeck } from './mechanics/shuffleIntoDeck';
 import { RenewalMCTargeter, MindControl } from './mechanics/mindControl';
 import { Lordship, unitTypeLordshipExclusive, unitTypeLordshipInclusive } from './mechanics/lordship';
-import { Serenity } from './mechanics/serenity';
 import { EndOfTurn } from './mechanics/periodic';
 import { SummonUnits, SummonUnitOnDamage } from './mechanics/summonUnits';
-import { BuffTarget } from './mechanics/buff';
+import { BuffTargetAndGrant, BuffTarget } from './mechanics/buff';
 import { RefreshTarget } from './mechanics/heal';
 import { Flying, Aquatic, Rush, Relentless, Ranged, Immortal } from './mechanics/skills';
 import { CurePoisonTargeter, CurePoison } from './mechanics/poison';
 import { UnitEntersPlay } from './mechanics/entersPlay';
 import { Recharge, Discharge, CannotBeEmpowered } from './mechanics/enchantmentCounters';
 import { PreventAllDamage } from './mechanics/shieldEnchantments';
+import { GainLife } from 'app/game_model/cards/mechanics/playerAid';
+import { DrawCard } from 'app/game_model/cards/mechanics/draw';
+
 
 
 export function supremeAgeis() {
@@ -166,12 +171,12 @@ export function ancientSage() {
         }),
         new Untargeted(),
         0, 4,
-        [new Immortal(),
-        new CannotAttack(),
-        new Serenity('Gain 2 life and draw a card', 1, (unit, game) => {
-            game.getPlayer(unit.getOwner()).addLife(2);
-            game.getPlayer(unit.getOwner()).drawCard();
-        })]
+        [
+            new Immortal(),
+            new CannotAttack(),
+            new GainLife(2).setTrigger(new Serenity()),
+            new DrawCard(1).setTrigger(new Serenity())
+        ]
     );
 }
 
@@ -189,7 +194,7 @@ export function ruralMonk() {
         }),
         new Untargeted(),
         1, 2,
-        [new Serenity('Gain 1 life', 1, (unit, game) => game.getPlayer(unit.getOwner()).addLife(1))]
+        [new GainLife(1).setTrigger(new Serenity())]
     );
 }
 
@@ -300,7 +305,7 @@ export function dawnbreak() {
             Synthesis: 0
         }),
         new FriendlyUnits(),
-        [new RefreshTarget(), new BuffTarget(1, 3, [])],
+        [new RefreshTarget(), new BuffTarget(1, 3)],
         'Refresh all friendly units and give them +1/+3.'
     );
 }
@@ -355,11 +360,7 @@ export function monestary() {
         }),
         new Untargeted(),
         0, 5,
-        [new CannotAttack(),
-        new Serenity('Play a Traveling Monk', 5, (unit, game) => {
-            let player = game.getPlayer(unit.getOwner());
-            game.playGeneratedUnit(player, ruralMonk());
-        })]
+        [new CannotAttack(), new SummonUnits(ruralMonk, 1).setTrigger(new Serenity())]
     );
 }
 

@@ -12,7 +12,7 @@ export class DamageOnBlock extends Mechanic {
         super();
     }
 
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.Block, params => {
                 let attacker = params.get('attacker') as Unit;
@@ -40,7 +40,7 @@ export class DealDamage extends TargetedMechanic {
         super(targeter);
     }
 
-    public run(card: Card, game: Game) {
+    public onTrigger(card: Card, game: Game) {
         let dmg = this.getDamage(card, game);
         for (let target of this.targeter.getTargets(card, game)) {
             target.takeDamage(dmg, card);
@@ -87,7 +87,7 @@ export class DamageSpawnOnKill extends DealDamage {
         this.name = factory().getName();
     }
 
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game)) {
             target.takeDamage(this.amount, card);
             target.checkDeath();

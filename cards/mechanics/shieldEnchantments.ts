@@ -11,7 +11,7 @@ abstract class ShieldEnchantment extends Mechanic {
     protected validCardTypes = new Set([CardType.Enchantment]);
     protected abstract effect(enchantment: Enchantment, owner: Player, amount: number, source: Card): number;
 
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         let enchantment = card as Enchantment;
         game.getPlayer(enchantment.getOwner()).getEvents()
             .addEvent(this, new GameEvent(EventType.TakeDamage, (params) => {

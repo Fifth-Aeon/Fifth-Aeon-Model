@@ -1,6 +1,7 @@
 import { remove, sortBy } from 'lodash';
 
 import { Mechanic } from './mechanic';
+import { Trigger } from './trigger';
 import { Game } from './game';
 
 
@@ -9,13 +10,13 @@ export enum EventType {
     UnitEntersPlay, StartOfTurn, EndOfTurn,
 
     // Unit Events
-    Death, UnitDies, Attack, Block, TakeDamage, DealDamage,
+    Played, Death, UnitDies, Attack, Block, TakeDamage, DealDamage,
     CheckBlockable, CheckCanBlock, KillUnit,
     LeavesPlay, Annihilate
 }
 
 export class GameEvent {
-    public source: Mechanic | null;
+    public source: Mechanic | Trigger | null;
     constructor(
         public type: EventType,
         public trigger: (params: (Map<string, any>)) => Map<string, any>,
@@ -39,7 +40,7 @@ export class EventGroup {
         return subgroup;
     }
 
-    public addEvent(source: Mechanic | null, event: GameEvent) {
+    public addEvent(source: Mechanic | Trigger |  null, event: GameEvent) {
         event.source = source;
         let events = this.events.get(event.type);
         if (!events) {
@@ -49,6 +50,13 @@ export class EventGroup {
         events.push(event);
         events = sortBy(events, (ev: GameEvent) => ev.priority);
         event.source = source;
+    }
+
+    public removeEvents(source: Mechanic | Trigger | null) {
+        let allEvents = Array.from(this.events.values());
+        allEvents.forEach(eventList => remove(eventList, event => {
+            return event.source === source
+        }))
     }
 
     public trigger(type: EventType, params: Map<string, any>) {
@@ -69,10 +77,4 @@ export class EventGroup {
         return params;
     }
 
-    public removeEvents(source: Mechanic | null) {
-        let allEvents = Array.from(this.events.values());
-        allEvents.forEach(eventList => remove(eventList, event => {
-            return event.source === source
-        }))
-    }
 }

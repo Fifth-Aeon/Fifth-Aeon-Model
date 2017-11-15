@@ -19,7 +19,7 @@ import { UnitEntersPlay } from './mechanics/entersPlay';
 import { Flying, Ranged, Lethal, Shielded, Relentless, Aquatic, Unblockable } from './mechanics/skills';
 import { friendlyLordship } from './mechanics/lordship';
 import { Annihilate } from './mechanics/removal';
-import { BuffTarget } from './mechanics/buff';
+import { BuffTargetAndGrant } from './mechanics/buff';
 import { Robotic, SpyPower } from './mechanics/synthSpecials';
 import { MechanicalUnit, BiologicalUnit } from './targeters/biotargeter';
 import { DealDamage, DealSynthDamage, DamageOnBlock} from './mechanics/dealDamage';
@@ -287,7 +287,7 @@ export function alloyTransmute() {
             Synthesis: 3
         }),
         new MechanicalUnit(),
-        [new BuffTarget(3, 6, [new Shielded()])]
+        [new BuffTargetAndGrant(3, 6, [new Shielded()])]
     );
 }
 
@@ -304,7 +304,7 @@ export function dangerousInjection() {
             Synthesis: 1
         }),
         new BiologicalUnit(),
-        [new BuffTarget(3, 2, [new Poisoned()])],
+        [new BuffTargetAndGrant(3, 2, [new Poisoned()])],
         'Poison target biological unit and give it +3/+2.'
     );
 }

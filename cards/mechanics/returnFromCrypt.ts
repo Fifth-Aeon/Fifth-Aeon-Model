@@ -9,7 +9,7 @@ export class ReturnFromCrypt extends Mechanic {
         super();
     }
 
-    public run(card: Card, game: Game) {
+    public enter(card: Card, game: Game) {
         let crypt = game.getCrypt(card.getOwner());
         let validCards = crypt.filter(this.filter);
         let player = game.getPlayer(card.getOwner());
