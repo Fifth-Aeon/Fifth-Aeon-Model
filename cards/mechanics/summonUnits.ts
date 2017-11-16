@@ -1,11 +1,11 @@
-import { Mechanic, EvalContext } from '../../mechanic';
+import { Mechanic, EvalContext, TriggeredMechanic } from '../../mechanic';
 import { Game, GamePhase } from '../../game';
 import { Targeter } from '../../targeter';
 import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
-export class SummonUnits extends Mechanic {
+export class SummonUnits extends TriggeredMechanic {
     protected name: string;
     protected unit: Unit;
     constructor(protected factory: () => Unit, private count: number = 1) {
@@ -14,7 +14,7 @@ export class SummonUnits extends Mechanic {
         this.name = factory().getName();
     }
 
-    public enter(card: Card, game: Game) {
+    public onTrigger(card: Card, game: Game) {
         let owner = game.getPlayer(card.getOwner());
         for (let i = 0; i < this.getUnitCount(card, game); i++) {
             game.playGeneratedUnit(owner, this.factory())
@@ -26,7 +26,7 @@ export class SummonUnits extends Mechanic {
     }
 
     public getText(card: Card, game: Game) {
-        return `Summon ${this.count} ${this.name}.`;
+        return `Summon ${this.count === 1 ? 'a' : this.count } ${this.name}.`;
     }
 
     public evaluate(card: Card, game: Game) {
@@ -60,7 +60,6 @@ export class SummonUnitOnDamage extends Mechanic {
 
     constructor(protected factory: () => Unit) {
         super();
-
         this.unit = factory();
         this.name = this.unit.getName();
     }

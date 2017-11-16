@@ -77,7 +77,6 @@ export class Unit extends Permanent {
         this.items = [];
     }
 
-   
     public addItem(item: Item) {
         this.items.push(item);
     }

@@ -1,18 +1,21 @@
-import { Mechanic } from '../../mechanic';
+import { Mechanic, TriggeredMechanic } from '../../mechanic';
 import { Game } from '../../Game';
 import { Targeter } from '../../targeter';
 import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { Player } from '../../player';
 import { GameEvent, EventType } from '../../gameEvent';
+import { PlayTrigger } from 'app/game_model/trigger';
 
 
-export class DrawCard extends Mechanic {
+export class DrawCard extends TriggeredMechanic {
+    protected triggerType = new PlayTrigger();
+
     constructor(private count: number) {
         super();
     }
 
-    public enter(card: Card, game: Game) {
+    public onTrigger(card: Card, game: Game) {
         game.getPlayer(card.getOwner()).drawCards(this.count);
     }
 
@@ -27,8 +30,10 @@ export class DrawCard extends Mechanic {
     }
 }
 
-export class Peek extends Mechanic {
-    public enter(card: Card, game: Game) {
+export class Peek extends TriggeredMechanic {
+    protected triggerType = new PlayTrigger();
+
+    public onTrigger(card: Card, game: Game) {
         game.queryCards(
             (queried: Game) => queried.getPlayer(queried.getOtherPlayerNumber(card.getOwner())).getHand(),
             (hand) => {
@@ -45,11 +50,12 @@ export class Peek extends Mechanic {
     }
 }
 
-export class Discard extends Mechanic {
+export class Discard extends TriggeredMechanic {
+    protected triggerType = new PlayTrigger();
     constructor(private count: number) {
         super()
     }
-    public enter(card: Card, game: Game) {
+    public onTrigger(card: Card, game: Game) {
         let target = game.getPlayer(game.getOtherPlayerNumber(card.getOwner()));
         target.discard(game, this.count);
     }
@@ -88,8 +94,9 @@ export class DiscardOnDamage extends Mechanic {
     }
 }
 
-export class AugarCard extends Mechanic {
-    public enter(card: Card, game: Game) {
+export class AugarCard extends TriggeredMechanic {
+    protected triggerType = new PlayTrigger();
+    public onTrigger(card: Card, game: Game) {
         let owner = game.getPlayer(card.getOwner());
         let synth = owner.getPool().getOfType('Synthesis');
 

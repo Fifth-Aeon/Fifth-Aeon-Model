@@ -56,7 +56,7 @@ export class SleepTarget extends TargetedMechanic {
         super();
     }
 
-    public enter(card: Card, game: Game) {
+    public onTrigger(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game)) {
             target.addMechanic(new Sleeping(this.turns), game);
         }

@@ -6,7 +6,7 @@ import { Unit, UnitType } from '../unit';
 import { Resource } from '../resource';
 
 // Targeters
-import { SingleUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnit, AllOtherUnits } from '../targeter';
+import { SingleUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnit, AllOtherUnits, SelfTarget } from '../targeter';
 import { SleepableUnit } from './targeters/poisonTargeter';
 import { BiologicalUnit } from './targeters/biotargeter';
 import { UnitWithAbility } from './targeters/mechanicTargeter';
@@ -15,17 +15,16 @@ import { UnitWithAbility } from './targeters/mechanicTargeter';
 import { DrawCardsFromUnit, WebTarget } from './mechanics/growthSpecials';
 import { DealDamage, BiteDamage } from './mechanics/dealDamage';
 import { SleepTarget } from './mechanics/sleep';
-import { BuffTargetAndGrant } from './mechanics/buff';
-import { FinalBlow } from './mechanics/finalBlow';
+import { BuffTargetAndGrant, BuffTarget } from './mechanics/buff';
 import { SummonUnits } from './mechanics/summonUnits';
 import { Flying, Lethal, Rush, Aquatic, Relentless, Deathless } from './mechanics/skills';
 import { Venomous } from './mechanics/poison';
 import { GainLife, GainResource } from './mechanics/playerAid';
-import { OnDeath } from './mechanics/death';
+import { OnDeath } from './triggers/death';
 import { KillTarget } from './mechanics/removal';
 import { Affinity } from 'app/game_model/cards/triggers/affinity';
 import { UnitsOfType } from 'app/game_model/cards/targeters/unitTypeTargeter';
-
+import { LethalStrike } from 'app/game_model/cards/triggers/lethalStrike';
 
 export function SleepDart() {
     return new Card(
@@ -166,7 +165,9 @@ export function hydra() {
         new Untargeted(),
         5, 5,
         [new Flying(), new Deathless(3),
-        new OnDeath('it gains +1/+1', 2, (unit, game) => unit.buff(1, 1))]
+            new BuffTarget(1, 1)
+            .setTrigger(new OnDeath())
+            .setTargeter(new SelfTarget())]
     );
 }
 
@@ -306,9 +307,9 @@ export function wolfPup() {
             Renewal: 0,
             Synthesis: 0
         }),
-        new Untargeted(),
+        new SelfTarget(),
         2, 1,
-        [new BuffTargetAndGrant(0, 1, []).setTrigger(new Affinity())]
+        [new BuffTarget(0, 1).setTrigger(new Affinity())]
     );
 }
 
@@ -324,7 +325,7 @@ export function spiderHatchling() {
             Renewal: 0,
             Synthesis: 0
         }),
-        new Untargeted(),
+        new SelfTarget(),
         2, 3,
         [new BuffTargetAndGrant(1, 0, []).setTrigger(new Affinity())]
     );
@@ -432,9 +433,7 @@ export function spiderQueen() {
         }),
         new Untargeted(),
         3, 6,
-        [new FinalBlow('Play a Toxic Spiderling', 4, (source, killed, game) =>
-            game.playGeneratedUnit(game.getPlayer(source.getOwner()), venomousSpiderling()))
-        ]
+        [new SummonUnits(venomousSpiderling, 1).setTrigger(new LethalStrike())]
     );
 }
 

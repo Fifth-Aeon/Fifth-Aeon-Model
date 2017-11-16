@@ -2,7 +2,7 @@ import { Game } from './game';
 import { Card, CardType, GameZone } from './card';
 import { Unit } from './unit';
 import { Targeter } from './targeter';
-import { Trigger, PlayTrigger } from './trigger';
+import { Trigger, PlayTrigger, NoTrigger } from './trigger';
 
 import { sumBy, multiply, reduce } from 'lodash';
 
@@ -17,7 +17,6 @@ export interface EvalOperator {
 
 export abstract class Mechanic {
     protected validCardTypes = new Set([CardType.Spell, CardType.Enchantment, CardType.Unit, CardType.Item]);
-    protected triggerType: Trigger = new PlayTrigger();
 
     static getMultiplier(vals: Array<number | EvalOperator>) {
         let multipliers = (vals.filter(val => typeof val === 'object') as EvalOperator[])
@@ -42,22 +41,13 @@ export abstract class Mechanic {
     public stack() { }
     public clone(): Mechanic { return this; }
     public enter(parent: Card, game: Game) { };
-    public onTrigger(parent: Card, game: Game) { };
 
-    public setTrigger(trigger: Trigger) {
-        this.triggerType = trigger;
-        return this;
-    }
 
     public attach(parent: Card) {
         if (!this.canAttach(parent))
             throw new Error(`Cannot attach  mechanic ${this.id()} to ${parent.getName()} it is not of the right card type.`);
-        this.triggerType.attach(this);
     };
 
-    public getTrigger() {
-        return this.triggerType;
-    }
 
     public id(): string {
         return this.constructor.name;
@@ -68,7 +58,35 @@ export abstract class Mechanic {
     }
 }
 
-export abstract class TargetedMechanic extends Mechanic {
+
+export abstract class TriggeredMechanic extends Mechanic {
+    protected triggerType: Trigger = new PlayTrigger();
+    public onTrigger(parent: Card, game: Game) { };
+
+    public setTrigger(trigger: Trigger) {
+        this.triggerType = trigger;
+        return this;
+    }
+
+    public getTrigger() {
+        return this.triggerType;
+    }
+
+    public attach(parent: Card) {
+        super.attach(parent);
+        this.triggerType.attach(this);
+    }
+
+    public remove(card: Card, game: Game) {
+        this.triggerType.unregister(card, game);
+    };
+
+    public setTargeter(targeter: Targeter) {
+        return this;
+    }
+}
+
+export abstract class TargetedMechanic extends TriggeredMechanic {
     constructor(protected targeter?: Targeter) {
         super();
     }

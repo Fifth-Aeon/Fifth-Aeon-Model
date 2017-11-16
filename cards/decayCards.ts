@@ -8,25 +8,26 @@ import { Resource } from '../resource';
 // Targeters
 import { DamagedUnit } from './targeters/weakenedUnits';
 import { PoisonableUnit, PoisonableUnits } from './targeters/poisonTargeter';
-import { SingleUnit, Untargeted, AllUnits, AllOtherUnits, FriendlyUnit, EnemyUnit } from '../targeter';
+import { SingleUnit, Untargeted, AllUnits, AllOtherUnits, FriendlyUnit, EnemyUnit, SelfTarget } from '../targeter';
 
 // Mechanics
 import { Discharge, Recharge } from './mechanics/enchantmentCounters';
 import { Flying, Rush, Aquatic, Lethal, Lifesteal, Deathless, Immortal, Relentless } from './mechanics/skills';
 import { Discard, DiscardOnDamage } from './mechanics/draw';
-import { FinalBlow } from './mechanics/finalBlow';
-import { BuffTargetAndGrant } from './mechanics/buff';
+import { BuffTargetAndGrant, BuffTarget } from './mechanics/buff';
 import { EndOfTurn } from './mechanics/periodic';
 import { CannotAttack } from './mechanics/cantAttack';
 import { PoisonTarget, PoisonImmune } from './mechanics/poison';
 import { ReturnFromCrypt } from './mechanics/returnFromCrypt';
 import { TransformDamaged, AbominationConsume } from './mechanics/decaySpecials';
-import { SummonUnitForGrave, SummonUnitOnDamage } from './mechanics/summonUnits';
+import { SummonUnitForGrave, SummonUnitOnDamage, SummonUnits } from './mechanics/summonUnits';
 import { DamageSpawnOnKill } from './mechanics/dealDamage';
-import { OnDeath, OnDeathAnyDeath } from './mechanics/death';
+import { OnDeathAnyDeath } from './mechanics/death';
 import { unitTypeLordshipInclusive, unitTypeLordshipAll, notUnitLordship } from './mechanics/lordship';
 import { KillTarget } from './mechanics/removal';
 import { DeathCounter } from './mechanics/shieldEnchantments';
+import { OnDeath } from 'app/game_model/cards/triggers/death';
+import { LethalStrike } from 'app/game_model/cards/triggers/lethalStrike';
 
 
 
@@ -270,7 +271,7 @@ export function lich() {
         }),
         new Untargeted(),
         4, 4,
-        [new Deathless(), new OnDeathAnyDeath('play a Skeleton', 6, (unit, dying, game) => {
+        [new Deathless(), new OnDeathAnyDeath('summon a Skeleton', 6, (unit, dying, game) => {
             game.playGeneratedUnit(unit.getOwner(), skeleton());
         })]
     );
@@ -389,8 +390,7 @@ export function rottingZombie() {
         }),
         new Untargeted(),
         2, 2,
-        [new OnDeath('play a Crawling Zombie', 3, (unit, game) =>
-            game.playGeneratedUnit(game.getPlayer(unit.getOwner()), crawlingZombie()))]
+        [new SummonUnits(crawlingZombie, 1).setTrigger(new OnDeath())]
     );
 }
 
@@ -478,9 +478,10 @@ export function vampire() {
         }),
         new Untargeted(),
         3, 3,
-        [new FinalBlow('Gain +1/+1', 2, (unit) => {
-            unit.buff(1, 1);
-        })]
+        [ new BuffTarget(1, 1)
+            .setTrigger(new LethalStrike())
+            .setTargeter(new SelfTarget())
+        ]
     );
 }
 

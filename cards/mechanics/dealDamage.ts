@@ -87,7 +87,7 @@ export class DamageSpawnOnKill extends DealDamage {
         this.name = factory().getName();
     }
 
-    public enter(card: Card, game: Game) {
+    public onTrigger(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game)) {
             target.takeDamage(this.amount, card);
             target.checkDeath();
@@ -98,7 +98,7 @@ export class DamageSpawnOnKill extends DealDamage {
     }
 
     public getText(card: Card) {
-        return `Deal ${this.amount} damage to ${this.targeter.getText()}. If it dies play a ${this.name}.`;
+        return `Deal ${this.amount} damage to ${this.targeter.getText()}. If it dies summon a ${this.name}.`;
     }
 }
 

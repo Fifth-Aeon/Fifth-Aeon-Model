@@ -29,11 +29,11 @@ export class MindControl extends TargetedMechanic {
         }
     }
 
-    public getText(card: Card, game:Game) {
+    public getText(card: Card, game: Game) {
         return `Take control of ${this.targeter.getText()}.`
     }
 
-    public evaluateTarget(source: Card, unit: Unit, game:Game) {
+    public evaluateTarget(source: Card, unit: Unit, game: Game) {
         return unit.evaluate(game, EvalContext.NonlethalRemoval) * 2 * (unit.getOwner() === source.getOwner() ? -1 : 1);
     }
 }

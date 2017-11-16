@@ -2,16 +2,25 @@ import { Game } from './game';
 import { Card, CardType } from './Card';
 import { Unit } from './unit';
 import { GameEvent, EventType } from 'app/game_model/gameEvent';
-import { Mechanic } from 'app/game_model/mechanic';
+import { Mechanic, TargetedMechanic, TriggeredMechanic } from 'app/game_model/mechanic';
 
 export abstract class Trigger {
-    protected mechanic: Mechanic;
-    public attach(mechanic: Mechanic) {
+    protected mechanic: TriggeredMechanic;
+    public attach(mechanic: TriggeredMechanic) {
         this.mechanic = mechanic;
     }
     abstract register(card: Card, game: Game);
     abstract unregister(card: Card, game: Game);
     abstract getName(): string;
+}
+
+
+export class NoTrigger extends Trigger {
+    public getName() {
+        return '';
+    }
+    public register(card: Card, game: Game) { }
+    public unregister(card: Card, game: Game) { }
 }
 
 export class PlayTrigger extends Trigger {

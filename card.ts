@@ -1,13 +1,13 @@
 import { Resource } from './resource';
 import { Game } from './game';
 import { Player } from './player';
-import { Mechanic, EvalContext } from './mechanic';
+import { Mechanic, EvalContext, TriggeredMechanic } from './mechanic';
 import { Targeter, Untargeted } from './targeter';
 import { Unit } from './unit';
 import { EventGroup, EventType } from './gameEvent';
 
 
-import { remove, sumBy } from 'lodash';
+import { remove, sumBy, groupBy } from 'lodash';
 
 export enum GameZone {
     Deck, Hand, Board, Crypt
@@ -121,7 +121,8 @@ export class Card {
 
     public play(game: Game) {
         this.mechanics.forEach(mechanic => {
-            mechanic.getTrigger().register(this, game);
+            if ((<TriggeredMechanic>mechanic).getTrigger)
+                (<TriggeredMechanic>mechanic).getTrigger().register(this, game);
             mechanic.enter(this, game);
         });
         this.events.trigger(EventType.Played, new Map());

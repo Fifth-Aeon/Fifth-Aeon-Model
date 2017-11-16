@@ -61,6 +61,20 @@ export class Untargeted extends Targeter {
     }
 }
 
+export class SelfTarget extends Targeter {
+    public getTargets(card: Card, game: Game): Array<Unit> {
+        return [card as Unit];
+    }
+
+    public getText() {
+        return 'this unit';
+    }
+    public needsInput() {
+        return false;
+    }
+
+}
+
 export class SingleUnit extends Targeter {
 
     constructor(optional: boolean = false) {

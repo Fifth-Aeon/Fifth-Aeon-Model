@@ -1,4 +1,4 @@
-import { Mechanic, TargetedMechanic } from '../../mechanic';
+import { Mechanic, TargetedMechanic, TriggeredMechanic } from '../../mechanic';
 import { Game } from '../../Game';
 import { Targeter } from '../../targeter';
 import { Card, GameZone } from '../../card';
@@ -9,12 +9,12 @@ import { GameEvent, EventType } from '../../gameEvent';
 import { remove } from 'lodash';
 
 
-export class GainLife extends Mechanic {
+export class GainLife extends TriggeredMechanic {
     constructor(private amount: number) {
         super();
     }
 
-    public enter(card: Card, game: Game) {
+    public onTrigger(card: Card, game: Game) {
         let player = game.getPlayer(card.getOwner());
         player.addLife(this.amount);
     }
@@ -28,12 +28,12 @@ export class GainLife extends Mechanic {
     }
 }
 
-export class GainResource extends Mechanic {
+export class GainResource extends TriggeredMechanic {
     constructor(private resource: Resource) {
         super();
     }
 
-    public enter(card: Card, game: Game) {
+    public onTrigger(card: Card, game: Game) {
         let player = game.getPlayer(card.getOwner());
         player.getPool().add(this.resource)
     }

@@ -1,4 +1,4 @@
-import { Mechanic, TargetedMechanic } from '../../mechanic';
+import { Mechanic, TargetedMechanic, TriggeredMechanic } from '../../mechanic';
 import { Game } from '../../Game';
 import { Targeter } from '../../targeter';
 import { Card, GameZone } from '../../card';
@@ -43,8 +43,8 @@ export class TransformDamaged extends Mechanic {
     }
 }
 
-export class AbominationConsume extends Mechanic {
-    public enter(card: Card, game: Game) {
+export class AbominationConsume extends TriggeredMechanic {
+    public onTrigger(card: Card, game: Game) {
         let crypt = game.getCrypt(card.getOwner());
         let valid = crypt.filter(cryptCard => cryptCard.isUnit());
         let unit = card as Unit;

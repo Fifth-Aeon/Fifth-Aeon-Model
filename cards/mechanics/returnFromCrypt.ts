@@ -1,15 +1,15 @@
-import { Mechanic } from '../../mechanic';
+import { Mechanic, TriggeredMechanic } from '../../mechanic';
 import { Game } from '../../Game';
 import { Targeter } from '../../targeter';
 import { Card } from '../../card';
 import { Unit } from '../../unit';
 
-export class ReturnFromCrypt extends Mechanic {
+export class ReturnFromCrypt extends TriggeredMechanic {
     constructor(private filter: (card: Card) => boolean) {
         super();
     }
 
-    public enter(card: Card, game: Game) {
+    public onTrigger(card: Card, game: Game) {
         let crypt = game.getCrypt(card.getOwner());
         let validCards = crypt.filter(this.filter);
         let player = game.getPlayer(card.getOwner());
