@@ -3,7 +3,7 @@ import { Targeter } from '../../targeter';
 import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
-import { Trigger } from 'app/game_model/trigger';
+import { Trigger } from '../../trigger';
 
 export class Affinity extends Trigger {
     private triggered = false;

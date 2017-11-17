@@ -5,7 +5,7 @@ import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { Player } from '../../player';
 import { GameEvent, EventType } from '../../gameEvent';
-import { PlayTrigger } from 'app/game_model/trigger';
+import { PlayTrigger } from '../../trigger';
 
 
 export class DrawCard extends TriggeredMechanic {

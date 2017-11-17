@@ -27,8 +27,8 @@ import { CurePoisonTargeter, CurePoison } from './mechanics/poison';
 import { UnitEntersPlay } from './mechanics/entersPlay';
 import { Recharge, Discharge, CannotBeEmpowered } from './mechanics/enchantmentCounters';
 import { PreventAllDamage } from './mechanics/shieldEnchantments';
-import { GainLife } from 'app/game_model/cards/mechanics/playerAid';
-import { DrawCard } from 'app/game_model/cards/mechanics/draw';
+import { GainLife } from './mechanics/playerAid';
+import { DrawCard } from './mechanics/draw';
 
 
 

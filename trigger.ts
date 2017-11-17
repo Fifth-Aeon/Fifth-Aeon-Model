@@ -1,8 +1,8 @@
 import { Game } from './game';
 import { Card, CardType } from './Card';
 import { Unit } from './unit';
-import { GameEvent, EventType } from 'app/game_model/gameEvent';
-import { Mechanic, TargetedMechanic, TriggeredMechanic } from 'app/game_model/mechanic';
+import { GameEvent, EventType } from './gameEvent';
+import { Mechanic, TargetedMechanic, TriggeredMechanic } from './mechanic';
 
 export abstract class Trigger {
     protected mechanic: TriggeredMechanic;
