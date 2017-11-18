@@ -26,8 +26,8 @@ import { OnDeathAnyDeath } from './mechanics/death';
 import { unitTypeLordshipInclusive, unitTypeLordshipAll, notUnitLordship } from './mechanics/lordship';
 import { KillTarget } from './mechanics/removal';
 import { DeathCounter } from './mechanics/shieldEnchantments';
-import { OnDeath } from 'app/game_model/cards/triggers/death';
-import { LethalStrike } from 'app/game_model/cards/triggers/lethalStrike';
+import { OnDeath } from './triggers/death';
+import { LethalStrike } from './triggers/lethalStrike';
 
 
 

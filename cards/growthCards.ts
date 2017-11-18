@@ -22,9 +22,9 @@ import { Venomous } from './mechanics/poison';
 import { GainLife, GainResource } from './mechanics/playerAid';
 import { OnDeath } from './triggers/death';
 import { KillTarget } from './mechanics/removal';
-import { Affinity } from 'app/game_model/cards/triggers/affinity';
-import { UnitsOfType } from 'app/game_model/cards/targeters/unitTypeTargeter';
-import { LethalStrike } from 'app/game_model/cards/triggers/lethalStrike';
+import { Affinity } from './triggers/affinity';
+import { UnitsOfType } from './targeters/unitTypeTargeter';
+import { LethalStrike } from './triggers/lethalStrike';
 
 export function SleepDart() {
     return new Card(
