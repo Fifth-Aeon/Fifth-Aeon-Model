@@ -1,6 +1,6 @@
 import { Card, CardType, GameZone } from './card';
 import { Unit } from './unit';
-import { Mechanic } from './mechanic';
+import { Mechanic, TriggeredMechanic } from './mechanic';
 import { Resource } from './resource';
 import { Targeter } from './targeter';
 import { EventGroup } from './gameEvent';
@@ -69,6 +69,12 @@ export class Item extends Card {
             let clone = mechanic.clone();
             this.host.addMechanic(clone);
             clone.enter(host, game);
+            if ((<TriggeredMechanic>clone).getTrigger) {
+                (<TriggeredMechanic>clone).getTrigger().register(this, game);
+                if ((<TriggeredMechanic>clone).getTrigger().getName() === 'Play') {
+                    (<TriggeredMechanic>clone).onTrigger(this, game);
+                }
+            }
         }
     }
 

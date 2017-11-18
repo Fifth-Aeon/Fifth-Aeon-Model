@@ -6,7 +6,7 @@ import { Item } from './item';
 import { EventGroup, EventType } from './gameEvent';
 import { Resource } from './resource';
 import { Targeter } from './targeter';
-import { Mechanic, EvalContext } from './mechanic';
+import { Mechanic, EvalContext, TriggeredMechanic } from './mechanic';
 
 import { remove } from 'lodash';
 
@@ -123,8 +123,9 @@ export class Unit extends Permanent {
         }
         this.mechanics.push(mechanic);
         mechanic.attach(this);
-        if (this.location === GameZone.Board && game !== null)
+        if (this.location === GameZone.Board && game !== null) {
             mechanic.enter(this, game)
+        }
     }
 
     public addImmunity(id: string) {
