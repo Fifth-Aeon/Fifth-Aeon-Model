@@ -395,7 +395,7 @@ export abstract class Game {
         this.removePermanant(unit);
         unit.setOwner(newOwner);
         unit.getTargeter().setTargets([]);
-        unit.play(this);
+        this.addUnit(unit, newOwner, false);
     }
 
     public returnPermanentToDeck(perm: Permanent) {
@@ -423,7 +423,7 @@ export abstract class Game {
         this.board.addPermanent(enchantment);
     }
 
-    public addUnit(unit: Unit, owner: number) {
+    public addUnit(unit: Unit, owner: number, etb: boolean = true) {
         unit.getEvents().addEvent(null, new GameEvent(EventType.Death, (params) => {
             this.removePermanant(unit);
             this.addToCrypt(unit);
@@ -438,9 +438,11 @@ export abstract class Game {
             return params;
         }));
         this.board.addPermanent(unit);
-        this.gameEvents.trigger(EventType.UnitEntersPlay, new Map<string, any>([
-            ['enteringUnit', unit]
-        ]));
+        if (etb) {
+            this.gameEvents.trigger(EventType.UnitEntersPlay, new Map<string, any>([
+                ['enteringUnit', unit]
+            ]));
+        }
         unit.checkDeath();
     }
 
