@@ -9,8 +9,8 @@ export abstract class Trigger {
     public attach(mechanic: TriggeredMechanic) {
         this.mechanic = mechanic;
     }
-    abstract register(card: Card, game: Game);
-    abstract unregister(card: Card, game: Game);
+    abstract register(card: Card, game: Game): void;
+    abstract unregister(card: Card, game: Game): void;
     abstract getName(): string;
 }
 
