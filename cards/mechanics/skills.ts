@@ -29,7 +29,7 @@ export class Flying extends Skill {
         return `Flying.`;
     }
 
-    public id() {
+    public getId() {
         return 'flying';
     }
 
@@ -56,7 +56,7 @@ export class Unblockable extends Skill {
         return `Unblockable.`;
     }
 
-    public id() {
+    public getId() {
         return 'unblockable';
     }
 
@@ -75,7 +75,7 @@ export class Rush extends Skill {
         return `Rush.`;
     }
 
-    public id() {
+    public getId() {
         return 'rush';
     }
 
@@ -114,7 +114,7 @@ export class Aquatic extends Skill {
         return `Aquatic.`;
     }
 
-    public id() {
+    public getId() {
         return 'aquatic';
     }
 
@@ -131,7 +131,7 @@ export class Ranged extends Skill {
         return `Ranged.`;
     }
 
-    public id() {
+    public getId() {
         return 'ranged';
     }
 
@@ -158,7 +158,7 @@ export class Lifesteal extends Skill {
         return `Lifesteal.`;
     }
 
-    public id() {
+    public getId() {
         return 'lifesteal';
     }
 
@@ -187,7 +187,7 @@ export class Lethal extends Skill {
         return `Lethal.`;
     }
 
-    public id() {
+    public getId() {
         return 'lethal';
     }
 
@@ -223,7 +223,7 @@ export class Shielded extends Skill {
         return `Shielded.`;
     }
 
-    public id() {
+    public getId() {
         return 'shielded';
     }
 
@@ -257,7 +257,7 @@ export class Relentless extends Skill {
         return `Relentless.`;
     }
 
-    public id() {
+    public getId() {
         return 'relentless';
     }
 
@@ -278,7 +278,7 @@ export class Deathless extends Skill {
             game.gameEvents.addEvent(this, new GameEvent(EventType.EndOfTurn, (eotParams) => {
                 this.charges--;
                 if (this.charges <= 0)
-                    unit.removeMechanic(this.id(), game);
+                    unit.removeMechanic(this.getId(), game);
                 game.playFromCrypt(unit);
                 game.gameEvents.removeEvents(this);
                 return eotParams;
@@ -291,7 +291,7 @@ export class Deathless extends Skill {
         return new Deathless(this.charges);
     }
 
-    public id() {
+    public getId() {
         return 'deathless';
     }
 
@@ -325,7 +325,7 @@ export class Immortal extends Skill {
         }));
     }
 
-    public id() {
+    public getId() {
         return 'immortal';
     }
 

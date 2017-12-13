@@ -4,7 +4,8 @@ import { Targeter } from '../../targeter';
 import { Card } from '../../card';
 import { Unit } from '../../unit';
 
-export class ReturnFromCrypt extends TriggeredMechanic {
+export class ReturnFromCrypt extends TriggeredMechanic { 
+    protected id = 'ReturnFromCrypt';
     constructor(private filter: (card: Card) => boolean) {
         super();
     }

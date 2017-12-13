@@ -9,6 +9,7 @@ import { GameEvent, EventType } from '../../gameEvent';
 import { remove } from 'lodash';
 
 export class DrawCardsFromUnit extends TargetedMechanic {
+    protected id = 'DrawCardsFromUnit';
     constructor(private factor: number) {
         super();
     }
@@ -34,6 +35,7 @@ export class DrawCardsFromUnit extends TargetedMechanic {
 
 
 export class WebTarget extends TargetedMechanic {
+    protected id = 'WebTarget';
     public enter(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game)) {
             target.removeMechanic('flying', game);

@@ -36,6 +36,7 @@ export class DamageOnBlock extends Mechanic {
 }
 
 export class DealDamage extends TargetedMechanic {
+    protected id = 'DealDamage';
     constructor(protected amount: number, targeter?: Targeter) {
         super(targeter);
     }
@@ -68,7 +69,7 @@ export class BiteDamage extends DealDamage {
     }
 
     public getDamage(card: Card, game: Game) {
-        return Math.max(Math.max(...game.getBoard().getPlayerUnits(card.getOwner()).map(unit => unit.getDamage())), 0); ;
+        return Math.max(Math.max(...game.getBoard().getPlayerUnits(card.getOwner()).map(unit => unit.getDamage())), 0);;
     }
 
     public getText(card: Card, game: Game) {

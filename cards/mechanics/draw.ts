@@ -9,6 +9,7 @@ import { PlayTrigger } from '../../trigger';
 
 
 export class DrawCard extends TriggeredMechanic {
+    protected id = 'DrawCard';
     protected triggerType = new PlayTrigger();
 
     constructor(private count: number) {
@@ -31,6 +32,7 @@ export class DrawCard extends TriggeredMechanic {
 }
 
 export class Peek extends TriggeredMechanic {
+    protected id = 'Peek';
     protected triggerType = new PlayTrigger();
 
     public onTrigger(card: Card, game: Game) {
@@ -51,6 +53,7 @@ export class Peek extends TriggeredMechanic {
 }
 
 export class Discard extends TriggeredMechanic {
+    protected id = 'Discard';
     protected triggerType = new PlayTrigger();
     constructor(private count: number) {
         super()
@@ -95,6 +98,7 @@ export class DiscardOnDamage extends Mechanic {
 }
 
 export class AugarCard extends TriggeredMechanic {
+    protected id = 'AugarCard';
     protected triggerType = new PlayTrigger();
     public onTrigger(card: Card, game: Game) {
         let owner = game.getPlayer(card.getOwner());

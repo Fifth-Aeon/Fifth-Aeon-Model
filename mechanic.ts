@@ -17,6 +17,7 @@ export interface EvalOperator {
 
 export abstract class Mechanic {
     protected validCardTypes = new Set([CardType.Spell, CardType.Enchantment, CardType.Unit, CardType.Item]);
+    protected id: string;
 
     static getMultiplier(vals: Array<number | EvalOperator>) {
         let multipliers = (vals.filter(val => typeof val === 'object') as EvalOperator[])
@@ -45,12 +46,12 @@ export abstract class Mechanic {
 
     public attach(parent: Card) {
         if (!this.canAttach(parent))
-            throw new Error(`Cannot attach  mechanic ${this.id()} to ${parent.getName()} it is not of the right card type.`);
+            throw new Error(`Cannot attach  mechanic ${this.getId()} to ${parent.getName()} it is not of the right card type.`);
     };
 
 
-    public id(): string {
-        return this.constructor.name;
+    public getId(): string {
+        return this.id;
     };
 
     public canAttach(card: Card) {

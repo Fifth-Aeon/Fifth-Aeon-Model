@@ -20,7 +20,7 @@ export class Sleeping extends Mechanic {
                 unit.setExausted(true);
                 this.turns--;
                 if (this.turns < 1) {
-                    unit.removeMechanic(this.id(), game);
+                    unit.removeMechanic(this.getId(), game);
                 }
             }
             return params;
@@ -35,7 +35,7 @@ export class Sleeping extends Mechanic {
         game.gameEvents.removeEvents(this);
     }
 
-    public id() {
+    public getId() {
         return 'sleeping';
     }
 
@@ -51,7 +51,8 @@ export class Sleeping extends Mechanic {
     }
 }
 
-export class SleepTarget extends TargetedMechanic {
+export class SleepTarget extends TargetedMechanic { 
+    protected id = 'SleepTarget';
     constructor(private turns: number) {
         super();
     }

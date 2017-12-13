@@ -9,7 +9,7 @@ import { Sleeping } from './sleep';
 import { Poisoned } from './poison';
 
 
-const robotImmunities = [new Sleeping().id(), new Poisoned().id()];
+const robotImmunities = [new Sleeping().getId(), new Poisoned().getId()];
 export class Robotic extends Mechanic {
     public enter(card: Card, game: Game) {
         for (let immunity of robotImmunities) {
@@ -22,7 +22,7 @@ export class Robotic extends Mechanic {
         }
     }
 
-    public id() {
+    public getId() {
         return 'robotic';
     }
 

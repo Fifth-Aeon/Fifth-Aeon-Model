@@ -5,7 +5,8 @@ import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
-export class SummonUnits extends TriggeredMechanic {
+export class SummonUnits extends TriggeredMechanic { 
+    protected id = 'SummonUnits';
     protected name: string;
     protected unit: Unit;
     constructor(protected factory: () => Unit, private count: number = 1) {

@@ -9,7 +9,8 @@ import { GameEvent, EventType } from '../../gameEvent';
 import { remove } from 'lodash';
 
 
-export class GainLife extends TriggeredMechanic {
+export class GainLife extends TriggeredMechanic { 
+    protected id = 'GainLife';
     constructor(private amount: number) {
         super();
     }
@@ -28,7 +29,8 @@ export class GainLife extends TriggeredMechanic {
     }
 }
 
-export class GainResource extends TriggeredMechanic {
+export class GainResource extends TriggeredMechanic { 
+    protected id = 'GainResource';
     constructor(private resource: Resource) {
         super();
     }

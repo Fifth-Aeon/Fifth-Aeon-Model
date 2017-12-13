@@ -107,7 +107,7 @@ export class Unit extends Permanent {
     }
 
     public removeMechanic(id: string, game: Game) {
-        let target = this.mechanics.find(mechanic => mechanic.id() === id);
+        let target = this.mechanics.find(mechanic => mechanic.getId() === id);
         if (!target)
             return;
         target.remove(this, game);
@@ -115,10 +115,10 @@ export class Unit extends Permanent {
     }
 
     public addMechanic(mechanic: Mechanic, game: Game | null = null) {
-        if (this.immunities.has(mechanic.id()))
+        if (this.immunities.has(mechanic.getId()))
             return;
-        if (mechanic.id() !== null && this.hasMechanicWithId(mechanic.id())) {
-            this.hasMechanicWithId(mechanic.id()).stack();
+        if (mechanic.getId() !== null && this.hasMechanicWithId(mechanic.getId())) {
+            this.hasMechanicWithId(mechanic.getId()).stack();
             return;
         }
         this.mechanics.push(mechanic);
@@ -141,7 +141,7 @@ export class Unit extends Permanent {
     }
 
     public hasMechanicWithId(id: string) {
-        return this.mechanics.find(mechanic => mechanic.id() === id);
+        return this.mechanics.find(mechanic => mechanic.getId() === id);
     }
 
     public getUnitType() {

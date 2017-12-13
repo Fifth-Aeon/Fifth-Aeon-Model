@@ -22,6 +22,7 @@ export class RenewalMCTargeter extends Targeter {
 }
 
 export class MindControl extends TargetedMechanic {
+    protected id = 'MindControl';
     public enter(card: Card, game: Game) {
         let targets = this.targeter.getTargets(card, game);
         for (let target of targets) {

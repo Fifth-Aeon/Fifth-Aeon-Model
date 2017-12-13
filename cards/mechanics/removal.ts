@@ -5,7 +5,8 @@ import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
-export class Annihilate extends TargetedMechanic {
+export class Annihilate extends TargetedMechanic { 
+    protected id = 'Annihilate';
     public onTrigger(card: Card, game: Game) {
         this.targeter.getTargets(card, game).forEach(target => {
             target.annihilate();
@@ -21,7 +22,8 @@ export class Annihilate extends TargetedMechanic {
     }
 }
 
-export class KillTarget extends TargetedMechanic {
+export class KillTarget extends TargetedMechanic { 
+    protected id = 'KillTarget';
     public onTrigger(card: Card, game: Game) {
         this.targeter.getTargets(card, game).forEach(target => {
             target.kill(true);

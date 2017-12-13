@@ -82,7 +82,7 @@ export class Item extends Card {
         this.host.buff(-this.damageBonus, -this.lifeBonus);
         this.host.removeItem(this);
         for (let mechanic of this.mechanics) {
-            this.host.removeMechanic(mechanic.id(), game);
+            this.host.removeMechanic(mechanic.getId(), game);
             mechanic.remove(this.host, game);
         }
         this.host = null;

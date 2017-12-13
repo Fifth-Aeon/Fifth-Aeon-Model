@@ -7,6 +7,7 @@ import { GameEvent, EventType } from '../../gameEvent';
 import { properCase, properList } from '../../strings';
 
 export class BuffTarget extends TargetedMechanic {
+    protected id = 'BuffTarget';
     constructor(private damage: number, private life: number) {
         super();
     }
@@ -32,6 +33,7 @@ export class BuffTarget extends TargetedMechanic {
 }
 
 export class BuffTargetAndGrant extends TargetedMechanic {
+    protected id = 'BuffTargetAndGrant';
     constructor(private damage: number, private life: number, private abilities: Mechanic[]) {
         super();
     }
@@ -46,7 +48,7 @@ export class BuffTargetAndGrant extends TargetedMechanic {
     }
 
     private abilityString() {
-        return properList(this.abilities.map(ability => properCase(ability.id())));
+        return properList(this.abilities.map(ability => properCase(ability.getId())));
     }
 
     private symbol(number: number) {

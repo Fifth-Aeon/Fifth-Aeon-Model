@@ -38,12 +38,13 @@ export class TransformDamaged extends Mechanic {
         return 6;
     }
 
-    public id() {
+    public getId() {
         return 'transfomTarget';
     }
 }
 
 export class AbominationConsume extends TriggeredMechanic {
+    protected id = 'AbominationConsume';
     public onTrigger(card: Card, game: Game) {
         let crypt = game.getCrypt(card.getOwner());
         let valid = crypt.filter(cryptCard => cryptCard.isUnit());
