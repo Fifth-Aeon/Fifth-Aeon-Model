@@ -179,7 +179,7 @@ export abstract class Game {
         if (this.currentChoice !== null) {
             this.currentChoice.callback(cards);
         } else {
-            console.trace('Error, no defered choice handler for', cards);
+            console.error('Error, no defered choice handler for', cards);
         }
         this.currentChoice = null;
     }

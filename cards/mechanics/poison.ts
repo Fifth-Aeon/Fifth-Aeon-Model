@@ -23,7 +23,7 @@ export class CurePoisonTargeter extends Targeter {
     }
 }
 
-export class CurePoison extends TargetedMechanic { 
+export class CurePoison extends TargetedMechanic {
     protected id = 'CurePoison';
     public onTrigger(card: Card, game: Game) {
         this.targeter.getTargets(card, game).forEach(target => {
@@ -76,7 +76,7 @@ export class Poisoned extends Mechanic {
     }
 }
 
-export class PoisonTarget extends TargetedMechanic { 
+export class PoisonTarget extends TargetedMechanic {
     protected id = 'PoisonTarget';
     public onTrigger(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game)) {
