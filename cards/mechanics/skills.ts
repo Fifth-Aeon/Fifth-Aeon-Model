@@ -306,7 +306,7 @@ export class Deathless extends Skill {
             return `Deathless (${this.charges}).`;
     }
 
-    public evaluate(card: Card, game, context: EvalContext) {
+    public evaluate(card: Card, game: Game, context: EvalContext) {
         if (context === EvalContext.LethalRemoval)
             return { addend: 0, multiplier: 0.5 };
         return { addend: 0, multiplier: 1.5 };
