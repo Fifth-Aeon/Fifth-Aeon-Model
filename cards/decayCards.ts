@@ -31,6 +31,25 @@ import { LethalStrike } from './triggers/lethalStrike';
 
 
 
+
+export function imp() {
+    return new Unit(
+        'Imp',
+        'Imp',
+        'imp.png',
+        UnitType.Demon,
+        new Resource(1, 0, {
+            Growth: 0,
+            Decay: 1,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        1, 1,
+        [new Flying()]
+    );
+}
+
 export function gargoyle() {
     return new Unit(
         'gargoyle',

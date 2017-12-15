@@ -58,6 +58,13 @@ export class Resource {
                 properList(reqs.map(pair => `${pair[1]} ${pair[0].toLowerCase()}`))}`;
     }
 
+    public asListDesc() {
+        const base = this.numeric + ' energy';
+        const reqs: Array<[string, number]> = toPairs(this.types).filter(pair => pair[1] > 0);
+        let items = [this.numeric + ' energy'].concat(reqs.map(pair => `${pair[1]} ${pair[0].toLowerCase()}`));
+        return properList(items);
+    }
+
     public getColor() {
         for (let i = 0; i < colors.length; i++) {
             if (this.isInColors(colors[i]))

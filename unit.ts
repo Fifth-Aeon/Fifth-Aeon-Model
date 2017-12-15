@@ -13,7 +13,7 @@ import { remove } from 'lodash';
 export enum UnitType {
     Player, Human, Cleric, Wolf, Spider, Snake, Automaton, Monster, Mammal, Soldier,
     Vampire, Cultist, Agent, Undead, Structure, Vehicle, Insect, Dragon,
-    Elemental
+    Elemental, Demon
 }
 
 export const mechanical = new Set([UnitType.Automaton, UnitType.Structure, UnitType.Vehicle]);
@@ -228,6 +228,13 @@ export class Unit extends Permanent {
 
     public getBlockedUnitId() {
         return this.blockedUnitId;
+    }
+
+    public setStats(damage: number, maxLife: number) {
+        this.damage = damage;
+        this.maxLife = maxLife;
+        this.life = maxLife;
+        this.checkDeath();
     }
 
     public buff(damage: number, maxLife: number) {

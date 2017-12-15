@@ -41,7 +41,7 @@ export class GainResource extends TriggeredMechanic {
     }
 
     public getText(card: Card) {
-        return `Gain ${this.resource.asSentance()}.`
+        return `Gain ${this.resource.asListDesc()}.`
     }
 
     public evaluate() {

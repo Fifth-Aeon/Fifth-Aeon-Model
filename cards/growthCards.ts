@@ -17,16 +17,116 @@ import { DealDamage, BiteDamage } from './mechanics/dealDamage';
 import { SleepTarget } from './mechanics/sleep';
 import { BuffTargetAndGrant, BuffTarget } from './mechanics/buff';
 import { SummonUnits } from './mechanics/summonUnits';
-import { Flying, Lethal, Rush, Aquatic, Relentless, Deathless } from './mechanics/skills';
-import { Venomous } from './mechanics/poison';
+import { Flying, Lethal, Rush, Aquatic, Relentless, Deathless, Ranged } from './mechanics/skills';
+import { Venomous, PoisonTarget } from './mechanics/poison';
 import { GainLife, GainResource } from './mechanics/playerAid';
 import { OnDeath } from './triggers/death';
 import { KillTarget } from './mechanics/removal';
 import { Affinity } from './triggers/affinity';
 import { UnitsOfType } from './targeters/unitTypeTargeter';
 import { LethalStrike } from './triggers/lethalStrike';
+import { Enchantment } from '../enchantment';
+import { friendlyEOT, anyEOT, friendlySOT } from './triggers/periodic';
+import { Discharge } from './mechanics/enchantmentCounters';
+import { DrawCard } from 'app/game_model/cards/mechanics/draw';
 
-export function SleepDart() {
+
+export function flourishing() {
+    return new Enchantment(
+        'Flourishing',
+        'Flourishing',
+        'beech.png',
+        new Resource(5, 0, {
+            Growth: 3,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        5, 3,
+        [new GainResource(new Resource(1, 1, {
+            Growth: 1,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        })).setTrigger(friendlySOT()), new Discharge(1)]
+    );
+}
+
+
+export function fairy() {
+    return new Unit(
+        'Fairy',
+        'Fairy',
+        'fairy.png',
+        UnitType.Human,
+        new Resource(3, 0, {
+            Growth: 2,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        1, 1,
+        [new Flying(), new DrawCard(1).setTrigger(new OnDeath())]
+    );
+}
+
+export function mermaid() {
+    return new Unit(
+        'Mermaid',
+        'Mermaid',
+        'mermaid.png',
+        UnitType.Human,
+        new Resource(2, 0, {
+            Growth: 2,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        2, 2,
+        [new Aquatic()]
+    );
+}
+
+export function elvenBow() {
+    return new Item(
+        'ElvenBow',
+        'Elven Bow',
+        'pocket-bow.png',
+        new Resource(1, 0, {
+            Growth: 1,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new SingleUnit().setOptional(true),
+        new FriendlyUnit(),
+        1, 0,
+        [new Ranged(), new DealDamage(1)]
+    );
+}
+
+export function plauge() {
+    return new Enchantment(
+        'DeadlyPlague',
+        'Deadly Plague',
+        'virus.png',
+        new Resource(4, 0, {
+            Growth: 3,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        4, 1,
+        [new PoisonTarget(new AllUnits()).setTrigger(anyEOT()), new Discharge(1)]
+    );
+}
+
+
+export function sleepDart() {
     return new Card(
         'SleepDart',
         'Sleep Dart',
@@ -165,7 +265,7 @@ export function hydra() {
         new Untargeted(),
         5, 5,
         [new Flying(), new Deathless(3),
-            new BuffTarget(1, 1)
+        new BuffTarget(1, 1)
             .setTrigger(new OnDeath())
             .setTargeter(new SelfTarget())]
     );

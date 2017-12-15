@@ -240,6 +240,7 @@ export abstract class Game {
         this.cardPool.set(card.getId(), card);
         this.generatedCardId++;
         player.playCard(this, card, true);
+        return card as Unit;
     }
 
     public playFromCrypt(card: Card) {
