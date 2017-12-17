@@ -17,9 +17,9 @@ addDeck({
     avatar: 'crowned-skull.png',
     customMetadata: true,
     records: [
-        ["Skeleton", 4], ["CrawlingZombie", 4], ["Poison", 3], ["RottingZombie", 4],
-        ["Hemorrhage", 4], ["Decapitate", 4], ["DeathAscendancy", 4],
-        ["raiseSeeleton", 3], ["Abomination", 4], ["Lich", 4], ["Spectre", 2]
+        ['Skeleton', 4], ['CrawlingZombie', 4], ['Poison', 3], ['RottingZombie', 4],
+        ['Hemorrhage', 4], ['Decapitate', 4], ['DeathAscendancy', 4],
+        ['raiseSeeleton', 3], ['Abomination', 4], ['Lich', 4], ['Spectre', 2]
     ]
 });
 
@@ -28,31 +28,31 @@ addDeck({
     avatar: 'hydra.png',
     customMetadata: true,
     records: [
-        ["Dragon", 4], ["Three headed Hydra", 4], ["Cobra", 4], ["Spiderling", 4],
-        ["NaturesBounty", 4], ["Bear", 4], ["Minotaur", 4], ["bite", 4],
-        ["NeuralResonance", 2], ["Eruption", 2], ["SweetFragrance", 2], ["Kraken", 1], ["Fire Elemental", 1]
+        ['Dragon', 4], ['Three headed Hydra', 4], ['Cobra', 4], ['Spiderling', 4],
+        ['NaturesBounty', 4], ['Bear', 4], ['Minotaur', 4], ['bite', 4],
+        ['NeuralResonance', 2], ['Eruption', 2], ['SweetFragrance', 2], ['Kraken', 1], ['Fire Elemental', 1]
     ]
 });
 
 addDeck({
-    name: "The King’s Legions",
-    avatar: "throne-king.png",
+    name: 'The King’s Legions',
+    avatar: 'throne-king.png',
     customMetadata: true,
     records: [
-        ["Archer", 4], ["Pikeman", 4], ["blacksmith", 4], ["Imprison", 4],
-        ["Knight", 4], ["recruitment", 4], ["General", 4], ["king", 4],
-        ["SentryAngel", 4], ["CallOfJustice", 4]
+        ['Archer', 4], ['Pikeman', 4], ['blacksmith', 4], ['Imprison', 4],
+        ['Knight', 4], ['recruitment', 4], ['General', 4], ['king', 4],
+        ['SentryAngel', 4], ['CallOfJustice', 4]
     ]
 });
 
 addDeck({
-    name: "Rapid Responce",
-    avatar: "battleship.png",
+    name: 'Skys and Seas',
+    avatar: 'battleship.png',
     customMetadata: true,
     records: [
-        ["siegeArtillery", 4], ["Hanglider", 4], ["Airship", 4], ["Rifle", 4],
-        ["archivesSearch", 4], ["Mine", 4], ["Submarine", 2], ["BombingRun", 4],
-        ["Battleship", 2], ["golem", 4], ["spy", 4]
+        ['siegeArtillery', 4], ['Hanglider', 4], ['Airship', 4], ['Rifle', 4],
+        ['archivesSearch', 4], ['Mine', 4], ['Submarine', 2], ['BombingRun', 4],
+        ['Battleship', 2], ['golem', 4], ['spy', 4]
     ]
 });
 

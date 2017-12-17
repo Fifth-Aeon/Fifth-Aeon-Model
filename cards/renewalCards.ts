@@ -25,11 +25,29 @@ import { RefreshTarget } from './mechanics/heal';
 import { Flying, Aquatic, Rush, Relentless, Ranged, Immortal } from './mechanics/skills';
 import { CurePoisonTargeter, CurePoison } from './mechanics/poison';
 import { UnitEntersPlay } from './mechanics/entersPlay';
-import { Recharge, Discharge, CannotBeEmpowered } from './mechanics/enchantmentCounters';
+import { Recharge, Discharge, CannotBeEmpowered, ChangePower } from './mechanics/enchantmentCounters';
 import { PreventAllDamage } from './mechanics/shieldEnchantments';
 import { GainLife } from './mechanics/playerAid';
 import { DrawCard } from './mechanics/draw';
+import { OwnerAttacked } from 'app/game_model/cards/triggers/owner';
 
+export function valiantDefenses() {
+    return new Enchantment(
+        'valiantDefenses',
+        'Valiant Defenses',
+        'guards.png',
+        new Resource(3, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 2,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        3, 3,
+        [new SummonUnits(pikeman, 1).setTrigger(new OwnerAttacked()),
+        new ChangePower(-1).setTrigger(new OwnerAttacked())]
+    );
+}
 
 
 export function supremeAgeis() {
@@ -86,11 +104,11 @@ export function general() {
 }
 
 
-export function elderblade() {
+export function wingsOfLight() {
     return new Item(
-        'ElderBlade',
-        'Lightsworn Blade',
-        'relic-blade.png',
+        'WingsOfLight',
+        'Wings Of light',
+        'angel-outfit.png',
         new Resource(7, 0, {
             Growth: 0,
             Decay: 0,

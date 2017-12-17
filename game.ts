@@ -323,6 +323,8 @@ export abstract class Game {
     // Game Flow Logic (phases, turns) -------------------------------------------------
     protected endPhaseOne() {
         if (this.isAttacking()) {
+            this.gameEvents.trigger(EventType.PlayerAttacked,
+                new Map([['target', this.getOtherPlayerNumber(this.getActivePlayer())]]));
             if (this.blockersExist()) {
                 this.changePhase(GamePhase.Block);
             } else {
@@ -476,6 +478,8 @@ export abstract class Game {
             return this.turn;
         }
     }
+
+
 
     public getOtherPlayerNumber(playerNum: number): number {
         return (playerNum + 1) % this.players.length

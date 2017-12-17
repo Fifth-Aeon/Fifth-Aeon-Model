@@ -8,7 +8,6 @@ import { GameEvent, EventType } from '../../gameEvent';
 
 import { remove } from 'lodash';
 
-
 export class GainLife extends TriggeredMechanic {
     protected id = 'GainLife';
     constructor(private amount: number) {
