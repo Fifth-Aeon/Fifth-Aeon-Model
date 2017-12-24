@@ -29,7 +29,7 @@ import { Recharge, Discharge, CannotBeEmpowered, ChangePower } from './mechanics
 import { PreventAllDamage } from './mechanics/shieldEnchantments';
 import { GainLife } from './mechanics/playerAid';
 import { DrawCard } from './mechanics/draw';
-import { OwnerAttacked } from 'app/game_model/cards/triggers/owner';
+import { OwnerAttacked } from './triggers/owner';
 
 export function pegasus() {
     return new Unit(

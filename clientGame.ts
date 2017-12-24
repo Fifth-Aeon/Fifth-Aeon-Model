@@ -11,7 +11,7 @@ import { Enchantment } from './enchantment';
 import { Resource, ResourceTypeNames } from './resource';
 
 import { maxBy } from 'lodash'
-import { EventType } from 'app/game_model/gameEvent';
+import { EventType } from './gameEvent';
 
 export class ClientGame extends Game {
     // Handlers to syncronize events
