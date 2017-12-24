@@ -30,7 +30,6 @@ import { friendlyEOT, anyEOT, friendlySOT } from './triggers/periodic';
 import { Discharge } from './mechanics/enchantmentCounters';
 import { DrawCard } from './mechanics/draw';
 
-
 export function flourishing() {
     return new Enchantment(
         'Flourishing',
@@ -52,7 +51,6 @@ export function flourishing() {
         })).setTrigger(friendlySOT()), new Discharge(1)]
     );
 }
-
 
 export function fairy() {
     return new Unit(
@@ -101,7 +99,7 @@ export function elvenBow() {
             Renewal: 0,
             Synthesis: 0
         }),
-        new SingleUnit().setOptional(true),
+        new SingleUnit(),
         new FriendlyUnit(),
         1, 0,
         [new Ranged(), new DealDamage(1)]
@@ -124,7 +122,6 @@ export function plauge() {
         [new PoisonTarget(new AllUnits()).setTrigger(anyEOT()), new Discharge(1)]
     );
 }
-
 
 export function sleepDart() {
     return new Card(

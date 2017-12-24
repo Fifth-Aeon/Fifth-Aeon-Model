@@ -13,7 +13,7 @@ import { remove } from 'lodash';
 export enum UnitType {
     Player, Human, Cleric, Wolf, Spider, Snake, Automaton, Monster, Mammal, Soldier,
     Vampire, Cultist, Agent, Undead, Structure, Vehicle, Insect, Dragon,
-    Elemental, Demon
+    Elemental, Demon, Bird
 }
 
 export const mechanical = new Set([UnitType.Automaton, UnitType.Structure, UnitType.Vehicle]);

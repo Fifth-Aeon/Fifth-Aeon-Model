@@ -11,6 +11,7 @@ import { Enchantment } from './enchantment';
 import { Resource, ResourceTypeNames } from './resource';
 
 import { maxBy } from 'lodash'
+import { EventType } from 'app/game_model/gameEvent';
 
 export class ClientGame extends Game {
     // Handlers to syncronize events
@@ -188,6 +189,9 @@ export class ClientGame extends Game {
     }
 
     private syncPhaseChange(playerNumber: number, event: GameSyncEvent, params: any) {
+        if (event.params.phase === GamePhase.Block)
+            this.gameEvents.trigger(EventType.PlayerAttacked,
+                new Map([['target', this.getOtherPlayerNumber(this.getActivePlayer())]]));
         if (event.params.phase === GamePhase.Play2)
             this.resolveCombat();
         if (event.params.phase === GamePhase.End)

@@ -1,4 +1,4 @@
-import { Mechanic } from '../../mechanic';
+import { Mechanic, TriggeredMechanic } from '../../mechanic';
 import { Game } from '../../Game';
 import { Targeter } from '../../targeter';
 import { Card, CardType } from '../../card';
@@ -56,6 +56,32 @@ export class Discharge extends Recharge {
 
     public evaluate() {
         return this.amountPerTurn * -1;
+    }
+}
+
+export class ChangePower extends TriggeredMechanic {
+    private desc: string;
+    constructor(private diff: number) {
+        super();
+        this.desc = diff > 0 ? 'Gain' : 'Lose';
+        this.desc += ' ' + Math.abs(diff) + ' power.';
+    }
+
+    public onTrigger(card: Card, game: Game) {
+        let enchantment = card as Enchantment;
+        enchantment.changePower(this.diff);
+    }
+
+    public remove(card: Card, game: Game) {
+        game.gameEvents.removeEvents(this);
+    }
+
+    public getText(card: Card) {
+        return this.desc;
+    }
+
+    public evaluate() {
+        return this.diff;
     }
 }
 
