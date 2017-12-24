@@ -27,9 +27,8 @@ import { DealDamage, DealSynthDamage, DamageOnBlock } from './mechanics/dealDama
 import { Poisoned } from './mechanics/poison';
 import { Recharge } from './mechanics/enchantmentCounters';
 import { ForceField } from './mechanics/shieldEnchantments';
-import { EnchantmentSummon } from 'app/game_model/cards/mechanics/summonUnits';
-import { RefreshTarget } from 'app/game_model/cards/mechanics/heal';
-
+import { EnchantmentSummon } from './mechanics/summonUnits';
+import { RefreshTarget } from './mechanics/heal';
 
 export function assemblyLine() {
     return new Enchantment(
@@ -66,7 +65,6 @@ export function medicalConvoy() {
     );
 }
 
-
 export function automatedInfantry() {
     return new Unit(
         'automatedInfantry',
@@ -102,7 +100,6 @@ export function interceptor() {
         [new Flying(), new DamageOnBlock(3)]
     );
 }
-
 
 export function forceField() {
     return new Enchantment(
@@ -156,8 +153,6 @@ export function battleship() {
         [new Aquatic()]
     );
 }
-
-
 
 export function submarine() {
     return new Unit(
@@ -405,14 +400,13 @@ export function enhancmentChamber() {
         new Untargeted(),
         0, 5,
         [new CannotAttack(),
-        new UnitEntersPlay('When you summon  a biological unit give it +2/+2.', 5, (source, unit) => {
+        new UnitEntersPlay('When you summon a biological unit give it +2/+2.', 5, (source, unit) => {
             if (unit.getOwner() === source.getOwner() && !mechanical.has(unit.getUnitType())) {
                 unit.buff(2, 2);
             }
         })]
     );
 }
-
 
 export function observationBallon() {
     return new Unit(
@@ -541,7 +535,6 @@ export function insight() {
 }
 
 export function riftBlast() {
-    let targeter = new SingleUnit();
     return new Card(
         'riftBlast',
         'Rift Pulse',
@@ -552,8 +545,8 @@ export function riftBlast() {
             Renewal: 0,
             Synthesis: 4
         }),
-        targeter,
-        [new Annihilate(targeter)]
+        new SingleUnit(),
+        [new Annihilate()]
     );
 }
 
