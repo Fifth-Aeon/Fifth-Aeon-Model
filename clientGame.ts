@@ -198,7 +198,6 @@ export class ClientGame extends Game {
             this.startEndPhase();
         else
             this.changePhase(event.params.phase);
-
     }
 
     private syncChoiceMade(playerNumber: number, event: GameSyncEvent, params: any) {

@@ -67,8 +67,8 @@ export class DeckList {
         this.randomDeckWithColors(new Set(sampleSize(ResourceTypeNames, n) as Array<string>));
     }
 
-    public toJson() {
-        return JSON.stringify(this.getSavable());
+    public toJson(spacing: number = null) {
+        return JSON.stringify(this.getSavable(), null, spacing);
     }
 
     public clone() {
@@ -79,10 +79,10 @@ export class DeckList {
 
     public getSavable(): SavedDeck {
         return {
-            records: [...Array.from(this.records.entries())],
             name: this.name,
             avatar: this.avatar,
-            customMetadata: this.customMetadata
+            customMetadata: this.customMetadata,
+            records: [...Array.from(this.records.entries())],
         };
     }
 

@@ -31,6 +31,42 @@ import { GainLife } from './mechanics/playerAid';
 import { DrawCard } from './mechanics/draw';
 import { OwnerAttacked } from 'app/game_model/cards/triggers/owner';
 
+export function pegasus() {
+    return new Unit(
+        'Pegasus',
+        'Pegasus',
+        'pegasus.png',
+        UnitType.Bird,
+        new Resource(5, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 3,
+            Synthesis: 0
+        }),
+        new SingleUnit().setOptional(true),
+        2, 3,
+        [new Flying(), new BuffTargetAndGrant(0, 1, [new Flying()])]
+    );
+}
+
+export function dove() {
+    return new Unit(
+        'Dove',
+        'Dove',
+        'dove.png',
+        UnitType.Bird,
+        new Resource(2, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 1,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        1, 2,
+        [new Flying(), new GainLife(2)]
+    );
+}
+
 export function valiantDefenses() {
     return new Enchantment(
         'valiantDefenses',
