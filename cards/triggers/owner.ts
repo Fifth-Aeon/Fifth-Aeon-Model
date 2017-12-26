@@ -25,8 +25,6 @@ export class OwnerAttacked extends Trigger {
     }
 
     public unregister(card: Card, game: Game) {
-        game.getPlayer(card.getOwner())
-            .getEvents()
-            .removeEvents(this);
+        game.gameEvents.removeEvents(this);
     }
 }
