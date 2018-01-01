@@ -172,24 +172,21 @@ export class BasicAI extends AI {
     }
 
     private modifyEnchantments() {
-        console.log('A.I mod enchants');
         let player = this.game.getPlayer(this.playerNumber);
         let res = player.getPool();
         let enchantments = this.game.getBoard()
             .getAllEnchantments()
             .filter(enchant => res.meetsReq(enchant.getModifyCost()));
-        console.log('valid', enchantments);
-
         if (enchantments.length === 0)
             return;
-        let lowest = minBy(enchantments, (enchant) => enchant.getModifyCost().getNumeric());
-        console.log('modify', lowest.getName());
+        let lowest = minBy(enchantments, (enchant) => enchant.getPower());
         this.game.modifyEnchantment(player, lowest);
         this.addActionToSequence(this.modifyEnchantments, true);
     }
 
     private getBestHost(item: Item): Unit {
-        return sample(this.game.getBoard().getPlayerUnits(this.playerNumber));
+        let units = this.game.getBoard().getPlayerUnits(this.playerNumber);
+        return maxBy(units, unit => unit.getMultiplier(this.game, EvalContext.NonlethalRemoval));
     }
 
     private playResource() {

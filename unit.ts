@@ -334,6 +334,10 @@ export class Unit extends Permanent {
         return this.maxLife + this.damage + super.evaluate(game, context);
     }
 
+    public getMultiplier(game: Game, context: EvalContext) {
+        return Mechanic.getMultiplier(this.mechanics.map(mechanic => mechanic.evaluate(this, game, context)));
+    }
+
     public dealAndApplyDamage(target: Unit, amount: number) {
         this.dealDamage(target, amount).run();
     }
