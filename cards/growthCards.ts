@@ -28,7 +28,7 @@ import { LethalStrike } from './triggers/lethalStrike';
 import { Enchantment } from '../enchantment';
 import { friendlyEOT, anyEOT, friendlySOT } from './triggers/periodic';
 import { Discharge } from './mechanics/enchantmentCounters';
-import { DrawCard } from 'app/game_model/cards/mechanics/draw';
+import { DrawCard } from './mechanics/draw';
 
 export function flourishing() {
     return new Enchantment(

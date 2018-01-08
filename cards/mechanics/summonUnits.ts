@@ -4,7 +4,7 @@ import { Targeter } from '../../targeter';
 import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
-import { Enchantment } from 'app/game_model/enchantment';
+import { Enchantment } from '../../enchantment';
 
 export class SummonUnits extends TriggeredMechanic {
     protected id = 'SummonUnits';
