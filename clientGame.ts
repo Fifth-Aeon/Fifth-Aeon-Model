@@ -121,13 +121,13 @@ export class ClientGame extends Game {
     }
 
     private addSyncHandlers() {
-        this.addSyncHandler(SyncEventType.PlayCard, this.syncCardEvent);
-        this.addSyncHandler(SyncEventType.Draw, this.syncDrawEvent);
-        this.addSyncHandler(SyncEventType.PlayResource, this.syncPlayResource);
         this.addSyncHandler(SyncEventType.AttackToggled, this.syncAttackToggled);
-        this.addSyncHandler(SyncEventType.Block, this.syncBlock);
         this.addSyncHandler(SyncEventType.TurnStart, this.syncTurnStart);
         this.addSyncHandler(SyncEventType.PhaseChange, this.syncPhaseChange);
+        this.addSyncHandler(SyncEventType.PlayResource, this.syncPlayResource);
+        this.addSyncHandler(SyncEventType.PlayCard, this.syncCardEvent);
+        this.addSyncHandler(SyncEventType.Block, this.syncBlock);
+        this.addSyncHandler(SyncEventType.Draw, this.syncDrawEvent);
         this.addSyncHandler(SyncEventType.ChoiceMade, this.syncChoiceMade);
         this.addSyncHandler(SyncEventType.QueryResult, this.syncQueryResult);
         this.addSyncHandler(SyncEventType.Ended, this.syncEnded);
