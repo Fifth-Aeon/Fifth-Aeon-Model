@@ -17,7 +17,8 @@ export function getStarterDecks() {
     decks.push(Math.random() > 0.5 ? deckMap.get('marchOfUndeath') : deckMap.get('agentsOfDecay'));
     decks.push(Math.random() > 0.5 ? deckMap.get('theKingsLegions') : deckMap.get('clericalOrder'));
     decks.push(Math.random() > 0.5 ? deckMap.get('ancientGiants') : deckMap.get('primalSwarm'));
-    decks.push(Math.random() > 0.5 ? deckMap.get('skysAndSeas') : deckMap.get('mechanicalLegions'));
+    decks.push(Math.random() > 0.5 ? deckMap.get('skysAndSeas') : deckMap.get('mechanicalArmy'));
+   
     return decks;
 }
 
