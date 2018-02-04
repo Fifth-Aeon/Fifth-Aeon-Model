@@ -141,7 +141,7 @@ export function sleepDart() {
 
 export function fireElemental() {
     return new Unit(
-        'Fire Elemental',
+        'FireElemental',
         'Flame Ifrit',
         'ifrit.png',
         UnitType.Elemental,
@@ -177,7 +177,7 @@ export function giantClub() {
 
 export function cobra() {
     return new Unit(
-        'Cobra',
+        'SnappingCobra',
         'Snapping Cobra',
         'cobra.png',
         UnitType.Snake,
@@ -249,7 +249,7 @@ export function tiger() {
 
 export function hydra() {
     return new Unit(
-        'Three headed Hydra',
+        'Hydra',
         'Hydra',
         'hydra.png',
         UnitType.Dragon,
@@ -308,7 +308,7 @@ export function bounty() {
 
 export function webspit() {
     return new Card(
-        'webspit',
+        'Webspit',
         'Spit Web',
         'web-spit.png',
         new Resource(1, 0, {
@@ -325,7 +325,7 @@ export function webspit() {
 
 export function bite() {
     return new Card(
-        'bite',
+        'Bite',
         'Bite',
         'fangs.png',
         new Resource(2, 0, {

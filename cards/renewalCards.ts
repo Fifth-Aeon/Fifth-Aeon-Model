@@ -69,7 +69,7 @@ export function dove() {
 
 export function valiantDefenses() {
     return new Enchantment(
-        'valiantDefenses',
+        'ValiantDefenses',
         'Valiant Defenses',
         'guards.png',
         new Resource(3, 0, {
@@ -143,7 +143,7 @@ export function general() {
 export function wingsOfLight() {
     return new Item(
         'WingsOfLight',
-        'Wings Of light',
+        'Wings Of Light',
         'angel-outfit.png',
         new Resource(7, 0, {
             Growth: 0,
@@ -254,7 +254,7 @@ export function ruralMonk() {
 
 export function blacksmith() {
     return new Unit(
-        'blacksmith',
+        'Blacksmith',
         'Blacksmith',
         'blacksmith.png',
         UnitType.Human,
@@ -276,8 +276,8 @@ export function blacksmith() {
 
 export function kingUnit() {
     return new Unit(
-        'king',
         'King',
+        'Regal Monarch',
         'throne-king.png',
         UnitType.Human,
         new Resource(6, 0, {
@@ -314,7 +314,7 @@ export function imprison() {
 
 export function heal() {
     return new Card(
-        'heal',
+        'Heal',
         'Heal',
         'caduceus.png',
         new Resource(1, 0, {
@@ -331,7 +331,7 @@ export function heal() {
 
 export function gryphon() {
     return new Unit(
-        'gryphon',
+        'Gryphon',
         'Gryphon',
         'griffin-symbol.png',
         UnitType.Mammal,
@@ -347,9 +347,9 @@ export function gryphon() {
     );
 }
 
-export function dawnbreak() {
+export function Dawnbreak() {
     return new Card(
-        'dawnbreak',
+        'Dawnbreak',
         'Dawnbreak',
         'sunbeams.png',
         new Resource(6, 0, {
@@ -474,7 +474,7 @@ export function knight() {
 
 export function recruitment() {
     return new Card(
-        'recruitment',
+        'Recruitment',
         'Rapid Recruitment',
         'rally-the-troops.png',
         new Resource(3, 0, {

@@ -49,7 +49,7 @@ export function assemblyLine() {
 
 export function medicalConvoy() {
     return new Unit(
-        'medicalConvoy',
+        'MedicalConvoy',
         'Medical Convoy',
         'military-ambulance.png',
         UnitType.Vehicle,
@@ -67,7 +67,7 @@ export function medicalConvoy() {
 
 export function automatedInfantry() {
     return new Unit(
-        'automatedInfantry',
+        'AutomatedInfantry',
         'Automated Infantry',
         'battle-mech.png',
         UnitType.Automaton,
@@ -85,7 +85,7 @@ export function automatedInfantry() {
 
 export function interceptor() {
     return new Unit(
-        'interceptor',
+        'Interceptor',
         'Prototype Interceptor',
         'biplane.png',
         UnitType.Vehicle,
@@ -210,7 +210,7 @@ export function rifle() {
 
 export function atomicStrike() {
     return new Card(
-        'atomicStrike',
+        'AtomicStrike',
         'Atomic Strike',
         'mushroom-cloud.png',
         new Resource(8, 0, {
@@ -227,7 +227,7 @@ export function atomicStrike() {
 
 export function titanmk2() {
     return new Unit(
-        'titanmk2',
+        'TitanMk2',
         'Titan Mk. 2',
         'megabot.png',
         UnitType.Automaton,
@@ -245,7 +245,7 @@ export function titanmk2() {
 
 export function spy() {
     return new Unit(
-        'spy',
+        'Spy',
         'Spy',
         'spy.png',
         UnitType.Agent,
@@ -295,7 +295,7 @@ export function energyBeam() {
 
 export function archivesSearch() {
     return new Card(
-        'archivesSearch',
+        'ArchivesSearch',
         'Search the Archives',
         'enlightenment.png',
         new Resource(3, 0, {
@@ -311,7 +311,7 @@ export function archivesSearch() {
 
 export function alloyTransmute() {
     return new Card(
-        'alloyTransmute',
+        'AlloyTransmute',
         'Alloy Transmutation',
         'materials-science.png',
         new Resource(5, 0, {
@@ -325,10 +325,9 @@ export function alloyTransmute() {
     );
 }
 
-
 export function dangerousInjection() {
     return new Card(
-        'dangerousInjection',
+        'DangerousInjection',
         'Dangerous Injection',
         'hypodermic-test.png',
         new Resource(1, 0, {
@@ -345,7 +344,7 @@ export function dangerousInjection() {
 
 export function workbot() {
     return new Unit(
-        'workbot',
+        'Workbot',
         'Workbot',
         'vintage-robot.png',
         UnitType.Automaton,
@@ -387,7 +386,7 @@ export function comsTower() {
 
 export function enhancmentChamber() {
     return new Unit(
-        'enhancmentChamber',
+        'EnhancmentChamber',
         'Enhancement Chamber',
         'cryo-chamber.png',
         UnitType.Structure,
@@ -428,7 +427,7 @@ export function observationBallon() {
 
 export function siegeArtillery() {
     return new Unit(
-        'siegeArtillery',
+        'SiegeArtillery',
         'Siege Artillery',
         'field-gun.png',
         UnitType.Vehicle,
@@ -448,7 +447,7 @@ export function siegeArtillery() {
 
 export function golem() {
     return new Unit(
-        'golem',
+        'Golem',
         'Golem',
         'robot-golem.png',
         UnitType.Automaton,
@@ -466,7 +465,7 @@ export function golem() {
 
 export function paragon() {
     return new Unit(
-        'paragon',
+        'Paragon',
         'P.A.R.A.G.O.N',
         'android-mask.png',
         UnitType.Automaton,
@@ -484,7 +483,7 @@ export function paragon() {
 
 export function hanglider() {
     return new Unit(
-        'Hanglider',
+        'ScoutGlider',
         'Scout Glider',
         'hang-glider.png',
         UnitType.Vehicle,
@@ -536,7 +535,7 @@ export function insight() {
 
 export function riftBlast() {
     return new Card(
-        'riftBlast',
+        'RiftBlast',
         'Rift Pulse',
         'lightning-dissipation.png',
         new Resource(6, 0, {
@@ -552,7 +551,7 @@ export function riftBlast() {
 
 export function mine() {
     return new Unit(
-        'Mine',
+        'GoldMine',
         'Gold Mine',
         'gold-mine.png',
         UnitType.Structure,

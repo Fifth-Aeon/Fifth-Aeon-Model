@@ -52,7 +52,7 @@ export function imp() {
 
 export function gargoyle() {
     return new Unit(
-        'gargoyle',
+        'GargoyleSentry',
         'Gargoyle Sentry',
         'gargoyle.png',
         UnitType.Monster,
@@ -70,7 +70,7 @@ export function gargoyle() {
 
 export function tombGuardian() {
     return new Unit(
-        'tombGuardian',
+        'TombGuardian',
         'Tomb Guardian',
         'mummy-head.png',
         UnitType.Undead,
@@ -126,7 +126,7 @@ export function deathAscendancy() {
 
 export function raider() {
     return new Unit(
-        'raider',
+        'Raider',
         'Raider',
         'horned-helm.png',
         UnitType.Human,
@@ -144,7 +144,7 @@ export function raider() {
 
 export function raidShip() {
     return new Unit(
-        'raidingShip',
+        'RaidingShip',
         'Raid Ship',
         'drakkar.png',
         UnitType.Vehicle,
@@ -163,7 +163,7 @@ export function raidShip() {
 
 export function whip() {
     return new Item(
-        'WhipOfTorrment',
+        'WhipOfTorment',
         'Whip of Torment',
         'whip.png',
         new Resource(3, 0, {
@@ -346,7 +346,7 @@ export function backstab() {
 
 export function raiseSkeletons() {
     return new Card(
-        'raiseSeeleton',
+        'RaiseSkeletons',
         'Raise Skeletons',
         'raise-skeleton.png',
         new Resource(5, 0, {
@@ -361,9 +361,9 @@ export function raiseSkeletons() {
 }
 
 
-export function poison() {
+export function toxin() {
     return new Card(
-        'Poison',
+        'Toxin',
         'Toxin',
         'death-juice.png',
         new Resource(2, 0, {
@@ -485,7 +485,7 @@ export function assassin() {
 
 export function vampire() {
     return new Unit(
-        'Vampire1',
+        'Vampire',
         'Vampire',
         'vampire.png',
         UnitType.Vampire,

@@ -92,6 +92,11 @@ export class DeckList {
         this.avatar = saveData.avatar;
         this.cardCount = sum(Array.from(this.records.values()));
         this.customMetadata = saveData.customMetadata;
+        for (let key of Array.from(this.records.keys())) {
+            if (!allCards.has(key)) {
+                throw Error(`Deck ${this.name} tried to load non-existant card with id ${key}.`);
+            }
+        }
     }
 
     public fromJson(jsonStr: string) {
@@ -103,13 +108,22 @@ export class DeckList {
         return this.cardCount;
     }
 
-    public addCard(card: Card) {
+    public getCardCount(card: Card) {
+        return this.records.get(card.getDataId()) || 0;
+    }
+
+    public canAddCard(card: Card) {
         let currValue = this.records.get(card.getDataId()) || 0;
         let limit = this.format.cardsOfRarity[0];
-        if (currValue < limit) {
-            this.records.set(card.getDataId(), currValue + 1);
-            this.cardCount++;
-        }
+        return currValue < limit;
+    }
+
+
+    public addCard(card: Card) {
+        if (!this.canAddCard(card)) return;
+        let currValue = this.records.get(card.getDataId()) || 0;
+        this.records.set(card.getDataId(), currValue + 1);
+        this.cardCount++;
     }
 
     public isValid() {

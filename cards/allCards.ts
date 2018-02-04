@@ -5,10 +5,13 @@ import { values } from 'lodash';
 export type CardFactory = () => Card;
 
 export const allCards = new Map<string, CardFactory>();
+export const cardList = Array<Card>();
 
 function addFactory(...factories: CardFactory[]) {
     for (let factory of factories) {
-        allCards.set(factory().getDataId(), factory);
+        let card = factory();
+        allCards.set(card.getDataId(), factory);
+        cardList.push(card);
     }
 }
 

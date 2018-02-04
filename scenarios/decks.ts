@@ -18,7 +18,6 @@ export function getStarterDecks() {
     decks.push(Math.random() > 0.5 ? deckMap.get('theKingsLegions') : deckMap.get('clericalOrder'));
     decks.push(Math.random() > 0.5 ? deckMap.get('ancientGiants') : deckMap.get('primalSwarm'));
     decks.push(Math.random() > 0.5 ? deckMap.get('skysAndSeas') : deckMap.get('mechanicalArmy'));
-   
     return decks;
 }
 
@@ -27,9 +26,9 @@ addDeck({
     avatar: 'crowned-skull.png',
     customMetadata: true,
     records: [
-        ['Skeleton', 4], ['CrawlingZombie', 4], ['Poison', 3], ['RottingZombie', 4],
+        ['Skeleton', 4], ['CrawlingZombie', 4], ['Toxin', 3], ['RottingZombie', 4],
         ['Hemorrhage', 4], ['Decapitate', 4], ['DeathAscendancy', 4],
-        ['raiseSeeleton', 3], ['Abomination', 4], ['Lich', 4], ['Spectre', 2]
+        ['RaiseSkeletons', 3], ['Abomination', 4], ['Lich', 4], ['Spectre', 2]
     ]
 });
 
@@ -38,9 +37,9 @@ addDeck({
     avatar: 'hydra.png',
     customMetadata: true,
     records: [
-        ['Dragon', 4], ['Three headed Hydra', 4], ['Cobra', 4], ['Spiderling', 4],
-        ['NaturesBounty', 4], ['Bear', 4], ['Minotaur', 4], ['bite', 4],
-        ['NeuralResonance', 2], ['Eruption', 2], ['SweetFragrance', 2], ['Kraken', 1], ['Fire Elemental', 1]
+        ['Dragon', 4], ['Hydra', 4], ['SnappingCobra', 4], ['Spiderling', 4],
+        ['NaturesBounty', 4], ['Bear', 4], ['Minotaur', 4], ['Bite', 4],
+        ['NeuralResonance', 2], ['Eruption', 2], ['SweetFragrance', 2], ['Kraken', 1], ['FireElemental', 1]
     ]
 });
 
@@ -49,8 +48,8 @@ addDeck({
     avatar: 'throne-king.png',
     customMetadata: true,
     records: [
-        ['Archer', 4], ['Pikeman', 4], ['blacksmith', 4], ['Imprison', 4],
-        ['Knight', 4], ['recruitment', 4], ['General', 4], ['king', 4],
+        ['Archer', 4], ['Pikeman', 4], ['Blacksmith', 4], ['Imprison', 4],
+        ['Knight', 4], ['Recruitment', 4], ['General', 4], ['King', 4],
         ['SentryAngel', 4], ['CallOfJustice', 4]
     ]
 });
@@ -60,9 +59,9 @@ addDeck({
     avatar: 'battleship.png',
     customMetadata: true,
     records: [
-        ['siegeArtillery', 4], ['Hanglider', 4], ['Airship', 4], ['Rifle', 4],
-        ['archivesSearch', 4], ['Mine', 4], ['Submarine', 2], ['BombingRun', 4],
-        ['Battleship', 2], ['golem', 4], ['spy', 4]
+        ['SiegeArtillery', 4], ['ScoutGlider', 4], ['Airship', 4], ['Rifle', 4],
+        ['ArchivesSearch', 4], ['GoldMine', 4], ['Submarine', 2], ['BombingRun', 4],
+        ['Battleship', 2], ['Golem', 4], ['Spy', 4]
     ]
 });
 
@@ -71,9 +70,9 @@ addDeck({
     'avatar': 'android-mask.png',
     'customMetadata': true,
     'records': [
-        ['workbot', 4], ['automatedInfantry', 4], ['AssemblyLine', 4], ['siegeArtillery', 4],
-        ['interceptor', 4], ['golem', 4], ['ComsTower', 4], ['EnergyBeam', 2], ['alloyTransmute', 2],
-        ['paragon', 4], ['riftBlast', 2], ['titanmk2', 2]
+        ['Workbot', 4], ['AutomatedInfantry', 4], ['AssemblyLine', 4], ['SiegeArtillery', 4],
+        ['Interceptor', 4], ['Golem', 4], ['ComsTower', 4], ['EnergyBeam', 2], ['AlloyTransmute', 2],
+        ['Paragon', 4], ['RiftBlast', 2], ['TitanMk2', 2]
     ]
 });
 
@@ -82,9 +81,9 @@ addDeck({
     'avatar': 'hooded-assassin.png',
     'customMetadata': true,
     'records': [
-        ['Imp', 4], ['Backstab', 4], ['VampireBat', 4], ['WhipOfTorrment', 4],
-        ['Saboteur', 4], ['Assassin', 4], ['NecromancerTome', 4], ['Poison', 4],
-        ['Vampire1', 2], ['AssasinDagger', 2], ['Decapitate', 4]
+        ['Imp', 4], ['Backstab', 4], ['VampireBat', 4], ['WhipOfTorment', 4],
+        ['Saboteur', 4], ['Assassin', 4], ['NecromancerTome', 4], ['Toxin', 4],
+        ['Vampire', 2], ['AssasinDagger', 2], ['Decapitate', 4]
     ]
 });
 
@@ -96,7 +95,7 @@ addDeck({
         ['RuralMonk', 4], ['Dove', 4], ['NavalGalley', 4],
         ['Imprison', 4], ['Pontiff', 4], ['CallOfJustice', 4],
         ['Monastery', 4], ['SentryAngel', 4], ['AncientSage', 4],
-        ['SupremeAgeis', 1], ['WingsOfLight', 1], ['dawnbreak', 1],
+        ['SupremeAgeis', 1], ['WingsOfLight', 1], ['Dawnbreak', 1],
         ['Armstice', 1]
     ]
 });
@@ -119,9 +118,9 @@ addDeck({
     'customMetadata': true,
     'records': [
         ['AssemblyLine', 4], ['ForceField', 4], ['DeadlyPlague', 4],
-        ['Flourishing', 4], ['automatedInfantry', 4], ['golem', 4],
-        ['paragon', 4], ['NaturesBounty', 4], ['titanmk2', 2],
-        ['Eruption', 2], ['workbot', 4]
+        ['Flourishing', 4], ['AutomatedInfantry', 4], ['Golem', 4],
+        ['Paragon', 4], ['NaturesBounty', 4], ['TitanMk2', 2],
+        ['Eruption', 2], ['Workbot', 4]
     ]
 });
 
@@ -131,7 +130,7 @@ addDeck({
     'customMetadata': true,
     'records': [
         ['Armstice', 4], ['AncientSage', 2], ['AssemblyLine', 4], ['Dove', 4],
-        ['valiantDefenses', 4], ['Imprison', 4], ['CallOfJustice', 4], ['SentryAngel', 4],
-        ['archivesSearch', 4], ['BombingRun', 2], ['Mine', 2], ['ObsesrvationBallon', 2]
+        ['ValiantDefenses', 4], ['Imprison', 4], ['CallOfJustice', 4], ['SentryAngel', 4],
+        ['ArchivesSearch', 4], ['BombingRun', 2], ['GoldMine', 2], ['ObsesrvationBallon', 2]
     ]
 })
