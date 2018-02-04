@@ -62,6 +62,16 @@ export class Collection {
         return this.addBooster(pack);
     }
 
+    public canBuyPack() {
+        return this.gold > 100;
+    }
+
+    public buyPack() {
+        if (!this.canBuyPack()) return;
+        this.gold -= 100;
+        this.packs += 1;
+    }
+
     public clear() {
         this.records = new Map<string, number>();
     }
