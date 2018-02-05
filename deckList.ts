@@ -10,11 +10,11 @@ export interface SavedDeck {
     name: string;
     avatar: string;
     customMetadata: boolean;
-    id: string;
+    id: number;
 }
 
 export class DeckList {
-    public id: number = -1;
+    public id = -1;
     public name = 'New Deck';
     public avatar = '';
     public customMetadata = false;
@@ -84,7 +84,8 @@ export class DeckList {
             name: this.name,
             avatar: this.avatar,
             customMetadata: this.customMetadata,
-            records: [...Array.from(this.records.entries())],
+            id: this.id,
+            records: [...Array.from(this.records.entries())]
         };
     }
 
