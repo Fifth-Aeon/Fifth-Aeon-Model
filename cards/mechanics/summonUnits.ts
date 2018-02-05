@@ -70,7 +70,7 @@ export class EnchantmentSummon extends SummonUnits {
     }
 
     public getText(card: Card, game: Game) {
-        return `Summon ${this.count === 1 ? 'a' : this.count} ${this.name}. It becomes an X/X where X is this enchantment’s power.`;
+        return `Summon ${this.count === 1 ? a(this.name) : this.count} ${this.name}. It becomes an X/X where X is this enchantment’s power.`;
     }
 
     public evaluate(card: Card, game: Game) {
@@ -107,7 +107,7 @@ export class SummonUnitOnDamage extends Mechanic {
     }
 
     public getText(card: Card) {
-        return `Whenever this damages your opponent summon a ${this.name}.`;
+        return `Whenever this damages your opponent summon ${a(this.name)} ${this.name}.`;
     }
 
     public evaluate(card: Card, game: Game) {
