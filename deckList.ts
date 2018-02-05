@@ -10,9 +10,11 @@ export interface SavedDeck {
     name: string;
     avatar: string;
     customMetadata: boolean;
+    id: string;
 }
 
 export class DeckList {
+    public id: number = -1;
     public name = 'New Deck';
     public avatar = '';
     public customMetadata = false;
@@ -149,6 +151,10 @@ export class DeckList {
             }
         }
         return deck;
+    }
+
+    public getEntries() {
+        return Array.from(this.records.entries());
     }
 
     public getRecordList() {
