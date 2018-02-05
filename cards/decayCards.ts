@@ -8,7 +8,7 @@ import { Resource } from '../resource';
 // Targeters
 import { DamagedUnit } from './targeters/weakenedUnits';
 import { PoisonableUnit, PoisonableUnits } from './targeters/poisonTargeter';
-import { SingleUnit, Untargeted, AllUnits, AllOtherUnits, FriendlyUnit, EnemyUnit, SelfTarget } from '../targeter';
+import { SingleUnit, Untargeted, AllUnits, AllOtherUnits, FriendlyUnit, EnemyUnit, SelfTarget, OwningPlayer } from '../targeter';
 
 // Mechanics
 import { Discharge, Recharge } from './mechanics/enchantmentCounters';
@@ -28,9 +28,9 @@ import { KillTarget } from './mechanics/removal';
 import { DeathCounter } from './mechanics/shieldEnchantments';
 import { OnDeath } from './triggers/death';
 import { LethalStrike } from './triggers/lethalStrike';
-
-
-
+import { GainLife } from './mechanics/playerAid';
+import { DealDamage, DealSynthDamage, DamageOnBlock } from './mechanics/dealDamage';
+import { friendlyEOT, anyEOT, friendlySOT } from './triggers/periodic';
 
 export function imp() {
     return new Unit(
@@ -49,6 +49,7 @@ export function imp() {
         [new Flying()]
     );
 }
+
 
 export function gargoyle() {
     return new Unit(
@@ -121,6 +122,31 @@ export function deathAscendancy() {
             unitTypeLordshipAll(UnitType.Undead, 1, 1),
             notUnitLordship(UnitType.Undead, -1, -1)
         ]
+    );
+}
+
+export function imp_keep() {
+    return new Enchantment(
+        'Imp Keep',
+        'Imp Keep',
+        'imp.png',
+        new Resource(1, 0, {
+            Growth: 0,
+            Decay: 1,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        4, 2,
+       [
+         new EndOfTurn('summon an imp', 4, (imp_keep, game) => 
+            game.playGeneratedUnit(imp_keep.getOwner(), imp())),
+            
+         new DealDamage(1)
+          .setTargeter(new OwningPlayer())
+          .setTrigger(friendlyEOT())
+           // new EndOfTurn('Lose 2 life', 4, (imp_keep, game) => game.getPlayer(Enchantment.canChangePower()).drawCard())
+       ]
     );
 }
 
