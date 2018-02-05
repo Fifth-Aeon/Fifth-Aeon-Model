@@ -51,6 +51,33 @@ export abstract class Targeter {
         return this.targets.length > 0 && every(this.targets, target => valid.has(target));
     }
 }
+export class OwningPlayer extends Targeter {
+    public needsInput() {
+        return false;
+    }
+
+    public getTargets(card: Card, game: Game) {
+        return [game.getPlayer(card.getOwner())];
+    }
+
+    public getText() {
+        return 'this card’s owner';
+    }
+}
+
+export class EnemyPlayer extends Targeter {
+    public needsInput() {
+        return false;
+    }
+
+    public getTargets(card: Card, game: Game) {
+        return [game.getPlayer(game.getOtherPlayerNumber(card.getOwner()))];
+    }
+
+    public getText() {
+        return 'this unit’s owner’s opponent';
+    }
+}
 
 export class Untargeted extends Targeter {
     public getText() {
