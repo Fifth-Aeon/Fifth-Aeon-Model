@@ -125,28 +125,25 @@ export function deathAscendancy() {
     );
 }
 
-export function imp_keep() {
+export function impKeep() {
     return new Enchantment(
-        'Imp Keep',
-        'Imp Keep',
-        'imp.png',
+        'InfestedKeep',
+        'Infested Keep',
+        'castle-ruins.png',
         new Resource(1, 0, {
             Growth: 0,
-            Decay: 1,
+            Decay: 3,
             Renewal: 0,
             Synthesis: 0
         }),
         new Untargeted(),
         4, 2,
-       [
-         new EndOfTurn('summon an imp', 4, (imp_keep, game) => 
-            game.playGeneratedUnit(imp_keep.getOwner(), imp())),
-            
-         new DealDamage(1)
-          .setTargeter(new OwningPlayer())
-          .setTrigger(friendlyEOT())
-           // new EndOfTurn('Lose 2 life', 4, (imp_keep, game) => game.getPlayer(Enchantment.canChangePower()).drawCard())
-       ]
+        [
+            new SummonUnits(imp).setTrigger(friendlyEOT()),
+            new DealDamage(1)
+                .setTargeter(new OwningPlayer())
+                .setTrigger(friendlyEOT())
+        ]
     );
 }
 
@@ -523,7 +520,7 @@ export function vampire() {
         }),
         new Untargeted(),
         3, 3,
-        [ new BuffTarget(1, 1)
+        [new BuffTarget(1, 1)
             .setTrigger(new LethalStrike())
             .setTargeter(new SelfTarget())
         ]

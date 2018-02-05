@@ -13,6 +13,11 @@ export function properCase(str: string) {
     return str.replace(/\b\w/g, l => l.toUpperCase())
 }
 
+export function a(nextWord: string) {
+    return 'aeiouAEIOU'.includes(nextWord[0]) ? 'an' : 'a';
+}
+
+
 function symbol(number: number) {
     return number > 0 ? '+' : '';
 }

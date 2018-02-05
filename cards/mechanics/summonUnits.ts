@@ -5,6 +5,7 @@ import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 import { Enchantment } from '../../enchantment';
+import { a } from '../../strings';
 
 export class SummonUnits extends TriggeredMechanic {
     protected id = 'SummonUnits';
@@ -28,7 +29,7 @@ export class SummonUnits extends TriggeredMechanic {
     }
 
     public getText(card: Card, game: Game) {
-        return `Summon ${this.count === 1 ? 'a' : this.count} ${this.name}.`;
+        return `Summon ${this.count === 1 ? a(this.name) : this.count} ${this.name}.`;
     }
 
     public evaluate(card: Card, game: Game) {
@@ -50,9 +51,9 @@ export class SummonUnitForGrave extends SummonUnits {
 
     public getText(card: Card, game: Game) {
         if (game)
-            return `Play a ${this.name} for each ${this.factor} units in any crypt (${this.getUnitCount(card, game)}).`;
+            return `Play ${a(this.name)} ${this.name} for each ${this.factor} units in any crypt (${this.getUnitCount(card, game)}).`;
         else
-            return `Play a ${this.name} for each ${this.factor} units in any crypt (rounded down).`;
+            return `Play ${a(this.name)} ${this.name} for each ${this.factor} units in any crypt (rounded down).`;
     }
 }
 
