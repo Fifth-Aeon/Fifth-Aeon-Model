@@ -91,6 +91,7 @@ export class DeckList {
 
     public fromSavable(saveData: SavedDeck) {
         this.records = new Map(saveData.records) as Map<string, number>;
+        this.id = saveData.id;
         this.name = saveData.name;
         this.avatar = saveData.avatar;
         this.cardCount = sum(Array.from(this.records.values()));
