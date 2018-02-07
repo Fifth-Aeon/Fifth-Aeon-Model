@@ -207,41 +207,40 @@ export class BasicAI extends AI {
         let potentialBlockers = this.game.getBoard().getPlayerUnits(this.enemyNumber)
             .filter(unit => !unit.isExausted());
         let attacked = false;
-        //Testing Changes
+        // Testing Changes
         let curLife = this.aiPlayer.getLife();
         let numBlockers = potentialBlockers.length;
         let totalEnemyAttack = 0;
-        for (let blocker of potentialBlockers){
+        for (let blocker of potentialBlockers) {
             totalEnemyAttack += blocker.getDamage();
         }
         let test = 0;
         for (let attacker of potentialAttackers) {
-            //this.game.declareAttacker(potentialAttackers[0]);
-         
+            // this.game.declareAttacker(potentialAttackers[0]);
+
             let hasBlocker = false;
             for (let blocker of potentialBlockers) {
-                 
+
                 if (this.canFavorablyBlock(attacker, blocker)) {
                     hasBlocker = true;
                     break;
                 }
-                
-                if (totalEnemyAttack > curLife){
-                  if (test < numBlockers){
-                     potentialBlockers[test];
-                     test++;
-                     curLife -= potentialBlockers[test].getDamage();
-                     hasBlocker = true;
-                  }
+
+                if (totalEnemyAttack > curLife) {
+                    if (test < numBlockers) {
+                        // potentialBlockers[test];
+                        test++;
+                        curLife -= potentialBlockers[test].getDamage();
+                        hasBlocker = true;
+                    }
                 }
             }
             if (!hasBlocker) {
                 this.game.declareAttacker(attacker);
                 attacked = true;
             }
-            
+
         }
-        //---------------
     }
 
     private canFavorablyBlock(attacker: Unit, blocker: Unit) {
@@ -300,7 +299,7 @@ export class BasicAI extends AI {
                         attacker: attacker,
                         type: this.categorizeBlock(attacker, blocker),
                         tradeScore: blocker.evaluate(this.game, EvalContext.LethalRemoval) -
-                        attacker.evaluate(this.game, EvalContext.LethalRemoval)
+                            attacker.evaluate(this.game, EvalContext.LethalRemoval)
                     });
                 }
             }
