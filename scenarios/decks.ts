@@ -25,6 +25,7 @@ addDeck({
     name: 'March of Undeath',
     avatar: 'crowned-skull.png',
     customMetadata: true,
+    id: -1,
     records: [
         ['Skeleton', 4], ['CrawlingZombie', 4], ['Toxin', 3], ['RottingZombie', 4],
         ['Hemorrhage', 4], ['Decapitate', 4], ['DeathAscendancy', 4],
@@ -36,6 +37,7 @@ addDeck({
     name: 'Ancient Giants',
     avatar: 'hydra.png',
     customMetadata: true,
+    id: -1,
     records: [
         ['Dragon', 4], ['Hydra', 4], ['SnappingCobra', 4], ['Spiderling', 4],
         ['NaturesBounty', 4], ['Bear', 4], ['Minotaur', 4], ['Bite', 4],
@@ -47,6 +49,7 @@ addDeck({
     name: 'The King’s Legions',
     avatar: 'throne-king.png',
     customMetadata: true,
+    id: -1,
     records: [
         ['Archer', 4], ['Pikeman', 4], ['Blacksmith', 4], ['Imprison', 4],
         ['Knight', 4], ['Recruitment', 4], ['General', 4], ['King', 4],
@@ -58,6 +61,7 @@ addDeck({
     name: 'Skys and Seas',
     avatar: 'battleship.png',
     customMetadata: true,
+    id: -1,
     records: [
         ['SiegeArtillery', 4], ['ScoutGlider', 4], ['Airship', 4], ['Rifle', 4],
         ['ArchivesSearch', 4], ['GoldMine', 4], ['Submarine', 2], ['BombingRun', 4],
@@ -69,6 +73,7 @@ addDeck({
     'name': 'Mechanical Army',
     'avatar': 'android-mask.png',
     'customMetadata': true,
+    id: -1,
     'records': [
         ['Workbot', 4], ['AutomatedInfantry', 4], ['AssemblyLine', 4], ['SiegeArtillery', 4],
         ['Interceptor', 4], ['Golem', 4], ['ComsTower', 4], ['EnergyBeam', 2], ['AlloyTransmute', 2],
@@ -80,6 +85,7 @@ addDeck({
     'name': 'Agents of Decay',
     'avatar': 'hooded-assassin.png',
     'customMetadata': true,
+    id: -1,
     'records': [
         ['Imp', 4], ['Backstab', 4], ['VampireBat', 4], ['WhipOfTorment', 4],
         ['Saboteur', 4], ['Assassin', 4], ['NecromancerTome', 4], ['Toxin', 4],
@@ -91,6 +97,7 @@ addDeck({
     'name': 'Clerical Order',
     'avatar': 'meditation.png',
     'customMetadata': true,
+    id: -1,
     'records': [
         ['RuralMonk', 4], ['Dove', 4], ['NavalGalley', 4],
         ['Imprison', 4], ['Pontiff', 4], ['CallOfJustice', 4],
@@ -104,6 +111,7 @@ addDeck({
     'name': 'Primal Swarm',
     'avatar': 'hanging-spider.png',
     'customMetadata': true,
+    id: -1,
     'records': [
         ['Spiderling', 4], ['SpiderHatchling', 4], ['Wasp', 4],
         ['WolfPup', 4], ['Werewolf', 4], ['WolfHowl', 4],
@@ -116,6 +124,7 @@ addDeck({
     'name': 'Robotic Plague',
     'avatar': 'virus.png',
     'customMetadata': true,
+    id: -1,
     'records': [
         ['AssemblyLine', 4], ['ForceField', 4], ['DeadlyPlague', 4],
         ['Flourishing', 4], ['AutomatedInfantry', 4], ['Golem', 4],
@@ -128,6 +137,7 @@ addDeck({
     'name': 'Dominion',
     'avatar': 'meditation.png',
     'customMetadata': true,
+    id: -1,
     'records': [
         ['Armstice', 4], ['AncientSage', 2], ['AssemblyLine', 4], ['Dove', 4],
         ['ValiantDefenses', 4], ['Imprison', 4], ['CallOfJustice', 4], ['SentryAngel', 4],
