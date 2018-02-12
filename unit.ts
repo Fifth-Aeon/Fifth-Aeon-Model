@@ -270,14 +270,15 @@ export class Unit extends Permanent {
         return `${this.name} (${this.cost}) - (${this.damage}/${this.life})`;
     }
 
-    public fight(target: Unit) {
+    public fight(target: Unit, damage: number = null) {
         // Trigger an attack event
         let eventParams = new Map<string, any>([
             ['damage', this.damage],
             ['attacker', this],
             ['defender', target]
         ]);
-        let damage: number = this.events.trigger(EventType.Attack, eventParams).get('damage');
+        if (damage === null)
+            damage = this.events.trigger(EventType.Attack, eventParams).get('damage');
 
         // Remove actions and deal damage
         let damage1 = this.dealDamage(target, damage);

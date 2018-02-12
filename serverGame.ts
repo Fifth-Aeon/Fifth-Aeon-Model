@@ -7,6 +7,7 @@ import { Item } from './item';
 import { Unit } from './unit';
 import { DeckList } from './deckList';
 import { data } from './gameData';
+import { EventType } from './gameEvent';
 
 
 type ActionCb = (act: GameAction) => boolean;
@@ -19,6 +20,37 @@ export class ServerGame extends Game {
         this.actionHandelers = new Map<GameActionType, ActionCb>();
         this.addActionHandelers();
     }
+
+
+    // Serverside phase logic
+    protected endPhaseOne() {
+        if (this.isAttacking()) {
+            this.gameEvents.trigger(EventType.PlayerAttacked,
+                new Map([['target', this.getOtherPlayerNumber(this.getActivePlayer())]]));
+            if (this.blockersExist()) {
+                this.changePhase(GamePhase.Block);
+            } else {
+                this.resolveCombat();
+            }
+        } else {
+            this.startEndPhase();
+        }
+    }
+
+    protected nextPhase() {
+        switch (this.phase) {
+            case GamePhase.Play1:
+                this.endPhaseOne();
+                break;
+            case GamePhase.Play2:
+                this.startEndPhase();
+                break;
+            case GamePhase.Block:
+                this.resolveCombat();
+                break;
+        }
+    }
+
 
     // Player Actions -----------------------------------------------------
 
