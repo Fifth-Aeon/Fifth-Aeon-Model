@@ -49,7 +49,7 @@ export class AbominationConsume extends TriggeredMechanic {
         let crypt = game.getCrypt(card.getOwner());
         let valid = crypt.filter(cryptCard => cryptCard.isUnit());
         let unit = card as Unit;
-        game.promptCardChoice(card.getOwner(), valid, 2, (raised: Card[]) => {
+        game.promptCardChoice(card.getOwner(), valid, 0, 2, (raised: Card[]) => {
             raised.forEach(toRaise => {
                 let eaten = toRaise as Unit;
                 unit.buff(eaten.getDamage(), eaten.getMaxLife());

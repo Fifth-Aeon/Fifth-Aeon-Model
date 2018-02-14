@@ -39,7 +39,7 @@ export class Peek extends TriggeredMechanic {
         game.queryCards(
             (queried: Game) => queried.getPlayer(queried.getOtherPlayerNumber(card.getOwner())).getHand(),
             (hand) => {
-                game.promptCardChoice(card.getOwner(), hand, 0, null, '');
+                game.promptCardChoice(card.getOwner(), hand, 0, 0, null, '');
             });
     }
 
@@ -105,7 +105,7 @@ export class AugarCard extends TriggeredMechanic {
         let synth = owner.getPool().getOfType('Synthesis');
 
         if (synth < 4) {
-            owner.replace(game, 1);
+            owner.replace(game, 0, 1);
         } else if (synth < 8) {
             owner.drawCard();
         } else {
