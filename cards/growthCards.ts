@@ -519,24 +519,6 @@ export function wolfHowl() {
     );
 }
 
-/*
-export function atomicStrike() {
-    return new Card(
-        'AtomicStrike',
-        'Atomic Strike',
-        'mushroom-cloud.png',
-        new Resource(8, 0, {
-            Growth: 0,
-            Decay: 0,
-            Renewal: 0,
-            Synthesis: 6
-        }),
-        new AllUnits(),
-        [new DealDamage(10), new DealDamage(5, new AllPlayers())],
-        'Deal 10 damage to each unit and 5 to each player.'
-    );
-}
-*/
 export function mutation() {
     return new Card(
         'mutation',
