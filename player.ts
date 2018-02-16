@@ -128,8 +128,8 @@ export class Player extends Unit {
             game.nextTurn();
     }
 
-    public replace(game: Game, count: number) {
-        game.promptCardChoice(this.getPlayerNumber(), this.hand, count, (cards: Card[]) => {
+    public replace(game: Game, min: number, max: number) {
+        game.promptCardChoice(this.getPlayerNumber(), this.hand, min, max, (cards: Card[]) => {
             cards.forEach(card => {
                 this.removeCardFromHand(card);
                 this.addToDeck(card);
@@ -143,7 +143,7 @@ export class Player extends Unit {
             this.hand = [];
             return;
         }
-        game.promptCardChoice(this.getPlayerNumber(), this.hand, count, (cards: Card[]) => {
+        game.promptCardChoice(this.getPlayerNumber(), this.hand, count, count, (cards: Card[]) => {
             cards.forEach(card => {
                 this.removeCardFromHand(card);
                 game.addToCrypt(card);
@@ -156,7 +156,7 @@ export class Player extends Unit {
         game.queryCards(
             (queried: Game) => shuffle(queried.getPlayer(this.playerNumber).getDeck()),
             (deck: Card[]) => {
-                game.promptCardChoice(this.playerNumber, deck, count, (cards: Card[]) => {
+                game.promptCardChoice(this.playerNumber, deck, 0, count, (cards: Card[]) => {
                     cards.forEach(card => {
                         this.drawGeneratedCard(card);
                         deck.splice(deck.indexOf(card), 1);

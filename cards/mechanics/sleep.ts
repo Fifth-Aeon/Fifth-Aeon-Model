@@ -51,7 +51,7 @@ export class Sleeping extends Mechanic {
     }
 }
 
-export class SleepTarget extends TargetedMechanic { 
+export class SleepTarget extends TargetedMechanic {
     protected id = 'SleepTarget';
     constructor(private turns: number) {
         super();

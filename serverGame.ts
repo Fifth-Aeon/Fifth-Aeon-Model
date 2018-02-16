@@ -114,9 +114,10 @@ export class ServerGame extends Game {
         }
         let cardIds = act.params.choice as string[];
         let cards = cardIds.map(id => this.getCardById(id));
-        let wanted = Math.min(this.currentChoice.validCards.size, this.currentChoice.count)
-        if (cards.length !== wanted) {
-            console.error(`Reject choice. Wanted ${wanted} cards but only got ${cards.length}.`)
+        let min = Math.min(this.currentChoice.validCards.size, this.currentChoice.min);
+        let max = this.currentChoice.max;
+        if (cards.length > max || cards.length < min) {
+            console.error(`Reject choice. Out of range cards but only got ${cards.length}.`)
             return false;
         }
         if (!cards.every(card => this.currentChoice.validCards.has(card))) {
