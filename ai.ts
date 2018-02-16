@@ -95,14 +95,14 @@ export class BasicAI extends AI {
             console.log('A.I skip choice (doesn\'t need input)');
             return
         }
-        this.game.deferChoice(this.playerNumber, cards, min, max, callback);
+        this.game.deferChoice(player, cards, min, max, callback);
         if (player !== this.playerNumber) {
             console.log('A.I skip choice (choice is for player)', player, this.playerNumber);
             return;
         }
         let choice = sampleSize(cards, min);
         console.log('A.I make choice', choice);
-        this.game.makeChoice(choice);
+        this.game.makeChoice(this.playerNumber, choice);
     }
 
     public handleGameEvent(event: GameSyncEvent) {

@@ -16,7 +16,7 @@ import { knapsack } from 'app/game_model/algoritms';
 import { EvalContext } from 'app/game_model/mechanic';
 
 export enum GamePhase {
-    Play1, Block, AttackOrder, Play2, End, Response
+    Play1, Block, DamageDistribution, Play2, End, Response
 }
 
 export enum GameActionType {
@@ -79,7 +79,7 @@ export abstract class Game {
     // A group of game logic events that are not connected to any individual unit
     public gameEvents: EventGroup;
     // Flag to tell us which player's choice we are waiting for (null if not waiting)
-    protected currentChoice: Choice | null = null;
+    protected currentChoices: Choice[] = [null, null];
     protected log: Log;
     protected winner = -1;
     protected generatedCardId = 1;
@@ -96,7 +96,7 @@ export abstract class Game {
      * @param {any} [format=standardFormat]
      * @memberof Game
      */
-    constructor(format = standardFormat, protected client: boolean = false, deckLists?: [DeckList, DeckList]) {
+    constructor(protected name: string, format = standardFormat, protected client: boolean = false, deckLists?: [DeckList, DeckList]) {
         this.format = format;
         this.board = new Board(this.format.playerCount, this.format.boardSize);
         this.cardPool = new Map<string, Card>();
@@ -171,7 +171,8 @@ export abstract class Game {
     public deferChoice(player: number, choices: Card[], min: number, max: number, callback: (cards: Card[]) => void) {
         if (!callback)
             return;
-        this.currentChoice = {
+        console.log(this.name,  'defering choice for', player)
+        this.currentChoices[player] = {
             player: player,
             validCards: new Set(choices),
             min: min,
@@ -180,13 +181,14 @@ export abstract class Game {
         };
     }
 
-    protected makeDeferedChoice(cards: Card[]) {
-        if (this.currentChoice !== null) {
-            this.currentChoice.callback(cards);
+    protected makeDeferedChoice(player: number, cards: Card[]) {
+        console.log(this.name, player, 'making choice with', this.currentChoices);
+        if (this.currentChoices[player] !== null) {
+            this.currentChoices[player].callback(cards);
         } else {
-            console.error('Error, no defered choice handler for', cards);
+            console.error('Error, no defered choice handler for', cards, 'from', player);
         }
-        this.currentChoice = null;
+        this.currentChoices[player] = null;
     }
 
     // Crypt logic ----------------------------------------------------
@@ -199,19 +201,6 @@ export abstract class Game {
         return this.crypt[player];
     }
 
-    // Game Logic -----------------------------------------------------
-    public startGame() {
-        this.turn = 0;
-        for (let i = 0; i < this.players.length; i++) {
-            this.players[i].drawCards(this.format.initialDraw[i]);
-        }
-        this.players[this.turn].startTurn();
-        this.getCurrentPlayerUnits().forEach(unit => unit.refresh());
-        this.phase = GamePhase.Play1;
-
-        this.addGameEvent(new GameSyncEvent(SyncEventType.TurnStart, { turn: this.turn, turnNum: this.turnNum }));
-        return this.events;
-    }
 
     // Server Query Logic ----------------------------------------------
 
@@ -258,7 +247,7 @@ export abstract class Game {
     }
 
     public canTakeAction() {
-        return this.currentChoice === null;
+        return this.currentChoices[0] === null && this.currentChoices[1] === null;
     }
 
     // Combat -------------------------------------------------------------
@@ -280,7 +269,7 @@ export abstract class Game {
             .filter(unit => unit.getBlockedUnitId());
     }
 
-    private getBasicAttackOrder(attacker: Unit, blockers: Unit[]) {
+    private getBasicDamageDistribution(attacker: Unit, blockers: Unit[]) {
         let damage = attacker.getDamage();
         let toKill = new Set(knapsack(damage, blockers.map(blocker => {
             return {
@@ -293,13 +282,10 @@ export abstract class Game {
         return Array.from(toKill.values()).concat(notToKill);
     }
 
-    protected resolveCombat() {
+    protected generateDamageDistribution() {
         let attackers = this.getAttackers();
         let blockers = this.getBlockers();
         let defendingPlayer = this.players[this.getOtherPlayerNumber(this.getCurrentPlayer().getPlayerNumber())];
-
-        if (this.log)
-            this.log.addCombatResolved(attackers, blockers, defendingPlayer.getPlayerNumber());
 
         this.attackDamageOrder = new Map<string, Unit[]>();
 
@@ -317,10 +303,32 @@ export abstract class Game {
         // Set damage order according to basic A.I
         for (let attackerID of Array.from(this.attackDamageOrder.keys())) {
             this.attackDamageOrder.set(attackerID,
-                this.getBasicAttackOrder(this.getUnitById(attackerID), this.attackDamageOrder.get(attackerID)));
+                this.getBasicDamageDistribution(this.getUnitById(attackerID), this.attackDamageOrder.get(attackerID)));
         }
 
         console.log(this.attackDamageOrder)
+        return this.attackDamageOrder;
+    }
+
+    protected getModableDamageDistributions(attackDamageOrder: Map<string, Unit[]>) {
+        let orderableAttacks = new Map<string, Unit[]>()
+        for (let attackerID of Array.from(this.attackDamageOrder.keys())) {
+            let defenders = attackDamageOrder.get(attackerID);
+            let dmg = this.getUnitById(attackerID).getDamage();
+            if (defenders.length > 1 && defenders
+                .map(unit => unit.getLife())
+                .reduce((a, b) => a + b) > dmg)
+                orderableAttacks.set(attackerID, defenders);
+        }
+        return orderableAttacks;
+    }
+
+    protected resolveCombat() {
+        let attackers = this.getAttackers();
+        let blockers = this.getBlockers();
+        let defendingPlayer = this.players[this.getOtherPlayerNumber(this.getCurrentPlayer().getPlayerNumber())];
+
+        this.generateDamageDistribution();
 
         // Apply blocks in order decided by attacker
         for (let attackerID of Array.from(this.attackDamageOrder.keys())) {

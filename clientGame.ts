@@ -18,11 +18,12 @@ export class ClientGame extends Game {
     protected syncEventHandlers: Map<SyncEventType, (playerNo: number, event: GameSyncEvent, params: any) => void>;
 
     constructor(
+        name: string,
         protected runGameAction: (type: GameActionType, params: any) => void,
         log: Log = null,
         format: GameFormat = standardFormat
     ) {
-        super(format, true);
+        super(name, format, true);
         this.log = log;
         if (this.log)
             this.log.attachToGame(this);
@@ -71,8 +72,8 @@ export class ClientGame extends Game {
         });
     }
 
-    public makeChoice(cards: Card[]) {
-        this.makeDeferedChoice(cards);
+    public makeChoice(player: number, cards: Card[]) {
+        this.makeDeferedChoice(player, cards);
         this.runGameAction(GameActionType.CardChoice, {
             choice: cards.map(card => card.getId())
         });
@@ -167,6 +168,9 @@ export class ClientGame extends Game {
 
     private syncTurnStart(playerNumber: number, event: GameSyncEvent, params: any) {
         if (this.turnNum === 1) {
+            for (let player of this.players) {
+                player.replace(this, 0, player.getHand().length);
+            }
             this.turn = params.turn;
             this.turnNum = params.turnNum
             this.refresh();
@@ -202,7 +206,7 @@ export class ClientGame extends Game {
 
     private syncChoiceMade(playerNumber: number, event: GameSyncEvent, params: any) {
         if (params.player !== playerNumber)
-            this.makeDeferedChoice(this.idsToCards(params.choice));
+            this.makeDeferedChoice(params.player, this.idsToCards(params.choice));
     }
 
     private syncQueryResult(playerNumber: number, event: GameSyncEvent, params: any) {

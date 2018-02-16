@@ -13,12 +13,29 @@ import { EventType } from './gameEvent';
 type ActionCb = (act: GameAction) => boolean;
 export class ServerGame extends Game {
     // A table of handlers used to respond to actions taken by players
-    protected actionHandelers: Map<GameActionType, ActionCb>
+    protected actionHandelers: Map<GameActionType, ActionCb>;
 
-    constructor(format: GameFormat = standardFormat, decks: [DeckList, DeckList]) {
-        super(format, false, decks);
+    constructor(name: string, format: GameFormat = standardFormat, decks: [DeckList, DeckList]) {
+        super(name, format, false, decks);
         this.actionHandelers = new Map<GameActionType, ActionCb>();
         this.addActionHandelers();
+    }
+
+    public startGame() {
+        this.turn = 0;
+        for (let i = 0; i < this.players.length; i++) {
+            this.players[i].drawCards(this.format.initialDraw[i]);
+        }
+        this.players[this.turn].startTurn();
+        this.getCurrentPlayerUnits().forEach(unit => unit.refresh());
+        this.phase = GamePhase.Play1;
+
+        for (let player of this.players) {
+            player.replace(this, 0, player.getHand().length);
+        }
+
+        this.addGameEvent(new GameSyncEvent(SyncEventType.TurnStart, { turn: this.turn, turnNum: this.turnNum }));
+        return this.events;
     }
 
 
@@ -34,6 +51,16 @@ export class ServerGame extends Game {
             }
         } else {
             this.startEndPhase();
+        }
+    }
+
+    protected endBlockPhase() {
+        let damageDistribution = this.generateDamageDistribution();
+        let reorderables = this.getModableDamageDistributions(damageDistribution);
+        if (reorderables.size > 0) {
+            this.changePhase(GamePhase.DamageDistribution);
+        } else {
+            this.resolveCombat();
         }
     }
 
@@ -67,13 +94,15 @@ export class ServerGame extends Game {
         let handeler = this.actionHandelers.get(action.type);
         if (!handeler)
             return [];
-        if (action.type !== GameActionType.CardChoice && this.currentChoice !== null) {
-            console.error('Cant take action, waiting for', this.currentChoice);
+        if (action.type !== GameActionType.CardChoice &&
+            (this.currentChoices[0] !== null ||
+                this.currentChoices[1] !== null)) {
+            console.error('Cant take action, waiting for', this.currentChoices);
             return null;
         }
         let sig = handeler(action);
         if (sig !== true)
-            return null
+            return null;
         return this.events.slice(mark);
     }
 
@@ -105,26 +134,24 @@ export class ServerGame extends Game {
     }
 
     protected cardChoiceAction(act: GameAction): boolean {
-        if (!this.currentChoice) {
-            console.error('Reject choice from', act.player, '. No choice requested');
-            return false;
-        } if (this.currentChoice.player !== act.player) {
-            console.error('Reject choice from', act.player, 'wanted', this.currentChoice.player);
+        if (this.currentChoices[act.player] === null) {
+            console.error('Reject choice from', act.player);
             return false;
         }
         let cardIds = act.params.choice as string[];
         let cards = cardIds.map(id => this.getCardById(id));
-        let min = Math.min(this.currentChoice.validCards.size, this.currentChoice.min);
-        let max = this.currentChoice.max;
+        let min = Math.min(this.currentChoices[act.player].validCards.size, this.currentChoices[act.player].min);
+        let max = this.currentChoices[act.player].max;
         if (cards.length > max || cards.length < min) {
-            console.error(`Reject choice. Out of range cards but only got ${cards.length}.`)
+            console.error(`Reject choice. Out of range cards but only got ${cards.length}.`);
             return false;
         }
-        if (!cards.every(card => this.currentChoice.validCards.has(card))) {
-            console.error(`Reject choice. Included invalid options.`, cards, this.currentChoice.validCards)
+        if (!cards.every(card => this.currentChoices[act.player].validCards.has(card))) {
+            console.error(`Reject choice. Included invalid options.`, cards, this.currentChoices[act.player].validCards);
             return false;
         }
-        this.makeDeferedChoice(cards);
+        this.makeDeferedChoice(act.player, cards);
+        console.log('Sending ChoiceMade')
         this.addGameEvent(new GameSyncEvent(SyncEventType.ChoiceMade, {
             player: act.player,
             choice: act.params.choice
