@@ -184,15 +184,18 @@ export class BasicAI extends AI {
             console.log('eval', evaluated.map(card => card.getName() + ' ' + this.evaluateCard(card)).join(' | '));
             let toPlay = evaluated[0];
             //INSERT ENCHANTMENT EVALUATE HERE
-            if (this.canModifyEnemyEnchant()){
-               let evalEnemyEnchant = this.evaluateEnchantmentBoard();
+            
+               if(this.canModifyEnemyEnchant()){
+                  let evalEnemyEnchant = this.evaluateEnchantmentBoard();
                   console.log('Enchant Score' , this.evaluateCard(evalEnemyEnchant));
                   if (this.evaluateCard(toPlay) < this.evaluateCard(evalEnemyEnchant)){
                      let player = this.game.getPlayer(this.enemyNumber);
                      this.game.modifyEnchantment(player, evalEnemyEnchant);
+                     return;
                   }
                }
-            else{
+            
+               
                console.log('play', toPlay.getName());
 
                if (this.evaluateCard(toPlay) <= 0)
@@ -210,7 +213,7 @@ export class BasicAI extends AI {
                }
                this.game.playCardExtern(toPlay, targets, host);
                this.addActionToSequence(this.selectCardToPlay, true);
-            }
+            
         }
     }
     

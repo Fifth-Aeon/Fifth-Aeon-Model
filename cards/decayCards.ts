@@ -130,7 +130,7 @@ export function impKeep() {
         'InfestedKeep',
         'Infested Keep',
         'castle-ruins.png',
-        new Resource(2, 0, {
+        new Resource(3, 0, {
             Growth: 0,
             Decay: 2,
             Renewal: 0,
