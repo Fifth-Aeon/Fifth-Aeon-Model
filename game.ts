@@ -38,8 +38,7 @@ export interface GameAction {
 interface Choice {
     player: number,
     validCards: Set<Card>,
-    min: number,
-    max: number,
+    count: number,
     callback: (cards: Card[]) => void;
 }
 
@@ -83,7 +82,7 @@ export abstract class Game {
     protected log: Log;
     protected winner = -1;
     protected generatedCardId = 1;
-    public promptCardChoice: (player: number, choices: Card[], min: number, max: number,
+    public promptCardChoice: (player: number, choices: Card[], count: number,
         callback: (cards: Card[]) => void, message: string) => void;
     protected onQueryResult: (cards: Card[]) => void;
 
@@ -168,14 +167,13 @@ export abstract class Game {
     }
 
     // Player choice =--------------------------------------------------------
-    public deferChoice(player: number, choices: Card[], min: number, max: number, callback: (cards: Card[]) => void) {
+    public deferChoice(player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) {
         if (!callback)
             return;
         this.currentChoice = {
             player: player,
             validCards: new Set(choices),
-            min: min,
-            max: max,
+            count: count,
             callback: callback
         };
     }

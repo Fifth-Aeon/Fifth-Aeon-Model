@@ -90,17 +90,17 @@ export class BasicAI extends AI {
     }
 
 
-    private makeChoice(player: number, cards: Array<Card>, min: number = 1, max: number = 1, callback: (cards: Card[]) => void = null) {
+    private makeChoice(player: number, cards: Array<Card>, toPick: number = 1, callback: (cards: Card[]) => void = null) {
         if (!callback) {
             console.log('A.I skip choice (doesn\'t need input)');
             return
         }
-        this.game.deferChoice(this.playerNumber, cards, min, max, callback);
+        this.game.deferChoice(this.playerNumber, cards, toPick, callback);
         if (player !== this.playerNumber) {
             console.log('A.I skip choice (choice is for player)', player, this.playerNumber);
             return;
         }
-        let choice = sampleSize(cards, min);
+        let choice = sampleSize(cards, toPick);
         console.log('A.I make choice', choice);
         this.game.makeChoice(choice);
     }
