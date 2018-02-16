@@ -136,7 +136,39 @@ export class BasicAI extends AI {
         }
         return score + card.evaluate(this.game, EvalContext.Play);
     }
+    
+    private evaluateEnchantmentBoard() {
+        let player = this.game.getPlayer(this.playerNumber);
+        let res = player.getPool();
+        
+        let enchantments = this.game.getBoard()
+            .getAllEnemyEnchantments(this.enemyNumber)
+             .filter(enchant => res.meetsReq(enchant.getModifyCost()));
 
+        if (enchantments.length === 0)
+            return ;
+        let evaluated = sortBy(enchantments, card => {
+           try {
+                    return -this.evaluateCard(card)
+                } catch (e) {
+                    console.error('Error while evaluating', card, 'got', e);
+                    return;
+                }    
+        
+        });
+        return evaluated[0];
+    }
+    private canModifyEnemyEnchant(){
+        let player = this.game.getPlayer(this.playerNumber);
+        let res = player.getPool();
+        
+        let enchantments = this.game.getBoard()
+            .getAllEnemyEnchantments(this.enemyNumber)
+             .filter(enchant => res.meetsReq(enchant.getModifyCost()));
+      if (enchantments.length === 0){
+         return false;
+      } else return true;
+    }
     private selectCardToPlay() {
         let playable = this.aiPlayer.getHand().filter(card => card.isPlayable(this.game));
         console.log('hand', this.aiPlayer.getHand());
@@ -151,26 +183,37 @@ export class BasicAI extends AI {
             });
             console.log('eval', evaluated.map(card => card.getName() + ' ' + this.evaluateCard(card)).join(' | '));
             let toPlay = evaluated[0];
-            console.log('play', toPlay.getName());
+            //INSERT ENCHANTMENT EVALUATE HERE
+            if (this.canModifyEnemyEnchant()){
+               let evalEnemyEnchant = this.evaluateEnchantmentBoard();
+                  console.log('Enchant Score' , this.evaluateCard(evalEnemyEnchant));
+                  if (this.evaluateCard(toPlay) < this.evaluateCard(evalEnemyEnchant)){
+                     let player = this.game.getPlayer(this.enemyNumber);
+                     this.game.modifyEnchantment(player, evalEnemyEnchant);
+                  }
+               }
+            else{
+               console.log('play', toPlay.getName());
 
-            if (this.evaluateCard(toPlay) <= 0)
-                return;
-            let targets: Unit[] = [];
-            let host = null;
-            if (toPlay.getCardType() === CardType.Item)
-                host = this.getBestHost(toPlay as Item);
-            if (toPlay.getTargeter().needsInput()) {
-                let best = this.getBestTarget(toPlay);
-                if (!toPlay.getTargeter().isOptional() ||
-                    best.score) {
-                    targets.push(best.target);
-                }
+               if (this.evaluateCard(toPlay) <= 0)
+                   return;
+               let targets: Unit[] = [];
+               let host = null;
+               if (toPlay.getCardType() === CardType.Item)
+                   host = this.getBestHost(toPlay as Item);
+               if (toPlay.getTargeter().needsInput()) {
+                   let best = this.getBestTarget(toPlay);
+                   if (!toPlay.getTargeter().isOptional() ||
+                       best.score) {
+                       targets.push(best.target);
+                   }
+               }
+               this.game.playCardExtern(toPlay, targets, host);
+               this.addActionToSequence(this.selectCardToPlay, true);
             }
-            this.game.playCardExtern(toPlay, targets, host);
-            this.addActionToSequence(this.selectCardToPlay, true);
         }
     }
-
+    
     private modifyEnchantments() {
         let player = this.game.getPlayer(this.playerNumber);
         let res = player.getPool();
