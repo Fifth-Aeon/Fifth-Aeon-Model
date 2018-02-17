@@ -168,9 +168,7 @@ export class ClientGame extends Game {
 
     private syncTurnStart(playerNumber: number, event: GameSyncEvent, params: any) {
         if (this.turnNum === 1) {
-            for (let player of this.players) {
-                player.replace(this, 0, player.getHand().length);
-            }
+            this.mulligan();
             this.turn = params.turn;
             this.turnNum = params.turnNum
             this.refresh();

@@ -142,6 +142,12 @@ export abstract class Game {
         this.events.push(event);
     }
 
+    public mulligan () {
+        for (let player of this.players) {
+            player.replace(this, 0, player.getHand().length);
+        }
+    }
+
     // Game End Logic -----------------------------------------------
     protected endGame(winningPlayer: number, quit: boolean = false) {
         if (this.winner !== -1)

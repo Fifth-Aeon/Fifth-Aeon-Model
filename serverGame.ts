@@ -30,9 +30,7 @@ export class ServerGame extends Game {
         this.getCurrentPlayerUnits().forEach(unit => unit.refresh());
         this.phase = GamePhase.Play1;
 
-        for (let player of this.players) {
-            player.replace(this, 0, player.getHand().length);
-        }
+        this.mulligan();
 
         this.addGameEvent(new GameSyncEvent(SyncEventType.TurnStart, { turn: this.turn, turnNum: this.turnNum }));
         return this.events;
