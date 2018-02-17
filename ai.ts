@@ -287,6 +287,15 @@ export class BasicAI extends AI {
             -(attacker.getDamage() + (attacker.hasMechanicWithId('flying') !== undefined ? 1000 : 0)));
         let potentialBlockers = this.game.getBoard().getPlayerUnits(this.playerNumber)
             .filter(unit => !unit.isExausted());
+
+        // test multiblock
+        if (attackers.length > 0 && potentialBlockers.length > 1) {
+            this.sequenceActions(potentialBlockers.map(blocker => {
+                return this.makeBlockAction({ blocker: blocker, attacker: attackers[0] });
+            }));
+            return;
+        }
+
         let totalDamage = sumBy(attackers, (attacker) => attacker.getDamage());
         let life = this.aiPlayer.getLife();
         let blocks = [];
@@ -304,7 +313,6 @@ export class BasicAI extends AI {
                 }
             }
             let best = minBy(options, option => option.type * 100000 + option.tradeScore);
-            console.log('options', options, 'best', best);
             if (best !== undefined && (
                 totalDamage >= life ||
                 best.type < BlockType.BothDie ||
@@ -321,11 +329,12 @@ export class BasicAI extends AI {
     }
 
     private onPhaseChange(params: any) {
-        if (params.phase === GamePhase.Block && this.game.isActivePlayer(this.playerNumber))
+        if (!this.game.isActivePlayer(this.playerNumber))
+            return;
+        if (params.phase === GamePhase.Block)
             this.block();
-        if (params.phase === GamePhase.Play2 && this.game.isActivePlayer(this.playerNumber)) {
+        if (params.phase === GamePhase.Play2 || params.phase === GamePhase.DamageDistribution)
             this.game.pass();
-        }
     }
 }
 

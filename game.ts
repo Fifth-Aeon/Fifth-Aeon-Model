@@ -26,7 +26,8 @@ export enum GameActionType {
 
 export enum SyncEventType {
     Start, AttackToggled, TurnStart, PhaseChange, PlayResource, Mulligan,
-    PlayCard, Block, Draw, ChoiceMade, QueryResult, Ended, EnchantmentModified
+    PlayCard, Block, Draw, ChoiceMade, QueryResult, Ended, EnchantmentModified,
+    DamageDistributed
 }
 
 export interface GameAction {
@@ -72,8 +73,10 @@ export abstract class Game {
     protected attackers: Unit[];
     // A list of blocks by the defending player
     protected blockers: [Unit, Unit][];
-    // A ordered list of the order to applly damage in combat
-    protected attackDamageOrder: Map<string, Unit[]>;
+    // A map of the order to apply damage in combat
+    protected attackDamageOrder: Map<string, Unit[]> = null;
+    // A list attack orders that can be rearanged
+    protected orderableAttacks: Map<string, Unit[]> = null;
     // A map of cards loaded from the server so far
     protected cardPool: Map<string, Card>;
     // A group of game logic events that are not connected to any individual unit
@@ -316,17 +319,20 @@ export abstract class Game {
         return this.attackDamageOrder;
     }
 
-    protected getModableDamageDistributions(attackDamageOrder: Map<string, Unit[]>) {
+
+
+    public getModableDamageDistributions() {
         let orderableAttacks = new Map<string, Unit[]>()
         for (let attackerID of Array.from(this.attackDamageOrder.keys())) {
-            let defenders = attackDamageOrder.get(attackerID);
+            let defenders = this.attackDamageOrder.get(attackerID);
             let dmg = this.getUnitById(attackerID).getDamage();
             if (defenders.length > 1 && defenders
                 .map(unit => unit.getLife())
                 .reduce((a, b) => a + b) > dmg)
                 orderableAttacks.set(attackerID, defenders);
         }
-        return orderableAttacks;
+        this.orderableAttacks = orderableAttacks;
+        return this.orderableAttacks;
     }
 
     protected resolveCombat() {

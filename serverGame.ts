@@ -8,6 +8,7 @@ import { Unit } from './unit';
 import { DeckList } from './deckList';
 import { data } from './gameData';
 import { EventType } from './gameEvent';
+import { isArray } from 'util';
 
 
 type ActionCb = (act: GameAction) => boolean;
@@ -45,6 +46,7 @@ export class ServerGame extends Game {
             if (this.blockersExist()) {
                 this.changePhase(GamePhase.Block);
             } else {
+                this.generateDamageDistribution();
                 this.resolveCombat();
             }
         } else {
@@ -54,7 +56,7 @@ export class ServerGame extends Game {
 
     protected endBlockPhase() {
         let damageDistribution = this.generateDamageDistribution();
-        let reorderables = this.getModableDamageDistributions(damageDistribution);
+        let reorderables = this.getModableDamageDistributions();
         if (reorderables.size > 0) {
             this.changePhase(GamePhase.DamageDistribution);
         } else {
@@ -71,6 +73,9 @@ export class ServerGame extends Game {
                 this.startEndPhase();
                 break;
             case GamePhase.Block:
+                this.endBlockPhase();
+                break;
+            case GamePhase.DamageDistribution:
                 this.resolveCombat();
                 break;
         }
@@ -116,7 +121,28 @@ export class ServerGame extends Game {
         this.addActionHandeler(GameActionType.DeclareBlocker, this.declareBlockerAction);
         this.addActionHandeler(GameActionType.CardChoice, this.cardChoiceAction);
         this.addActionHandeler(GameActionType.ModifyEnchantment, this.modifyEnchantmentAction);
+        this.addActionHandeler(GameActionType.DistributeDamage, this.distributeDamageAction);
         this.addActionHandeler(GameActionType.Quit, this.quit);
+    }
+
+    protected distributeDamageAction(act: GameAction): boolean {
+        if (!this.isPlayerTurn(act.player) || this.phase !== GamePhase.DamageDistribution)
+            return false;
+        if (!isArray(act.params.order))
+            return false;
+        if (!this.attackDamageOrder.has(act.params.attackerID))
+            return false;
+        let defenders = new Set(this.attackDamageOrder.get(act.params.attackerID).map(u => u.getId()));
+        let order = act.params.order as string[];
+        if (defenders.size !== order.length)
+            return false;
+        for (let defender of order) {
+            if (!defenders.has(defender))
+                return false;
+        }
+        this.attackDamageOrder.set(act.params.attackerID, order.map(id => this.getUnitById(id)));
+        this.addGameEvent(new GameSyncEvent(SyncEventType.DamageDistributed, act.params))
+        return true;
     }
 
     protected modifyEnchantmentAction(act: GameAction): boolean {
@@ -149,7 +175,7 @@ export class ServerGame extends Game {
             return false;
         }
         this.makeDeferedChoice(act.player, cards);
-        console.log('Sending ChoiceMade')
+        console.log('Sending ChoiceMade');
         this.addGameEvent(new GameSyncEvent(SyncEventType.ChoiceMade, {
             player: act.player,
             choice: act.params.choice
