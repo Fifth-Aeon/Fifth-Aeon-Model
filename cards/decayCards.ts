@@ -146,25 +146,7 @@ export function impKeep() {
         ]
     );
 }
-/*
-export function testOnlyImp() {
-    return new Unit(
-        'testOnlyImp',
-        'test Only Imp',
-        'imp.png',
-        UnitType.Demon,
-        new Resource(1, 0, {
-            Growth: 0,
-            Decay: 1,
-            Renewal: 0,
-            Synthesis: 0
-        }),
-        new Untargeted(),
-        100, 100,
-        [new Flying()]
-    );
-}
-*/
+
 export function raider() {
     return new Unit(
         'Raider',

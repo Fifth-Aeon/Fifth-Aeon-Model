@@ -29,6 +29,7 @@ import { Enchantment } from '../enchantment';
 import { friendlyEOT, anyEOT, friendlySOT } from './triggers/periodic';
 import { Discharge } from './mechanics/enchantmentCounters';
 import { DrawCard } from './mechanics/draw';
+import { LifeLessUnits } from './targeters/powerTargeter';
 
 export function flourishing() {
     return new Enchantment(
@@ -143,16 +144,15 @@ export function CreepingCorrosion() {
     return new Card(
         'CreepingCorrosion',
         'Creeping Corrosion',
-        'mushroom-cloud.png',
-        new Resource(5, 0, {
-            Growth: 3,
+        'poison-gas.png',
+        new Resource(3, 0, {
+            Growth: 2,
             Decay: 0,
             Renewal: 0,
             Synthesis: 0
         }),
-        new AllUnits(),
-        [new PoisonTarget()],
-        'Apply Poison to each unit'
+        new LifeLessUnits(4),
+        [new PoisonTarget()]
     );
 }
 
