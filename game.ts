@@ -31,16 +31,16 @@ export enum SyncEventType {
 }
 
 export interface GameAction {
-    type: GameActionType,
-    player: number,
+    type: GameActionType;
+    player: number;
     params: any;
 }
 
 interface Choice {
-    player: number,
-    validCards: Set<Card>,
-    min: number,
-    max: number,
+    player: number;
+    validCards: Set<Card>;
+    min: number;
+    max: number;
     callback: (cards: Card[]) => void;
 }
 
@@ -145,7 +145,7 @@ export abstract class Game {
         this.events.push(event);
     }
 
-    public mulligan () {
+    public mulligan() {
         for (let player of this.players) {
             player.replace(this, 0, player.getHand().length);
         }
@@ -180,7 +180,7 @@ export abstract class Game {
     public deferChoice(player: number, choices: Card[], min: number, max: number, callback: (cards: Card[]) => void) {
         if (!callback)
             return;
-        console.log(this.name,  'defering choice for', player)
+        console.log(this.name, 'defering choice for', player);
         this.currentChoices[player] = {
             player: player,
             validCards: new Set(choices),
@@ -315,14 +315,14 @@ export abstract class Game {
                 this.getBasicDamageDistribution(this.getUnitById(attackerID), this.attackDamageOrder.get(attackerID)));
         }
 
-        console.log(this.attackDamageOrder)
+        console.log(this.attackDamageOrder);
         return this.attackDamageOrder;
     }
 
 
 
     public getModableDamageDistributions() {
-        let orderableAttacks = new Map<string, Unit[]>()
+        let orderableAttacks = new Map<string, Unit[]>();
         for (let attackerID of Array.from(this.attackDamageOrder.keys())) {
             let defenders = this.attackDamageOrder.get(attackerID);
             let dmg = this.getUnitById(attackerID).getDamage();
@@ -340,18 +340,20 @@ export abstract class Game {
         let blockers = this.getBlockers();
         let defendingPlayer = this.players[this.getOtherPlayerNumber(this.getCurrentPlayer().getPlayerNumber())];
 
-        this.generateDamageDistribution();
+        if (this.attackDamageOrder === null) {
+            this.generateDamageDistribution();
+        }
 
         // Apply blocks in order decided by attacker
         for (let attackerID of Array.from(this.attackDamageOrder.keys())) {
-            let attacker = this.getUnitById(attackerID)
+            let attacker = this.getUnitById(attackerID);
             let damageOrder = this.attackDamageOrder.get(attackerID);
             let remainingDamage = attacker.getDamage();
 
             for (let blocker of damageOrder) {
                 let assignedDamage = Math.min(blocker.getLife(), remainingDamage);
                 remainingDamage -= assignedDamage;
-                console.log(attacker.getName(), 'assigns', assignedDamage, 'to', blocker.getName());
+                // console.log(this.name, attacker.getName(), 'assigns', assignedDamage, 'to', blocker.getName());
                 blocker.getEvents().trigger(EventType.Block, new Map([['attacker', attacker]]));
                 blocker.getEvents().trigger(EventType.Attack, new Map([['blocker', blocker]]));
                 attacker.fight(blocker, assignedDamage);
@@ -368,6 +370,7 @@ export abstract class Game {
             attacker.toggleAttacking();
         }
 
+        this.attackDamageOrder = null;
         this.changePhase(GamePhase.Play2);
     }
 

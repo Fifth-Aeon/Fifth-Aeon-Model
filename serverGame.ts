@@ -46,7 +46,6 @@ export class ServerGame extends Game {
             if (this.blockersExist()) {
                 this.changePhase(GamePhase.Block);
             } else {
-                this.generateDamageDistribution();
                 this.resolveCombat();
             }
         } else {

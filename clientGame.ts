@@ -212,7 +212,6 @@ export class ClientGame extends Game {
             this.gameEvents.trigger(EventType.PlayerAttacked,
                 new Map([['target', this.getOtherPlayerNumber(this.getActivePlayer())]]));
         if (event.params.phase === GamePhase.Play2) {
-            this.generateDamageDistribution();
             this.resolveCombat();
         }
         if (event.params.phase === GamePhase.DamageDistribution)
