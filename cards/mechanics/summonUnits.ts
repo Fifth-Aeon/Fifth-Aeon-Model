@@ -20,7 +20,7 @@ export class SummonUnits extends TriggeredMechanic {
     public onTrigger(card: Card, game: Game) {
         let owner = game.getPlayer(card.getOwner());
         for (let i = 0; i < this.getUnitCount(card, game); i++) {
-            game.playGeneratedUnit(owner, this.factory())
+            game.playGeneratedUnit(owner, this.factory());
         }
     }
 
@@ -70,8 +70,8 @@ export class EnchantmentSummon extends SummonUnits {
     }
 
     public getText(card: Card, game: Game) {
-        return `Summon ${this.count === 1
-            ? a(this.name) : this.count} ${this.name}. It becomes an X/X where X is this enchantment’s power.`;
+        return `Summon ${this.count === 1 ?
+             a(this.name) : this.count} ${this.name}. It becomes an X/X where X is this enchantment’s power.`;
     }
 
     public evaluate(card: Card, game: Game) {
@@ -96,11 +96,11 @@ export class SummonUnitOnDamage extends Mechanic {
                 let target = params.get('target') as Unit;
                 if (target.getUnitType() === UnitType.Player) {
                     let owner = game.getPlayer(card.getOwner());
-                    game.playGeneratedUnit(owner, this.factory())
+                    game.playGeneratedUnit(owner, this.factory());
                 }
                 return params;
             }
-        ))
+        ));
     }
 
     public remove(card: Card, game: Game) {

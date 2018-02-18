@@ -21,7 +21,7 @@ export class TransformDamaged extends Mechanic {
             let target = params.get('target') as Unit;
             if (target.getUnitType() === UnitType.Player)
                 return params;
-            target.transform(this.transformation(), game)
+            target.transform(this.transformation(), game);
             return params;
         }));
     }
@@ -54,7 +54,7 @@ export class AbominationConsume extends TriggeredMechanic {
                 let eaten = toRaise as Unit;
                 unit.buff(eaten.getDamage(), eaten.getMaxLife());
                 remove(crypt, eaten);
-            })
+            });
         }, 'to combine');
     }
 

@@ -9,7 +9,7 @@ class PeriodicTrgger extends Trigger {
     private triggered = false;
     private desc: string;
 
-    constructor(private period: EventType, private friendly: boolean, private name:string) {
+    constructor(private period: EventType, private friendly: boolean, private name: string) {
         super();
     }
 

@@ -90,10 +90,11 @@ export class BasicAI extends AI {
     }
 
 
-    private makeChoice(player: number, cards: Array<Card>, min: number = 1, max: number = 1, callback: (cards: Card[]) => void = null) {
+    private makeChoice(player: number, cards: Array<Card>, min: number = 1, max: number = 1,
+        callback: (cards: Card[]) => void = null) {
         if (!callback) {
             console.log('A.I skip choice (doesn\'t need input)');
-            return
+            return;
         }
         this.game.deferChoice(player, cards, min, max, callback);
         if (player !== this.playerNumber) {
@@ -122,9 +123,9 @@ export class BasicAI extends AI {
     private getBestTarget(card: Card) {
         let targets = card.getTargeter().getValidTargets(card, this.game);
         if (targets.length === 0)
-            return { score: 0, target: null }
+            return { score: 0, target: null };
         let best = maxBy(targets, target => card.evaluateTarget(target, this.game));
-        return { target: best, score: card.evaluateTarget(best, this.game) }
+        return { target: best, score: card.evaluateTarget(best, this.game) };
     }
 
     private evaluateCard(card: Card) {
@@ -137,13 +138,45 @@ export class BasicAI extends AI {
         return score + card.evaluate(this.game, EvalContext.Play);
     }
 
+    private evaluateEnchantmentBoard() {
+        let player = this.game.getPlayer(this.playerNumber);
+        let res = player.getPool();
+
+        let enchantments = this.game.getBoard()
+            .getAllEnemyEnchantments(this.enemyNumber)
+            .filter(enchant => res.meetsReq(enchant.getModifyCost()));
+
+        if (enchantments.length === 0)
+            return;
+        let evaluated = sortBy(enchantments, card => {
+            try {
+                return -this.evaluateCard(card);
+            } catch (e) {
+                console.error('Error while evaluating', card, 'got', e);
+                return;
+            }
+
+        });
+        return evaluated[0];
+    }
+    private canModifyEnemyEnchant() {
+        let player = this.game.getPlayer(this.playerNumber);
+        let res = player.getPool();
+
+        let enchantments = this.game.getBoard()
+            .getAllEnemyEnchantments(this.enemyNumber)
+            .filter(enchant => res.meetsReq(enchant.getModifyCost()));
+        if (enchantments.length === 0) {
+            return false;
+        } else return true;
+    }
     private selectCardToPlay() {
         let playable = this.aiPlayer.getHand().filter(card => card.isPlayable(this.game));
         console.log('hand', this.aiPlayer.getHand());
         if (playable.length > 0) {
             let evaluated = sortBy(playable, card => {
                 try {
-                    return -this.evaluateCard(card)
+                    return -this.evaluateCard(card);
                 } catch (e) {
                     console.error('Error while evaluating', card, 'got', e);
                     return 0;
@@ -151,6 +184,19 @@ export class BasicAI extends AI {
             });
             console.log('eval', evaluated.map(card => card.getName() + ' ' + this.evaluateCard(card)).join(' | '));
             let toPlay = evaluated[0];
+            // INSERT ENCHANTMENT EVALUATE HERE
+
+            if (this.canModifyEnemyEnchant()) {
+                let evalEnemyEnchant = this.evaluateEnchantmentBoard();
+                console.log('Enchant Score', this.evaluateCard(evalEnemyEnchant));
+                if (this.evaluateCard(toPlay) < this.evaluateCard(evalEnemyEnchant)) {
+                    let player = this.game.getPlayer(this.enemyNumber);
+                    this.game.modifyEnchantment(player, evalEnemyEnchant);
+                    return;
+                }
+            }
+
+
             console.log('play', toPlay.getName());
 
             if (this.evaluateCard(toPlay) <= 0)
@@ -168,6 +214,7 @@ export class BasicAI extends AI {
             }
             this.game.playCardExtern(toPlay, targets, host);
             this.addActionToSequence(this.selectCardToPlay, true);
+
         }
     }
 

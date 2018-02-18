@@ -139,6 +139,23 @@ export function sleepDart() {
     );
 }
 
+export function CreepingCorrosion() {
+    return new Card(
+        'CreepingCorrosion',
+        'Creeping Corrosion',
+        'mushroom-cloud.png',
+        new Resource(5, 0, {
+            Growth: 3,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new AllUnits(),
+        [new PoisonTarget()],
+        'Apply Poison to each unit'
+    );
+}
+
 export function fireElemental() {
     return new Unit(
         'FireElemental',
@@ -391,6 +408,8 @@ export function venomousSpiderling() {
         [new Venomous()]
     );
 }
+
+
 
 export function wolfPup() {
     return new Unit(

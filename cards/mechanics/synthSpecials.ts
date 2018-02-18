@@ -43,7 +43,7 @@ export class SpyPower extends Mechanic {
                     game.getPlayer(card.getOwner()).drawCard();
                 return params;
             }
-        ))
+        ));
     }
 
     public remove(card: Card, game: Game) {

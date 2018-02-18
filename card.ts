@@ -100,7 +100,7 @@ export class Card {
             id: this.getId(),
             data: this.getDataId(),
             owner: this.owner
-        }
+        };
     }
 
     public isAttacking() {
@@ -168,7 +168,7 @@ export class Card {
     }
 
     public toString(): string {
-        return `${this.name}: (${this.cost})`
+        return `${this.name}: (${this.cost})`;
     }
 
     public evaluate(game: Game, context: EvalContext) {

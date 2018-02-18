@@ -11,7 +11,7 @@ import { Resource } from '../resource';
 import { SingleUnit, FriendlyUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnits } from '../targeter';
 
 // Trigers
-import { Serenity } from './triggers/serenity'
+import { Serenity } from './triggers/serenity';
 
 // Mecchanics
 import { CannotAttack, ImprisonTarget } from './mechanics/cantAttack';

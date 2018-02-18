@@ -140,7 +140,7 @@ export class ServerGame extends Game {
                 return false;
         }
         this.attackDamageOrder.set(act.params.attackerID, order.map(id => this.getUnitById(id)));
-        this.addGameEvent(new GameSyncEvent(SyncEventType.DamageDistributed, act.params))
+        this.addGameEvent(new GameSyncEvent(SyncEventType.DamageDistributed, act.params));
         return true;
     }
 

@@ -6,14 +6,14 @@ export const ResourceType = {
     'Growth': 'Growth',
     'Decay': 'Decay',
     'Renewal': 'Renewal'
-}
-export const ResourceTypeNames = ['Synthesis', 'Growth', 'Decay', 'Renewal']
+};
+export const ResourceTypeNames = ['Synthesis', 'Growth', 'Decay', 'Renewal'];
 export interface ResourceTypeGroup {
-    [type: string]: number
-    Synthesis: number
-    Growth: number
-    Decay: number
-    Renewal: number
+    [type: string]: number;
+    Synthesis: number;
+    Growth: number;
+    Decay: number;
+    Renewal: number;
 }
 
 const colors = [new Set(['Synthesis']), new Set(['Growth']), new Set(['Decay']), new Set(['Renewal']),
@@ -104,12 +104,12 @@ export class Resource {
     }
 
     public asCost(): string {
-        let types = Object.keys(this.types).map(key => key[0].repeat(this.types[key])).join('')
+        let types = Object.keys(this.types).map(key => key[0].repeat(this.types[key])).join('');
         return `${this.numeric.toString()} ${types}`;
     }
 
     public asPool(): string {
-        let types = Object.keys(this.types).map(key => key[0].repeat(this.types[key])).join('')
+        let types = Object.keys(this.types).map(key => key[0].repeat(this.types[key])).join('');
         return `(${this.numeric.toString()} / ${this.maxNumeric.toString()}) ${types}`;
     }
 
@@ -137,10 +137,10 @@ export class Resource {
     public meetsReq(req: Resource): boolean {
         let ok = true;
         Object.keys(req.types).forEach((key) => {
-            let necReq = req.types[key]
+            let necReq = req.types[key];
             if ((this.types[key] || 0) < necReq)
-                ok = false
-        })
+                ok = false;
+        });
         return ok && this.numeric >= req.numeric;
     }
 }

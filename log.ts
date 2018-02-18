@@ -15,12 +15,12 @@ export class Log {
         let blockerList = properList(blockers.map(blocker => {
             let blocked = this.game.getUnitById(blocker.getBlockedUnitId());
             return `${blocked.getName()} with ${blocker.getName()}`;
-        }))
+        }));
         let attackerName = this.isEnemy(defender) ? 'You' : 'Your opponent';
         let blockerName = this.isEnemy(defender)  ? 'Your opponent' : 'You';
         let tip = `${attackerName} attacked with ${attackersList}. `;
         if (blockers.length > 0) {
-            tip += `${blockerName} blocked ${blockerList}.`
+            tip += `${blockerName} blocked ${blockerList}.`;
         }
 
         this.addItem({

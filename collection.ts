@@ -7,14 +7,14 @@ import { ResourceTypeNames } from './resource';
 import { sample, sampleSize, remove, sum, random } from 'lodash';
 
 export interface SavedCollection {
-    gold: number,
-    packs: number,
+    gold: number;
+    packs: number;
     records: [string, number][];
 }
 
 export interface Rewards {
-    gold: number,
-    packs: number
+    gold: number;
+    packs: number;
 }
 
 const cardIds = Array.from(allCards.keys());
@@ -33,7 +33,7 @@ export class Collection {
         let reward: Rewards = {
             packs: won ? 1 : 0,
             gold: random(0, 100)
-        }
+        };
         this.packs += reward.packs;
         this.gold += reward.gold;
         return reward;
@@ -107,7 +107,7 @@ export class Collection {
 
     public addDeck(deck: DeckList) {
         for (let record of deck.getRecordList()) {
-            this.addCard(record.card, record.number)
+            this.addCard(record.card, record.number);
         }
     }
 
@@ -146,7 +146,7 @@ export class Collection {
 }
 
 export class Booster {
-    constructor(private cardCount: number = 6) { };
+    constructor(private cardCount: number = 6) { }
 
     public open() {
         let openedCards = Array<string>(this.cardCount);

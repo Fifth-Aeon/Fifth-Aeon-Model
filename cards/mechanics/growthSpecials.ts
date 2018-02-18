@@ -15,7 +15,7 @@ export class DrawCardsFromUnit extends TargetedMechanic {
     }
 
     private getCards(target: Unit) {
-        return Math.floor((target.getStats()) / this.factor)
+        return Math.floor((target.getStats()) / this.factor);
     }
 
     public enter(card: Card, game: Game) {
@@ -29,7 +29,7 @@ export class DrawCardsFromUnit extends TargetedMechanic {
     }
 
     public getText(card: Card) {
-        return `Choose a friendly unit. Draw cards equal to its stats divided by ${this.factor}.`
+        return `Choose a friendly unit. Draw cards equal to its stats divided by ${this.factor}.`;
     }
 }
 
@@ -44,7 +44,7 @@ export class WebTarget extends TargetedMechanic {
     }
 
     public getText(card: Card) {
-        return `Exaust ${this.targeter.getText()}. It loses flying.`
+        return `Exaust ${this.targeter.getText()}. It loses flying.`;
     }
 }
 

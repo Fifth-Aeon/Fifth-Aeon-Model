@@ -56,7 +56,7 @@ export class Discard extends TriggeredMechanic {
     protected id = 'Discard';
     protected triggerType = new PlayTrigger();
     constructor(private count: number) {
-        super()
+        super();
     }
     public onTrigger(card: Card, game: Game) {
         let target = game.getPlayer(game.getOtherPlayerNumber(card.getOwner()));
@@ -81,7 +81,7 @@ export class DiscardOnDamage extends Mechanic {
                     game.getPlayer((target as Player).getPlayerNumber()).discard(game);
                 return params;
             }
-        ))
+        ));
     }
 
     public remove(card: Card, game: Game) {

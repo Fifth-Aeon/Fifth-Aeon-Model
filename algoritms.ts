@@ -1,7 +1,7 @@
 interface KnapsackItem<T> {
-    w: number,
-    b: number,
-    data: T
+    w: number;
+    b: number;
+    data: T;
 }
 
 // Knapsack algorithm

@@ -31,7 +31,7 @@ export class PlayTrigger extends Trigger {
         card.getEvents().addEvent(this, new GameEvent(EventType.Played, (params) => {
             this.mechanic.onTrigger(card, game);
             return params;
-        }))
+        }));
     }
     public unregister(card: Card, game: Game) {
         card.getEvents().removeEvents(this);

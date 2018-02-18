@@ -2,7 +2,7 @@ import { Permanent } from './permanent';
 import { CardType } from './card';
 import { Unit } from './unit';
 import { Enchantment } from './enchantment';
-
+import { OwningPlayer, EnemyPlayer } from './targeter';
 /**
  * A simple board where each side can place up to a fixed number of units without any positoning.
  *
@@ -54,6 +54,18 @@ export class Board {
                     res.push(this.spaces[i][j] as Enchantment);
             }
         }
+        return res;
+    }
+
+    public getAllEnemyEnchantments(playerNumber: number): Array<Enchantment> {
+        let res: Enchantment[] = [];
+        let enemyPlayer = this.spaces[playerNumber];
+
+            for (let j = 0; j < this.spaces[playerNumber].length; j++) {
+                if (this.spaces[playerNumber][j].getCardType() === CardType.Enchantment)
+                        res.push(this.spaces[playerNumber][j] as Enchantment);
+            }
+
         return res;
     }
 

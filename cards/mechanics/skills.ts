@@ -15,7 +15,7 @@ export class Flying extends Skill {
             EventType.CheckBlockable, params => {
                 let blocker = params.get('blocker') as Unit;
                 if (!blocker.hasMechanicWithId('flying') && !blocker.hasMechanicWithId('ranged'))
-                    params.set('canBlock', false)
+                    params.set('canBlock', false);
                 return params;
             }
         ));
@@ -34,7 +34,7 @@ export class Flying extends Skill {
     }
 
     public evaluate(card: Card) {
-        return { addend: 0, multiplier: 1.3 }
+        return { addend: 0, multiplier: 1.3 };
     }
 }
 
@@ -92,7 +92,7 @@ export class Aquatic extends Skill {
             EventType.CheckBlockable, params => {
                 let blocker = params.get('blocker') as Unit;
                 if (!blocker.hasMechanicWithId('aquatic') && !blocker.hasMechanicWithId('flying'))
-                    params.set('canBlock', false)
+                    params.set('canBlock', false);
                 return params;
             }
         ));
@@ -100,7 +100,7 @@ export class Aquatic extends Skill {
             EventType.CheckCanBlock, params => {
                 let attacker = params.get('attacker') as Unit;
                 if (!attacker.hasMechanicWithId('aquatic'))
-                    params.set('canBlock', false)
+                    params.set('canBlock', false);
                 return params;
             }
         ));
@@ -136,7 +136,7 @@ export class Ranged extends Skill {
     }
 
     public evaluate(card: Card) {
-        return { addend: 0, multiplier: 1.1 }
+        return { addend: 0, multiplier: 1.1 };
     }
 }
 
@@ -147,7 +147,7 @@ export class Lifesteal extends Skill {
                 game.getPlayer(card.getOwner()).addLife(params.get('amount'));
                 return params;
             }
-        ))
+        ));
     }
 
     public remove(card: Card, game: Game) {
@@ -163,7 +163,7 @@ export class Lifesteal extends Skill {
     }
 
     public evaluate(card: Card) {
-        return { addend: 0, multiplier: 1.3 }
+        return { addend: 0, multiplier: 1.3 };
     }
 }
 
@@ -176,7 +176,7 @@ export class Lethal extends Skill {
                     target.kill(true);
                 return params;
             }
-        ))
+        ));
     }
 
     public remove(card: Card, game: Game) {
@@ -209,7 +209,7 @@ export class Shielded extends Skill {
                 this.depleted = true;
                 return params;
             },
-            0))
+            0));
     }
 
     public remove(card: Card, game: Game) {
@@ -246,7 +246,7 @@ export class Relentless extends Skill {
                 target.refresh();
                 return params;
             }
-        ))
+        ));
     }
 
     public remove(card: Card, game: Game) {
@@ -262,7 +262,7 @@ export class Relentless extends Skill {
     }
 
     public evaluate(card: Card) {
-        return { addend: 0, multiplier: 1.25 }
+        return { addend: 0, multiplier: 1.25 };
     }
 }
 
@@ -282,7 +282,7 @@ export class Deathless extends Skill {
                 game.playFromCrypt(unit);
                 game.gameEvents.removeEvents(this);
                 return eotParams;
-            }))
+            }));
             return params;
         }));
     }
@@ -320,7 +320,7 @@ export class Immortal extends Skill {
             game.gameEvents.addEvent(this, new GameEvent(EventType.EndOfTurn, (eotParams) => {
                 game.playFromCrypt(unit);
                 return eotParams;
-            }))
+            }));
             return params;
         }));
     }

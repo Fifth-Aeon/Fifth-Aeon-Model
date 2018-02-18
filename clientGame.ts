@@ -10,7 +10,7 @@ import { Item } from './item';
 import { Enchantment } from './enchantment';
 import { Resource, ResourceTypeNames } from './resource';
 
-import { maxBy } from 'lodash'
+import { maxBy } from 'lodash';
 import { EventType } from './gameEvent';
 
 export class ClientGame extends Game {
@@ -141,7 +141,7 @@ export class ClientGame extends Game {
         this.addSyncHandler(SyncEventType.QueryResult, this.syncQueryResult);
         this.addSyncHandler(SyncEventType.Ended, this.syncEnded);
         this.addSyncHandler(SyncEventType.EnchantmentModified, this.syncModifyEnchantment);
-        this.addSyncHandler(SyncEventType.DamageDistributed, this.syncDamageDistribution)
+        this.addSyncHandler(SyncEventType.DamageDistributed, this.syncDamageDistribution);
     }
 
     private syncDamageDistribution(localPlayerNumber: number, event: GameSyncEvent, params: any) {
@@ -155,7 +155,7 @@ export class ClientGame extends Game {
     private syncCardEvent(localPlayerNumber: number, event: GameSyncEvent, params: any) {
         if (params.playerNo !== localPlayerNumber) {
             let player = this.players[params.playerNo];
-            let card = this.unpackCard(params.played)
+            let card = this.unpackCard(params.played);
             if (params.targetIds) {
                 card.getTargeter().setTargets(params.targetIds
                     .map((id: string) => this.getUnitById(id)));
@@ -180,14 +180,14 @@ export class ClientGame extends Game {
         if (params.discarded)
             this.addToCrypt(this.unpackCard(params.card));
         else
-            this.players[params.playerNo].addToHand(this.unpackCard(params.card))
+            this.players[params.playerNo].addToHand(this.unpackCard(params.card));
     }
 
     private syncTurnStart(localPlayerNumber: number, event: GameSyncEvent, params: any) {
         if (this.turnNum === 1) {
             this.mulligan();
             this.turn = params.turn;
-            this.turnNum = params.turnNum
+            this.turnNum = params.turnNum;
             this.refresh();
         }
     }

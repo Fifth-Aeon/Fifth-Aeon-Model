@@ -37,22 +37,22 @@ export abstract class Mechanic {
     abstract getText(parent: Card, game: Game): string;
     abstract evaluate(card: Card, game: Game, context: EvalContext): number | EvalOperator;
 
-    public remove(card: Card, game: Game) { };
+    public remove(card: Card, game: Game) { }
     public evaluateTarget(source: Card, target: Unit, game: Game) { return 0; }
     public stack() { }
     public clone(): Mechanic { return this; }
-    public enter(parent: Card, game: Game) { };
+    public enter(parent: Card, game: Game) { }
 
 
     public attach(parent: Card) {
         if (!this.canAttach(parent))
             throw new Error(`Cannot attach  mechanic ${this.getId()} to ${parent.getName()} it is not of the right card type.`);
-    };
+    }
 
 
     public getId(): string {
         return this.id;
-    };
+    }
 
     public canAttach(card: Card) {
         return this.validCardTypes.has(card.getCardType());
@@ -62,7 +62,7 @@ export abstract class Mechanic {
 
 export abstract class TriggeredMechanic extends Mechanic {
     protected triggerType: Trigger = new PlayTrigger();
-    public onTrigger(parent: Card, game: Game) { };
+    public onTrigger(parent: Card, game: Game) { }
 
     public setTrigger(trigger: Trigger) {
         this.triggerType = trigger;
@@ -80,7 +80,7 @@ export abstract class TriggeredMechanic extends Mechanic {
 
     public remove(card: Card, game: Game) {
         this.triggerType.unregister(card, game);
-    };
+    }
 
     public setTargeter(targeter: Targeter) {
         return this;

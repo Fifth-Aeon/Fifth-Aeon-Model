@@ -39,7 +39,7 @@ class GameData {
             let card = factory();
             for (let color of colors) {
                 if (card.getCost().getOfType(color) > 0) {
-                    return true
+                    return true;
                 }
             }
             return false;

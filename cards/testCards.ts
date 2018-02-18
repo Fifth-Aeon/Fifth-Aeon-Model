@@ -15,7 +15,7 @@ export function makeDamageCard() {
         new Resource(1),
         targeter,
         [new DealDamage(1, targeter)]
-    )
+    );
 }
 
 export function makeBasicUnit() {
@@ -28,5 +28,5 @@ export function makeBasicUnit() {
         new Untargeted(),
         2, 2,
         []
-    )
+    );
 }
