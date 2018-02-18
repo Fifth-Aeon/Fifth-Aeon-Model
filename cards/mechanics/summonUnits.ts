@@ -32,7 +32,7 @@ export class SummonUnits extends TriggeredMechanic {
         return `Summon ${this.count === 1 ? a(this.name) : this.count} ${this.name}.`;
     }
 
-    public evaluate(card: Card, game: Game) {
+    public evaluateEffect(card: Card, game: Game) {
         return this.unit.evaluate(game, EvalContext.Play) * Math.min(this.getUnitCount(card, game),
             game.getBoard().getRemainingSpace(card.getOwner()));
     }

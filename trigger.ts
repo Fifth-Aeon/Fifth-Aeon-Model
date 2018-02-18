@@ -2,7 +2,7 @@ import { Game } from './game';
 import { Card, CardType } from './Card';
 import { Unit } from './unit';
 import { GameEvent, EventType } from './gameEvent';
-import { Mechanic, TargetedMechanic, TriggeredMechanic } from './mechanic';
+import { Mechanic, TargetedMechanic, TriggeredMechanic, EvalContext } from './mechanic';
 
 export abstract class Trigger {
     protected mechanic: TriggeredMechanic;
@@ -12,16 +12,10 @@ export abstract class Trigger {
     abstract register(card: Card, game: Game): void;
     abstract unregister(card: Card, game: Game): void;
     abstract getName(): string;
+    abstract evaluate(host: Card, game: Game, context: EvalContext): number;
 }
 
 
-export class NoTrigger extends Trigger {
-    public getName() {
-        return '';
-    }
-    public register(card: Card, game: Game) { }
-    public unregister(card: Card, game: Game) { }
-}
 
 export class PlayTrigger extends Trigger {
     public getName() {
@@ -35,5 +29,10 @@ export class PlayTrigger extends Trigger {
     }
     public unregister(card: Card, game: Game) {
         card.getEvents().removeEvents(this);
+    }
+    public evaluate(host: Card, game: Game, context: EvalContext) {
+        if (context === EvalContext.Play)
+            return 1;
+        return 0;
     }
 }

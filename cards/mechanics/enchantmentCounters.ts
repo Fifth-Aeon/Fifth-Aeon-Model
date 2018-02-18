@@ -80,7 +80,7 @@ export class ChangePower extends TriggeredMechanic {
         return this.desc;
     }
 
-    public evaluate() {
+    public evaluateEffect() {
         return this.diff;
     }
 }

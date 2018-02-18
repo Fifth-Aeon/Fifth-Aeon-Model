@@ -159,6 +159,7 @@ export class BasicAI extends AI {
         });
         return evaluated[0];
     }
+
     private canModifyEnemyEnchant() {
         let player = this.game.getPlayer(this.playerNumber);
         let res = player.getPool();
@@ -170,6 +171,7 @@ export class BasicAI extends AI {
             return false;
         } else return true;
     }
+
     private selectCardToPlay() {
         let playable = this.aiPlayer.getHand().filter(card => card.isPlayable(this.game));
         console.log('hand', this.aiPlayer.getHand());

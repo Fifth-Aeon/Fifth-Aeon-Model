@@ -23,7 +23,7 @@ export class GainLife extends TriggeredMechanic {
         return `You gain ${this.amount} life.`;
     }
 
-    public evaluate() {
+    public evaluateEffect() {
         return this.amount * 0.75;
     }
 }
@@ -43,7 +43,7 @@ export class GainResource extends TriggeredMechanic {
         return `Gain ${this.resource.asListDesc()}.`;
     }
 
-    public evaluate() {
+    public evaluateEffect() {
         return this.resource.getNumeric() * 2;
     }
 }

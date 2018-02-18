@@ -26,4 +26,8 @@ export class Serenity extends Trigger {
     public unregister(card: Card, game: Game) {
         game.gameEvents.removeEvents(this);
     }
+
+    public evaluate(host: Card, game: Game) {
+        return 1.25;
+    }
 }

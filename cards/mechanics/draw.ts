@@ -26,7 +26,7 @@ export class DrawCard extends TriggeredMechanic {
         return `Draw ${this.count} cards.`;
     }
 
-    public evaluate() {
+    public evaluateEffect() {
         return this.count * 3;
     }
 }
@@ -47,7 +47,7 @@ export class Peek extends TriggeredMechanic {
         return `Peek at your opponents hand.`;
     }
 
-    public evaluate() {
+    public evaluateEffect() {
         return 0;
     }
 }
@@ -67,7 +67,7 @@ export class Discard extends TriggeredMechanic {
         return `Your opponent discards ${this.count === 1 ? 'a card' : this.count + ' cards'}.`;
     }
 
-    public evaluate() {
+    public evaluateEffect() {
         return this.count * 2.5;
     }
 }
@@ -117,7 +117,7 @@ export class AugarCard extends TriggeredMechanic {
         return `If you have less than 4 synthesis, replace a card. If you have less than 8 draw one. Otherwise search for one.`;
     }
 
-    public evaluate() {
+    public evaluateEffect() {
         return 2;
     }
 }

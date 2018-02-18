@@ -67,7 +67,7 @@ export class AbominationConsume extends TriggeredMechanic {
         return `Remove up to two units from your crypt. This unit gains their stats.`;
     }
 
-    public evaluate(card: Card, game: Game) {
+    public evaluateEffect(card: Card, game: Game) {
         if (card.getLocation() === GameZone.Board)
             return 0;
         let valid = this.getValidPool(card, game).sort((unitA, unitB) => unitB.getStats() - unitA.getStats());

@@ -4,7 +4,6 @@ import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 import { Trigger } from '../../trigger';
-import { Enchantment } from '../../enchantment';
 import { Player } from '../../player';
 
 export class OwnerAttacked extends Trigger {
@@ -14,10 +13,9 @@ export class OwnerAttacked extends Trigger {
     }
 
     public register(card: Card, game: Game) {
-        let enchantment = card as Enchantment;
         game.gameEvents.addEvent(this, new GameEvent(EventType.PlayerAttacked, (params) => {
             let player = params.get('target') as number;
-            if (player === enchantment.getOwner()) {
+            if (player === card.getOwner()) {
                 this.mechanic.onTrigger(card, game);
             }
             return params;
@@ -26,5 +24,9 @@ export class OwnerAttacked extends Trigger {
 
     public unregister(card: Card, game: Game) {
         game.gameEvents.removeEvents(this);
+    }
+
+    public evaluate(host: Card, game: Game) {
+        return 1.25;
     }
 }
