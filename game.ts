@@ -315,7 +315,6 @@ export abstract class Game {
                 this.getBasicDamageDistribution(this.getUnitById(attackerID), this.attackDamageOrder.get(attackerID)));
         }
 
-        console.log(this.attackDamageOrder);
         return this.attackDamageOrder;
     }
 

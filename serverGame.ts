@@ -174,7 +174,6 @@ export class ServerGame extends Game {
             return false;
         }
         this.makeDeferedChoice(act.player, cards);
-        console.log('Sending ChoiceMade');
         this.addGameEvent(new GameSyncEvent(SyncEventType.ChoiceMade, {
             player: act.player,
             choice: act.params.choice
