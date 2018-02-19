@@ -4,7 +4,7 @@ import { Unit } from '../../unit';
 import { Game } from '../../game';
 
 export class LifeLessUnit extends Targeter {
-    constructor(private life) {
+    constructor(private life: number) {
         super();
     }
     public getValidTargets(card: Card, game: Game) {
@@ -16,7 +16,7 @@ export class LifeLessUnit extends Targeter {
 }
 
 export class LifeLessUnits extends AllUnits {
-    constructor(private life) {
+    constructor(private life: number) {
         super();
     }
     public getTargets(card: Card, game: Game): Array<Unit> {

@@ -12,8 +12,8 @@ import { data } from './gameData';
 import { Log } from './log';
 
 import { shuffle } from 'lodash';
-import { knapsack } from 'app/game_model/algoritms';
-import { EvalContext } from 'app/game_model/mechanic';
+import { knapsack } from './algoritms';
+import { EvalContext } from './mechanic';
 
 export enum GamePhase {
     Play1, Block, DamageDistribution, Play2, End, Response
