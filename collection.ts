@@ -59,6 +59,10 @@ export class Collection {
         return this.packs;
     }
 
+    public getGold() {
+        return this.gold;
+    }
+
     public canOpenBooster() {
         return this.packs > 0;
     }
