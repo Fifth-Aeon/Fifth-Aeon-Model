@@ -34,9 +34,17 @@ export class Collection {
             packs: won ? 1 : 0,
             gold: random(0, 100)
         };
+        this.addReward(reward);
+        return reward;
+    }
+
+    public addReward(reward: Rewards) {
         this.packs += reward.packs;
         this.gold += reward.gold;
-        return reward;
+    }
+
+    public removePack() {
+        this.packs--;
     }
 
     private addBooster(pack: Booster) {
