@@ -25,7 +25,7 @@ export class GameEvent {
 }
 
 export class EventGroup {
-    private events: Map<EventType, Array<GameEvent>>
+    private events: Map<EventType, Array<GameEvent>>;
 
     constructor() {
         this.events = new Map<EventType, Array<GameEvent>>();
@@ -36,7 +36,7 @@ export class EventGroup {
         let events = this.events.get(type) || [];
         events.forEach(event => {
             subgroup.addEvent(event.source, event);
-        })
+        });
         return subgroup;
     }
 
@@ -55,15 +55,15 @@ export class EventGroup {
     public removeEvents(source: Mechanic | Trigger | null) {
         let allEvents = Array.from(this.events.values());
         allEvents.forEach(eventList => remove(eventList, event => {
-            return event.source === source
-        }))
+            return event.source === source;
+        }));
     }
 
     public trigger(type: EventType, params: Map<string, any>) {
         let events = sortBy(this.events.get(type) || [], event => event.priority);
         let len = events.length;
         for (let i = 0; i < events.length; i++) {
-            let event = events[i]
+            let event = events[i];
             if (!event) {
                 console.error(`event of type ${EventType[type]} undefined at ${i} events.length = ${events.length}, len=${len}`);
                 continue;

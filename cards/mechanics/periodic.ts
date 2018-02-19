@@ -55,7 +55,7 @@ export class StartOfTurn extends Mechanic {
     }
 
     public evaluate() {
-        return this.value
+        return this.value;
     }
 }
 

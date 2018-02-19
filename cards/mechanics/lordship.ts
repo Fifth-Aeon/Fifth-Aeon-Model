@@ -40,7 +40,7 @@ export class Lordship extends Mechanic {
         unit.getEvents().addEvent(this, new GameEvent(EventType.LeavesPlay, (params) => {
             this.removeFromUnit(unit, game);
             return params;
-        }))
+        }));
     }
 
     private removeFromUnit(unit: Unit, game: Game) {

@@ -21,7 +21,7 @@ export class TransformDamaged extends Mechanic {
             let target = params.get('target') as Unit;
             if (target.getUnitType() === UnitType.Player)
                 return params;
-            target.transform(this.transformation(), game)
+            target.transform(this.transformation(), game);
             return params;
         }));
     }
@@ -49,12 +49,12 @@ export class AbominationConsume extends TriggeredMechanic {
         let crypt = game.getCrypt(card.getOwner());
         let valid = crypt.filter(cryptCard => cryptCard.isUnit());
         let unit = card as Unit;
-        game.promptCardChoice(card.getOwner(), valid, 2, (raised: Card[]) => {
+        game.promptCardChoice(card.getOwner(), valid, 0, 2, (raised: Card[]) => {
             raised.forEach(toRaise => {
                 let eaten = toRaise as Unit;
                 unit.buff(eaten.getDamage(), eaten.getMaxLife());
                 remove(crypt, eaten);
-            })
+            });
         }, 'to combine');
     }
 
@@ -67,7 +67,7 @@ export class AbominationConsume extends TriggeredMechanic {
         return `Remove up to two units from your crypt. This unit gains their stats.`;
     }
 
-    public evaluate(card: Card, game: Game) {
+    public evaluateEffect(card: Card, game: Game) {
         if (card.getLocation() === GameZone.Board)
             return 0;
         let valid = this.getValidPool(card, game).sort((unitA, unitB) => unitB.getStats() - unitA.getStats());

@@ -14,7 +14,7 @@ export class ReturnFromCrypt extends TriggeredMechanic {
         let crypt = game.getCrypt(card.getOwner());
         let validCards = crypt.filter(this.filter);
         let player = game.getPlayer(card.getOwner());
-        game.promptCardChoice(card.getOwner(), validCards, 1, (raised: Card[]) => {
+        game.promptCardChoice(card.getOwner(), validCards, 0, 1, (raised: Card[]) => {
             raised.forEach(raisedCard => {
                 player.drawGeneratedCard(raisedCard);
                 crypt.splice(crypt.indexOf(raisedCard), 1);
@@ -23,10 +23,10 @@ export class ReturnFromCrypt extends TriggeredMechanic {
     }
 
     public getText(card: Card) {
-        return `Return a unit from your crypt to your hand.`
+        return `Return a unit from your crypt to your hand.`;
     }
 
-    public evaluate(card: Card, game: Game) {
+    public evaluateEffect(card: Card, game: Game) {
         let valid = game.getCrypt(card.getOwner()).filter(this.filter);
         return valid.length > 1 ? 3 : 0;
     }

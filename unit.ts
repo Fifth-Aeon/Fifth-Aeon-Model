@@ -17,13 +17,13 @@ export enum UnitType {
 }
 
 export const mechanical = new Set([UnitType.Automaton, UnitType.Structure, UnitType.Vehicle]);
-export function isBiological(unit: Unit) { return !mechanical.has(unit.getUnitType()) }
-export function isMechanical(unit: Unit) { return mechanical.has(unit.getUnitType()) }
+export function isBiological(unit: Unit) { return !mechanical.has(unit.getUnitType()); }
+export function isMechanical(unit: Unit) { return mechanical.has(unit.getUnitType()); }
 
 class Damager {
     private events: EventGroup;
     constructor(private amount: number, private source: Unit, private target: Unit) {
-        this.events = source.getEvents().getSubgroup(EventType.DealDamage)
+        this.events = source.getEvents().getSubgroup(EventType.DealDamage);
     }
     public run() {
         let result = this.target.takeDamage(this.amount, this.source);
@@ -103,7 +103,7 @@ export class Unit extends Permanent {
             this.mechanics.push(mechanic);
             mechanic.attach(this);
         });
-        this.mechanics.forEach(mechanic => mechanic.enter(this, game))
+        this.mechanics.forEach(mechanic => mechanic.enter(this, game));
     }
 
     public removeMechanic(id: string, game: Game) {
@@ -124,7 +124,7 @@ export class Unit extends Permanent {
         this.mechanics.push(mechanic);
         mechanic.attach(this);
         if (this.location === GameZone.Board && game !== null) {
-            mechanic.enter(this, game)
+            mechanic.enter(this, game);
         }
     }
 
@@ -270,14 +270,15 @@ export class Unit extends Permanent {
         return `${this.name} (${this.cost}) - (${this.damage}/${this.life})`;
     }
 
-    public fight(target: Unit) {
+    public fight(target: Unit, damage: number = null) {
         // Trigger an attack event
         let eventParams = new Map<string, any>([
             ['damage', this.damage],
             ['attacker', this],
             ['defender', target]
         ]);
-        let damage: number = this.events.trigger(EventType.Attack, eventParams).get('damage');
+        if (damage === null)
+            damage = this.events.trigger(EventType.Attack, eventParams).get('damage');
 
         // Remove actions and deal damage
         let damage1 = this.dealDamage(target, damage);
@@ -312,7 +313,7 @@ export class Unit extends Permanent {
 
     public kill(instant: boolean) {
         if (instant)
-            this.die()
+            this.die();
         else
             this.died = true;
     }

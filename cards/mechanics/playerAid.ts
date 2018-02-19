@@ -20,10 +20,10 @@ export class GainLife extends TriggeredMechanic {
     }
 
     public getText(card: Card) {
-        return `You gain ${this.amount} life.`
+        return `You gain ${this.amount} life.`;
     }
 
-    public evaluate() {
+    public evaluateEffect() {
         return this.amount * 0.75;
     }
 }
@@ -36,14 +36,14 @@ export class GainResource extends TriggeredMechanic {
 
     public onTrigger(card: Card, game: Game) {
         let player = game.getPlayer(card.getOwner());
-        player.getPool().add(this.resource)
+        player.getPool().add(this.resource);
     }
 
     public getText(card: Card) {
-        return `Gain ${this.resource.asListDesc()}.`
+        return `Gain ${this.resource.asListDesc()}.`;
     }
 
-    public evaluate() {
+    public evaluateEffect() {
         return this.resource.getNumeric() * 2;
     }
 }

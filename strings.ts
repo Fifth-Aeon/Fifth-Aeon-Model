@@ -10,7 +10,7 @@ export function properList(arr: Array<string>) {
 }
 
 export function properCase(str: string) {
-    return str.replace(/\b\w/g, l => l.toUpperCase())
+    return str.replace(/\b\w/g, l => l.toUpperCase());
 }
 
 export function a(nextWord: string) {
@@ -23,5 +23,5 @@ function symbol(number: number) {
 }
 
 export function formatBuff(damage: number, life: number) {
-    return `${symbol(damage)}${damage}/${symbol(life)}${life}`
+    return `${symbol(damage)}${damage}/${symbol(life)}${life}`;
 }

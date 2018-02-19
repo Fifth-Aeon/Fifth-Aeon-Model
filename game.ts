@@ -12,9 +12,11 @@ import { data } from './gameData';
 import { Log } from './log';
 
 import { shuffle } from 'lodash';
+import { knapsack } from 'app/game_model/algoritms';
+import { EvalContext } from 'app/game_model/mechanic';
 
 export enum GamePhase {
-    Play1, Block, Play2, End, Response
+    Play1, Block, DamageDistribution, Play2, End, Response
 }
 
 export enum GameActionType {
@@ -24,20 +26,22 @@ export enum GameActionType {
 
 export enum SyncEventType {
     Start, AttackToggled, TurnStart, PhaseChange, PlayResource, Mulligan,
-    PlayCard, Block, Draw, ChoiceMade, QueryResult, Ended, EnchantmentModified
+    PlayCard, Block, Draw, ChoiceMade, QueryResult, Ended, EnchantmentModified,
+    DamageDistributed
 }
 
 export interface GameAction {
-    type: GameActionType,
-    player: number,
-    params: any
+    type: GameActionType;
+    player: number;
+    params: any;
 }
 
 interface Choice {
-    player: number,
-    validCards: Set<Card>,
-    count: number,
-    callback: (cards: Card[]) => void
+    player: number;
+    validCards: Set<Card>;
+    min: number;
+    max: number;
+    callback: (cards: Card[]) => void;
 }
 
 export class GameSyncEvent {
@@ -69,16 +73,20 @@ export abstract class Game {
     protected attackers: Unit[];
     // A list of blocks by the defending player
     protected blockers: [Unit, Unit][];
+    // A map of the order to apply damage in combat
+    protected attackDamageOrder: Map<string, Unit[]> = null;
+    // A list attack orders that can be rearanged
+    protected orderableAttacks: Map<string, Unit[]> = null;
     // A map of cards loaded from the server so far
     protected cardPool: Map<string, Card>;
     // A group of game logic events that are not connected to any individual unit
     public gameEvents: EventGroup;
     // Flag to tell us which player's choice we are waiting for (null if not waiting)
-    protected currentChoice: Choice | null = null;
+    protected currentChoices: Choice[] = [null, null];
     protected log: Log;
     protected winner = -1;
     protected generatedCardId = 1;
-    public promptCardChoice: (player: number, choices: Card[], count: number,
+    public promptCardChoice: (player: number, choices: Card[], min: number, max: number,
         callback: (cards: Card[]) => void, message: string) => void;
     protected onQueryResult: (cards: Card[]) => void;
 
@@ -91,7 +99,7 @@ export abstract class Game {
      * @param {any} [format=standardFormat]
      * @memberof Game
      */
-    constructor(format = standardFormat, protected client: boolean = false, deckLists?: [DeckList, DeckList]) {
+    constructor(protected name: string, format = standardFormat, protected client: boolean = false, deckLists?: [DeckList, DeckList]) {
         this.format = format;
         this.board = new Board(this.format.playerCount, this.format.boardSize);
         this.cardPool = new Map<string, Card>();
@@ -109,9 +117,9 @@ export abstract class Game {
                     let card = fact();
                     this.cardPool.set(card.getId(), card);
                     return card;
-                })
+                });
                 return shuffle(deck);
-            })
+            });
         }
 
         this.players = [
@@ -123,8 +131,8 @@ export abstract class Game {
             player.getEvents().addEvent(null, new GameEvent(EventType.Death, (params) => {
                 this.endGame(this.getOtherPlayerNumber(number));
                 return params;
-            }))
-        })
+            }));
+        });
 
         if (client) {
             this.players.forEach(player => player.disableDraw());
@@ -135,6 +143,12 @@ export abstract class Game {
 
     public addGameEvent(event: GameSyncEvent) {
         this.events.push(event);
+    }
+
+    public mulligan() {
+        for (let player of this.players) {
+            player.replace(this, 0, player.getHand().length);
+        }
     }
 
     // Game End Logic -----------------------------------------------
@@ -163,25 +177,27 @@ export abstract class Game {
     }
 
     // Player choice =--------------------------------------------------------
-    public deferChoice(player: number, choices: Card[], count: number, callback: (cards: Card[]) => void) {
+    public deferChoice(player: number, choices: Card[], min: number, max: number, callback: (cards: Card[]) => void) {
         if (!callback)
             return;
-        this.currentChoice = {
+        console.log(this.name, 'defering choice for', player);
+        this.currentChoices[player] = {
             player: player,
             validCards: new Set(choices),
-            count: count,
+            min: min,
+            max: max,
             callback: callback
-        }
+        };
     }
 
-
-    protected makeDeferedChoice(cards: Card[]) {
-        if (this.currentChoice !== null) {
-            this.currentChoice.callback(cards);
+    protected makeDeferedChoice(player: number, cards: Card[]) {
+        console.log(this.name, player, 'making choice with', this.currentChoices);
+        if (this.currentChoices[player] !== null) {
+            this.currentChoices[player].callback(cards);
         } else {
-            console.error('Error, no defered choice handler for', cards);
+            console.error('Error, no defered choice handler for', cards, 'from', player);
         }
-        this.currentChoice = null;
+        this.currentChoices[player] = null;
     }
 
     // Crypt logic ----------------------------------------------------
@@ -194,19 +210,6 @@ export abstract class Game {
         return this.crypt[player];
     }
 
-    // Game Logic -----------------------------------------------------
-    public startGame() {
-        this.turn = 0;
-        for (let i = 0; i < this.players.length; i++) {
-            this.players[i].drawCards(this.format.initialDraw[i]);
-        }
-        this.players[this.turn].startTurn();
-        this.getCurrentPlayerUnits().forEach(unit => unit.refresh());
-        this.phase = GamePhase.Play1;
-
-        this.addGameEvent(new GameSyncEvent(SyncEventType.TurnStart, { turn: this.turn, turnNum: this.turnNum }));
-        return this.events;
-    }
 
     // Server Query Logic ----------------------------------------------
 
@@ -253,7 +256,7 @@ export abstract class Game {
     }
 
     public canTakeAction() {
-        return this.currentChoice === null;
+        return this.currentChoices[0] === null && this.currentChoices[1] === null;
     }
 
     // Combat -------------------------------------------------------------
@@ -275,33 +278,98 @@ export abstract class Game {
             .filter(unit => unit.getBlockedUnitId());
     }
 
+    private getBasicDamageDistribution(attacker: Unit, blockers: Unit[]) {
+        let damage = attacker.getDamage();
+        let toKill = new Set(knapsack(damage, blockers.map(blocker => {
+            return {
+                w: blocker.getLife(),
+                b: blocker.evaluate(this, EvalContext.LethalRemoval),
+                data: blocker
+            };
+        })).set.map(sack => sack.data));
+        let notToKill = blockers.filter(blocker => !toKill.has(blocker));
+        return Array.from(toKill.values()).concat(notToKill);
+    }
+
+    protected generateDamageDistribution() {
+        let attackers = this.getAttackers();
+        let blockers = this.getBlockers();
+        let defendingPlayer = this.players[this.getOtherPlayerNumber(this.getCurrentPlayer().getPlayerNumber())];
+
+        this.attackDamageOrder = new Map<string, Unit[]>();
+
+        // Create a list of blockers for each attacker
+        for (let blocker of blockers) {
+            let blocked = this.getPlayerUnitById(this.getCurrentPlayer().getPlayerNumber(), blocker.getBlockedUnitId());
+            const id = blocked.getId();
+            if (this.attackDamageOrder.has(id)) {
+                this.attackDamageOrder.get(id).push(blocker);
+            } else {
+                this.attackDamageOrder.set(id, [blocker]);
+            }
+        }
+
+        // Set damage order according to basic A.I
+        for (let attackerID of Array.from(this.attackDamageOrder.keys())) {
+            this.attackDamageOrder.set(attackerID,
+                this.getBasicDamageDistribution(this.getUnitById(attackerID), this.attackDamageOrder.get(attackerID)));
+        }
+
+        return this.attackDamageOrder;
+    }
+
+
+
+    public getModableDamageDistributions() {
+        let orderableAttacks = new Map<string, Unit[]>();
+        for (let attackerID of Array.from(this.attackDamageOrder.keys())) {
+            let defenders = this.attackDamageOrder.get(attackerID);
+            let dmg = this.getUnitById(attackerID).getDamage();
+            if (defenders.length > 1 && defenders
+                .map(unit => unit.getLife())
+                .reduce((a, b) => a + b) > dmg)
+                orderableAttacks.set(attackerID, defenders);
+        }
+        this.orderableAttacks = orderableAttacks;
+        return this.orderableAttacks;
+    }
+
     protected resolveCombat() {
         let attackers = this.getAttackers();
         let blockers = this.getBlockers();
         let defendingPlayer = this.players[this.getOtherPlayerNumber(this.getCurrentPlayer().getPlayerNumber())];
 
-        if (this.log)
-            this.log.addCombatResolved(attackers, blockers, defendingPlayer.getPlayerNumber());
+        if (this.attackDamageOrder === null) {
+            this.generateDamageDistribution();
+        }
 
-        blockers.forEach(blocker => {
-            let blocked = this.getPlayerUnitById(this.getCurrentPlayer().getPlayerNumber(), blocker.getBlockedUnitId());
-            if (blocked) {
-                blocker.getEvents().trigger(EventType.Block, new Map([['attacker', blocked]]));
+        // Apply blocks in order decided by attacker
+        for (let attackerID of Array.from(this.attackDamageOrder.keys())) {
+            let attacker = this.getUnitById(attackerID);
+            let damageOrder = this.attackDamageOrder.get(attackerID);
+            let remainingDamage = attacker.getDamage();
+
+            for (let blocker of damageOrder) {
+                let assignedDamage = Math.min(blocker.getLife(), remainingDamage);
+                remainingDamage -= assignedDamage;
+                // console.log(this.name, attacker.getName(), 'assigns', assignedDamage, 'to', blocker.getName());
+                blocker.getEvents().trigger(EventType.Block, new Map([['attacker', attacker]]));
                 blocker.getEvents().trigger(EventType.Attack, new Map([['blocker', blocker]]));
-                if (blocker.getLocation() === GameZone.Board && blocked.getLocation() === GameZone.Board)
-                    blocked.fight(blocker);
+                attacker.fight(blocker, assignedDamage);
+                blocker.setBlocking(null);
             }
-            blocker.setBlocking(null);
-        });
+        }
 
-        attackers.forEach(attacker => {
-            if (!attacker.isExausted()) {
+        // Unblocked attackers damage the defening player
+        for (let attacker of attackers) {
+            if (!this.attackDamageOrder.has(attacker.getId())) {
                 attacker.dealAndApplyDamage(defendingPlayer, attacker.getDamage());
                 attacker.setExausted(true);
             }
             attacker.toggleAttacking();
-        });
+        }
 
+        this.attackDamageOrder = null;
         this.changePhase(GamePhase.Play2);
     }
 
@@ -321,19 +389,6 @@ export abstract class Game {
     }
 
     // Game Flow Logic (phases, turns) -------------------------------------------------
-    protected endPhaseOne() {
-        if (this.isAttacking()) {
-            this.gameEvents.trigger(EventType.PlayerAttacked,
-                new Map([['target', this.getOtherPlayerNumber(this.getActivePlayer())]]));
-            if (this.blockersExist()) {
-                this.changePhase(GamePhase.Block);
-            } else {
-                this.resolveCombat();
-            }
-        } else {
-            this.startEndPhase();
-        }
-    }
 
     protected changePhase(nextPhase: GamePhase) {
         this.phase = nextPhase;
@@ -344,20 +399,6 @@ export abstract class Game {
         this.gameEvents.trigger(EventType.EndOfTurn, new Map());
         this.changePhase(GamePhase.End);
         this.getCurrentPlayer().discardExtra(this);
-    }
-
-    protected nextPhase() {
-        switch (this.phase) {
-            case GamePhase.Play1:
-                this.endPhaseOne();
-                break;
-            case GamePhase.Play2:
-                this.startEndPhase();
-                break;
-            case GamePhase.Block:
-                this.resolveCombat();
-                break;
-        }
     }
 
     public nextTurn() {
@@ -482,7 +523,7 @@ export abstract class Game {
 
 
     public getOtherPlayerNumber(playerNum: number): number {
-        return (playerNum + 1) % this.players.length
+        return (playerNum + 1) % this.players.length;
     }
 
     public getCurrentPlayer() {

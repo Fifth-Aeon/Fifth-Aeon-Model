@@ -26,7 +26,7 @@ export class DrawCard extends TriggeredMechanic {
         return `Draw ${this.count} cards.`;
     }
 
-    public evaluate() {
+    public evaluateEffect() {
         return this.count * 3;
     }
 }
@@ -39,7 +39,7 @@ export class Peek extends TriggeredMechanic {
         game.queryCards(
             (queried: Game) => queried.getPlayer(queried.getOtherPlayerNumber(card.getOwner())).getHand(),
             (hand) => {
-                game.promptCardChoice(card.getOwner(), hand, 0, null, '');
+                game.promptCardChoice(card.getOwner(), hand, 0, 0, null, '');
             });
     }
 
@@ -47,7 +47,7 @@ export class Peek extends TriggeredMechanic {
         return `Peek at your opponents hand.`;
     }
 
-    public evaluate() {
+    public evaluateEffect() {
         return 0;
     }
 }
@@ -56,7 +56,7 @@ export class Discard extends TriggeredMechanic {
     protected id = 'Discard';
     protected triggerType = new PlayTrigger();
     constructor(private count: number) {
-        super()
+        super();
     }
     public onTrigger(card: Card, game: Game) {
         let target = game.getPlayer(game.getOtherPlayerNumber(card.getOwner()));
@@ -67,7 +67,7 @@ export class Discard extends TriggeredMechanic {
         return `Your opponent discards ${this.count === 1 ? 'a card' : this.count + ' cards'}.`;
     }
 
-    public evaluate() {
+    public evaluateEffect() {
         return this.count * 2.5;
     }
 }
@@ -81,7 +81,7 @@ export class DiscardOnDamage extends Mechanic {
                     game.getPlayer((target as Player).getPlayerNumber()).discard(game);
                 return params;
             }
-        ))
+        ));
     }
 
     public remove(card: Card, game: Game) {
@@ -105,7 +105,7 @@ export class AugarCard extends TriggeredMechanic {
         let synth = owner.getPool().getOfType('Synthesis');
 
         if (synth < 4) {
-            owner.replace(game, 1);
+            owner.replace(game, 0, 1);
         } else if (synth < 8) {
             owner.drawCard();
         } else {
@@ -117,7 +117,7 @@ export class AugarCard extends TriggeredMechanic {
         return `If you have less than 4 synthesis, replace a card. If you have less than 8 draw one. Otherwise search for one.`;
     }
 
-    public evaluate() {
+    public evaluateEffect() {
         return 2;
     }
 }

@@ -7,18 +7,79 @@ import { Item } from './item';
 import { Unit } from './unit';
 import { DeckList } from './deckList';
 import { data } from './gameData';
+import { EventType } from './gameEvent';
+import { isArray } from 'util';
 
 
 type ActionCb = (act: GameAction) => boolean;
 export class ServerGame extends Game {
     // A table of handlers used to respond to actions taken by players
-    protected actionHandelers: Map<GameActionType, ActionCb>
+    protected actionHandelers: Map<GameActionType, ActionCb>;
 
-    constructor(format: GameFormat = standardFormat, decks: [DeckList, DeckList]) {
-        super(format, false, decks);
+    constructor(name: string, format: GameFormat = standardFormat, decks: [DeckList, DeckList]) {
+        super(name, format, false, decks);
         this.actionHandelers = new Map<GameActionType, ActionCb>();
         this.addActionHandelers();
     }
+
+    public startGame() {
+        this.turn = 0;
+        for (let i = 0; i < this.players.length; i++) {
+            this.players[i].drawCards(this.format.initialDraw[i]);
+        }
+        this.players[this.turn].startTurn();
+        this.getCurrentPlayerUnits().forEach(unit => unit.refresh());
+        this.phase = GamePhase.Play1;
+
+        this.mulligan();
+
+        this.addGameEvent(new GameSyncEvent(SyncEventType.TurnStart, { turn: this.turn, turnNum: this.turnNum }));
+        return this.events;
+    }
+
+
+    // Serverside phase logic
+    protected endPhaseOne() {
+        if (this.isAttacking()) {
+            this.gameEvents.trigger(EventType.PlayerAttacked,
+                new Map([['target', this.getOtherPlayerNumber(this.getActivePlayer())]]));
+            if (this.blockersExist()) {
+                this.changePhase(GamePhase.Block);
+            } else {
+                this.resolveCombat();
+            }
+        } else {
+            this.startEndPhase();
+        }
+    }
+
+    protected endBlockPhase() {
+        let damageDistribution = this.generateDamageDistribution();
+        let reorderables = this.getModableDamageDistributions();
+        if (reorderables.size > 0) {
+            this.changePhase(GamePhase.DamageDistribution);
+        } else {
+            this.resolveCombat();
+        }
+    }
+
+    protected nextPhase() {
+        switch (this.phase) {
+            case GamePhase.Play1:
+                this.endPhaseOne();
+                break;
+            case GamePhase.Play2:
+                this.startEndPhase();
+                break;
+            case GamePhase.Block:
+                this.endBlockPhase();
+                break;
+            case GamePhase.DamageDistribution:
+                this.resolveCombat();
+                break;
+        }
+    }
+
 
     // Player Actions -----------------------------------------------------
 
@@ -35,13 +96,15 @@ export class ServerGame extends Game {
         let handeler = this.actionHandelers.get(action.type);
         if (!handeler)
             return [];
-        if (action.type !== GameActionType.CardChoice && this.currentChoice !== null) {
-            console.error('Cant take action, waiting for', this.currentChoice);
+        if (action.type !== GameActionType.CardChoice &&
+            (this.currentChoices[0] !== null ||
+                this.currentChoices[1] !== null)) {
+            console.error('Cant take action, waiting for', this.currentChoices);
             return null;
         }
         let sig = handeler(action);
         if (sig !== true)
-            return null
+            return null;
         return this.events.slice(mark);
     }
 
@@ -57,7 +120,28 @@ export class ServerGame extends Game {
         this.addActionHandeler(GameActionType.DeclareBlocker, this.declareBlockerAction);
         this.addActionHandeler(GameActionType.CardChoice, this.cardChoiceAction);
         this.addActionHandeler(GameActionType.ModifyEnchantment, this.modifyEnchantmentAction);
+        this.addActionHandeler(GameActionType.DistributeDamage, this.distributeDamageAction);
         this.addActionHandeler(GameActionType.Quit, this.quit);
+    }
+
+    protected distributeDamageAction(act: GameAction): boolean {
+        if (!this.isPlayerTurn(act.player) || this.phase !== GamePhase.DamageDistribution)
+            return false;
+        if (!isArray(act.params.order))
+            return false;
+        if (!this.attackDamageOrder.has(act.params.attackerID))
+            return false;
+        let defenders = new Set(this.attackDamageOrder.get(act.params.attackerID).map(u => u.getId()));
+        let order = act.params.order as string[];
+        if (defenders.size !== order.length)
+            return false;
+        for (let defender of order) {
+            if (!defenders.has(defender))
+                return false;
+        }
+        this.attackDamageOrder.set(act.params.attackerID, order.map(id => this.getUnitById(id)));
+        this.addGameEvent(new GameSyncEvent(SyncEventType.DamageDistributed, act.params));
+        return true;
     }
 
     protected modifyEnchantmentAction(act: GameAction): boolean {
@@ -73,25 +157,23 @@ export class ServerGame extends Game {
     }
 
     protected cardChoiceAction(act: GameAction): boolean {
-        if (!this.currentChoice) {
-            console.error('Reject choice from', act.player, '. No choice requested');
-            return false;
-        } if (this.currentChoice.player !== act.player) {
-            console.error('Reject choice from', act.player, 'wanted', this.currentChoice.player);
+        if (this.currentChoices[act.player] === null) {
+            console.error('Reject choice from', act.player);
             return false;
         }
         let cardIds = act.params.choice as string[];
         let cards = cardIds.map(id => this.getCardById(id));
-        let wanted = Math.min(this.currentChoice.validCards.size, this.currentChoice.count)
-        if (cards.length !== wanted) {
-            console.error(`Reject choice. Wanted ${wanted} cards but only got ${cards.length}.`)
+        let min = Math.min(this.currentChoices[act.player].validCards.size, this.currentChoices[act.player].min);
+        let max = this.currentChoices[act.player].max;
+        if (cards.length > max || cards.length < min) {
+            console.error(`Reject choice. Out of range cards but only got ${cards.length}.`);
             return false;
         }
-        if (!cards.every(card => this.currentChoice.validCards.has(card))) {
-            console.error(`Reject choice. Included invalid options.`, cards, this.currentChoice.validCards)
+        if (!cards.every(card => this.currentChoices[act.player].validCards.has(card))) {
+            console.error(`Reject choice. Included invalid options.`, cards, this.currentChoices[act.player].validCards);
             return false;
         }
-        this.makeDeferedChoice(cards);
+        this.makeDeferedChoice(act.player, cards);
         this.addGameEvent(new GameSyncEvent(SyncEventType.ChoiceMade, {
             player: act.player,
             choice: act.params.choice

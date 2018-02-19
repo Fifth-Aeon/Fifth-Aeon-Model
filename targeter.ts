@@ -116,7 +116,7 @@ export class SingleUnit extends Targeter {
         return 'target unit';
     }
     public isOptional() {
-        return this.optional
+        return this.optional;
     }
 }
 
@@ -153,7 +153,7 @@ export class AllUnits extends Targeter {
         return this.lastTargets;
     }
     public getLastTargets() {
-        return this.lastTargets
+        return this.lastTargets;
     }
 }
 

@@ -2,7 +2,7 @@ import { Game } from './game';
 import { Card, CardType, GameZone } from './card';
 import { Unit } from './unit';
 import { Targeter } from './targeter';
-import { Trigger, PlayTrigger, NoTrigger } from './trigger';
+import { Trigger, PlayTrigger } from './trigger';
 
 import { sumBy, multiply, reduce } from 'lodash';
 
@@ -37,22 +37,20 @@ export abstract class Mechanic {
     abstract getText(parent: Card, game: Game): string;
     abstract evaluate(card: Card, game: Game, context: EvalContext): number | EvalOperator;
 
-    public remove(card: Card, game: Game) { };
+    public remove(card: Card, game: Game) { }
     public evaluateTarget(source: Card, target: Unit, game: Game) { return 0; }
     public stack() { }
     public clone(): Mechanic { return this; }
-    public enter(parent: Card, game: Game) { };
-
+    public enter(parent: Card, game: Game) { }
 
     public attach(parent: Card) {
         if (!this.canAttach(parent))
             throw new Error(`Cannot attach  mechanic ${this.getId()} to ${parent.getName()} it is not of the right card type.`);
-    };
-
+    }
 
     public getId(): string {
         return this.id;
-    };
+    }
 
     public canAttach(card: Card) {
         return this.validCardTypes.has(card.getCardType());
@@ -62,7 +60,22 @@ export abstract class Mechanic {
 
 export abstract class TriggeredMechanic extends Mechanic {
     protected triggerType: Trigger = new PlayTrigger();
-    public onTrigger(parent: Card, game: Game) { };
+    public onTrigger(parent: Card, game: Game) { }
+
+
+    public evaluate(card: Card, game: Game, context: EvalContext): number | EvalOperator {
+        let base = this.evaluateEffect(card, game, context);
+        if (typeof base !== 'object') {
+            base = {
+                addend: base,
+                multiplier: 1
+            } as EvalOperator;
+        }
+        base.multiplier *= this.triggerType.evaluate(card, game, context);
+        return base;
+    }
+
+    abstract evaluateEffect(card: Card, game: Game, context: EvalContext): EvalOperator | number;
 
     public setTrigger(trigger: Trigger) {
         this.triggerType = trigger;
@@ -80,7 +93,7 @@ export abstract class TriggeredMechanic extends Mechanic {
 
     public remove(card: Card, game: Game) {
         this.triggerType.unregister(card, game);
-    };
+    }
 
     public setTargeter(targeter: Targeter) {
         return this;
@@ -102,10 +115,8 @@ export abstract class TargetedMechanic extends TriggeredMechanic {
         return this;
     }
 
-    public evaluate(card: Card, game: Game) {
-        if (card.getLocation() === GameZone.Hand)
-            return sumBy(this.targeter.getTargets(card, game),
-                (target) => this.evaluateTarget(card, target, game));
-        return 0;
+    public evaluateEffect(card: Card, game: Game) {
+        return sumBy(this.targeter.getTargets(card, game),
+            (target) => this.evaluateTarget(card, target, game));
     }
 }

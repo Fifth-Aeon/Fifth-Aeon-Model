@@ -4,6 +4,7 @@ import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 import { Trigger } from '../../trigger';
+import { EvalContext } from '../../mechanic';
 
 export class OnDeath extends Trigger {
     public getName() {
@@ -20,6 +21,12 @@ export class OnDeath extends Trigger {
 
     public unregister(card: Card, game: Game) {
         (card as Unit).getEvents().removeEvents(this);
+    }
+
+    public evaluate(host: Card, game: Game, context: EvalContext) {
+        if (context === EvalContext.LethalRemoval)
+            return 0.25;
+        return 0.9;
     }
 }
 
@@ -42,6 +49,10 @@ export class OnDeathAnyDeath extends Trigger {
 
     public unregister(card: Card, game: Game) {
         (card as Unit).getEvents().removeEvents(this);
+    }
+
+    public evaluate(host: Card, game: Game, context: EvalContext) {
+        return 2;
     }
 }
 
