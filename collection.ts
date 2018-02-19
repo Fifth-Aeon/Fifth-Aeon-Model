@@ -24,9 +24,12 @@ export class Collection {
     private gold: number;
     private packs: number;
 
-    constructor() {
+    constructor(saved: SavedCollection = null) {
         this.gold = 0;
         this.packs = 3;
+        if (saved) {
+            this.fromSavable(saved);
+        }
     }
 
     public addWinReward(won: boolean) {
