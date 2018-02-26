@@ -22,8 +22,9 @@ export class DeckList {
     private cardCount = 0;
 
 
-    constructor(private format: GameFormat = standardFormat) {
-        this.generateRandomNColorDeck(1);
+    constructor(private format: GameFormat = standardFormat, empty = false) {
+        if (!empty)
+            this.generateRandomNColorDeck(1);
     }
 
     public randomDeckWithColors(colors: Set<string>) {
