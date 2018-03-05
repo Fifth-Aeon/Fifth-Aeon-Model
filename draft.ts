@@ -4,6 +4,8 @@ import { standardFormat } from './gameFormat';
 import { cardList, allCards } from './cards/allCards';
 import { Rewards } from './collection';
 
+import { sampleSize } from 'lodash';
+
 enum DraftState { Drafting, Playing, Ended }
 
 export class Draft {
@@ -12,9 +14,9 @@ export class Draft {
     /** The number of rounds a player gets to pick a card */
     private static CardPickRounds = 40;
     /** Maxiumium number of games a player can win before the run ends */
-    private static MaxWins = 7;
+    private static MaxWins = 12;
     /** Maxiumum number of games a player can lose before the run ends */
-    private static MaxLosses = 0;
+    private static MaxLosses = 3;
 
     /** The current state of the draft.
      * Tells us if the player is seleccting cards, playing games or if its over */
@@ -35,7 +37,13 @@ export class Draft {
      * @memberof Draft
      */
     canPickCard(): boolean {
-        return false;
+        if(this.state === DraftState.Drafting && this.pickNumber != 40){
+            return true;
+        }
+        else{
+            return false;
+        }
+
     }
 
     /**
@@ -45,7 +53,7 @@ export class Draft {
      * @memberof Draft
      */
     getChoices(): Set<Card> {
-        return new Set();
+        return new Set(sampleSize(cardList, Draft.CardsPerPick) as Array<Card>);
     }
 
     /**
@@ -55,7 +63,11 @@ export class Draft {
      * @memberof Draft
      */
     pickCard(picked: Card) {
-
+        this.deck.addCard(picked);
+        this.pickNumber++;
+        if(this.pickNumber === Draft.CardPickRounds){
+            this.state = DraftState.Playing
+        }
     }
 
     /**
@@ -65,7 +77,11 @@ export class Draft {
      * @memberof Draft
      */
     canPlayGame(): boolean {
-        return false;
+        if(this.state === DraftState.Playing){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     /**
@@ -75,6 +91,15 @@ export class Draft {
      * @memberof Draft
      */
     updateRecord(won: boolean) {
+        if(won){
+            this.wins ++;
+        }
+        else{
+            this.losses ++;
+            if(this.losses === Draft.MaxLosses){
+                this.state = DraftState.Ended
+            }
+        }
 
     }
 
@@ -85,7 +110,20 @@ export class Draft {
      * @memberof Draft
      */
     getRewards(): Rewards {
-        return null;
+        var packs = 1;
+        var gold = 50;
+        if (this.wins > 3 && this.wins <= 7){
+            packs = 2;
+            gold *=this.wins;
+        }else if(this.wins > 7){
+            packs = 4;
+            gold *=this.wins;
+        }
+        let rewards: Rewards = {
+            packs: packs,
+            gold: gold
+        };
+        return rewards;
     }
 
     /**
@@ -93,7 +131,7 @@ export class Draft {
      * @memberof Draft
      */
     retire() {
-
+        this.state = DraftState.Ended
     }
 
 
