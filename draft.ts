@@ -37,13 +37,7 @@ export class Draft {
      * @memberof Draft
      */
     canPickCard(): boolean {
-        if(this.state === DraftState.Drafting && this.pickNumber != 40){
-            return true;
-        }
-        else{
-            return false;
-        }
-
+        return this.state === DraftState.Drafting;
     }
 
     /**
@@ -65,8 +59,8 @@ export class Draft {
     pickCard(picked: Card) {
         this.deck.addCard(picked);
         this.pickNumber++;
-        if(this.pickNumber === Draft.CardPickRounds){
-            this.state = DraftState.Playing
+        if (this.pickNumber === Draft.CardPickRounds) {
+            this.state = DraftState.Playing;
         }
     }
 
@@ -77,11 +71,7 @@ export class Draft {
      * @memberof Draft
      */
     canPlayGame(): boolean {
-        if(this.state === DraftState.Playing){
-            return true;
-        }else{
-            return false;
-        }
+        return this.state === DraftState.Playing;
     }
 
     /**
@@ -91,13 +81,15 @@ export class Draft {
      * @memberof Draft
      */
     updateRecord(won: boolean) {
-        if(won){
-            this.wins ++;
-        }
-        else{
-            this.losses ++;
-            if(this.losses === Draft.MaxLosses){
-                this.state = DraftState.Ended
+        if (won) {
+            this.wins++;
+            if (this.wins === Draft.MaxWins) {
+                this.state = DraftState.Ended;
+            }
+        } else {
+            this.losses++;
+            if (this.losses === Draft.MaxLosses) {
+                this.state = DraftState.Ended;
             }
         }
 
@@ -110,14 +102,14 @@ export class Draft {
      * @memberof Draft
      */
     getRewards(): Rewards {
-        var packs = 1;
-        var gold = 50;
-        if (this.wins > 3 && this.wins <= 7){
+        let packs = 1;
+        let gold = 50;
+        if (this.wins > 3 && this.wins <= 7) {
             packs = 2;
-            gold *=this.wins;
-        }else if(this.wins > 7){
+            gold *= this.wins;
+        } else if (this.wins > 7) {
             packs = 4;
-            gold *=this.wins;
+            gold *= this.wins;
         }
         let rewards: Rewards = {
             packs: packs,
@@ -131,9 +123,8 @@ export class Draft {
      * @memberof Draft
      */
     retire() {
-        this.state = DraftState.Ended
+        this.state = DraftState.Ended;
     }
-
 
     getDeck() {
         return this.deck;
