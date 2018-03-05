@@ -120,7 +120,9 @@ export function plauge() {
         }),
         new Untargeted(),
         4, 1,
-        [new PoisonTarget(new AllUnits()).setTrigger(anyEOT()), new Discharge(1)]
+        [new PoisonTarget()
+            .setTargeter(new AllUnits())
+            .setTrigger(anyEOT()), new Discharge(1)]
     );
 }
 

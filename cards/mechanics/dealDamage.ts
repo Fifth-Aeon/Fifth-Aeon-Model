@@ -37,8 +37,8 @@ export class DamageOnBlock extends Mechanic {
 
 export class DealDamage extends TargetedMechanic {
     protected id = 'DealDamage';
-    constructor(protected amount: number, targeter?: Targeter) {
-        super(targeter);
+    constructor(protected amount: number) {
+        super();
     }
 
     public onTrigger(card: Card, game: Game) {

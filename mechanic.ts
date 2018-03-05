@@ -101,9 +101,7 @@ export abstract class TriggeredMechanic extends Mechanic {
 }
 
 export abstract class TargetedMechanic extends TriggeredMechanic {
-    constructor(protected targeter?: Targeter) {
-        super();
-    }
+    protected targeter: Targeter;
 
     public attach(parent: Card) {
         super.attach(parent);

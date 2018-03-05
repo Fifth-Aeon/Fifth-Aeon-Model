@@ -220,7 +220,7 @@ export function atomicStrike() {
             Synthesis: 6
         }),
         new AllUnits(),
-        [new DealDamage(10), new DealDamage(5, new AllPlayers())],
+        [new DealDamage(10), new DealDamage(5).setTargeter(new AllPlayers())],
         'Deal 10 damage to each unit and 5 to each player.'
     );
 }
