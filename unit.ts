@@ -248,6 +248,7 @@ export class Unit extends Permanent {
         super.play(game);
         this.exausted = false;
         this.location = GameZone.Board;
+        this.life = this.maxLife;
         game.playPermanent(this, this.owner);
     }
 
@@ -299,8 +300,6 @@ export class Unit extends Permanent {
             ['amount', amount]
         ])).get('amount');
         this.life -= amount;
-        if (this.life <= 0)
-            this.died = true;
         this.checkDeath();
         return amount;
     }
@@ -345,9 +344,7 @@ export class Unit extends Permanent {
 
     public leaveBoard(game: Game) {
         this.events.trigger(EventType.LeavesPlay, new Map([['leavingUnit', this]]));
-        this.refresh();
         this.blockedUnitId = null;
-        this.life = this.maxLife;
         this.ready = false;
         this.exausted = false;
         this.died = false;

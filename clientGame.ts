@@ -12,6 +12,7 @@ import { Resource, ResourceTypeNames } from './resource';
 
 import { maxBy } from 'lodash';
 import { EventType } from './gameEvent';
+import { Animator } from './animator';
 
 export class ClientGame extends Game {
     // Handlers to syncronize events
@@ -20,6 +21,7 @@ export class ClientGame extends Game {
     constructor(
         name: string,
         protected runGameAction: (type: GameActionType, params: any) => void,
+        private animator: Animator,
         log: Log = null,
         format: GameFormat = standardFormat
     ) {
@@ -94,6 +96,69 @@ export class ClientGame extends Game {
     public pass() {
         this.runGameAction(GameActionType.Pass, {});
     }
+
+
+    // Animation logic
+
+    protected async resolveCombat() {
+        let attackers = this.getAttackers();
+        let blockers = this.getBlockers();
+        let defendingPlayer = this.players[this.getOtherPlayerNumber(this.getCurrentPlayer().getPlayerNumber())];
+
+        if (this.attackDamageOrder === null) {
+            this.generateDamageDistribution();
+        }
+
+        this.animator.startAnimiation();
+
+        // Apply blocks in order decided by attacker
+        for (let attackerID of Array.from(this.attackDamageOrder.keys())) {
+            let attacker = this.getUnitById(attackerID);
+            let damageOrder = this.attackDamageOrder.get(attackerID);
+            let remainingDamage = attacker.getDamage();
+
+            this.animator.triggerBattleAnimation({
+                defendingPlayer: defendingPlayer,
+                attacker: attacker,
+                defenders: damageOrder
+            });
+
+            for (let blocker of damageOrder) {
+                await this.animator.getAnimationDelay(damageOrder.length * 2);
+                let assignedDamage = Math.min(blocker.getLife(), remainingDamage);
+                remainingDamage -= assignedDamage;
+                blocker.getEvents().trigger(EventType.Block, new Map([['attacker', attacker]]));
+                blocker.getEvents().trigger(EventType.Attack, new Map([['blocker', blocker]]));
+                attacker.fight(blocker, assignedDamage);
+                blocker.setBlocking(null);
+                await this.animator.getAnimationDelay(damageOrder.length * 2);
+            }
+        }
+
+        // Unblocked attackers damage the defening player
+        for (let attacker of attackers) {
+            if (!this.attackDamageOrder.has(attacker.getId())) {
+                this.animator.triggerBattleAnimation({
+                    defendingPlayer: defendingPlayer,
+                    attacker: attacker,
+                    defenders: []
+                });
+                await this.animator.getAnimationDelay(2);
+                attacker.dealAndApplyDamage(defendingPlayer, attacker.getDamage());
+                attacker.toggleAttacking();
+                attacker.setExausted(true);
+                await this.animator.getAnimationDelay(2);
+            } else {
+                attacker.toggleAttacking();
+            }
+
+        }
+
+        this.animator.endAnimiation();
+        this.attackDamageOrder = null;
+        this.changePhase(GamePhase.Play2);
+    }
+
 
     // Syncronization Logic --------------------------------------------------------
     /**

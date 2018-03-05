@@ -12,6 +12,7 @@ import { Shielded } from './cards/mechanics/skills';
 
 import { minBy, sample, sampleSize, maxBy, sortBy, sumBy, remove } from 'lodash';
 import { LinkedList } from 'typescript-collections';
+import { Animator } from './animator';
 
 export enum AiDifficulty {
     Easy, Medium, Hard
@@ -34,7 +35,9 @@ During my opponents turn
 export abstract class AI {
     constructor(
         protected playerNumber: number,
-        protected game: ClientGame) { }
+        protected game: ClientGame,
+        protected animator: Animator
+    ) { }
 
     abstract handleGameEvent(event: GameSyncEvent): void;
     abstract pulse(): void;
@@ -46,8 +49,8 @@ export class BasicAI extends AI {
     private aiPlayer: Player;
     private actionSequence: LinkedList<() => void> = new LinkedList<() => void>();
 
-    constructor(playerNumber: number, game: ClientGame) {
-        super(playerNumber, game);
+    constructor(playerNumber: number, game: ClientGame, animator: Animator) {
+        super(playerNumber, game, animator);
         this.aiPlayer = this.game.getPlayer(this.playerNumber);
         this.enemyNumber = this.game.getOtherPlayerNumber(this.playerNumber);
 
@@ -79,16 +82,13 @@ export class BasicAI extends AI {
     }
 
     private continue() {
+        if (this.animator.isAnimiating())
+            return;
         if (!this.game.canTakeAction() || !this.game.isActivePlayer(this.playerNumber))
             return;
         let next = this.dequeue() || this.game.pass.bind(this.game);
         next();
     }
-
-    private pass() {
-        this.game.pass();
-    }
-
 
     private makeChoice(player: number, cards: Array<Card>, min: number = 1, max: number = 1,
         callback: (cards: Card[]) => void = null) {
@@ -337,14 +337,6 @@ export class BasicAI extends AI {
         let potentialBlockers = this.game.getBoard().getPlayerUnits(this.playerNumber)
             .filter(unit => !unit.isExausted());
 
-        // test multiblock
-        if (attackers.length > 0 && potentialBlockers.length > 1) {
-            this.sequenceActions(potentialBlockers.map(blocker => {
-                return this.makeBlockAction({ blocker: blocker, attacker: attackers[0] });
-            }));
-            return;
-        }
-
         let totalDamage = sumBy(attackers, (attacker) => attacker.getDamage());
         let life = this.aiPlayer.getLife();
         let blocks = [];
@@ -365,7 +357,8 @@ export class BasicAI extends AI {
             if (best !== undefined && (
                 totalDamage >= life ||
                 best.type < BlockType.BothDie ||
-                best.type === BlockType.BothDie && best.tradeScore <= 0)) {
+                best.type === BlockType.BothDie && best.tradeScore <= 0)
+            ) {
                 blocks.push(best);
                 totalDamage -= best.attacker.getDamage();
                 remove(potentialBlockers, (unit) => unit === best.blocker);
@@ -382,8 +375,7 @@ export class BasicAI extends AI {
             return;
         if (params.phase === GamePhase.Block)
             this.block();
-        if (params.phase === GamePhase.Play2 || params.phase === GamePhase.DamageDistribution)
-            this.game.pass();
+
     }
 }
 
