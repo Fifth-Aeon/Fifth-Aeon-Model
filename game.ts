@@ -180,7 +180,6 @@ export abstract class Game {
     public deferChoice(player: number, choices: Card[], min: number, max: number, callback: (cards: Card[]) => void) {
         if (!callback)
             return;
-        console.log(this.name, 'defering choice for', player);
         this.currentChoices[player] = {
             player: player,
             validCards: new Set(choices),
@@ -191,7 +190,6 @@ export abstract class Game {
     }
 
     protected makeDeferedChoice(player: number, cards: Card[]) {
-        console.log(this.name, player, 'making choice with', this.currentChoices);
         if (this.currentChoices[player] !== null) {
             this.currentChoices[player].callback(cards);
         } else {
