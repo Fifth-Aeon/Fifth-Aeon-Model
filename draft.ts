@@ -118,6 +118,10 @@ export class Draft {
         return rewards;
     }
 
+    public hasEnded() {
+        return this.state === DraftState.Ended;
+    }
+
     /**
      * Prematurly ends the draft
      * @memberof Draft
