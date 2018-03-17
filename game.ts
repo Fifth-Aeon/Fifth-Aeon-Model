@@ -480,11 +480,9 @@ export abstract class Game {
             return params;
         }));
         this.board.addPermanent(unit);
-        if (etb) {
-            this.gameEvents.trigger(EventType.UnitEntersPlay, new Map<string, any>([
-                ['enteringUnit', unit]
-            ]));
-        }
+        this.gameEvents.trigger(EventType.UnitEntersPlay, new Map<string, any>([
+            ['enteringUnit', unit]
+        ]));
         unit.checkDeath();
     }
 
