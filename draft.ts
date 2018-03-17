@@ -9,10 +9,10 @@ import { sampleSize } from 'lodash';
 enum DraftState { Drafting, Playing, Ended }
 
 export class Draft {
+    /** The format to draft*/
+    private static format = standardFormat;
     /** The number of cards a player gets to pick each round */
     private static CardsPerPick = 4;
-    /** The number of rounds a player gets to pick a card */
-    private static CardPickRounds = 40;
     /** Maxiumium number of games a player can win before the run ends */
     private static MaxWins = 12;
     /** Maxiumum number of games a player can lose before the run ends */
@@ -23,6 +23,7 @@ export class Draft {
     private state = DraftState.Drafting;
     /** The current pick the user is on */
     private pickNumber = 0;
+    private choices: Set<Card>;
     /** The players deck */
     private deck = new DeckList(standardFormat, true);
     /** The number of games a player has won */
@@ -47,7 +48,9 @@ export class Draft {
      * @memberof Draft
      */
     getChoices(): Set<Card> {
-        return new Set(sampleSize(cardList, Draft.CardsPerPick) as Array<Card>);
+        if (!this.choices)
+            this.choices = new Set(sampleSize(cardList, Draft.CardsPerPick));
+        return this.choices;
     }
 
     /**
@@ -57,9 +60,12 @@ export class Draft {
      * @memberof Draft
      */
     pickCard(picked: Card) {
+        if (!this.choices.has(picked))
+            return;
         this.deck.addCard(picked);
         this.pickNumber++;
-        if (this.pickNumber === Draft.CardPickRounds) {
+        this.choices = undefined;
+        if (this.pickNumber === Draft.format.minDeckSize) {
             this.state = DraftState.Playing;
         }
     }
@@ -92,7 +98,6 @@ export class Draft {
                 this.state = DraftState.Ended;
             }
         }
-
     }
 
     /**
