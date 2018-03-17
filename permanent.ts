@@ -16,13 +16,16 @@ export class Permanent extends Card {
             return this.text;
         let text = '';
         let groups = groupBy(this.mechanics, (mech) => {
-            if ((<TriggeredMechanic>mech).getTrigger) {
-                return (<TriggeredMechanic>mech).getTrigger().getName();
+            const triggered = <TriggeredMechanic>mech;
+            if (triggered.getTrigger) {
+                return triggered.getTrigger().isHidden() ? 'hidden' : triggered.getTrigger().getName();
             }
             return '';
         });
         let first = true;
         for (let trigger in groups) {
+            if (trigger === 'hidden')
+                continue;
             if (!first) {
                 text += ' ';
             }

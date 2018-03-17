@@ -13,6 +13,10 @@ export class Affinity extends Trigger {
         return 'Affinity';
     }
 
+    public isHidden() {
+        return this.triggered;
+    }
+
     public evaluate(host: Card, game: Game, context: EvalContext) {
         if (!this.triggered)
             return 0.75;
