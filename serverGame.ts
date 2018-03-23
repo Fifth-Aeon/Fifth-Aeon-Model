@@ -6,7 +6,6 @@ import { CardType } from './card';
 import { Item } from './item';
 import { Unit } from './unit';
 import { DeckList } from './deckList';
-import { data } from './gameData';
 import { EventType } from './gameEvent';
 import { isArray } from 'util';
 

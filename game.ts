@@ -8,7 +8,6 @@ import { GameFormat, standardFormat } from './gameFormat';
 import { DeckList } from './deckList';
 import { Resource } from './resource';
 import { GameEvent, EventType, EventGroup } from './gameEvent';
-import { data } from './gameData';
 import { Log } from './log';
 
 import { shuffle } from 'lodash';

@@ -1,5 +1,5 @@
 import { GameFormat, standardFormat } from './gameFormat';
-import { allCards, CardFactory } from './cards/allCards';
+import { cardList, CardFactory } from './cards/cardList';
 import { Card } from './card';
 
 import { ResourceTypeNames } from './resource';
@@ -29,17 +29,14 @@ export class DeckList {
 
     public randomDeckWithColors(colors: Set<string>) {
         this.clear();
-        let validCards = Array.from(allCards.values()).filter(factory => {
-            return factory().getCost().isInColors(colors);
+        let validCards = cardList.getCards().filter(card => {
+            return card.getCost().isInColors(colors);
         });
         for (let i = 0; i < this.format.minDeckSize; i++) {
-            let constr = sample(validCards);
-            if (!constr)
-                throw new Error('No cards to construct');
-            let card = constr();
+            let card = sample(validCards);
             this.addCard(card);
             if (this.records.get(card.getDataId()) === this.format.cardsOfRarity[0])
-                remove(validCards, fact => fact === constr);
+                remove(validCards, fact => fact === card);
         }
         this.genMetadata();
     }
@@ -98,7 +95,7 @@ export class DeckList {
         this.cardCount = sum(Array.from(this.records.values()));
         this.customMetadata = saveData.customMetadata;
         for (let key of Array.from(this.records.keys())) {
-            if (!allCards.has(key)) {
+            if (!cardList.exists(key)) {
                 throw Error(`Deck ${this.name} tried to load non-existant card with id ${key}.`);
             }
         }
@@ -150,7 +147,7 @@ export class DeckList {
         let deck = [];
         for (let entry of Array.from(this.records.entries())) {
             for (let i = 0; i < entry[1]; i++) {
-                deck.push(allCards.get(entry[0]));
+                deck.push(cardList.getCardFactory(entry[0]));
             }
         }
         return deck;
@@ -163,7 +160,7 @@ export class DeckList {
     public getRecordList() {
         return Array.from(this.records.entries()).map(entry => {
             return {
-                card: allCards.get(entry[0])(),
+                card: cardList.getCard(entry[0]),
                 number: entry[1]
             };
         }).sort((rec1, rec2) => rec1.card.getCost().getNumeric() - rec2.card.getCost().getNumeric());

@@ -1,5 +1,5 @@
 import { GameFormat, standardFormat } from './gameFormat';
-import { allCards, CardFactory } from './cards/allCards';
+import { cardList} from './cards/cardList';
 import { Card } from './card';
 import { DeckList } from './deckList';
 
@@ -17,7 +17,7 @@ export interface Rewards {
     packs: number;
 }
 
-const cardIds = Array.from(allCards.keys());
+const cardIds = cardList.getIds();
 
 export class Collection {
     private records = new Map<string, number>();
@@ -147,13 +147,13 @@ export class Collection {
     }
 
     public getCards() {
-        return Array.from(this.records.keys(), id => allCards.get(id)());
+        return Array.from(this.records.keys(), id => cardList.getCard(id));
     }
 
     public getRecordList() {
         return Array.from(this.records.entries()).map(entry => {
             return {
-                card: allCards.get(entry[0])(),
+                card: cardList.getCard(entry[0]),
                 number: entry[1]
             };
         }).sort((rec1, rec2) => rec1.card.getCost().getNumeric() - rec2.card.getCost().getNumeric());
