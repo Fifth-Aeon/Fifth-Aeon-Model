@@ -8,7 +8,8 @@ import { Item } from '../item';
 import { Resource } from '../resource';
 
 // Targeters
-import { SingleUnit, FriendlyUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnits } from '../targeter';
+import { SingleUnit, FriendlyUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnits } from './targeters/basicTargeter';
+
 
 // Trigers
 import { Serenity } from './triggers/serenity';

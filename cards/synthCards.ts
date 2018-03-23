@@ -9,7 +9,7 @@ import { Resource } from '../resource';
 import {
     SingleUnit, Untargeted, AllUnits, AllPlayers, EnemyUnits, Friends, Enemies, Everyone,
     FriendlyUnit, EnemyUnit, FriendlyUnits
-} from '../targeter';
+} from './targeters/basicTargeter';
 import { PoisonImmune } from './mechanics/poison';
 import { ShuffleIntoDeck } from './mechanics/shuffleIntoDeck';
 import { AugarCard, DrawCard, Peek } from './mechanics/draw';

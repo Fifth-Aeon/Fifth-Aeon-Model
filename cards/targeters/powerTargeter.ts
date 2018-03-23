@@ -1,9 +1,11 @@
-import { Targeter, AllUnits } from '../../targeter';
+import { Targeter } from '../../targeter';
+import { AllUnits } from './basicTargeter';
 import { Card } from '../../card';
 import { Unit } from '../../unit';
 import { Game } from '../../game';
 
 export class LifeLessUnit extends Targeter {
+    protected static id = 'LifeLessUnit';
     constructor(private life: number) {
         super();
     }
@@ -16,6 +18,7 @@ export class LifeLessUnit extends Targeter {
 }
 
 export class LifeLessUnits extends AllUnits {
+    protected static id = 'LifeLessUnits';
     constructor(private life: number) {
         super();
     }

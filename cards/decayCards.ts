@@ -8,7 +8,10 @@ import { Resource } from '../resource';
 // Targeters
 import { DamagedUnit } from './targeters/weakenedUnits';
 import { PoisonableUnit, PoisonableUnits } from './targeters/poisonTargeter';
-import { SingleUnit, Untargeted, AllUnits, AllOtherUnits, FriendlyUnit, EnemyUnit, SelfTarget, OwningPlayer } from '../targeter';
+import {
+    SingleUnit, Untargeted, AllUnits, AllOtherUnits,
+    FriendlyUnit, EnemyUnit, SelfTarget, OwningPlayer
+} from './targeters/basicTargeter';
 
 // Mechanics
 import { Discharge, Recharge } from './mechanics/enchantmentCounters';

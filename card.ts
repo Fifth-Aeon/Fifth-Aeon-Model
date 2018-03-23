@@ -2,7 +2,7 @@ import { Resource } from './resource';
 import { Game } from './game';
 import { Player } from './player';
 import { Mechanic, EvalContext, TriggeredMechanic } from './mechanic';
-import { Targeter, Untargeted } from './targeter';
+import { Targeter } from './targeter';
 import { Unit } from './unit';
 import { EventGroup, EventType } from './gameEvent';
 
@@ -33,7 +33,7 @@ export class Card {
     protected text: string = null;
     protected events: EventGroup = new EventGroup();
 
-    protected targeter: Targeter = new Untargeted();
+    protected targeter: Targeter;
 
     constructor(dataId: string, name: string, imageUrl: string, cost: Resource,
         targeter: Targeter, mechanics: Array<Mechanic>, text?: string) {

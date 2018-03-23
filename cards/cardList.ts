@@ -1,8 +1,9 @@
 import { Card } from '../card';
 import { Resource } from '../resource';
-import { Untargeted } from '../targeter';
 import { MechanicData, mechanicList } from './mechanicList';
 import { Unit, UnitType } from '../unit';
+import { Untargeted } from './targeters/basicTargeter';
+import { targeterList, TargeterData } from './targeterList';
 
 import { values } from 'lodash';
 
@@ -11,6 +12,7 @@ interface CardData {
     name: string;
     imageUrl: string;
     cost: Resource;
+    targeter: TargeterData;
     mechanics: MechanicData[];
 }
 
@@ -48,7 +50,7 @@ class CardList {
                 data.imageUrl,
                 data.type,
                 data.cost,
-                new Untargeted(),
+                targeterList.buildInstance(data.targeter),
                 data.damage,
                 data.life,
                 data.mechanics.map(mechanic => mechanicList.buildInstance(mechanic))
@@ -105,6 +107,7 @@ cardList.loadUnit(
             Renewal: 0
         }),
         mechanics: [{ id: 'flying' }],
+        targeter: { id: 'Untargeted' },
         life: 1,
         damage: 1,
         type: UnitType.Agent
