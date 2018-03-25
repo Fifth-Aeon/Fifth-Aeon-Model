@@ -1,4 +1,4 @@
-import { Card } from '../card';
+import { Card, CardType } from '../card';
 import { Resource, ResourcePrototype } from '../resource';
 import { MechanicData, mechanicList } from './mechanicList';
 import { Unit, UnitType } from '../unit';
@@ -7,8 +7,14 @@ import { targeterList, TargeterData } from './targeterList';
 
 import { values } from 'lodash';
 
-interface CardData {
+import * as renewal from './renewalCards';
+import * as growth from './growthCards';
+import * as decay from './decayCards';
+import * as synthesis from './synthCards';
+
+export interface CardData {
     id: string;
+    cardType: CardType;
     name: string;
     imageUrl: string;
     targeter: TargeterData;
@@ -16,7 +22,7 @@ interface CardData {
     cost: ResourcePrototype;
 }
 
-interface UnitData extends CardData {
+export interface UnitData extends CardData {
     life: number;
     damage: number;
     type: UnitType;
@@ -43,21 +49,12 @@ class CardList {
     }
 
     public loadUnit(data: UnitData) {
-        const factory = () => {
-            return new Unit(
-                data.id,
-                data.name,
-                data.imageUrl,
-                data.type,
-                Resource.loadResource(data.cost),
-                targeterList.buildInstance(data.targeter),
-                data.damage,
-                data.life,
-                data.mechanics.map(mechanic => mechanicList.buildInstance(mechanic))
-            );
-        };
+        const factory = this.buildUnitFactory(data);
         this.addFactory(factory);
-        console.log('fs', data.id, factory, factory());
+    }
+
+    public buildUnitInstance(data: UnitData) {
+        return this.buildUnitFactory(data)();
     }
 
     public addFactory(...factories: CardFactory[]) {
@@ -88,39 +85,27 @@ class CardList {
         return this.factories.get(id);
     }
 
+    private buildUnitFactory(data: UnitData) {
+        return () => {
+            return new Unit(
+                data.id,
+                data.name,
+                data.imageUrl,
+                data.type,
+                Resource.loadResource(data.cost),
+                targeterList.buildInstance(data.targeter),
+                data.damage,
+                data.life,
+                data.mechanics.map(mechanic => mechanicList.buildInstance(mechanic))
+            );
+        };
+    }
+
 }
-
-
 
 export const cardList = new CardList();
 
-
-cardList.loadUnit(
-    {
-        name: 'A',
-        id: 'A',
-        imageUrl: '',
-        cost: {
-            energy: 1,
-            synthesis: 1
-        },
-        mechanics: [{ id: 'flying' }],
-        targeter: { id: 'Untargeted' },
-        life: 1,
-        damage: 1,
-        type: UnitType.Agent
-    }
-);
-
-import * as renewal from './renewalCards';
 cardList.addFactory(...(values(renewal) as CardFactory[]));
-
-import * as growth from './growthCards';
 cardList.addFactory(...(values(growth) as CardFactory[]));
-
-import * as decay from './decayCards';
 cardList.addFactory(...(values(decay) as CardFactory[]));
-
-import * as synthesis from './synthCards';
 cardList.addFactory(...(values(synthesis) as CardFactory[]));
-
