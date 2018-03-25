@@ -85,7 +85,7 @@ class CardList {
     }
 
     public getCardFactory(id) {
-        return this.factories.get(id)();
+        return this.factories.get(id);
     }
 
 }
