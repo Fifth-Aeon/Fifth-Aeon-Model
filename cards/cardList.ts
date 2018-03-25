@@ -1,5 +1,5 @@
 import { Card } from '../card';
-import { Resource } from '../resource';
+import { Resource, ResourcePrototype } from '../resource';
 import { MechanicData, mechanicList } from './mechanicList';
 import { Unit, UnitType } from '../unit';
 import { Untargeted } from './targeters/basicTargeter';
@@ -11,9 +11,9 @@ interface CardData {
     id: string;
     name: string;
     imageUrl: string;
-    cost: Resource;
     targeter: TargeterData;
     mechanics: MechanicData[];
+    cost: ResourcePrototype;
 }
 
 interface UnitData extends CardData {
@@ -34,8 +34,8 @@ class CardList {
                 data.id,
                 data.name,
                 data.imageUrl,
-                data.cost,
-                new Untargeted(),
+                Resource.loadResource(data.cost),
+                targeterList.buildInstance(data.targeter),
                 data.mechanics.map(mechanic => mechanicList.buildInstance(mechanic))
             );
         };
@@ -49,7 +49,7 @@ class CardList {
                 data.name,
                 data.imageUrl,
                 data.type,
-                data.cost,
+                Resource.loadResource(data.cost),
                 targeterList.buildInstance(data.targeter),
                 data.damage,
                 data.life,
@@ -100,12 +100,10 @@ cardList.loadUnit(
         name: 'A',
         id: 'A',
         imageUrl: '',
-        cost: new Resource(0, 0, {
-            Synthesis: 1,
-            Decay: 0,
-            Growth: 0,
-            Renewal: 0
-        }),
+        cost: {
+            energy: 1,
+            synthesis: 1
+        },
         mechanics: [{ id: 'flying' }],
         targeter: { id: 'Untargeted' },
         life: 1,

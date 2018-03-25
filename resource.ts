@@ -27,6 +27,15 @@ export class Resource {
     private numeric: number;
     private maxNumeric: number;
 
+    static loadResource(saved: ResourcePrototype) {
+        return new Resource(saved.energy, saved.maxEnergy || 0, {
+            Decay: saved.decay || 0,
+            Growth: saved.growth || 0,
+            Renewal: saved.renewal || 0,
+            Synthesis: saved.synthesis || 0
+        });
+    }
+
     constructor(numeric: number, maxNumeric: number = 0, types?: ResourceTypeGroup, ) {
         this.numeric = numeric;
         this.maxNumeric = maxNumeric;
@@ -143,4 +152,13 @@ export class Resource {
         });
         return ok && this.numeric >= req.numeric;
     }
+}
+
+export interface ResourcePrototype {
+    energy: number;
+    maxEnergy?: number;
+    synthesis?: number;
+    growth?: number;
+    renewal?: number;
+    decay?: number;
 }
