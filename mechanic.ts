@@ -52,6 +52,10 @@ export abstract class Mechanic {
         return this.id;
     }
 
+    public getValidCardTypes() {
+        return this.validCardTypes;
+    }
+
     public canAttach(card: Card) {
         return this.validCardTypes.has(card.getCardType());
     }

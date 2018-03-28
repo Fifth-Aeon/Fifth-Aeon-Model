@@ -5,6 +5,7 @@ import { Mechanic } from '../mechanic';
 
 import * as skills from './mechanics/skills';
 import * as buffs from './mechanics/buff';
+import { CardType } from '../card';
 
 export interface MechanicData {
     id: string;
@@ -12,11 +13,15 @@ export interface MechanicData {
 
 class MechanicList {
     private constructors: Map<string, SimpleMechanicConstructor> = new Map();
+    private constructorList: SimpleMechanicConstructor[] =  [];
 
     public addConstructors(...constructors: SimpleMechanicConstructor[]) {
         for (let constructor of constructors) {
             let instance = new constructor();
-            this.constructors.set(instance.getId(), constructor);
+            constructor.id = instance.getId();
+            constructor.validCardTypes = instance.getValidCardTypes();
+            this.constructorList.push(constructor);
+            this.constructors.set(constructor.id, constructor);
         }
     }
 
@@ -25,9 +30,15 @@ class MechanicList {
         return new constructor();
     }
 
+    public getConstructors(cardType: CardType) {
+        return this.constructorList.filter(constructor => constructor.validCardTypes.has(cardType));
+    }
+
 }
 
 interface SimpleMechanicConstructor {
+    id?: string;
+    validCardTypes?: Set<CardType>;
     new(): Mechanic;
 }
 
