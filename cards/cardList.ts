@@ -11,6 +11,8 @@ import * as renewal from './renewalCards';
 import * as growth from './growthCards';
 import * as decay from './decayCards';
 import * as synthesis from './synthCards';
+import { Enchantment } from 'fifthaeon/enchantment';
+import { Item } from 'fifthaeon/item';
 
 export interface CardData {
     id: string;
@@ -28,33 +30,30 @@ export interface UnitData extends CardData {
     type: UnitType;
 }
 
+export interface ItemData extends CardData {
+    life: number;
+    damage: number;
+    hostTargeter: TargeterData;
+}
+
+export interface EnchantmentData extends CardData {
+    power: number;
+    empowerCost: number;
+}
+
 export type CardFactory = () => Card;
 
 class CardList {
     private factories = new Map<string, CardFactory>();
     private instances: Card[] = [];
 
-    public loadCard(data: CardData) {
-        const factory = () => {
-            return new Card(
-                data.id,
-                data.name,
-                data.imageUrl,
-                Resource.loadResource(data.cost),
-                targeterList.buildInstance(data.targeter),
-                data.mechanics.map(mechanic => mechanicList.buildInstance(mechanic))
-            );
-        };
+    public loadCard(data: CardData | UnitData | ItemData | EnchantmentData) {
+        const factory = this.buildCardFactory(data);
         this.addFactory(factory);
     }
 
-    public loadUnit(data: UnitData) {
-        const factory = this.buildUnitFactory(data);
-        this.addFactory(factory);
-    }
-
-    public buildUnitInstance(data: UnitData) {
-        return this.buildUnitFactory(data)();
+    public buildInstance(data: CardData | UnitData | ItemData | EnchantmentData) {
+        return this.buildCardFactory(data)();
     }
 
     public addFactory(...factories: CardFactory[]) {
@@ -85,6 +84,33 @@ class CardList {
         return this.factories.get(id);
     }
 
+
+    public buildCardFactory(data: CardData | UnitData | ItemData | EnchantmentData) {
+        switch (data.cardType) {
+            case CardType.Spell:
+                return this.buildSpellFactory(data as CardData);
+            case CardType.Unit:
+                return this.buildUnitFactory(data as UnitData);
+            case CardType.Item:
+                return this.buildItemFactory(data as ItemData);
+            case CardType.Enchantment:
+                return this.buildEnchantmentFactory(data as EnchantmentData);
+        }
+    }
+
+    private buildSpellFactory(data: CardData) {
+        return () => {
+            return new Card(
+                data.id,
+                data.name,
+                data.imageUrl,
+                Resource.loadResource(data.cost),
+                targeterList.buildInstance(data.targeter),
+                data.mechanics.map(mechanic => mechanicList.buildInstance(mechanic))
+            );
+        };
+    }
+
     private buildUnitFactory(data: UnitData) {
         return () => {
             return new Unit(
@@ -96,6 +122,37 @@ class CardList {
                 targeterList.buildInstance(data.targeter),
                 data.damage,
                 data.life,
+                data.mechanics.map(mechanic => mechanicList.buildInstance(mechanic))
+            );
+        };
+    }
+
+    private buildItemFactory(data: ItemData) {
+        return () => {
+            return new Item(
+                data.id,
+                data.name,
+                data.imageUrl,
+                Resource.loadResource(data.cost),
+                targeterList.buildInstance(data.targeter),
+                targeterList.buildInstance(data.hostTargeter),
+                data.damage,
+                data.life,
+                data.mechanics.map(mechanic => mechanicList.buildInstance(mechanic))
+            );
+        };
+    }
+
+    private buildEnchantmentFactory(data: EnchantmentData) {
+        return () => {
+            return new Enchantment(
+                data.id,
+                data.name,
+                data.imageUrl,
+                Resource.loadResource(data.cost),
+                targeterList.buildInstance(data.targeter),
+                data.empowerCost,
+                data.power,
                 data.mechanics.map(mechanic => mechanicList.buildInstance(mechanic))
             );
         };
