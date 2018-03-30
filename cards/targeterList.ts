@@ -50,7 +50,6 @@ interface TargeterConstructor {
 
 
 export const targeterList = new TargeterList();
-console.log('hai');
 for (let targeterGroup of targeterGroups) {
     targeterList.addConstructors(...(values(targeterGroup) as TargeterConstructor[]));
 }

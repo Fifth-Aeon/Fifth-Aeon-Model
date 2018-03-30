@@ -6,6 +6,7 @@ import { Mechanic } from '../mechanic';
 import * as skills from './mechanics/skills';
 import * as buffs from './mechanics/buff';
 import { CardType } from '../card';
+import { CardData } from 'fifthaeon/cards/cardList';
 
 export interface MechanicData {
     id: string;
@@ -13,7 +14,7 @@ export interface MechanicData {
 
 class MechanicList {
     private constructors: Map<string, SimpleMechanicConstructor> = new Map();
-    private constructorList: SimpleMechanicConstructor[] =  [];
+    private constructorList: SimpleMechanicConstructor[] = [];
 
     public addConstructors(...constructors: SimpleMechanicConstructor[]) {
         for (let constructor of constructors) {
@@ -32,6 +33,13 @@ class MechanicList {
 
     public getConstructors(cardType: CardType) {
         return this.constructorList.filter(constructor => constructor.validCardTypes.has(cardType));
+    }
+
+    public isValid(cardData: CardData, mechanic: MechanicData) {
+        const constructor = this.constructors.get(mechanic.id);
+        if (!constructor)
+            return false;
+        return constructor.validCardTypes.has(cardData.cardType);
     }
 
 }
