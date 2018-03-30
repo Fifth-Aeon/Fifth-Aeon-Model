@@ -5,7 +5,7 @@ import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { Player } from '../../player';
 import { GameEvent, EventType } from '../../gameEvent';
-import { PlayTrigger } from '../../trigger';
+import { PlayTrigger } from 'fifthaeon/cards/triggers/basic';
 
 
 export class DrawCard extends TriggeredMechanic {

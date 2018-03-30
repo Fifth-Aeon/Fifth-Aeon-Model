@@ -26,7 +26,7 @@ import * as sleep from './mechanics/sleep';
 import * as summonUnits from './mechanics/summonUnits';
 import * as synthSpecials from './mechanics/synthSpecials';
 import { TargeterData, targeterList } from 'fifthaeon/cards/targeterList';
-
+import { triggerList } from 'fifthaeon/cards/triggerList';
 
 export interface MechanicData {
     id: string;
@@ -49,6 +49,8 @@ class MechanicList {
     public buildInstance(data: MechanicData) {
         const constructor = this.constructors.get(data.id);
         const instance = new constructor();
+        if (constructor.prototype instanceof TriggeredMechanic && data.trigger )
+            (instance as TargetedMechanic).setTrigger(triggerList.buildInstance(data.trigger));
         if (constructor.prototype instanceof TargetedMechanic && data.targeter )
             (instance as TargetedMechanic).setTargeter(targeterList.buildInstance(data.targeter));
         return instance;

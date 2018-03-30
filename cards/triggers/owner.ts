@@ -7,6 +7,7 @@ import { Trigger } from '../../trigger';
 import { Player } from '../../player';
 
 export class OwnerAttacked extends Trigger {
+    protected static id = 'OwnerAttacked';
 
     public getName() {
         return 'Owner Attacked';

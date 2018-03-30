@@ -7,6 +7,8 @@ import { Trigger } from '../../trigger';
 import { EvalContext } from '../../mechanic';
 
 export class OnDeath extends Trigger {
+    protected static id = 'OnDeath';
+
     public getName() {
         return 'Death';
     }
@@ -31,6 +33,8 @@ export class OnDeath extends Trigger {
 }
 
 export class OnDeathAnyDeath extends Trigger {
+    protected static id = 'OnDeathAnyDeath';
+
     public getName() {
         return 'Death';
     }

@@ -6,6 +6,8 @@ import { GameEvent, EventType } from '../../gameEvent';
 import { Trigger } from '../../trigger';
 
 export class Serenity extends Trigger {
+    protected static id = 'Serenity';
+
     private triggered = false;
 
     public getName() {

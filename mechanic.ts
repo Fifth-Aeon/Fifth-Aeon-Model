@@ -3,9 +3,10 @@ import { Card,  GameZone } from './card';
 import {CardType} from './cardType';
 import { Unit } from './unit';
 import { Targeter } from './targeter';
-import { Trigger, PlayTrigger } from './trigger';
+import { Trigger } from './trigger';
 
 import { sumBy, multiply, reduce } from 'lodash';
+import { PlayTrigger } from 'fifthaeon/cards/triggers/basic';
 
 export enum EvalContext {
     LethalRemoval, NonlethalRemoval, Play
