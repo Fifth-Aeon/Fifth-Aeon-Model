@@ -1,7 +1,7 @@
 
 
 import { values } from 'lodash';
-import { Mechanic } from '../mechanic';
+import { Mechanic, TargetedMechanic, TriggeredMechanic } from '../mechanic';
 import { CardType } from '../card';
 import { CardData } from 'fifthaeon/cards/cardList';
 
@@ -25,10 +25,14 @@ import * as skills from './mechanics/skills';
 import * as sleep from './mechanics/sleep';
 import * as summonUnits from './mechanics/summonUnits';
 import * as synthSpecials from './mechanics/synthSpecials';
+import { TargeterData, targeterList } from 'fifthaeon/cards/targeterList';
 
 
 export interface MechanicData {
     id: string;
+    parameters: Array<any>;
+    targeter?: TargeterData;
+    trigger?: any;
 }
 
 class MechanicList {
@@ -43,8 +47,11 @@ class MechanicList {
     }
 
     public buildInstance(data: MechanicData) {
-        let constructor = this.constructors.get(data.id);
-        return new constructor();
+        const constructor = this.constructors.get(data.id);
+        const instance = new constructor();
+        if (constructor.prototype instanceof TargetedMechanic && data.targeter )
+            (instance as TargetedMechanic).setTargeter(targeterList.buildInstance(data.targeter));
+        return instance;
     }
 
     public getConstructors(cardType: CardType) {

@@ -84,7 +84,7 @@ export class EnchantmentSummon extends SummonUnits {
 }
 
 export class SummonUnitOnDamage extends Mechanic {
-    protected static id = 'EnchantmentSummon';
+    protected static id = 'SummonUnitOnDamage';
 
     protected name: string;
     protected unit: Unit;
