@@ -2,27 +2,43 @@
 
 import { values } from 'lodash';
 import { Mechanic } from '../mechanic';
-
-import * as skills from './mechanics/skills';
-import * as buffs from './mechanics/buff';
 import { CardType } from '../card';
 import { CardData } from 'fifthaeon/cards/cardList';
+
+import * as buff from './mechanics/buff';
+import * as cantAttack from './mechanics/cantAttack';
+import * as dealDamage from './mechanics/dealDamage';
+import * as decaySpecials from './mechanics/decaySpecials';
+import * as draw from './mechanics/draw';
+import * as enchantmentCounters from './mechanics/enchantmentCounters';
+import * as growthSpecials from './mechanics/growthSpecials';
+import * as heal from './mechanics/heal';
+// import * as lordship from './mechanics/lordship';
+import * as mindControl from './mechanics/mindControl';
+import * as playerAid from './mechanics/playerAid';
+import * as poison from './mechanics/poison';
+import * as removal from './mechanics/removal';
+import * as returnFromCrypt from './mechanics/returnFromCrypt';
+import * as shieldEnchantments from './mechanics/shieldEnchantments';
+import * as shuffleIntoDeck from './mechanics/shuffleIntoDeck';
+import * as skills from './mechanics/skills';
+import * as sleep from './mechanics/sleep';
+import * as summonUnits from './mechanics/summonUnits';
+import * as synthSpecials from './mechanics/synthSpecials';
+
 
 export interface MechanicData {
     id: string;
 }
 
 class MechanicList {
-    private constructors: Map<string, SimpleMechanicConstructor> = new Map();
-    private constructorList: SimpleMechanicConstructor[] = [];
+    private constructors: Map<string, MechanicConstructor> = new Map();
+    private constructorList: MechanicConstructor[] = [];
 
-    public addConstructors(...constructors: SimpleMechanicConstructor[]) {
+    public addConstructors(...constructors: MechanicConstructor[]) {
         for (let constructor of constructors) {
-            let instance = new constructor();
-            constructor.id = instance.getId();
-            constructor.validCardTypes = instance.getValidCardTypes();
             this.constructorList.push(constructor);
-            this.constructors.set(constructor.id, constructor);
+            this.constructors.set(constructor.getId(), constructor);
         }
     }
 
@@ -32,26 +48,29 @@ class MechanicList {
     }
 
     public getConstructors(cardType: CardType) {
-        return this.constructorList.filter(constructor => constructor.validCardTypes.has(cardType));
+        return this.constructorList.filter(constructor => constructor.isValidParent(cardType));
     }
 
     public isValid(cardData: CardData, mechanic: MechanicData) {
         const constructor = this.constructors.get(mechanic.id);
         if (!constructor)
             return false;
-        return constructor.validCardTypes.has(cardData.cardType);
+        return constructor.isValidParent(cardData.cardType);
     }
 
 }
 
-interface SimpleMechanicConstructor {
-    id?: string;
-    validCardTypes?: Set<CardType>;
-    new(): Mechanic;
+interface MechanicConstructor {
+    getId(): string;
+    isValidParent(CardType): boolean;
+    new(param1?, param2?): Mechanic;
 }
 
 
 export const mechanicList = new MechanicList();
-
-
-mechanicList.addConstructors(...(values(skills) as SimpleMechanicConstructor[]));
+const sources = [buff, cantAttack, dealDamage, decaySpecials, draw, enchantmentCounters,
+    growthSpecials, heal, mindControl, playerAid, poison, removal,
+    returnFromCrypt, shieldEnchantments, shuffleIntoDeck, skills, sleep, summonUnits, synthSpecials];
+for (let source of sources) {
+    mechanicList.addConstructors(...(values(source) as MechanicConstructor[]));
+}

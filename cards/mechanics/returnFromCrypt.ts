@@ -5,7 +5,7 @@ import { Card } from '../../card';
 import { Unit } from '../../unit';
 
 export class ReturnFromCrypt extends TriggeredMechanic {
-    protected id = 'ReturnFromCrypt';
+    protected static id = 'ReturnFromCrypt';
     constructor(private filter: (card: Card) => boolean) {
         super();
     }

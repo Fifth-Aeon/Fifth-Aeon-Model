@@ -1,13 +1,16 @@
 import { Mechanic, TargetedMechanic, EvalContext } from '../../mechanic';
 import { Game } from '../../Game';
 import { Targeter } from '../../targeter';
-import { Card } from '../../card';
+import { Card, CardType } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
 
 
 export class Sleeping extends Mechanic {
+    protected static id = 'Sleeping';
+    protected static validCardTypes = new Set([CardType.Unit]);
+
     constructor(private turns: number = 1) {
         super();
     }
@@ -52,7 +55,7 @@ export class Sleeping extends Mechanic {
 }
 
 export class SleepTarget extends TargetedMechanic {
-    protected id = 'SleepTarget';
+    protected static id = 'SleepTarget';
     constructor(private turns: number) {
         super();
     }

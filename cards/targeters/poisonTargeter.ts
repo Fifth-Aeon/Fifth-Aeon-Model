@@ -35,3 +35,22 @@ export class PoisonableUnits extends AllUnits {
         return 'all units';
     }
 }
+
+export class CurePoisonTargeter extends Targeter {
+    protected static id = 'CurePoisonTargeter';
+
+    public getValidTargets(card: Card, game: Game) {
+        let owner = game.getPlayer(card.getOwner());
+        return game.getBoard()
+            .getPlayerUnits(card.getOwner())
+            .filter(unit => unit.hasMechanicWithId('poison'));
+    }
+
+    public getText() {
+        return 'target posioned unit';
+    }
+
+    public isOptional() {
+        return true;
+    }
+}

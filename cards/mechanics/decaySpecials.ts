@@ -1,13 +1,14 @@
 import { Mechanic, TargetedMechanic, TriggeredMechanic } from '../../mechanic';
 import { Game } from '../../Game';
 import { Targeter } from '../../targeter';
-import { Card, GameZone } from '../../card';
+import { Card, GameZone, CardType } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
 import { remove, take, sumBy } from 'lodash';
 
 export class TransformDamaged extends Mechanic {
+    protected static id = 'TransformDamaged';
     private unitDesc: string;
     constructor(private transformation: () => Unit) {
         super();
@@ -44,7 +45,9 @@ export class TransformDamaged extends Mechanic {
 }
 
 export class AbominationConsume extends TriggeredMechanic {
-    protected id = 'AbominationConsume';
+    protected static id = 'AbominationConsume';
+    protected static validCardTypes = new Set([CardType.Unit, CardType.Item]);
+
     public onTrigger(card: Card, game: Game) {
         let crypt = game.getCrypt(card.getOwner());
         let valid = crypt.filter(cryptCard => cryptCard.isUnit());

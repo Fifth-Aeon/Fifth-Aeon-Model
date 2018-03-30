@@ -1,6 +1,6 @@
 import { Game } from './game';
 import { Player } from './player';
-import { Card, GameZone } from './card';
+import { Card, GameZone, CardType } from './card';
 import { Item } from './item';
 import { EventGroup, EventType } from './gameEvent';
 import { Resource } from './resource';
@@ -10,6 +10,7 @@ import { Mechanic, TriggeredMechanic } from './mechanic';
 import { groupBy } from 'lodash';
 
 export class Permanent extends Card {
+    static cardTypes = new Set([CardType.Unit, CardType.Item]);
 
     public getText(game: Game): string {
         if (this.text)

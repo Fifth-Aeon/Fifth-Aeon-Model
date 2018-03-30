@@ -9,7 +9,7 @@ import { PlayTrigger } from '../../trigger';
 
 
 export class DrawCard extends TriggeredMechanic {
-    protected id = 'DrawCard';
+    protected static id = 'DrawCard';
     protected triggerType = new PlayTrigger();
 
     constructor(private count: number) {
@@ -32,7 +32,7 @@ export class DrawCard extends TriggeredMechanic {
 }
 
 export class Peek extends TriggeredMechanic {
-    protected id = 'Peek';
+    protected static id = 'Peek';
     protected triggerType = new PlayTrigger();
 
     public onTrigger(card: Card, game: Game) {
@@ -53,7 +53,7 @@ export class Peek extends TriggeredMechanic {
 }
 
 export class Discard extends TriggeredMechanic {
-    protected id = 'Discard';
+    protected static id = 'Discard';
     protected triggerType = new PlayTrigger();
     constructor(private count: number) {
         super();
@@ -73,6 +73,8 @@ export class Discard extends TriggeredMechanic {
 }
 
 export class DiscardOnDamage extends Mechanic {
+    protected static id = 'DiscardOnDamage';
+
     public enter(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.DealDamage, params => {
@@ -98,7 +100,7 @@ export class DiscardOnDamage extends Mechanic {
 }
 
 export class AugarCard extends TriggeredMechanic {
-    protected id = 'AugarCard';
+    protected static id = 'AugarCard';
     protected triggerType = new PlayTrigger();
     public onTrigger(card: Card, game: Game) {
         let owner = game.getPlayer(card.getOwner());

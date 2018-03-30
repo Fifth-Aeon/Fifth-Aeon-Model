@@ -6,7 +6,9 @@ import { Unit } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
 export class DamageOnBlock extends Mechanic {
-    protected validCardTypes = new Set([CardType.Unit, CardType.Item]);
+    protected static id = 'DamageOnBlock';
+
+    protected static validCardTypes = new Set([CardType.Unit, CardType.Item]);
 
     constructor(protected damage: number) {
         super();
@@ -36,7 +38,7 @@ export class DamageOnBlock extends Mechanic {
 }
 
 export class DealDamage extends TargetedMechanic {
-    protected id = 'DealDamage';
+    protected static id = 'DealDamage';
     constructor(protected amount: number) {
         super();
     }
@@ -64,6 +66,8 @@ export class DealDamage extends TargetedMechanic {
 }
 
 export class BiteDamage extends DealDamage {
+    protected static id = 'BiteDamage';
+
     constructor() {
         super(0);
     }
@@ -82,6 +86,8 @@ export class BiteDamage extends DealDamage {
 }
 
 export class DamageSpawnOnKill extends DealDamage {
+    protected static id = 'DamageSpawnOnKill';
+
     private name: string;
     constructor(amount: number, private factory: () => Unit) {
         super(amount);
@@ -105,6 +111,8 @@ export class DamageSpawnOnKill extends DealDamage {
 
 
 export class DealSynthDamage extends DealDamage {
+    protected static id = 'DealSynthDamage';
+
     constructor() {
         super(0);
     }

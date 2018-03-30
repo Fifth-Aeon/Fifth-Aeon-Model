@@ -18,14 +18,12 @@ import { Discharge, Recharge } from './mechanics/enchantmentCounters';
 import { Flying, Rush, Aquatic, Lethal, Lifesteal, Deathless, Immortal, Relentless } from './mechanics/skills';
 import { Discard, DiscardOnDamage } from './mechanics/draw';
 import { BuffTargetAndGrant, BuffTarget } from './mechanics/buff';
-import { EndOfTurn } from './mechanics/periodic';
 import { CannotAttack } from './mechanics/cantAttack';
 import { PoisonTarget, PoisonImmune } from './mechanics/poison';
 import { ReturnFromCrypt } from './mechanics/returnFromCrypt';
 import { TransformDamaged, AbominationConsume } from './mechanics/decaySpecials';
 import { SummonUnitForGrave, SummonUnitOnDamage, SummonUnits } from './mechanics/summonUnits';
 import { DamageSpawnOnKill } from './mechanics/dealDamage';
-import { OnDeathAnyDeath } from './mechanics/death';
 import { unitTypeLordshipInclusive, unitTypeLordshipAll, notUnitLordship } from './mechanics/lordship';
 import { KillTarget } from './mechanics/removal';
 import { DeathCounter } from './mechanics/shieldEnchantments';
@@ -316,11 +314,12 @@ export function lich() {
         }),
         new Untargeted(),
         4, 4,
-        [new Deathless(), new OnDeathAnyDeath('summon a Skeleton', 6, (unit, dying, game) => {
+        [new Deathless(), /* new OnDeathAnyDeath('summon a Skeleton', 6, (unit, dying, game) => {
             game.playGeneratedUnit(unit.getOwner(), skeleton());
-        })]
+        })*/]
     );
 }
+
 
 export function Hemmorage() {
     return new Card(

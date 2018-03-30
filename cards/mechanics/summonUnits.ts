@@ -1,14 +1,14 @@
 import { Mechanic, EvalContext, TriggeredMechanic } from '../../mechanic';
 import { Game, GamePhase } from '../../game';
 import { Targeter } from '../../targeter';
-import { Card } from '../../card';
+import { Card, CardType } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 import { Enchantment } from '../../enchantment';
 import { a } from '../../strings';
 
 export class SummonUnits extends TriggeredMechanic {
-    protected id = 'SummonUnits';
+    protected static id = 'SummonUnits';
     protected name: string;
     protected unit: Unit;
     constructor(protected factory: () => Unit, protected count: number = 1) {
@@ -39,6 +39,8 @@ export class SummonUnits extends TriggeredMechanic {
 }
 
 export class SummonUnitForGrave extends SummonUnits {
+    protected static id = 'SummonUnitForGrave';
+
     constructor(factory: () => Unit, private factor: number) {
         super(factory, 0);
     }
@@ -58,7 +60,8 @@ export class SummonUnitForGrave extends SummonUnits {
 }
 
 export class EnchantmentSummon extends SummonUnits {
-    protected id = 'EnchantmentSummon';
+    protected static id = 'EnchantmentSummon';
+    protected static validCardTypes = new Set([CardType.Enchantment]);
 
     public onTrigger(card: Card, game: Game) {
         let owner = game.getPlayer(card.getOwner());
@@ -81,6 +84,8 @@ export class EnchantmentSummon extends SummonUnits {
 }
 
 export class SummonUnitOnDamage extends Mechanic {
+    protected static id = 'EnchantmentSummon';
+
     protected name: string;
     protected unit: Unit;
 

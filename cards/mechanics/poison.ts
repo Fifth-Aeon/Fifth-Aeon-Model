@@ -5,26 +5,8 @@ import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
-
-export class CurePoisonTargeter extends Targeter {
-    public getValidTargets(card: Card, game: Game) {
-        let owner = game.getPlayer(card.getOwner());
-        return game.getBoard()
-            .getPlayerUnits(card.getOwner())
-            .filter(unit => unit.hasMechanicWithId('poison'));
-    }
-
-    public getText() {
-        return 'target posioned unit';
-    }
-
-    public isOptional() {
-        return true;
-    }
-}
-
 export class CurePoison extends TargetedMechanic {
-    protected id = 'CurePoison';
+    protected static id = 'CurePoison';
     public onTrigger(card: Card, game: Game) {
         this.targeter.getTargets(card, game).forEach(target => {
             target.removeMechanic('poisoned', game);
@@ -41,6 +23,8 @@ export class CurePoison extends TargetedMechanic {
 }
 
 export class Poisoned extends Mechanic {
+protected static id = 'Poisoned';
+
     private level = 1;
     public enter(card: Card, game: Game) {
         let unit = card as Unit;
@@ -77,7 +61,8 @@ export class Poisoned extends Mechanic {
 }
 
 export class PoisonTarget extends TargetedMechanic {
-    protected id = 'PoisonTarget';
+protected static id = 'PoisonTarget';
+
     public onTrigger(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game)) {
             target.addMechanic(new Poisoned(), game);
@@ -94,6 +79,8 @@ export class PoisonTarget extends TargetedMechanic {
 }
 
 export class Venomous extends Mechanic {
+protected static id = 'Venomous';
+
     public enter(card: Card, game: Game) {
         let unit = card as Unit;
         unit.getEvents().addEvent(this, new GameEvent(EventType.DealDamage, (params) => {
@@ -118,6 +105,8 @@ export class Venomous extends Mechanic {
 }
 
 export class PoisonImmune extends Mechanic {
+protected static id = 'PoisonImmune';
+
     public enter(card: Card, game: Game) {
         (card as Unit).addImmunity('poisoned');
     }

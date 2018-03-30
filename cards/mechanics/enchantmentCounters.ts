@@ -6,7 +6,8 @@ import { Enchantment } from '../../enchantment';
 import { GameEvent, EventType } from '../../gameEvent';
 
 export class Recharge extends Mechanic {
-    protected validCardTypes = new Set([CardType.Enchantment]);
+    protected static id = 'Recharge';
+    protected static validCardTypes = new Set([CardType.Enchantment]);
 
     constructor(protected amountPerTurn: number) {
         super();
@@ -36,6 +37,8 @@ export class Recharge extends Mechanic {
 }
 
 export class Discharge extends Recharge {
+protected static id = 'Discharge';
+
     public enter(card: Card, game: Game) {
         let enchantment = card as Enchantment;
         game.gameEvents.addEvent(this, new GameEvent(EventType.StartOfTurn, (params) => {
@@ -60,6 +63,8 @@ export class Discharge extends Recharge {
 }
 
 export class ChangePower extends TriggeredMechanic {
+protected static id = 'ChangePower';
+
     private desc: string;
     constructor(private diff: number) {
         super();
@@ -86,7 +91,8 @@ export class ChangePower extends TriggeredMechanic {
 }
 
 export class CannotBeEmpowered extends Mechanic {
-    protected validCardTypes = new Set([CardType.Enchantment]);
+    protected static validCardTypes = new Set([CardType.Enchantment]);
+    protected static id = 'CannotBeEmpowered';
 
     public enter(card: Card, game: Game) {
         (card as Enchantment).setEmpowerable(false);
@@ -107,7 +113,9 @@ export class CannotBeEmpowered extends Mechanic {
 
 
 export class CannotBeDiminished extends Mechanic {
-    protected validCardTypes = new Set([CardType.Enchantment]);
+protected static id = 'CannotBeDiminished';
+
+    protected static validCardTypes = new Set([CardType.Enchantment]);
 
     public enter(card: Card, game: Game) {
         (card as Enchantment).setDiminishable(false);

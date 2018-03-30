@@ -5,8 +5,12 @@ import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 import { formatBuff } from '../../strings';
+import { Permanent } from 'fifthaeon/permanent';
 
 export class Lordship extends Mechanic {
+    protected static id = 'Lordship';
+    protected static validCardTypes = Permanent.cardTypes;
+
     constructor(private text: string,
         private valuePerUnit: number,
         private addEffect: (unit: Unit, game: Game) => void,
