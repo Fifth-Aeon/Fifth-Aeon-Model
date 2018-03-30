@@ -14,7 +14,7 @@ import * as synthesis from './synthCards';
 import { Enchantment } from 'fifthaeon/enchantment';
 import { Item } from 'fifthaeon/item';
 
-export interface CardData {
+export interface SpellData {
     id: string;
     cardType: CardType;
     name: string;
@@ -24,22 +24,24 @@ export interface CardData {
     cost: ResourcePrototype;
 }
 
-export interface UnitData extends CardData {
+export interface UnitData extends SpellData {
     life: number;
     damage: number;
     type: UnitType;
 }
 
-export interface ItemData extends CardData {
+export interface ItemData extends SpellData {
     life: number;
     damage: number;
     hostTargeter: TargeterData;
 }
 
-export interface EnchantmentData extends CardData {
+export interface EnchantmentData extends SpellData {
     power: number;
     empowerCost: number;
 }
+
+export type CardData = SpellData | UnitData | ItemData | EnchantmentData;
 
 export type CardFactory = () => Card;
 
@@ -47,12 +49,12 @@ class CardList {
     private factories = new Map<string, CardFactory>();
     private instances: Card[] = [];
 
-    public loadCard(data: CardData | UnitData | ItemData | EnchantmentData) {
+    public loadCard(data: CardData) {
         const factory = this.buildCardFactory(data);
         this.addFactory(factory);
     }
 
-    public buildInstance(data: CardData | UnitData | ItemData | EnchantmentData) {
+    public buildInstance(data: CardData) {
         return this.buildCardFactory(data)();
     }
 
@@ -84,11 +86,10 @@ class CardList {
         return this.factories.get(id);
     }
 
-
-    public buildCardFactory(data: CardData | UnitData | ItemData | EnchantmentData) {
+    public buildCardFactory(data: CardData) {
         switch (data.cardType) {
             case CardType.Spell:
-                return this.buildSpellFactory(data as CardData);
+                return this.buildSpellFactory(data as SpellData);
             case CardType.Unit:
                 return this.buildUnitFactory(data as UnitData);
             case CardType.Item:
@@ -98,7 +99,7 @@ class CardList {
         }
     }
 
-    private buildSpellFactory(data: CardData) {
+    private buildSpellFactory(data: SpellData) {
         return () => {
             return new Card(
                 data.id,
