@@ -10,7 +10,7 @@ import { remove } from 'lodash';
 
 export class GainLife extends TriggeredMechanic {
     protected static id = 'GainLife';
-    constructor(private amount: number) {
+    constructor(private amount: number = 1) {
         super();
     }
 
@@ -30,7 +30,7 @@ export class GainLife extends TriggeredMechanic {
 
 export class GainResource extends TriggeredMechanic {
     protected static id = 'GainResource';
-    constructor(private resource: Resource) {
+    constructor(private resource: Resource = new Resource(1, 1)) {
         super();
     }
 

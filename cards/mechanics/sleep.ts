@@ -56,7 +56,7 @@ export class Sleeping extends Mechanic {
 
 export class SleepTarget extends TargetedMechanic {
     protected static id = 'SleepTarget';
-    constructor(private turns: number) {
+    constructor(private turns: number = 1) {
         super();
     }
 

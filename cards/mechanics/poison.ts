@@ -23,7 +23,7 @@ export class CurePoison extends TargetedMechanic {
 }
 
 export class Poisoned extends Mechanic {
-protected static id = 'Poisoned';
+    protected static id = 'Poisoned';
 
     private level = 1;
     public enter(card: Card, game: Game) {
@@ -61,7 +61,7 @@ protected static id = 'Poisoned';
 }
 
 export class PoisonTarget extends TargetedMechanic {
-protected static id = 'PoisonTarget';
+    protected static id = 'PoisonTarget';
 
     public onTrigger(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game)) {
@@ -79,7 +79,7 @@ protected static id = 'PoisonTarget';
 }
 
 export class Venomous extends Mechanic {
-protected static id = 'Venomous';
+    protected static id = 'Venomous';
 
     public enter(card: Card, game: Game) {
         let unit = card as Unit;
@@ -105,7 +105,7 @@ protected static id = 'Venomous';
 }
 
 export class PoisonImmune extends Mechanic {
-protected static id = 'PoisonImmune';
+    protected static id = 'PoisonImmune';
 
     public enter(card: Card, game: Game) {
         (card as Unit).addImmunity('poisoned');

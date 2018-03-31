@@ -10,7 +10,7 @@ export class DamageOnBlock extends Mechanic {
 
     protected static validCardTypes = new Set([CardType.Unit, CardType.Item]);
 
-    constructor(protected damage: number) {
+    constructor(protected damage: number = 1) {
         super();
     }
 
@@ -39,7 +39,7 @@ export class DamageOnBlock extends Mechanic {
 
 export class DealDamage extends TargetedMechanic {
     protected static id = 'DealDamage';
-    constructor(protected amount: number) {
+    constructor(protected amount: number = 1) {
         super();
     }
 
@@ -89,7 +89,7 @@ export class DamageSpawnOnKill extends DealDamage {
     protected static id = 'DamageSpawnOnKill';
 
     private name: string;
-    constructor(amount: number, private factory: () => Unit) {
+    constructor(amount: number = 1, private factory: () => Unit) {
         super(amount);
         this.name = factory().getName();
     }

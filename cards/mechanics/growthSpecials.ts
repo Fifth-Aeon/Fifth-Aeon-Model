@@ -10,7 +10,7 @@ import { remove } from 'lodash';
 
 export class DrawCardsFromUnit extends TargetedMechanic {
     protected static id = 'DrawCardsFromUnit';
-    constructor(private factor: number) {
+    constructor(private factor: number = 3) {
         super();
     }
 

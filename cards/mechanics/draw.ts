@@ -12,7 +12,7 @@ export class DrawCard extends TriggeredMechanic {
     protected static id = 'DrawCard';
     protected triggerType = new PlayTrigger();
 
-    constructor(private count: number) {
+    constructor(private count: number = 1) {
         super();
     }
 
@@ -55,7 +55,7 @@ export class Peek extends TriggeredMechanic {
 export class Discard extends TriggeredMechanic {
     protected static id = 'Discard';
     protected triggerType = new PlayTrigger();
-    constructor(private count: number) {
+    constructor(private count: number = 1) {
         super();
     }
     public onTrigger(card: Card, game: Game) {

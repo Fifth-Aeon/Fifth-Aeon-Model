@@ -8,7 +8,7 @@ import { properCase, properList } from '../../strings';
 
 export class BuffTarget extends TargetedMechanic {
     protected static id = 'BuffTarget';
-    constructor(private damage: number, private life: number) {
+    constructor(private damage: number = 1, private life: number = 1) {
         super();
     }
 
@@ -34,7 +34,7 @@ export class BuffTarget extends TargetedMechanic {
 
 export class BuffTargetAndGrant extends TargetedMechanic {
     protected static id = 'BuffTargetAndGrant';
-    constructor(private damage: number, private life: number, private abilities: Mechanic[]) {
+    constructor(private damage: number = 1, private life: number = 1, private abilities: Mechanic[] = []) {
         super();
     }
 

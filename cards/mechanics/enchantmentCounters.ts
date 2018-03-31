@@ -9,7 +9,7 @@ export class Recharge extends Mechanic {
     protected static id = 'Recharge';
     protected static validCardTypes = new Set([CardType.Enchantment]);
 
-    constructor(protected amountPerTurn: number) {
+    constructor(protected amountPerTurn: number = 1) {
         super();
     }
 
@@ -37,7 +37,9 @@ export class Recharge extends Mechanic {
 }
 
 export class Discharge extends Recharge {
-protected static id = 'Discharge';
+    protected static id = 'Discharge';
+    protected static validCardTypes = new Set([CardType.Enchantment]);
+
 
     public enter(card: Card, game: Game) {
         let enchantment = card as Enchantment;
@@ -63,10 +65,11 @@ protected static id = 'Discharge';
 }
 
 export class ChangePower extends TriggeredMechanic {
-protected static id = 'ChangePower';
+    protected static id = 'ChangePower';
+    protected static validCardTypes = new Set([CardType.Enchantment]);
 
     private desc: string;
-    constructor(private diff: number) {
+    constructor(private diff: number = 1) {
         super();
         this.desc = diff > 0 ? 'Gain' : 'Lose';
         this.desc += ' ' + Math.abs(diff) + ' power.';
@@ -113,8 +116,7 @@ export class CannotBeEmpowered extends Mechanic {
 
 
 export class CannotBeDiminished extends Mechanic {
-protected static id = 'CannotBeDiminished';
-
+    protected static id = 'CannotBeDiminished';
     protected static validCardTypes = new Set([CardType.Enchantment]);
 
     public enter(card: Card, game: Game) {
