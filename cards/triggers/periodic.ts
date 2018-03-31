@@ -5,21 +5,16 @@ import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 import { Trigger } from '../../trigger';
 
-class PeriodicTrgger extends Trigger {
-    private triggered = false;
-    private desc: string;
-
-    constructor(private period: EventType, private friendly: boolean, private name: string, private heuristic: number) {
-        super();
-    }
+export class Dusk extends Trigger {
+    protected static id = 'Dusk';
 
     public getName() {
-        return this.name;
+        return 'Dusk';
     }
 
     public register(card: Card, game: Game) {
-        game.gameEvents.addEvent(this, new GameEvent(this.period, (params) => {
-            if (!this.friendly || game.getCurrentPlayer().getPlayerNumber() === card.getOwner()) {
+        game.gameEvents.addEvent(this, new GameEvent(EventType.EndOfTurn, (params) => {
+            if (game.getCurrentPlayer().getPlayerNumber() === card.getOwner()) {
                 this.mechanic.onTrigger(card, game);
             }
             return params;
@@ -31,23 +26,46 @@ class PeriodicTrgger extends Trigger {
     }
 
     public evaluate(host: Card, game: Game) {
-        return this.heuristic;
+        return 2;
     }
 }
 
-export function friendlyEOT() {
-    return new PeriodicTrgger(EventType.EndOfTurn, true, 'Dusk', 2);
+export class Dawn extends Dusk {
+    protected static id = 'Dawn';
+
+    public getName() {
+        return 'dawn';
+    }
+
+    public register(card: Card, game: Game) {
+        game.gameEvents.addEvent(this, new GameEvent(EventType.StartOfTurn, (params) => {
+            if (game.getCurrentPlayer().getPlayerNumber() === card.getOwner()) {
+                this.mechanic.onTrigger(card, game);
+            }
+            return params;
+        }));
+    }
+
+    public evaluate(host: Card, game: Game) {
+        return 1.5;
+    }
 }
 
-export function anyEOT() {
-    return new PeriodicTrgger(EventType.EndOfTurn, false, 'Cycle', 3);
-}
+export class Cycle extends Dusk {
+    protected static id = 'Cycle';
 
-export function friendlySOT() {
-    return new PeriodicTrgger(EventType.StartOfTurn, true, 'Dawn', 1.5);
-}
+    public getName() {
+        return 'cycle';
+    }
 
-export function anySOT() {
-    return new PeriodicTrgger(EventType.StartOfTurn, false, 'Start of Any Turn', 2);
-}
+    public register(card: Card, game: Game) {
+        game.gameEvents.addEvent(this, new GameEvent(EventType.EndOfTurn, (params) => {
+            this.mechanic.onTrigger(card, game);
+            return params;
+        }));
+    }
 
+    public evaluate(host: Card, game: Game) {
+        return 3;
+    }
+}

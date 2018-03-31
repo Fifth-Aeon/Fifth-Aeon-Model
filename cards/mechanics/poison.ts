@@ -4,6 +4,7 @@ import { Targeter } from '../../targeter';
 import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
+import { Permanent } from 'fifthaeon/permanent';
 
 export class CurePoison extends TargetedMechanic {
     protected static id = 'CurePoison';
@@ -24,6 +25,7 @@ export class CurePoison extends TargetedMechanic {
 
 export class Poisoned extends Mechanic {
     protected static id = 'Poisoned';
+    protected static validCardTypes = Permanent.cardTypes;
 
     private level = 1;
     public enter(card: Card, game: Game) {
@@ -80,6 +82,7 @@ export class PoisonTarget extends TargetedMechanic {
 
 export class Venomous extends Mechanic {
     protected static id = 'Venomous';
+    protected static validCardTypes = Permanent.cardTypes;
 
     public enter(card: Card, game: Game) {
         let unit = card as Unit;
@@ -106,6 +109,7 @@ export class Venomous extends Mechanic {
 
 export class PoisonImmune extends Mechanic {
     protected static id = 'PoisonImmune';
+    protected static validCardTypes = Permanent.cardTypes;
 
     public enter(card: Card, game: Game) {
         (card as Unit).addImmunity('poisoned');

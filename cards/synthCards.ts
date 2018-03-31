@@ -13,7 +13,6 @@ import {
 import { PoisonImmune } from './mechanics/poison';
 import { ShuffleIntoDeck } from './mechanics/shuffleIntoDeck';
 import { AugarCard, DrawCard, Peek } from './mechanics/draw';
-import { friendlyEOT } from './triggers/periodic';
 import { CannotAttack, CannotBlock } from './mechanics/cantAttack';
 import { Flying, Ranged, Lethal, Shielded, Relentless, Aquatic, Unblockable } from './mechanics/skills';
 import { friendlyLordship } from './mechanics/lordship';
@@ -27,6 +26,7 @@ import { Recharge } from './mechanics/enchantmentCounters';
 import { ForceField } from './mechanics/shieldEnchantments';
 import { EnchantmentSummon } from './mechanics/summonUnits';
 import { RefreshTarget } from './mechanics/heal';
+import { Dusk } from 'fifthaeon/cards/triggers/periodic';
 
 export function assemblyLine() {
     return new Enchantment(
@@ -41,7 +41,7 @@ export function assemblyLine() {
         }),
         new Untargeted(),
         5, 1,
-        [new EnchantmentSummon(automatedInfantry, 1).setTrigger(friendlyEOT())]
+        [new EnchantmentSummon(automatedInfantry, 1).setTrigger(new Dusk())]
     );
 }
 
@@ -440,7 +440,7 @@ export function siegeArtillery() {
         }),
         new Untargeted(),
         1, 1,
-        [   new DealDamage(1).setTargeter(new EnemyPlayer()).setTrigger(friendlyEOT()) ]
+        [   new DealDamage(1).setTargeter(new EnemyPlayer()).setTrigger(new Dusk()) ]
     );
 }
 
@@ -564,8 +564,8 @@ export function mine() {
         0, 3,
         [
             new CannotAttack(),
-            new DrawCard(1).setTrigger(friendlyEOT()),
-            new BuffTarget(0, -1).setTargeter(new SelfTarget()).setTrigger(friendlyEOT())
+            new DrawCard(1).setTrigger(new Dusk()),
+            new BuffTarget(0, -1).setTargeter(new SelfTarget()).setTrigger(new Dusk())
         ]
     );
 }

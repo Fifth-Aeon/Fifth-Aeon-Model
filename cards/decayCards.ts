@@ -27,11 +27,11 @@ import { DamageSpawnOnKill } from './mechanics/dealDamage';
 import { unitTypeLordshipInclusive, unitTypeLordshipAll, notUnitLordship } from './mechanics/lordship';
 import { KillTarget } from './mechanics/removal';
 import { DeathCounter } from './mechanics/shieldEnchantments';
-import { OnDeath } from './triggers/death';
+import { DeathTrigger } from './triggers/death';
 import { LethalStrike } from './triggers/lethalStrike';
 import { GainLife } from './mechanics/playerAid';
 import { DealDamage, DealSynthDamage, DamageOnBlock } from './mechanics/dealDamage';
-import { friendlyEOT, anyEOT, friendlySOT } from './triggers/periodic';
+import { Dusk } from 'fifthaeon/cards/triggers/periodic';
 
 export function imp() {
     return new Unit(
@@ -140,10 +140,10 @@ export function impKeep() {
         new Untargeted(),
         4, 2,
         [
-            new SummonUnits(imp).setTrigger(friendlyEOT()),
+            new SummonUnits(imp).setTrigger(new Dusk()),
             new DealDamage(1)
                 .setTargeter(new OwningPlayer())
-                .setTrigger(friendlyEOT())
+                .setTrigger(new Dusk())
         ]
     );
 }
@@ -434,7 +434,7 @@ export function rottingZombie() {
         }),
         new Untargeted(),
         2, 2,
-        [new SummonUnits(crawlingZombie, 1).setTrigger(new OnDeath())]
+        [new SummonUnits(crawlingZombie, 1).setTrigger(new DeathTrigger())]
     );
 }
 

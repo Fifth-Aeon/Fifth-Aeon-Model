@@ -29,9 +29,9 @@ import { PreventAllDamage } from './mechanics/shieldEnchantments';
 import { GainLife } from './mechanics/playerAid';
 import { DrawCard } from './mechanics/draw';
 import { OwnerAttacked } from './triggers/owner';
-import { friendlyEOT } from 'fifthaeon/cards/triggers/periodic';
 import { RenewalMCTargeter } from 'fifthaeon/cards/targeters/mindControlTargeter';
 import { CurePoisonTargeter } from 'fifthaeon/cards/targeters/poisonTargeter';
+import { Dusk, Dawn } from 'fifthaeon/cards/triggers/periodic';
 
 export function pegasus() {
     return new Unit(
@@ -293,7 +293,7 @@ export function kingUnit() {
         new Untargeted(),
         3, 5,
         [unitTypeLordshipInclusive(UnitType.Soldier, 1, 1),
-            new SummonUnits(pikeman).setTrigger(friendlyEOT())
+            new SummonUnits(pikeman).setTrigger(new Dawn())
         ]
     );
 }

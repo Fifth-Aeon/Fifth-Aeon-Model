@@ -12,6 +12,8 @@ import * as death from 'fifthaeon/cards/triggers/death';
 import * as lethalStrike from 'fifthaeon/cards/triggers/lethalStrike';
 import * as owner from 'fifthaeon/cards/triggers/owner';
 import * as serenity from 'fifthaeon/cards/triggers/serenity';
+import * as periodic from 'fifthaeon/cards/triggers/periodic';
+
 
 export interface TriggerData {
     id: string;
@@ -37,6 +39,7 @@ class TriggerList {
     public getIds() {
         return this.constructorList.map(constr => constr.getId());
     }
+
 }
 
 interface TriggerConstructor {
@@ -45,7 +48,7 @@ interface TriggerConstructor {
 }
 
 export const triggerList = new TriggerList();
-const sources = [affinity, basic, death, lethalStrike, owner, serenity];
+const sources = [basic, death, periodic, owner, lethalStrike, serenity, affinity];
 for (let source of sources) {
     triggerList.addConstructors(...(values(source) as TriggerConstructor[]));
 }
