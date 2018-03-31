@@ -17,10 +17,12 @@ const targeterGroups = [biotargeters, basicTargeters, mechanicTargeters, poisonT
 
 export interface TargeterData {
     id: string;
+    optional: boolean;
 }
 
 class TargeterList {
     private constructors: Map<string, TargeterConstructor> = new Map();
+    private constructorList: TargeterConstructor[] = [];
 
     public addConstructors(...constructors: TargeterConstructor[]) {
         for (let constructor of constructors) {
@@ -29,6 +31,7 @@ class TargeterList {
             if (this.constructors.has(id))
                 console.warn('Warning, overwrting targeter ID', id);
             this.constructors.set(id, constructor);
+            this.constructorList.push(constructor);
         }
     }
 
@@ -38,7 +41,13 @@ class TargeterList {
             console.warn('No targeter with ID', data.id);
             constructor = basicTargeters.Untargeted;
         }
-        return new constructor();
+        const instance = new constructor();
+        instance.setOptional(data.optional);
+        return instance;
+    }
+
+    public getIds() {
+        return this.constructorList.map(constr => constr.getId());
     }
 
 }
