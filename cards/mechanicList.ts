@@ -51,7 +51,7 @@ class MechanicList {
         const instance = new constructor();
         if (constructor.prototype instanceof TriggeredMechanic && data.trigger )
             (instance as TargetedMechanic).setTrigger(triggerList.buildInstance(data.trigger));
-        if (constructor.prototype instanceof TargetedMechanic && data.targeter )
+        if (constructor.prototype instanceof TargetedMechanic && data.targeter && data.targeter.id !== 'Host' )
             (instance as TargetedMechanic).setTargeter(targeterList.buildInstance(data.targeter));
         return instance;
     }
@@ -65,6 +65,13 @@ class MechanicList {
         if (!constructor)
             return false;
         return constructor.prototype instanceof TriggeredMechanic;
+    }
+
+    public isTargeted(mechanic: MechanicData) {
+        const constructor = this.constructors.get(mechanic.id);
+        if (!constructor)
+            return false;
+        return constructor.prototype instanceof TargetedMechanic;
     }
 
     public isValid(cardData: CardData, mechanic: MechanicData) {

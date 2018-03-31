@@ -46,7 +46,11 @@ class TargeterList {
         return instance;
     }
 
-    public getIds() {
+    public getIds(passiveOnly = false) {
+        if (passiveOnly)
+            return this.constructorList
+            .filter(constructor => !new constructor().needsInput())
+            .map(constr => constr.getId());
         return this.constructorList.map(constr => constr.getId());
     }
 
