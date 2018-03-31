@@ -26,13 +26,13 @@ import * as sleep from './mechanics/sleep';
 import * as summonUnits from './mechanics/summonUnits';
 import * as synthSpecials from './mechanics/synthSpecials';
 import { TargeterData, targeterList } from 'fifthaeon/cards/targeterList';
-import { triggerList } from 'fifthaeon/cards/triggerList';
+import { triggerList, TriggerData } from 'fifthaeon/cards/triggerList';
 
 export interface MechanicData {
     id: string;
     parameters: Array<any>;
     targeter?: TargeterData;
-    trigger?: any;
+    trigger?: TriggerData;
 }
 
 class MechanicList {
@@ -58,6 +58,13 @@ class MechanicList {
 
     public getConstructors(cardType: CardType) {
         return this.constructorList.filter(constructor => constructor.isValidParent(cardType));
+    }
+
+    public isTriggered(mechanic: MechanicData) {
+        const constructor = this.constructors.get(mechanic.id);
+        if (!constructor)
+            return false;
+        return constructor.prototype instanceof TriggeredMechanic;
     }
 
     public isValid(cardData: CardData, mechanic: MechanicData) {
