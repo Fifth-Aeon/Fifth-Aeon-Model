@@ -30,8 +30,9 @@ import { DeathCounter } from './mechanics/shieldEnchantments';
 import { DeathTrigger } from './triggers/death';
 import { LethalStrike } from './triggers/lethalStrike';
 import { GainLife } from './mechanics/playerAid';
-import { DealDamage, DealSynthDamage, DamageOnBlock } from './mechanics/dealDamage';
+import { DealDamage, DealResourceDamage, DamageOnBlock } from './mechanics/dealDamage';
 import { Dusk } from 'fifthaeon/cards/triggers/periodic';
+import { CardType } from 'fifthaeon/cardType';
 
 export function imp() {
     return new Unit(
@@ -613,7 +614,7 @@ export function unbury() {
             Synthesis: 0
         }),
         new Untargeted(),
-        [new ReturnFromCrypt((card) => card.isUnit())]
+        [new ReturnFromCrypt(CardType.Unit)]
     );
 }
 

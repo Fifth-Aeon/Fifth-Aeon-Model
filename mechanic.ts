@@ -1,12 +1,13 @@
 import { Game } from './game';
-import { Card,  GameZone } from './card';
-import {CardType} from './cardType';
+import { Card, GameZone } from './card';
+import { CardType } from './cardType';
 import { Unit } from './unit';
 import { Targeter } from './targeter';
 import { Trigger } from './trigger';
 
 import { sumBy, multiply, reduce } from 'lodash';
 import { PlayTrigger } from 'fifthaeon/cards/triggers/basic';
+import { ParameterType } from 'fifthaeon/cards/parameters';
 
 export enum EvalContext {
     LethalRemoval, NonlethalRemoval, Play
@@ -19,6 +20,7 @@ export interface EvalOperator {
 
 export abstract class Mechanic {
     protected static validCardTypes = new Set([CardType.Spell, CardType.Enchantment, CardType.Unit, CardType.Item]);
+    protected static ParameterTypes: {name: string, type: ParameterType}[] = [];
     protected static id: string;
 
     static getMultiplier(vals: Array<number | EvalOperator>) {
@@ -48,6 +50,10 @@ export abstract class Mechanic {
         return this.id;
     }
 
+    static getParameterTypes() {
+        return this.ParameterTypes;
+    }
+
     static getValidCardTypes() {
         return this.validCardTypes;
     }
@@ -60,7 +66,7 @@ export abstract class Mechanic {
     public stack() { }
     public clone(): Mechanic { return this; }
     public enter(parent: Card, game: Game) { }
-    public attach(parent: Card) {}
+    public attach(parent: Card) { }
 
     public getId(): string {
         return (this.constructor as any).id;

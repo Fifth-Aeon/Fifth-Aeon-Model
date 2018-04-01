@@ -27,6 +27,7 @@ import * as summonUnits from './mechanics/summonUnits';
 import * as synthSpecials from './mechanics/synthSpecials';
 import { TargeterData, targeterList } from 'fifthaeon/cards/targeterList';
 import { triggerList, TriggerData } from 'fifthaeon/cards/triggerList';
+import { ParameterType } from 'fifthaeon/cards/parameters';
 
 export interface MechanicData {
     id: string;
@@ -49,9 +50,9 @@ class MechanicList {
     public buildInstance(data: MechanicData) {
         const constructor = this.constructors.get(data.id);
         const instance = new constructor();
-        if (constructor.prototype instanceof TriggeredMechanic && data.trigger )
+        if (constructor.prototype instanceof TriggeredMechanic && data.trigger)
             (instance as TargetedMechanic).setTrigger(triggerList.buildInstance(data.trigger));
-        if (constructor.prototype instanceof TargetedMechanic && data.targeter && data.targeter.id !== 'Host' )
+        if (constructor.prototype instanceof TargetedMechanic && data.targeter && data.targeter.id !== 'Host')
             (instance as TargetedMechanic).setTargeter(targeterList.buildInstance(data.targeter));
         return instance;
     }
@@ -86,14 +87,17 @@ class MechanicList {
 interface MechanicConstructor {
     getId(): string;
     isValidParent(CardType): boolean;
+    getParameterTypes(): { name: string, type: ParameterType }[];
     new(param1?, param2?): Mechanic;
 }
 
 
 export const mechanicList = new MechanicList();
-const sources = [buff, cantAttack, dealDamage, decaySpecials, draw, enchantmentCounters,
-    growthSpecials, heal, mindControl, playerAid, poison, removal,
-    returnFromCrypt, shieldEnchantments, shuffleIntoDeck, skills, sleep, summonUnits, synthSpecials];
+const sources = [
+    skills, poison, buff, cantAttack, dealDamage, decaySpecials, draw, enchantmentCounters,
+    growthSpecials, heal, mindControl, playerAid,  removal,
+    returnFromCrypt, shieldEnchantments, shuffleIntoDeck, sleep, summonUnits, synthSpecials
+];
 for (let source of sources) {
     mechanicList.addConstructors(...(values(source) as MechanicConstructor[]));
 }

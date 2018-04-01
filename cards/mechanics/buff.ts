@@ -5,9 +5,16 @@ import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 import { properCase, properList } from '../../strings';
+import { ParameterType } from 'fifthaeon/cards/parameters';
+
 
 export class BuffTarget extends TargetedMechanic {
     protected static id = 'BuffTarget';
+    protected static ParameterTypes = [
+        { name: 'damage', type: ParameterType.Integer },
+        { name: 'life', type: ParameterType.Integer }
+    ];
+
     constructor(private damage: number = 1, private life: number = 1) {
         super();
     }

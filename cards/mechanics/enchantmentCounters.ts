@@ -4,10 +4,14 @@ import { Targeter } from '../../targeter';
 import { Card, CardType } from '../../card';
 import { Enchantment } from '../../enchantment';
 import { GameEvent, EventType } from '../../gameEvent';
+import { ParameterType } from 'fifthaeon/cards/parameters';
 
 export class Recharge extends Mechanic {
     protected static id = 'Recharge';
     protected static validCardTypes = new Set([CardType.Enchantment]);
+    protected static ParameterTypes = [
+        { name: 'Amount Per Turn', type: ParameterType.NaturalNumber }
+    ];
 
     constructor(protected amountPerTurn: number = 1) {
         super();
@@ -67,6 +71,9 @@ export class Discharge extends Recharge {
 export class ChangePower extends TriggeredMechanic {
     protected static id = 'ChangePower';
     protected static validCardTypes = new Set([CardType.Enchantment]);
+    protected static ParameterTypes = [
+        { name: 'Difference', type: ParameterType.Integer }
+    ];
 
     private desc: string;
     constructor(private diff: number = 1) {

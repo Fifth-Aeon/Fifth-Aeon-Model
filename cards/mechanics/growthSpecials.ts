@@ -7,9 +7,13 @@ import { Resource } from '../../resource';
 import { GameEvent, EventType } from '../../gameEvent';
 
 import { remove } from 'lodash';
+import { ParameterType } from 'fifthaeon/cards/parameters';
 
 export class DrawCardsFromUnit extends TargetedMechanic {
     protected static id = 'DrawCardsFromUnit';
+    protected static ParameterTypes = [
+        { name: 'Factor', type: ParameterType.NaturalNumber }
+    ];
     constructor(private factor: number = 3) {
         super();
     }

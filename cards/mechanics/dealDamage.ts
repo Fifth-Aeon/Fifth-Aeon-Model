@@ -4,11 +4,15 @@ import { Targeter } from '../../targeter';
 import { Card, CardType, GameZone } from '../../card';
 import { Unit } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
+import { ParameterType } from 'fifthaeon/cards/parameters';
+import { ResourceType } from 'fifthaeon/resource';
 
 export class DamageOnBlock extends Mechanic {
     protected static id = 'DamageOnBlock';
-
     protected static validCardTypes = new Set([CardType.Unit, CardType.Item]);
+    protected static ParameterTypes = [
+        { name: 'damage', type: ParameterType.Integer }
+    ];
 
     constructor(protected damage: number = 1) {
         super();
@@ -39,6 +43,10 @@ export class DamageOnBlock extends Mechanic {
 
 export class DealDamage extends TargetedMechanic {
     protected static id = 'DealDamage';
+    protected static ParameterTypes = [
+        { name: 'damage', type: ParameterType.Integer }
+    ];
+
     constructor(protected amount: number = 1) {
         super();
     }
@@ -87,6 +95,10 @@ export class BiteDamage extends DealDamage {
 
 export class DamageSpawnOnKill extends DealDamage {
     protected static id = 'DamageSpawnOnKill';
+    protected static ParameterTypes = [
+        { name: 'damage', type: ParameterType.Integer },
+        { name: 'unit', type: ParameterType.Unit },
+    ];
 
     private name: string;
     constructor(amount: number = 1, private factory: () => Unit) {
@@ -109,21 +121,23 @@ export class DamageSpawnOnKill extends DealDamage {
     }
 }
 
+export class DealResourceDamage extends DealDamage {
+    protected static id = 'DealResourceDamage';
+    protected static ParameterTypes = [
+        { name: 'Resource', type: ParameterType.ResourceType }
+    ];
 
-export class DealSynthDamage extends DealDamage {
-    protected static id = 'DealSynthDamage';
-
-    constructor() {
+    constructor(private resource = ResourceType.Synthesis) {
         super(0);
     }
     public getDamage(card: Card, game: Game) {
-        return game.getPlayer(card.getOwner()).getPool().getOfType('Synthesis');
+        return game.getPlayer(card.getOwner()).getPool().getOfType(this.resource);
     }
 
     public getText(card: Card, game: Game) {
         if (game)
-            return `Deal damage to ${this.targeter.getText()} equal to your synthesis (${this.getDamage(card, game)}).`;
+            return `Deal damage to ${this.targeter.getText()} equal to your ${this.resource} (${this.getDamage(card, game)}).`;
         else
-            return `Deal damage to ${this.targeter.getText()} equal to your synthesis.`;
+            return `Deal damage to ${this.targeter.getText()} equal to your ${this.resource}.`;
     }
 }

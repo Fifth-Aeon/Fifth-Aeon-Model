@@ -45,7 +45,7 @@ export type CardData = SpellData | UnitData | ItemData | EnchantmentData;
 
 export type CardFactory = () => Card;
 
-class CardList {
+export class CardList {
     private factories = new Map<string, CardFactory>();
     private instances: Card[] = [];
 

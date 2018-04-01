@@ -6,9 +6,14 @@ import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
 import { remove, take, sumBy } from 'lodash';
+import { ParameterType } from 'fifthaeon/cards/parameters';
 
 export class TransformDamaged extends Mechanic {
     protected static id = 'TransformDamaged';
+    protected static ParameterTypes = [
+        { name: 'Transform Unit', type: ParameterType.Unit },
+    ];
+
     private unitDesc: string;
     constructor(private transformation: () => Unit) {
         super();

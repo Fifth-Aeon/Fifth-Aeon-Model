@@ -6,11 +6,14 @@ import { Unit, UnitType } from '../../unit';
 import { Player } from '../../player';
 import { GameEvent, EventType } from '../../gameEvent';
 import { PlayTrigger } from 'fifthaeon/cards/triggers/basic';
+import { ParameterType } from 'fifthaeon/cards/parameters';
 
 
 export class DrawCard extends TriggeredMechanic {
     protected static id = 'DrawCard';
-    protected triggerType = new PlayTrigger();
+    protected static ParameterTypes = [
+        { name: 'Number', type: ParameterType.NaturalNumber }
+    ];
 
     constructor(private count: number = 1) {
         super();
@@ -33,7 +36,6 @@ export class DrawCard extends TriggeredMechanic {
 
 export class Peek extends TriggeredMechanic {
     protected static id = 'Peek';
-    protected triggerType = new PlayTrigger();
 
     public onTrigger(card: Card, game: Game) {
         game.queryCards(
@@ -54,7 +56,10 @@ export class Peek extends TriggeredMechanic {
 
 export class Discard extends TriggeredMechanic {
     protected static id = 'Discard';
-    protected triggerType = new PlayTrigger();
+    protected static ParameterTypes = [
+        { name: 'Number', type: ParameterType.NaturalNumber }
+    ];
+
     constructor(private count: number = 1) {
         super();
     }
@@ -101,7 +106,7 @@ export class DiscardOnDamage extends Mechanic {
 
 export class AugarCard extends TriggeredMechanic {
     protected static id = 'AugarCard';
-    protected triggerType = new PlayTrigger();
+
     public onTrigger(card: Card, game: Game) {
         let owner = game.getPlayer(card.getOwner());
         let synth = owner.getPool().getOfType('Synthesis');

@@ -3,7 +3,7 @@ import { Card } from '../card';
 import { Item } from '../item';
 import { Enchantment } from '../enchantment';
 import { Unit, UnitType, mechanical } from '../unit';
-import { Resource } from '../resource';
+import { Resource, ResourceType } from '../resource';
 
 // Mechanics
 import {
@@ -20,7 +20,7 @@ import { Annihilate } from './mechanics/removal';
 import { BuffTargetAndGrant, BuffTarget } from './mechanics/buff';
 import { Robotic, SpyPower } from './mechanics/synthSpecials';
 import { MechanicalUnit, BiologicalUnit, FrendlyBiologicalUnits } from './targeters/biotargeter';
-import { DealDamage, DealSynthDamage, DamageOnBlock } from './mechanics/dealDamage';
+import { DealDamage, DealResourceDamage, DamageOnBlock } from './mechanics/dealDamage';
 import { Poisoned } from './mechanics/poison';
 import { Recharge } from './mechanics/enchantmentCounters';
 import { ForceField } from './mechanics/shieldEnchantments';
@@ -287,7 +287,7 @@ export function energyBeam() {
             Synthesis: 2
         }),
         new SingleUnit(),
-        [new DealSynthDamage()]
+        [new DealResourceDamage(ResourceType.Synthesis)]
     );
 }
 
