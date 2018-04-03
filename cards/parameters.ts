@@ -28,7 +28,8 @@ const loadCard = (data: ParamaterData, cards: CardList, expectedType: CardType) 
     result = cards.getCard(data);
     if (result.getCardType() !== expectedType)
         return () => getDefaultCard(cards, expectedType);
-    return () => cards.getCard(result.getId());
+    const id = result.getDataId();
+    return () => cards.getCard(id);
 };
 
 const parseResourceType = (data: ParamaterData) => {
