@@ -107,7 +107,7 @@ export class CardList {
                 data.imageUrl,
                 Resource.loadResource(data.cost),
                 targeterList.buildInstance(data.targeter),
-                data.mechanics.map(mechanic => mechanicList.buildInstance(mechanic))
+                data.mechanics.map(mechanic => mechanicList.buildInstance(mechanic, this))
             );
         };
     }
@@ -123,7 +123,7 @@ export class CardList {
                 targeterList.buildInstance(data.targeter),
                 data.damage,
                 data.life,
-                data.mechanics.map(mechanic => mechanicList.buildInstance(mechanic))
+                data.mechanics.map(mechanic => mechanicList.buildInstance(mechanic, this))
             );
         };
     }
@@ -139,7 +139,7 @@ export class CardList {
                 targeterList.buildInstance(data.hostTargeter),
                 data.damage,
                 data.life,
-                data.mechanics.map(mechanic => mechanicList.buildInstance(mechanic))
+                data.mechanics.map(mechanic => mechanicList.buildInstance(mechanic, this))
             );
         };
     }
@@ -154,7 +154,7 @@ export class CardList {
                 targeterList.buildInstance(data.targeter),
                 data.empowerCost,
                 data.power,
-                data.mechanics.map(mechanic => mechanicList.buildInstance(mechanic))
+                data.mechanics.map(mechanic => mechanicList.buildInstance(mechanic, this))
             );
         };
     }

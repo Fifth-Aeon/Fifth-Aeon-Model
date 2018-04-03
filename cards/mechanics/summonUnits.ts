@@ -6,9 +6,15 @@ import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 import { Enchantment } from '../../enchantment';
 import { a } from '../../strings';
+import { ParameterType } from 'fifthaeon/cards/parameters';
 
 export class SummonUnits extends TriggeredMechanic {
     protected static id = 'SummonUnits';
+    protected static ParameterTypes = [
+        { name: 'unit', type: ParameterType.Unit },
+        { name: 'count', type: ParameterType.NaturalNumber },
+    ];
+
     protected name: string;
     protected unit: Unit;
     constructor(protected factory: () => Unit, protected count: number = 1) {
@@ -40,6 +46,10 @@ export class SummonUnits extends TriggeredMechanic {
 
 export class SummonUnitForGrave extends SummonUnits {
     protected static id = 'SummonUnitForGrave';
+    protected static ParameterTypes = [
+        { name: 'unit', type: ParameterType.Unit },
+        { name: 'factor', type: ParameterType.NaturalNumber },
+    ];
 
     constructor(factory: () => Unit, private factor: number) {
         super(factory, 0);
@@ -85,6 +95,9 @@ export class EnchantmentSummon extends SummonUnits {
 
 export class SummonUnitOnDamage extends Mechanic {
     protected static id = 'SummonUnitOnDamage';
+    protected static ParameterTypes = [
+        { name: 'unit', type: ParameterType.Unit }
+    ];
 
     protected name: string;
     protected unit: Unit;

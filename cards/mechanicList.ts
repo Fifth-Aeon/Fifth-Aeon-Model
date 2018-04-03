@@ -3,7 +3,7 @@
 import { values } from 'lodash';
 import { Mechanic, TargetedMechanic, TriggeredMechanic } from '../mechanic';
 import { CardType } from '../card';
-import { CardData } from 'fifthaeon/cards/cardList';
+import { CardData, CardList } from 'fifthaeon/cards/cardList';
 
 import * as buff from './mechanics/buff';
 import * as cantAttack from './mechanics/cantAttack';
@@ -27,7 +27,7 @@ import * as summonUnits from './mechanics/summonUnits';
 import * as synthSpecials from './mechanics/synthSpecials';
 import { TargeterData, targeterList } from 'fifthaeon/cards/targeterList';
 import { triggerList, TriggerData } from 'fifthaeon/cards/triggerList';
-import { ParameterType } from 'fifthaeon/cards/parameters';
+import { ParameterType, buildParameters } from 'fifthaeon/cards/parameters';
 
 export interface MechanicData {
     id: string;
@@ -47,9 +47,11 @@ class MechanicList {
         }
     }
 
-    public buildInstance(data: MechanicData) {
+    public buildInstance(data: MechanicData, cards: CardList) {
         const constructor = this.constructors.get(data.id);
-        const instance = new constructor();
+        const paramTypes = constructor.getParameterTypes().map(param => param.type);
+        const paramterValues = buildParameters(paramTypes, data.parameters, cards);
+        const instance = new constructor(...paramterValues);
         if (constructor.prototype instanceof TriggeredMechanic && data.trigger)
             (instance as TargetedMechanic).setTrigger(triggerList.buildInstance(data.trigger));
         if (constructor.prototype instanceof TargetedMechanic && data.targeter && data.targeter.id !== 'Host')
@@ -82,6 +84,13 @@ class MechanicList {
         return constructor.isValidParent(cardData.cardType);
     }
 
+    public getParameters(mechanic: MechanicData) {
+        const constructor = this.constructors.get(mechanic.id);
+        if (!constructor)
+            return [];
+        return constructor.getParameterTypes();
+    }
+
 }
 
 interface MechanicConstructor {
@@ -95,7 +104,7 @@ interface MechanicConstructor {
 export const mechanicList = new MechanicList();
 const sources = [
     skills, poison, buff, cantAttack, dealDamage, decaySpecials, draw, enchantmentCounters,
-    growthSpecials, heal, mindControl, playerAid,  removal,
+    growthSpecials, heal, mindControl, playerAid, removal,
     returnFromCrypt, shieldEnchantments, shuffleIntoDeck, sleep, summonUnits, synthSpecials
 ];
 for (let source of sources) {

@@ -24,11 +24,11 @@ const getDefaultCard = (cards: CardList, expectedType: CardType) =>
 const loadCard = (data: ParamaterData, cards: CardList, expectedType: CardType) => {
     let result: Card;
     if (typeof data !== 'string')
-        return getDefaultCard(cards, expectedType);
+        return () => getDefaultCard(cards, expectedType);
     result = cards.getCard(data);
     if (result.getCardType() !== expectedType)
-        return getDefaultCard(cards, expectedType);
-    return result;
+        return () => getDefaultCard(cards, expectedType);
+    return () => cards.getCard(result.getId());
 };
 
 const parseResourceType = (data: ParamaterData) => {
@@ -48,7 +48,7 @@ const buildParameter = (type: ParameterType, data: ParamaterData, cards: CardLis
         case ParameterType.Integer:
             return parseInteger(data, -99, 99);
         case ParameterType.NaturalNumber:
-            return parseInteger(data, 0, 99);
+            return parseInteger(data, 1, 99);
         case ParameterType.Resource:
             return loadResource(data);
         case ParameterType.ResourceType:
@@ -69,9 +69,9 @@ const buildParameter = (type: ParameterType, data: ParamaterData, cards: CardLis
 };
 
 export const buildParameters = (types: ParameterType[], data: ParamaterData[], cards: CardList) => {
-    const results = [];
+    const results = new Array(types.length);
     for (let i = 0; i < types.length; i++) {
-        results.push(buildParameter(types[i], data[i], cards));
+        results[i] = buildParameter(types[i], data[i], cards);
     }
     return results;
 };
