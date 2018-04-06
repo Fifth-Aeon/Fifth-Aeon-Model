@@ -1,8 +1,8 @@
-import { Trigger } from 'fifthaeon/trigger';
-import { Game } from 'fifthaeon/game';
-import { Card } from 'fifthaeon/card';
-import { GameEvent, EventType } from 'fifthaeon/gameEvent';
-import { EvalContext } from 'fifthaeon/mechanic';
+import { Trigger } from '../../trigger';
+import { Game } from '../../game';
+import { Card } from '../../card';
+import { GameEvent, EventType } from '../../gameEvent';
+import { EvalContext } from '../../mechanic';
 
 
 export class PlayTrigger extends Trigger {

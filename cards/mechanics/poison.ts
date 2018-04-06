@@ -4,7 +4,7 @@ import { Targeter } from '../../targeter';
 import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
-import { Permanent } from 'fifthaeon/permanent';
+import { Permanent } from '../../permanent';
 
 export class CurePoison extends TargetedMechanic {
     protected static id = 'CurePoison';

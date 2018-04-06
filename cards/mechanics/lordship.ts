@@ -5,7 +5,7 @@ import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 import { formatBuff } from '../../strings';
-import { Permanent } from 'fifthaeon/permanent';
+import { Permanent } from '../../permanent';
 
 export class Lordship extends Mechanic {
     protected static id = 'Lordship';

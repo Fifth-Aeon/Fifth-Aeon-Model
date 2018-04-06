@@ -29,9 +29,9 @@ import { PreventAllDamage } from './mechanics/shieldEnchantments';
 import { GainLife } from './mechanics/playerAid';
 import { DrawCard } from './mechanics/draw';
 import { OwnerAttacked } from './triggers/owner';
-import { RenewalMCTargeter } from 'fifthaeon/cards/targeters/mindControlTargeter';
-import { CurePoisonTargeter } from 'fifthaeon/cards/targeters/poisonTargeter';
-import { Dusk, Dawn } from 'fifthaeon/cards/triggers/periodic';
+import { RenewalMCTargeter } from './targeters/mindControlTargeter';
+import { CurePoisonTargeter } from './targeters/poisonTargeter';
+import { Dusk, Dawn } from './triggers/periodic';
 
 export function pegasus() {
     return new Unit(

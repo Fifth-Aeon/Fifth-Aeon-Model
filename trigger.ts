@@ -1,8 +1,6 @@
+import { Card } from './Card';
 import { Game } from './game';
-import { Card, CardType } from './Card';
-import { Unit } from './unit';
-import { GameEvent, EventType } from './gameEvent';
-import { Mechanic, TargetedMechanic, TriggeredMechanic, EvalContext } from './mechanic';
+import { EvalContext, TriggeredMechanic } from './mechanic';
 
 export abstract class Trigger {
     protected static id: string;

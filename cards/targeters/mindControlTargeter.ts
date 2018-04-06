@@ -1,6 +1,6 @@
-import { Targeter } from 'fifthaeon/targeter';
-import { Game } from 'fifthaeon/game';
-import { Card } from 'fifthaeon/card';
+import { Card } from '../../card';
+import { Game } from '../../game';
+import { Targeter } from '../../targeter';
 
 export class RenewalMCTargeter extends Targeter {
     public getValidTargets(card: Card, game: Game) {

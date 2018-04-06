@@ -26,7 +26,7 @@ import { Recharge } from './mechanics/enchantmentCounters';
 import { ForceField } from './mechanics/shieldEnchantments';
 import { EnchantmentSummon } from './mechanics/summonUnits';
 import { RefreshTarget } from './mechanics/heal';
-import { Dusk } from 'fifthaeon/cards/triggers/periodic';
+import { Dusk } from './triggers/periodic';
 
 export function assemblyLine() {
     return new Enchantment(

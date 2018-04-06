@@ -1,18 +1,15 @@
 
 
+import * as affinity from './triggers/affinity';
+import * as basic from './triggers/basic';
+import * as death from './triggers/death';
+import * as lethalStrike from './triggers/lethalStrike';
+import * as owner from './triggers/owner';
+import * as periodic from './triggers/periodic';
+import * as serenity from './triggers/serenity';
+import { Trigger } from '../trigger';
 import { values } from 'lodash';
-import { CardType } from '../card';
-import { CardData } from 'fifthaeon/cards/cardList';
-import { TargeterData, targeterList } from 'fifthaeon/cards/targeterList';
-import { Trigger } from 'fifthaeon/trigger';
 
-import * as affinity from 'fifthaeon/cards/triggers/affinity';
-import * as basic from 'fifthaeon/cards/triggers/basic';
-import * as death from 'fifthaeon/cards/triggers/death';
-import * as lethalStrike from 'fifthaeon/cards/triggers/lethalStrike';
-import * as owner from 'fifthaeon/cards/triggers/owner';
-import * as serenity from 'fifthaeon/cards/triggers/serenity';
-import * as periodic from 'fifthaeon/cards/triggers/periodic';
 
 
 export interface TriggerData {

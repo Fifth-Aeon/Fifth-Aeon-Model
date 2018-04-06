@@ -6,8 +6,8 @@ import { Targeter } from './targeter';
 import { Trigger } from './trigger';
 
 import { sumBy, multiply, reduce } from 'lodash';
-import { PlayTrigger } from 'fifthaeon/cards/triggers/basic';
-import { ParameterType } from 'fifthaeon/cards/parameters';
+import { PlayTrigger } from './cards/triggers/basic';
+import { ParameterType } from './cards/parameters';
 
 export enum EvalContext {
     LethalRemoval, NonlethalRemoval, Play

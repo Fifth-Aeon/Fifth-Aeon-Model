@@ -4,7 +4,7 @@ import { Targeter } from '../../targeter';
 import { Card, CardType } from '../../card';
 import { Enchantment } from '../../enchantment';
 import { GameEvent, EventType } from '../../gameEvent';
-import { ParameterType } from 'fifthaeon/cards/parameters';
+import { ParameterType } from '../parameters';
 
 export class Recharge extends Mechanic {
     protected static id = 'Recharge';

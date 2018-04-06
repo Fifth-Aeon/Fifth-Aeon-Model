@@ -4,8 +4,8 @@ import { Targeter } from '../../targeter';
 import { Card, CardType, GameZone } from '../../card';
 import { Unit } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
-import { ParameterType } from 'fifthaeon/cards/parameters';
-import { ResourceType } from 'fifthaeon/resource';
+import { ParameterType } from '../parameters';
+import { ResourceType } from '../../resource';
 
 export class DamageOnBlock extends Mechanic {
     protected static id = 'DamageOnBlock';

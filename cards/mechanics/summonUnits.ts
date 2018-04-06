@@ -6,7 +6,7 @@ import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 import { Enchantment } from '../../enchantment';
 import { a } from '../../strings';
-import { ParameterType } from 'fifthaeon/cards/parameters';
+import { ParameterType } from '../parameters';
 
 export class SummonUnits extends TriggeredMechanic {
     protected static id = 'SummonUnits';

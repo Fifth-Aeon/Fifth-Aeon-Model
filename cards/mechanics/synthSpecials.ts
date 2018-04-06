@@ -7,7 +7,7 @@ import { GameEvent, EventType } from '../../gameEvent';
 
 import { Sleeping } from './sleep';
 import { Poisoned } from './poison';
-import { Permanent } from 'fifthaeon/permanent';
+import { Permanent } from '../../permanent';
 
 
 const robotImmunities = [new Sleeping().getId(), new Poisoned().getId()];

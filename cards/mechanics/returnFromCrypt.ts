@@ -1,10 +1,8 @@
-import { Mechanic, TriggeredMechanic } from '../../mechanic';
+import { CardType } from '../../cardType';
 import { Game } from '../../Game';
-import { Targeter } from '../../targeter';
 import { Card } from '../../card';
-import { Unit } from '../../unit';
-import { ParameterType } from 'fifthaeon/cards/parameters';
-import { CardType } from 'fifthaeon/cardType';
+import { TriggeredMechanic } from '../../mechanic';
+import { ParameterType } from '../parameters';
 
 export class ReturnFromCrypt extends TriggeredMechanic {
     protected static id = 'ReturnFromCrypt';

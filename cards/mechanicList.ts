@@ -3,7 +3,7 @@
 import { values } from 'lodash';
 import { Mechanic, TargetedMechanic, TriggeredMechanic } from '../mechanic';
 import { CardType } from '../card';
-import { CardData, CardList } from 'fifthaeon/cards/cardList';
+import { CardData, CardList } from './cardList';
 
 import * as buff from './mechanics/buff';
 import * as cantAttack from './mechanics/cantAttack';
@@ -25,9 +25,9 @@ import * as skills from './mechanics/skills';
 import * as sleep from './mechanics/sleep';
 import * as summonUnits from './mechanics/summonUnits';
 import * as synthSpecials from './mechanics/synthSpecials';
-import { TargeterData, targeterList } from 'fifthaeon/cards/targeterList';
-import { triggerList, TriggerData } from 'fifthaeon/cards/triggerList';
-import { ParameterType, buildParameters } from 'fifthaeon/cards/parameters';
+import { TargeterData, targeterList } from './targeterList';
+import { triggerList, TriggerData } from './triggerList';
+import { ParameterType, buildParameters } from './parameters';
 
 export interface MechanicData {
     id: string;

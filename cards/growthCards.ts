@@ -29,7 +29,7 @@ import { Enchantment } from '../enchantment';
 import { Discharge } from './mechanics/enchantmentCounters';
 import { DrawCard } from './mechanics/draw';
 import { LifeLessUnits } from './targeters/powerTargeter';
-import { Dawn, Cycle } from 'fifthaeon/cards/triggers/periodic';
+import { Dawn, Cycle } from './triggers/periodic';
 
 export function flourishing() {
     return new Enchantment(

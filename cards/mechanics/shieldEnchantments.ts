@@ -1,11 +1,10 @@
-import { Mechanic } from '../../mechanic';
-import { Game } from '../../game';
-import { Player } from '../../player';
-import { Targeter } from '../../targeter';
 import { Card, CardType } from '../../card';
 import { Enchantment } from '../../enchantment';
+import { Game } from '../../game';
+import { EventType, GameEvent } from '../../gameEvent';
+import { Mechanic } from '../../mechanic';
+import { Player } from '../../player';
 import { Unit } from '../../unit';
-import { GameEvent, EventType } from '../../gameEvent';
 
 abstract class ShieldEnchantment extends Mechanic {
     protected static validCardTypes = new Set([CardType.Enchantment]);

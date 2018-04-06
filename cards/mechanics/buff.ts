@@ -5,7 +5,7 @@ import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 import { properCase, properList } from '../../strings';
-import { ParameterType } from 'fifthaeon/cards/parameters';
+import { ParameterType } from '../parameters';
 
 
 export class BuffTarget extends TargetedMechanic {

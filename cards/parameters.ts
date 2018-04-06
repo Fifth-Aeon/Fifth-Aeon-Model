@@ -1,6 +1,6 @@
-import { ResourcePrototype, Resource, ResourceType } from 'fifthaeon/resource';
-import { CardList } from 'fifthaeon/cards/cardList';
-import { CardType, Card } from 'fifthaeon/card';
+import { ResourcePrototype, Resource, ResourceType } from '../resource';
+import { CardList } from './cardList';
+import { CardType, Card } from '../card';
 
 export enum ParameterType {
     Integer, NaturalNumber,

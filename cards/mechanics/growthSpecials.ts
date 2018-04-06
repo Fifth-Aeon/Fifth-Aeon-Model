@@ -7,7 +7,7 @@ import { Resource } from '../../resource';
 import { GameEvent, EventType } from '../../gameEvent';
 
 import { remove } from 'lodash';
-import { ParameterType } from 'fifthaeon/cards/parameters';
+import { ParameterType } from '../parameters';
 
 export class DrawCardsFromUnit extends TargetedMechanic {
     protected static id = 'DrawCardsFromUnit';
