@@ -65,7 +65,7 @@ const buildParameter = (type: ParameterType, data: ParamaterData, cards: CardLis
         case ParameterType.Enchantment:
             return loadCard(data, cards, CardType.Enchantment);
         case ParameterType.CardType:
-            return CardType[parseInteger(data, 0, 3)];
+            return parseInteger(data, 0, 3);
     }
 };
 
