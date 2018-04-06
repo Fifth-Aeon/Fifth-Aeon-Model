@@ -19,7 +19,7 @@ const parseInteger = (data: ParamaterData, min: number, max: number) => {
 };
 
 const getDefaultCard = (cards: CardList, expectedType: CardType) =>
-    cards.getCards().find(card => !expectedType || card.getCardType() === expectedType);
+    cards.getCards().find((card: Card) => !expectedType || card.getCardType() === expectedType);
 
 const loadCard = (data: ParamaterData, cards: CardList, expectedType: CardType) => {
     let result: Card;
@@ -32,7 +32,7 @@ const loadCard = (data: ParamaterData, cards: CardList, expectedType: CardType) 
     return () => cards.getCard(id);
 };
 
-const parseResourceType = (data: ParamaterData) => {
+const parseResourceType = (data: ParamaterData): string => {
     if (typeof data !== 'string')
         return ResourceType.Synthesis;
     return ResourceType[data];

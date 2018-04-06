@@ -3,8 +3,8 @@ import { Unit } from './unit';
 import { Player } from './player';
 
 export class Animator {
-    private battleAnimationSubscribers = new Array<(BattleAnimationEvent) => void>();
-    private nextAnimiationTime;
+    private battleAnimationSubscribers = new Array<(ev: BattleAnimationEvent) => void>();
+    private nextAnimiationTime: number;
     private animating = false;
 
     constructor(
@@ -19,7 +19,7 @@ export class Animator {
         this.animating = true;
     }
 
-    public endAnimiation () {
+    public endAnimiation() {
         this.animating = false;
     }
 

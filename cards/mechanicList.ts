@@ -95,9 +95,9 @@ class MechanicList {
 
 interface MechanicConstructor {
     getId(): string;
-    isValidParent(CardType): boolean;
+    isValidParent(CardType: CardType): boolean;
     getParameterTypes(): { name: string, type: ParameterType }[];
-    new(param1?, param2?): Mechanic;
+    new(param1?: any, param2?: any): Mechanic;
 }
 
 

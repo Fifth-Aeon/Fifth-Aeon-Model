@@ -5,7 +5,7 @@ import { GameEvent, EventType } from './gameEvent';
 import { Mechanic, TargetedMechanic, TriggeredMechanic, EvalContext } from './mechanic';
 
 export abstract class Trigger {
-    protected static id;
+    protected static id: string;
     protected mechanic: TriggeredMechanic;
     static getId() {
         return this.id;

@@ -78,11 +78,11 @@ export class CardList {
         return this.instances.map(instance => instance.getId());
     }
 
-    public exists(id) {
+    public exists(id: string) {
         return this.factories.has(id);
     }
 
-    public getCardFactory(id) {
+    public getCardFactory(id: string) {
         return this.factories.get(id);
     }
 
