@@ -1,6 +1,7 @@
-import { CardType } from '../../cardType';
+import { a } from '../../strings';
 import { Game } from '../../Game';
 import { Card } from '../../card';
+import { CardType } from '../../cardType';
 import { TriggeredMechanic } from '../../mechanic';
 import { ParameterType } from '../parameters';
 
@@ -27,7 +28,8 @@ export class ReturnFromCrypt extends TriggeredMechanic {
     }
 
     public getText(card: Card) {
-        return `Return a ${CardType[this.allowed]} from your crypt to your hand.`;
+        const cardTypeName = CardType[this.allowed];
+        return `Return ${a(cardTypeName)} ${cardTypeName} from your crypt to your hand.`;
     }
 
     public evaluateEffect(card: Card, game: Game) {

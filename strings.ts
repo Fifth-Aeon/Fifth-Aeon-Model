@@ -14,7 +14,7 @@ export function properCase(str: string) {
 }
 
 export function a(nextWord: string) {
-    return 'aeiouAEIOU'.includes(nextWord[0]) ? 'an' : 'a';
+    return 'aeioAEIO'.includes(nextWord[0]) ? 'an' : 'a';
 }
 
 
