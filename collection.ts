@@ -132,6 +132,12 @@ export class Collection {
         this.records.set(id, currValue + number);
     }
 
+    public addCardPlayset(card: Card | string) {
+        let id = typeof card === 'string' ? card : card.getDataId();
+        let currValue = this.records.get(id) || 0;
+        this.records.set(id, Math.max(currValue, 4));
+    }
+
     public removeCard(card: Card) {
         if (!this.records.has(card.getDataId()))
             return;
