@@ -1,21 +1,26 @@
 import { Mechanic, TargetedMechanic } from '../../mechanic';
 import { Game, GamePhase } from '../../Game';
 import { Targeter } from '../../targeter';
-import { Card } from '../../card';
+import { Card, CardType } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
 import { Sleeping } from './sleep';
 import { Poisoned } from './poison';
+import { Permanent } from '../../permanent';
 
 
 const robotImmunities = [new Sleeping().getId(), new Poisoned().getId()];
 export class Robotic extends Mechanic {
+    protected static id = 'Robotic';
+    protected static validCardTypes = Permanent.cardTypes;
+
     public enter(card: Card, game: Game) {
         for (let immunity of robotImmunities) {
             (card as Unit).addImmunity(immunity);
         }
     }
+
     public remove(card: Card, game: Game) {
         for (let immunity of robotImmunities) {
             (card as Unit).removeImmunity(immunity);
@@ -35,6 +40,9 @@ export class Robotic extends Mechanic {
     }
 }
 export class SpyPower extends Mechanic {
+    protected static id = 'SpyPower';
+    protected static validCardTypes = Permanent.cardTypes;
+
     public enter(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.DealDamage, params => {

@@ -1,10 +1,13 @@
 import { Game } from './game';
-import { Card, CardType, GameZone } from './card';
+import { Card, GameZone } from './card';
+import { CardType } from './cardType';
 import { Unit } from './unit';
 import { Targeter } from './targeter';
-import { Trigger, PlayTrigger } from './trigger';
+import { Trigger } from './trigger';
 
 import { sumBy, multiply, reduce } from 'lodash';
+import { PlayTrigger } from './cards/triggers/basic';
+import { ParameterType } from './cards/parameters';
 
 export enum EvalContext {
     LethalRemoval, NonlethalRemoval, Play
@@ -16,8 +19,9 @@ export interface EvalOperator {
 }
 
 export abstract class Mechanic {
-    protected validCardTypes = new Set([CardType.Spell, CardType.Enchantment, CardType.Unit, CardType.Item]);
-    protected id: string;
+    protected static validCardTypes = new Set([CardType.Spell, CardType.Enchantment, CardType.Unit, CardType.Item]);
+    protected static ParameterTypes: {name: string, type: ParameterType}[] = [];
+    protected static id: string;
 
     static getMultiplier(vals: Array<number | EvalOperator>) {
         let multipliers = (vals.filter(val => typeof val === 'object') as EvalOperator[])
@@ -34,6 +38,26 @@ export abstract class Mechanic {
         });
     }
 
+    static isValidParent(cardType: CardType) {
+        return this.validCardTypes.has(cardType);
+    }
+
+    static canAttach(card: Card) {
+        return this.validCardTypes.has(card.getCardType());
+    }
+
+    static getId() {
+        return this.id;
+    }
+
+    static getParameterTypes() {
+        return this.ParameterTypes;
+    }
+
+    static getValidCardTypes() {
+        return this.validCardTypes;
+    }
+
     abstract getText(parent: Card, game: Game): string;
     abstract evaluate(card: Card, game: Game, context: EvalContext): number | EvalOperator;
 
@@ -42,18 +66,10 @@ export abstract class Mechanic {
     public stack() { }
     public clone(): Mechanic { return this; }
     public enter(parent: Card, game: Game) { }
-
-    public attach(parent: Card) {
-        if (!this.canAttach(parent))
-            throw new Error(`Cannot attach  mechanic ${this.getId()} to ${parent.getName()} it is not of the right card type.`);
-    }
+    public attach(parent: Card) { }
 
     public getId(): string {
-        return this.id;
-    }
-
-    public canAttach(card: Card) {
-        return this.validCardTypes.has(card.getCardType());
+        return (this.constructor as any).id;
     }
 }
 

@@ -7,6 +7,8 @@ import { Trigger } from '../../trigger';
 import { EvalContext } from '../../mechanic';
 
 export class Affinity extends Trigger {
+    protected static id = 'Affinity';
+
     private triggered = false;
 
     public getName() {

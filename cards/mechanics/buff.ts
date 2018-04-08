@@ -5,10 +5,17 @@ import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 import { properCase, properList } from '../../strings';
+import { ParameterType } from '../parameters';
+
 
 export class BuffTarget extends TargetedMechanic {
-    protected id = 'BuffTarget';
-    constructor(private damage: number, private life: number) {
+    protected static id = 'BuffTarget';
+    protected static ParameterTypes = [
+        { name: 'damage', type: ParameterType.Integer },
+        { name: 'life', type: ParameterType.Integer }
+    ];
+
+    constructor(private damage: number = 1, private life: number = 1) {
         super();
     }
 
@@ -33,8 +40,8 @@ export class BuffTarget extends TargetedMechanic {
 }
 
 export class BuffTargetAndGrant extends TargetedMechanic {
-    protected id = 'BuffTargetAndGrant';
-    constructor(private damage: number, private life: number, private abilities: Mechanic[]) {
+    protected static id = 'BuffTargetAndGrant';
+    constructor(private damage: number = 1, private life: number = 1, private abilities: Mechanic[] = []) {
         super();
     }
 

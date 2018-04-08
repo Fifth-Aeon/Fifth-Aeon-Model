@@ -1,9 +1,11 @@
-import { Targeter, AllUnits } from '../../targeter';
+import { Targeter } from '../../targeter';
+import { AllUnits } from './basicTargeter';
 import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { Game } from '../../game';
 
 export class UnitsOfType extends AllUnits {
+    protected static id = 'UnitsOfType';
     constructor(private type: UnitType) {
         super();
     }

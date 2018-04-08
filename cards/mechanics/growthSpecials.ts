@@ -7,10 +7,14 @@ import { Resource } from '../../resource';
 import { GameEvent, EventType } from '../../gameEvent';
 
 import { remove } from 'lodash';
+import { ParameterType } from '../parameters';
 
 export class DrawCardsFromUnit extends TargetedMechanic {
-    protected id = 'DrawCardsFromUnit';
-    constructor(private factor: number) {
+    protected static id = 'DrawCardsFromUnit';
+    protected static ParameterTypes = [
+        { name: 'Factor', type: ParameterType.NaturalNumber }
+    ];
+    constructor(private factor: number = 3) {
         super();
     }
 
@@ -35,7 +39,7 @@ export class DrawCardsFromUnit extends TargetedMechanic {
 
 
 export class WebTarget extends TargetedMechanic {
-    protected id = 'WebTarget';
+    protected static id = 'WebTarget';
     public enter(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game)) {
             target.removeMechanic('flying', game);

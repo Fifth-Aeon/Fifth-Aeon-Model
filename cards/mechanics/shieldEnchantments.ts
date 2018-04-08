@@ -1,14 +1,13 @@
-import { Mechanic } from '../../mechanic';
-import { Game } from '../../game';
-import { Player } from '../../player';
-import { Targeter } from '../../targeter';
 import { Card, CardType } from '../../card';
 import { Enchantment } from '../../enchantment';
+import { Game } from '../../game';
+import { EventType, GameEvent } from '../../gameEvent';
+import { Mechanic } from '../../mechanic';
+import { Player } from '../../player';
 import { Unit } from '../../unit';
-import { GameEvent, EventType } from '../../gameEvent';
 
 abstract class ShieldEnchantment extends Mechanic {
-    protected validCardTypes = new Set([CardType.Enchantment]);
+    protected static validCardTypes = new Set([CardType.Enchantment]);
     protected abstract effect(enchantment: Enchantment, owner: Player, amount: number, source: Card): number;
 
     public enter(card: Card, game: Game) {
@@ -31,6 +30,8 @@ abstract class ShieldEnchantment extends Mechanic {
 }
 
 export class PreventAllDamage extends ShieldEnchantment {
+    protected static id = 'PreventAllDamage';
+
     protected effect(enchantment: Enchantment, owner: Player, amount: number) {
         return 0;
     }
@@ -45,6 +46,8 @@ export class PreventAllDamage extends ShieldEnchantment {
 }
 
 export class ForceField extends ShieldEnchantment {
+    protected static id = 'ForceField';
+
     protected effect(enchantment: Enchantment, owner: Player, amount: number) {
         let power = enchantment.getPower();
         let reduced = Math.max(0, amount - power);
@@ -62,6 +65,8 @@ export class ForceField extends ShieldEnchantment {
 }
 
 export class DeathCounter extends ShieldEnchantment {
+    protected static id = 'DeathCounter';
+
     protected effect(enchantment: Enchantment, owner: Player, amount: number, source: Card) {
         if (source.getCardType() === CardType.Unit) {
             (source as Unit).kill(true);

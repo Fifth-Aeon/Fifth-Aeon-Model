@@ -7,10 +7,15 @@ import { Resource} from '../../resource';
 import { GameEvent, EventType } from '../../gameEvent';
 
 import { remove } from 'lodash';
+import { ParameterType } from '../parameters';
 
 export class GainLife extends TriggeredMechanic {
-    protected id = 'GainLife';
-    constructor(private amount: number) {
+    protected static id = 'GainLife';
+    protected static ParameterTypes = [
+        { name: 'Amount', type: ParameterType.Integer }
+    ];
+
+    constructor(private amount: number = 1) {
         super();
     }
 
@@ -29,8 +34,12 @@ export class GainLife extends TriggeredMechanic {
 }
 
 export class GainResource extends TriggeredMechanic {
-    protected id = 'GainResource';
-    constructor(private resource: Resource) {
+    protected static id = 'GainResource';
+    protected static ParameterTypes = [
+        { name: 'Resource', type: ParameterType.Resource }
+    ];
+
+    constructor(private resource: Resource = new Resource(1, 1)) {
         super();
     }
 

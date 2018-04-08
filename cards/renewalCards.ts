@@ -8,7 +8,8 @@ import { Item } from '../item';
 import { Resource } from '../resource';
 
 // Targeters
-import { SingleUnit, FriendlyUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnits } from '../targeter';
+import { SingleUnit, FriendlyUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnits } from './targeters/basicTargeter';
+
 
 // Trigers
 import { Serenity } from './triggers/serenity';
@@ -16,20 +17,21 @@ import { Serenity } from './triggers/serenity';
 // Mecchanics
 import { CannotAttack, ImprisonTarget } from './mechanics/cantAttack';
 import { ShuffleIntoDeck } from './mechanics/shuffleIntoDeck';
-import { RenewalMCTargeter, MindControl } from './mechanics/mindControl';
+import { MindControl } from './mechanics/mindControl';
 import { Lordship, unitTypeLordshipExclusive, unitTypeLordshipInclusive } from './mechanics/lordship';
-import { EndOfTurn } from './mechanics/periodic';
 import { SummonUnits, SummonUnitOnDamage } from './mechanics/summonUnits';
 import { BuffTargetAndGrant, BuffTarget } from './mechanics/buff';
 import { RefreshTarget } from './mechanics/heal';
 import { Flying, Aquatic, Rush, Relentless, Ranged, Immortal } from './mechanics/skills';
-import { CurePoisonTargeter, CurePoison } from './mechanics/poison';
-import { UnitEntersPlay } from './mechanics/entersPlay';
+import { CurePoison } from './mechanics/poison';
 import { Recharge, Discharge, CannotBeEmpowered, ChangePower } from './mechanics/enchantmentCounters';
 import { PreventAllDamage } from './mechanics/shieldEnchantments';
 import { GainLife } from './mechanics/playerAid';
 import { DrawCard } from './mechanics/draw';
 import { OwnerAttacked } from './triggers/owner';
+import { RenewalMCTargeter } from './targeters/mindControlTargeter';
+import { CurePoisonTargeter } from './targeters/poisonTargeter';
+import { Dusk, Dawn } from './triggers/periodic';
 
 export function pegasus() {
     return new Unit(
@@ -252,6 +254,7 @@ export function ruralMonk() {
     );
 }
 
+
 export function blacksmith() {
     return new Unit(
         'Blacksmith',
@@ -266,13 +269,14 @@ export function blacksmith() {
         }),
         new Untargeted(),
         1, 1,
-        [new UnitEntersPlay('When you summon a unit give it +1/+0.', 3, (source, unit) => {
+        [/*new UnitEntersPlay('When you summon a unit give it +1/+0.', 3, (source, unit) => {
             if (unit !== source && unit.getOwner() === source.getOwner()) {
                 unit.buff(1, 0);
             }
-        })]
+        })*/]
     );
 }
+
 
 export function kingUnit() {
     return new Unit(
@@ -289,8 +293,7 @@ export function kingUnit() {
         new Untargeted(),
         3, 5,
         [unitTypeLordshipInclusive(UnitType.Soldier, 1, 1),
-        new EndOfTurn('play a Pikeman', 4,
-            (king, game) => game.playGeneratedUnit(king.getOwner(), pikeman()))
+            new SummonUnits(pikeman).setTrigger(new Dawn())
         ]
     );
 }

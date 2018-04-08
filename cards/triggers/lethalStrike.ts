@@ -6,6 +6,8 @@ import { GameEvent, EventType } from '../../gameEvent';
 import { Trigger } from '../../trigger';
 
 export class LethalStrike extends Trigger {
+    protected static id = 'LethalStrike';
+
     public getName() {
         return 'Lethal Strike';
     }

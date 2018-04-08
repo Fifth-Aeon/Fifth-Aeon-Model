@@ -1,9 +1,11 @@
-import { Targeter, AllUnits } from '../../targeter';
+import { Targeter } from '../../targeter';
+import { AllUnits } from './basicTargeter';
 import { Card } from '../../card';
 import { Unit } from '../../unit';
 import { Game } from '../../game';
 
 export class UnitWithAbility extends Targeter {
+    protected static id = 'UnitWithAbility';
     constructor(private abilityId: string, private desc: string) {
         super();
     }
@@ -12,17 +14,5 @@ export class UnitWithAbility extends Targeter {
     }
     public getText() {
         return `target ${this.desc} unit`;
-    }
-}
-
-
-export class PoisonableUnits extends AllUnits {
-    public getTargets(card: Card, game: Game): Array<Unit> {
-        this.lastTargets = game.getBoard().getAllUnits()
-            .filter(unit => !unit.isImmune('poisoned'));
-        return this.lastTargets;
-    }
-    public getText() {
-        return 'all units';
     }
 }

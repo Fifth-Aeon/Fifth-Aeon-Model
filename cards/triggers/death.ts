@@ -6,7 +6,9 @@ import { GameEvent, EventType } from '../../gameEvent';
 import { Trigger } from '../../trigger';
 import { EvalContext } from '../../mechanic';
 
-export class OnDeath extends Trigger {
+export class DeathTrigger extends Trigger {
+    protected static id = 'Death';
+
     public getName() {
         return 'Death';
     }
@@ -30,17 +32,14 @@ export class OnDeath extends Trigger {
     }
 }
 
-export class OnDeathAnyDeath extends Trigger {
+export class SoulReap extends Trigger {
+    protected static id = 'SoulReap';
+
     public getName() {
-        return 'Death';
+        return 'Soul Reap';
     }
 
     public register(card: Card, game: Game) {
-        let unit = card as Unit;
-        unit.getEvents().addEvent(this, new GameEvent(EventType.Death, (params) => {
-            this.mechanic.onTrigger(card, game);
-            return params;
-        }));
         game.gameEvents.addEvent(this, new GameEvent(EventType.UnitDies, (params) => {
             this.mechanic.onTrigger(card, game);
             return params;

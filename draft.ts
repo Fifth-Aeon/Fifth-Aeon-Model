@@ -1,7 +1,7 @@
 import { Card } from './card';
 import { DeckList } from './deckList';
 import { standardFormat } from './gameFormat';
-import { cardList, allCards } from './cards/allCards';
+import { cardList} from './cards/cardList';
 import { Rewards } from './collection';
 
 import { sampleSize } from 'lodash';
@@ -49,7 +49,7 @@ export class Draft {
      */
     getChoices(): Set<Card> {
         if (!this.choices)
-            this.choices = new Set(sampleSize(cardList, Draft.CardsPerPick));
+            this.choices = new Set(sampleSize(cardList.getCards(), Draft.CardsPerPick));
         return this.choices;
     }
 

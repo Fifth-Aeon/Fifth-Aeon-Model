@@ -3,32 +3,30 @@ import { Card } from '../card';
 import { Item } from '../item';
 import { Enchantment } from '../enchantment';
 import { Unit, UnitType, mechanical } from '../unit';
-import { Resource } from '../resource';
+import { Resource, ResourceType } from '../resource';
 
 // Mechanics
 import {
     SingleUnit, Untargeted, AllUnits, AllPlayers, EnemyUnits, Friends, Enemies, Everyone,
-    FriendlyUnit, EnemyUnit, FriendlyUnits
-} from '../targeter';
+    FriendlyUnit, EnemyUnit, FriendlyUnits, EnemyPlayer, SelfTarget
+} from './targeters/basicTargeter';
 import { PoisonImmune } from './mechanics/poison';
 import { ShuffleIntoDeck } from './mechanics/shuffleIntoDeck';
 import { AugarCard, DrawCard, Peek } from './mechanics/draw';
-import { EndOfTurn } from './mechanics/periodic';
-import { friendlyEOT } from './triggers/periodic';
 import { CannotAttack, CannotBlock } from './mechanics/cantAttack';
-import { UnitEntersPlay } from './mechanics/entersPlay';
 import { Flying, Ranged, Lethal, Shielded, Relentless, Aquatic, Unblockable } from './mechanics/skills';
 import { friendlyLordship } from './mechanics/lordship';
 import { Annihilate } from './mechanics/removal';
-import { BuffTargetAndGrant } from './mechanics/buff';
+import { BuffTargetAndGrant, BuffTarget } from './mechanics/buff';
 import { Robotic, SpyPower } from './mechanics/synthSpecials';
 import { MechanicalUnit, BiologicalUnit, FrendlyBiologicalUnits } from './targeters/biotargeter';
-import { DealDamage, DealSynthDamage, DamageOnBlock } from './mechanics/dealDamage';
+import { DealDamage, DealResourceDamage, DamageOnBlock } from './mechanics/dealDamage';
 import { Poisoned } from './mechanics/poison';
 import { Recharge } from './mechanics/enchantmentCounters';
 import { ForceField } from './mechanics/shieldEnchantments';
 import { EnchantmentSummon } from './mechanics/summonUnits';
 import { RefreshTarget } from './mechanics/heal';
+import { Dusk } from './triggers/periodic';
 
 export function assemblyLine() {
     return new Enchantment(
@@ -43,7 +41,7 @@ export function assemblyLine() {
         }),
         new Untargeted(),
         5, 1,
-        [new EnchantmentSummon(automatedInfantry, 1).setTrigger(friendlyEOT())]
+        [new EnchantmentSummon(automatedInfantry, 1).setTrigger(new Dusk())]
     );
 }
 
@@ -289,7 +287,7 @@ export function energyBeam() {
             Synthesis: 2
         }),
         new SingleUnit(),
-        [new DealSynthDamage()]
+        [new DealResourceDamage(ResourceType.Synthesis)]
     );
 }
 
@@ -342,6 +340,7 @@ export function dangerousInjection() {
     );
 }
 
+
 export function workbot() {
     return new Unit(
         'Workbot',
@@ -357,13 +356,14 @@ export function workbot() {
         new Untargeted(),
         1, 1,
         [new Robotic(),
-        new UnitEntersPlay('When you summon a mechanical unit give it +0/+1', 1, (source, unit) => {
+        /*new UnitEntersPlay('When you summon a mechanical unit give it +0/+1', 1, (source, unit) => {
             if (unit !== source && unit.getOwner() === source.getOwner() && mechanical.has(unit.getUnitType())) {
                 unit.buff(0, 1);
             }
-        })]
+        })*/]
     );
 }
+
 
 export function comsTower() {
     return new Unit(
@@ -398,14 +398,15 @@ export function enhancmentChamber() {
         }),
         new Untargeted(),
         0, 5,
-        [new CannotAttack(),
+        [new CannotAttack(), /*
         new UnitEntersPlay('When you summon a biological unit give it +2/+2.', 5, (source, unit) => {
             if (unit.getOwner() === source.getOwner() && !mechanical.has(unit.getUnitType())) {
                 unit.buff(2, 2);
             }
-        })]
+        })*/ ]
     );
 }
+
 
 export function observationBallon() {
     return new Unit(
@@ -439,9 +440,7 @@ export function siegeArtillery() {
         }),
         new Untargeted(),
         1, 1,
-        [new EndOfTurn('deal 1 damage to your opponent', 3, (unit, game) => {
-            game.getPlayer(game.getOtherPlayerNumber(unit.getOwner())).takeDamage(1, unit);
-        })]
+        [   new DealDamage(1).setTargeter(new EnemyPlayer()).setTrigger(new Dusk()) ]
     );
 }
 
@@ -565,10 +564,8 @@ export function mine() {
         0, 3,
         [
             new CannotAttack(),
-            new EndOfTurn('draw a card and get -0/-1', 3, (unit, game) => {
-                game.getPlayer(unit.getOwner()).drawCard();
-                unit.buff(0, -1);
-            })
+            new DrawCard(1).setTrigger(new Dusk()),
+            new BuffTarget(0, -1).setTargeter(new SelfTarget()).setTrigger(new Dusk())
         ]
     );
 }

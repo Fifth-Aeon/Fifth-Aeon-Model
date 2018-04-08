@@ -1,5 +1,4 @@
 import { Game, GamePhase, GameActionType, SyncEventType, GameAction, GameSyncEvent } from './game';
-import { data } from './gameData';
 import { GameFormat, standardFormat } from './gameFormat';
 import { Log } from './log';
 
@@ -13,6 +12,7 @@ import { Resource, ResourceTypeNames } from './resource';
 import { maxBy } from 'lodash';
 import { EventType } from './gameEvent';
 import { Animator } from './animator';
+import { cardList } from './cards/cardList';
 
 export class ClientGame extends Game {
     // Handlers to syncronize events
@@ -183,7 +183,7 @@ export class ClientGame extends Game {
     public unpackCard(proto: { id: string, data: string, owner: number }) {
         if (this.cardPool.has(proto.id))
             return this.cardPool.get(proto.id);
-        let card = data.getCard(proto.data);
+        let card = cardList.getCard(proto.data);
         card.setId(proto.id);
         card.setOwner(proto.owner);
         this.cardPool.set(proto.id, card);

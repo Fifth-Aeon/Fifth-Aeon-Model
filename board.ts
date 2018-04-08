@@ -2,7 +2,7 @@ import { Permanent } from './permanent';
 import { CardType } from './card';
 import { Unit } from './unit';
 import { Enchantment } from './enchantment';
-import { OwningPlayer, EnemyPlayer } from './targeter';
+
 /**
  * A simple board where each side can place up to a fixed number of units without any positoning.
  *

@@ -1,18 +1,19 @@
-import { Mechanic, TriggeredMechanic } from '../../mechanic';
 import { Game } from '../../Game';
-import { Targeter } from '../../targeter';
 import { Card } from '../../card';
-import { Unit, UnitType } from '../../unit';
+import { EventType, GameEvent } from '../../gameEvent';
+import { Mechanic, TriggeredMechanic } from '../../mechanic';
 import { Player } from '../../player';
-import { GameEvent, EventType } from '../../gameEvent';
-import { PlayTrigger } from '../../trigger';
+import { Unit, UnitType } from '../../unit';
+import { ParameterType } from '../parameters';
 
 
 export class DrawCard extends TriggeredMechanic {
-    protected id = 'DrawCard';
-    protected triggerType = new PlayTrigger();
+    protected static id = 'DrawCard';
+    protected static ParameterTypes = [
+        { name: 'Number', type: ParameterType.NaturalNumber }
+    ];
 
-    constructor(private count: number) {
+    constructor(private count: number = 1) {
         super();
     }
 
@@ -32,8 +33,7 @@ export class DrawCard extends TriggeredMechanic {
 }
 
 export class Peek extends TriggeredMechanic {
-    protected id = 'Peek';
-    protected triggerType = new PlayTrigger();
+    protected static id = 'Peek';
 
     public onTrigger(card: Card, game: Game) {
         game.queryCards(
@@ -53,9 +53,12 @@ export class Peek extends TriggeredMechanic {
 }
 
 export class Discard extends TriggeredMechanic {
-    protected id = 'Discard';
-    protected triggerType = new PlayTrigger();
-    constructor(private count: number) {
+    protected static id = 'Discard';
+    protected static ParameterTypes = [
+        { name: 'Number', type: ParameterType.NaturalNumber }
+    ];
+
+    constructor(private count: number = 1) {
         super();
     }
     public onTrigger(card: Card, game: Game) {
@@ -73,6 +76,8 @@ export class Discard extends TriggeredMechanic {
 }
 
 export class DiscardOnDamage extends Mechanic {
+    protected static id = 'DiscardOnDamage';
+
     public enter(card: Card, game: Game) {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.DealDamage, params => {
@@ -98,8 +103,8 @@ export class DiscardOnDamage extends Mechanic {
 }
 
 export class AugarCard extends TriggeredMechanic {
-    protected id = 'AugarCard';
-    protected triggerType = new PlayTrigger();
+    protected static id = 'AugarCard';
+
     public onTrigger(card: Card, game: Game) {
         let owner = game.getPlayer(card.getOwner());
         let synth = owner.getPool().getOfType('Synthesis');

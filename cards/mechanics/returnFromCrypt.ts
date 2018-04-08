@@ -1,18 +1,23 @@
-import { Mechanic, TriggeredMechanic } from '../../mechanic';
+import { a } from '../../strings';
 import { Game } from '../../Game';
-import { Targeter } from '../../targeter';
 import { Card } from '../../card';
-import { Unit } from '../../unit';
+import { CardType } from '../../cardType';
+import { TriggeredMechanic } from '../../mechanic';
+import { ParameterType } from '../parameters';
 
 export class ReturnFromCrypt extends TriggeredMechanic {
-    protected id = 'ReturnFromCrypt';
-    constructor(private filter: (card: Card) => boolean) {
+    protected static id = 'ReturnFromCrypt';
+    protected static ParameterTypes = [
+        { name: 'Card Type', type: ParameterType.CardType }
+    ];
+
+    constructor(private allowed: CardType) {
         super();
     }
 
     public onTrigger(card: Card, game: Game) {
         let crypt = game.getCrypt(card.getOwner());
-        let validCards = crypt.filter(this.filter);
+        let validCards = this.getValidCards(card, game);
         let player = game.getPlayer(card.getOwner());
         game.promptCardChoice(card.getOwner(), validCards, 0, 1, (raised: Card[]) => {
             raised.forEach(raisedCard => {
@@ -23,11 +28,15 @@ export class ReturnFromCrypt extends TriggeredMechanic {
     }
 
     public getText(card: Card) {
-        return `Return a unit from your crypt to your hand.`;
+        const cardTypeName = CardType[this.allowed];
+        return `Return ${a(cardTypeName)} ${cardTypeName} from your crypt to your hand.`;
     }
 
     public evaluateEffect(card: Card, game: Game) {
-        let valid = game.getCrypt(card.getOwner()).filter(this.filter);
-        return valid.length > 1 ? 3 : 0;
+        return this.getValidCards(card, game).length > 1 ? 3 : 0;
+    }
+
+    private getValidCards(card: Card, game: Game) {
+        return game.getCrypt(card.getOwner()).filter((cryptCard) => cryptCard.getCardType() === this.allowed);
     }
 }

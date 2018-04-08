@@ -1,36 +1,30 @@
-import { Mechanic } from '../mechanic';
 import { Card } from '../card';
-import { Unit, UnitType } from '../unit';
-import { Item } from '../item';
+import { CardType } from '../cardType';
 import { Enchantment } from '../enchantment';
+import { Item } from '../item';
 import { Resource } from '../resource';
-
+import { Unit, UnitType } from '../unit';
+import { BuffTarget, BuffTargetAndGrant } from './mechanics/buff';
+import { CannotAttack } from './mechanics/cantAttack';
+import { DamageSpawnOnKill, DealDamage } from './mechanics/dealDamage';
+import { AbominationConsume, TransformDamaged } from './mechanics/decaySpecials';
+import { Discard, DiscardOnDamage } from './mechanics/draw';
+// Mechanics
+import { Discharge } from './mechanics/enchantmentCounters';
+import { notUnitLordship, unitTypeLordshipAll } from './mechanics/lordship';
+import { PoisonImmune, PoisonTarget } from './mechanics/poison';
+import { KillTarget } from './mechanics/removal';
+import { ReturnFromCrypt } from './mechanics/returnFromCrypt';
+import { DeathCounter } from './mechanics/shieldEnchantments';
+import { Aquatic, Deathless, Flying, Immortal, Lethal, Lifesteal, Relentless, Rush } from './mechanics/skills';
+import { SummonUnitForGrave, SummonUnitOnDamage, SummonUnits } from './mechanics/summonUnits';
+import { AllOtherUnits, EnemyUnit, FriendlyUnit, OwningPlayer, SelfTarget, SingleUnit, Untargeted } from './targeters/basicTargeter';
+import { PoisonableUnit } from './targeters/poisonTargeter';
 // Targeters
 import { DamagedUnit } from './targeters/weakenedUnits';
-import { PoisonableUnit, PoisonableUnits } from './targeters/poisonTargeter';
-import { SingleUnit, Untargeted, AllUnits, AllOtherUnits, FriendlyUnit, EnemyUnit, SelfTarget, OwningPlayer } from '../targeter';
-
-// Mechanics
-import { Discharge, Recharge } from './mechanics/enchantmentCounters';
-import { Flying, Rush, Aquatic, Lethal, Lifesteal, Deathless, Immortal, Relentless } from './mechanics/skills';
-import { Discard, DiscardOnDamage } from './mechanics/draw';
-import { BuffTargetAndGrant, BuffTarget } from './mechanics/buff';
-import { EndOfTurn } from './mechanics/periodic';
-import { CannotAttack } from './mechanics/cantAttack';
-import { PoisonTarget, PoisonImmune } from './mechanics/poison';
-import { ReturnFromCrypt } from './mechanics/returnFromCrypt';
-import { TransformDamaged, AbominationConsume } from './mechanics/decaySpecials';
-import { SummonUnitForGrave, SummonUnitOnDamage, SummonUnits } from './mechanics/summonUnits';
-import { DamageSpawnOnKill } from './mechanics/dealDamage';
-import { OnDeathAnyDeath } from './mechanics/death';
-import { unitTypeLordshipInclusive, unitTypeLordshipAll, notUnitLordship } from './mechanics/lordship';
-import { KillTarget } from './mechanics/removal';
-import { DeathCounter } from './mechanics/shieldEnchantments';
-import { OnDeath } from './triggers/death';
+import { DeathTrigger } from './triggers/death';
 import { LethalStrike } from './triggers/lethalStrike';
-import { GainLife } from './mechanics/playerAid';
-import { DealDamage, DealSynthDamage, DamageOnBlock } from './mechanics/dealDamage';
-import { friendlyEOT, anyEOT, friendlySOT } from './triggers/periodic';
+import { Dusk } from './triggers/periodic';
 
 export function imp() {
     return new Unit(
@@ -139,10 +133,10 @@ export function impKeep() {
         new Untargeted(),
         4, 2,
         [
-            new SummonUnits(imp).setTrigger(friendlyEOT()),
+            new SummonUnits(imp).setTrigger(new Dusk()),
             new DealDamage(1)
                 .setTargeter(new OwningPlayer())
-                .setTrigger(friendlyEOT())
+                .setTrigger(new Dusk())
         ]
     );
 }
@@ -313,11 +307,12 @@ export function lich() {
         }),
         new Untargeted(),
         4, 4,
-        [new Deathless(), new OnDeathAnyDeath('summon a Skeleton', 6, (unit, dying, game) => {
+        [new Deathless(), /* new OnDeathAnyDeath('summon a Skeleton', 6, (unit, dying, game) => {
             game.playGeneratedUnit(unit.getOwner(), skeleton());
-        })]
+        })*/]
     );
 }
+
 
 export function Hemmorage() {
     return new Card(
@@ -432,7 +427,7 @@ export function rottingZombie() {
         }),
         new Untargeted(),
         2, 2,
-        [new SummonUnits(crawlingZombie, 1).setTrigger(new OnDeath())]
+        [new SummonUnits(crawlingZombie, 1).setTrigger(new DeathTrigger())]
     );
 }
 
@@ -611,7 +606,7 @@ export function unbury() {
             Synthesis: 0
         }),
         new Untargeted(),
-        [new ReturnFromCrypt((card) => card.isUnit())]
+        [new ReturnFromCrypt(CardType.Unit)]
     );
 }
 

@@ -4,11 +4,16 @@ import { Targeter } from '../../targeter';
 import { Card, CardType } from '../../card';
 import { Enchantment } from '../../enchantment';
 import { GameEvent, EventType } from '../../gameEvent';
+import { ParameterType } from '../parameters';
 
 export class Recharge extends Mechanic {
-    protected validCardTypes = new Set([CardType.Enchantment]);
+    protected static id = 'Recharge';
+    protected static validCardTypes = new Set([CardType.Enchantment]);
+    protected static ParameterTypes = [
+        { name: 'Amount Per Turn', type: ParameterType.NaturalNumber }
+    ];
 
-    constructor(protected amountPerTurn: number) {
+    constructor(protected amountPerTurn: number = 1) {
         super();
     }
 
@@ -36,6 +41,10 @@ export class Recharge extends Mechanic {
 }
 
 export class Discharge extends Recharge {
+    protected static id = 'Discharge';
+    protected static validCardTypes = new Set([CardType.Enchantment]);
+
+
     public enter(card: Card, game: Game) {
         let enchantment = card as Enchantment;
         game.gameEvents.addEvent(this, new GameEvent(EventType.StartOfTurn, (params) => {
@@ -60,8 +69,14 @@ export class Discharge extends Recharge {
 }
 
 export class ChangePower extends TriggeredMechanic {
+    protected static id = 'ChangePower';
+    protected static validCardTypes = new Set([CardType.Enchantment]);
+    protected static ParameterTypes = [
+        { name: 'Difference', type: ParameterType.Integer }
+    ];
+
     private desc: string;
-    constructor(private diff: number) {
+    constructor(private diff: number = 1) {
         super();
         this.desc = diff > 0 ? 'Gain' : 'Lose';
         this.desc += ' ' + Math.abs(diff) + ' power.';
@@ -86,7 +101,8 @@ export class ChangePower extends TriggeredMechanic {
 }
 
 export class CannotBeEmpowered extends Mechanic {
-    protected validCardTypes = new Set([CardType.Enchantment]);
+    protected static validCardTypes = new Set([CardType.Enchantment]);
+    protected static id = 'CannotBeEmpowered';
 
     public enter(card: Card, game: Game) {
         (card as Enchantment).setEmpowerable(false);
@@ -107,7 +123,8 @@ export class CannotBeEmpowered extends Mechanic {
 
 
 export class CannotBeDiminished extends Mechanic {
-    protected validCardTypes = new Set([CardType.Enchantment]);
+    protected static id = 'CannotBeDiminished';
+    protected static validCardTypes = new Set([CardType.Enchantment]);
 
     public enter(card: Card, game: Game) {
         (card as Enchantment).setDiminishable(false);

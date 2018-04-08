@@ -1,12 +1,13 @@
 import { Mechanic, TargetedMechanic, EvalContext } from '../../mechanic';
 import { Game, GamePhase } from '../../Game';
 import { Targeter } from '../../targeter';
-import { Card } from '../../card';
+import { Card, CardType } from '../../card';
 import { Unit } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 
 export class CannotAttack extends Mechanic {
-    protected id = 'CannotAttack';
+    protected static id = 'CannotAttack';
+    protected static validCardTypes = new Set([CardType.Unit, CardType.Item]);
     public enter(card: Card, game: Game) {
         (card as Unit).setAttackDisabled(true);
     }
@@ -25,7 +26,8 @@ export class CannotAttack extends Mechanic {
 }
 
 export class CannotBlock extends Mechanic {
-    protected id = 'CannotBlock';
+    protected static id = 'CannotBlock';
+    protected static validCardTypes = new Set([CardType.Unit, CardType.Item]);
     public enter(card: Card, game: Game) {
         (card as Unit).setBlockDisabled(true);
     }
@@ -44,7 +46,7 @@ export class CannotBlock extends Mechanic {
 }
 
 export class ImprisonTarget extends TargetedMechanic {
-    protected id = 'ImprisonTarget';
+    protected static id = 'ImprisonTarget';
     public onTrigger(card: Card, game: Game) {
         this.targeter.getTargets(card, game).forEach(target => {
             target.addMechanic(new CannotAttack(), game);

@@ -6,7 +6,7 @@ import { Unit, UnitType } from '../unit';
 import { Resource } from '../resource';
 
 // Targeters
-import { SingleUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnit, AllOtherUnits, SelfTarget } from '../targeter';
+import { SingleUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnit, AllOtherUnits, SelfTarget } from './targeters/basicTargeter';
 import { SleepableUnit } from './targeters/poisonTargeter';
 import { BiologicalUnit } from './targeters/biotargeter';
 import { UnitWithAbility } from './targeters/mechanicTargeter';
@@ -20,16 +20,16 @@ import { SummonUnits } from './mechanics/summonUnits';
 import { Flying, Lethal, Rush, Aquatic, Relentless, Deathless, Ranged } from './mechanics/skills';
 import { Venomous, PoisonTarget } from './mechanics/poison';
 import { GainLife, GainResource } from './mechanics/playerAid';
-import { OnDeath } from './triggers/death';
+import { DeathTrigger } from './triggers/death';
 import { KillTarget } from './mechanics/removal';
 import { Affinity } from './triggers/affinity';
 import { UnitsOfType } from './targeters/unitTypeTargeter';
 import { LethalStrike } from './triggers/lethalStrike';
 import { Enchantment } from '../enchantment';
-import { friendlyEOT, anyEOT, friendlySOT } from './triggers/periodic';
 import { Discharge } from './mechanics/enchantmentCounters';
 import { DrawCard } from './mechanics/draw';
 import { LifeLessUnits } from './targeters/powerTargeter';
+import { Dawn, Cycle } from './triggers/periodic';
 
 export function flourishing() {
     return new Enchantment(
@@ -49,7 +49,7 @@ export function flourishing() {
             Decay: 0,
             Renewal: 0,
             Synthesis: 0
-        })).setTrigger(friendlySOT()), new Discharge(1)]
+        })).setTrigger(new Dawn()), new Discharge(1)]
     );
 }
 
@@ -67,7 +67,7 @@ export function fairy() {
         }),
         new Untargeted(),
         1, 1,
-        [new Flying(), new DrawCard(1).setTrigger(new OnDeath())]
+        [new Flying(), new DrawCard(1).setTrigger(new DeathTrigger())]
     );
 }
 
@@ -122,7 +122,7 @@ export function plauge() {
         4, 1,
         [new PoisonTarget()
             .setTargeter(new AllUnits())
-            .setTrigger(anyEOT()), new Discharge(1)]
+            .setTrigger(new Cycle()), new Discharge(1)]
     );
 }
 
@@ -282,7 +282,7 @@ export function hydra() {
         5, 5,
         [new Flying(), new Deathless(3),
         new BuffTarget(1, 1)
-            .setTrigger(new OnDeath())
+            .setTrigger(new DeathTrigger())
             .setTargeter(new SelfTarget())]
     );
 }
