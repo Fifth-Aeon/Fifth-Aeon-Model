@@ -499,6 +499,10 @@ export abstract class Game {
         return this.board;
     }
 
+    public getEvents() {
+        return this.gameEvents;
+    }
+
     public getCurrentPlayerUnits() {
         return this.board.getAllUnits().filter(unit => this.isPlayerTurn(unit.getOwner()));
     }

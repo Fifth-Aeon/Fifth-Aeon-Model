@@ -5,9 +5,9 @@ import { Item } from './item';
 import { EventGroup, EventType } from './gameEvent';
 import { Resource } from './resource';
 import { Targeter } from './targeter';
-import { Mechanic, TriggeredMechanic } from './mechanic';
+import { Mechanic, TriggeredMechanic, TargetedMechanic } from './mechanic';
 
-import { groupBy } from 'lodash';
+import { groupBy, values } from 'lodash';
 
 export class Permanent extends Card {
     static cardTypes = new Set([CardType.Unit, CardType.Item]);
@@ -16,26 +16,27 @@ export class Permanent extends Card {
         if (this.text)
             return this.text;
         let text = '';
-        let groups = groupBy(this.mechanics, (mech) => {
+        let groups = values(groupBy(this.mechanics, (mech) => {
             const triggered = <TriggeredMechanic>mech;
             if (triggered.getTrigger) {
-                return triggered.getTrigger().isHidden() ? 'hidden' : triggered.getTrigger().getName();
+                return triggered.getTrigger().isHidden() ? 'hidden' : triggered.getTrigger().getId();
             }
             return '';
-        });
-        let first = true;
-        for (let trigger in groups) {
-            if (trigger === 'hidden')
-                continue;
-            if (!first) {
-                text += ' ';
-            }
-            first = false;
-            if (trigger !== '')
-                text += trigger + ': ';
-            text += groups[trigger].map(mechanic => mechanic.getText(this, game)).join(' ');
-        }
-        return text;
+        }));
+
+        return groups.map(mechanics => this.getTriggerGroupText(mechanics, game)).join(' ');
+    }
+
+    private getTriggerGroupText(mechanics: Mechanic[], game: Game) {
+        const mechanicText = mechanics
+            .map(mechanic => mechanic.getText(this, game))
+            .join(' ');
+        const first = mechanics[0];
+        if (!(first instanceof TriggeredMechanic))
+            return mechanicText;
+        const trigger = (first as TriggeredMechanic).getTrigger();
+        return trigger.getText(mechanicText);
+
     }
 
     public leaveBoard(game: Game) {

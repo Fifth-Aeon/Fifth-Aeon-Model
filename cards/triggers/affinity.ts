@@ -11,8 +11,8 @@ export class Affinity extends Trigger {
 
     private triggered = false;
 
-    public getName() {
-        return 'Affinity';
+    public getText(mechanicText: string) {
+        return `Affinity: ${mechanicText}`;
     }
 
     public isHidden() {

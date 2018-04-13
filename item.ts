@@ -71,7 +71,7 @@ export class Item extends Card {
             clone.enter(host, game);
             if ((<TriggeredMechanic>clone).getTrigger) {
                 (<TriggeredMechanic>clone).getTrigger().register(this, game);
-                if ((<TriggeredMechanic>clone).getTrigger().getName() === 'Play') {
+                if ((<TriggeredMechanic>clone).getTrigger().getText() === 'Play') {
                     (<TriggeredMechanic>clone).onTrigger(this, game);
                 }
             }

@@ -9,8 +9,8 @@ import { Player } from '../../player';
 export class OwnerAttacked extends Trigger {
     protected static id = 'OwnerAttacked';
 
-    public getName() {
-        return 'Owner Attacked';
+    public getText(mechanicText: string) {
+        return `When this unit’s owner is attacked ${mechanicText}`;
     }
 
     public register(card: Card, game: Game) {

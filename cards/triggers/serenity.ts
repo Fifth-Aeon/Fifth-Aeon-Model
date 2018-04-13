@@ -10,8 +10,8 @@ export class Serenity extends Trigger {
 
     private triggered = false;
 
-    public getName() {
-        return 'Serenity';
+    public getText(mechanicText: string) {
+        return `Serenity: ${mechanicText}`;
     }
 
     public register(card: Card, game: Game) {

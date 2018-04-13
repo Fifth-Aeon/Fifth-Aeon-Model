@@ -8,13 +8,16 @@ export abstract class Trigger {
     static getId() {
         return this.id;
     }
+    public getId(): string {
+        return (this.constructor as any).id;
+    }
     public attach(mechanic: TriggeredMechanic) {
         this.mechanic = mechanic;
     }
     abstract register(card: Card, game: Game): void;
     abstract unregister(card: Card, game: Game): void;
     public isHidden() { return false; }
-    abstract getName(): string;
+    abstract getText(mechanicText: string): string;
     abstract evaluate(host: Card, game: Game, context: EvalContext): number;
 }
 

@@ -32,6 +32,7 @@ import { OwnerAttacked } from './triggers/owner';
 import { RenewalMCTargeter } from './targeters/mindControlTargeter';
 import { CurePoisonTargeter } from './targeters/poisonTargeter';
 import { Dusk, Dawn } from './triggers/periodic';
+import { UnitEntersPlay } from './triggers/basic';
 
 export function pegasus() {
     return new Unit(
@@ -269,11 +270,9 @@ export function blacksmith() {
         }),
         new Untargeted(),
         1, 1,
-        [/*new UnitEntersPlay('When you summon a unit give it +1/+0.', 3, (source, unit) => {
-            if (unit !== source && unit.getOwner() === source.getOwner()) {
-                unit.buff(1, 0);
-            }
-        })*/]
+        [
+            new BuffTarget(1, 1).setTrigger(new UnitEntersPlay())
+        ]
     );
 }
 
@@ -293,7 +292,7 @@ export function kingUnit() {
         new Untargeted(),
         3, 5,
         [unitTypeLordshipInclusive(UnitType.Soldier, 1, 1),
-            new SummonUnits(pikeman).setTrigger(new Dawn())
+        new SummonUnits(pikeman).setTrigger(new Dawn())
         ]
     );
 }

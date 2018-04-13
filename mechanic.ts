@@ -6,7 +6,7 @@ import { Targeter } from './targeter';
 import { Trigger } from './trigger';
 
 import { sumBy, multiply, reduce } from 'lodash';
-import { PlayTrigger } from './cards/triggers/basic';
+import { Play } from './cards/triggers/basic';
 import { ParameterType } from './cards/parameters';
 
 export enum EvalContext {
@@ -75,7 +75,7 @@ export abstract class Mechanic {
 
 
 export abstract class TriggeredMechanic extends Mechanic {
-    protected triggerType: Trigger = new PlayTrigger();
+    protected triggerType: Trigger = new Play();
     public onTrigger(parent: Card, game: Game) { }
 
 

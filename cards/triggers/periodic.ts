@@ -8,8 +8,8 @@ import { Trigger } from '../../trigger';
 export class Dusk extends Trigger {
     protected static id = 'Dusk';
 
-    public getName() {
-        return 'Dusk';
+    public getText(mechanicText: string) {
+        return `Dusk: ${mechanicText}`;
     }
 
     public register(card: Card, game: Game) {
@@ -33,8 +33,8 @@ export class Dusk extends Trigger {
 export class Dawn extends Dusk {
     protected static id = 'Dawn';
 
-    public getName() {
-        return 'dawn';
+    public getText(mechanicText: string) {
+        return `Dawn: ${mechanicText}`;
     }
 
     public register(card: Card, game: Game) {
@@ -54,7 +54,7 @@ export class Dawn extends Dusk {
 export class Cycle extends Dusk {
     protected static id = 'Cycle';
 
-    public getName() {
+    public getText() {
         return 'cycle';
     }
 

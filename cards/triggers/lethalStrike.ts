@@ -8,8 +8,8 @@ import { Trigger } from '../../trigger';
 export class LethalStrike extends Trigger {
     protected static id = 'LethalStrike';
 
-    public getName() {
-        return 'Lethal Strike';
+    public getText(mechanicText: string) {
+        return `Lethal Strike': ${mechanicText}`;
     }
 
     public register(card: Card, game: Game) {

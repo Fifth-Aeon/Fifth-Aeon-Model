@@ -22,7 +22,7 @@ import { AllOtherUnits, EnemyUnit, FriendlyUnit, OwningPlayer, SelfTarget, Singl
 import { PoisonableUnit } from './targeters/poisonTargeter';
 // Targeters
 import { DamagedUnit } from './targeters/weakenedUnits';
-import { DeathTrigger } from './triggers/death';
+import { DeathTrigger, SoulReap } from './triggers/death';
 import { LethalStrike } from './triggers/lethalStrike';
 import { Dusk } from './triggers/periodic';
 
@@ -307,9 +307,10 @@ export function lich() {
         }),
         new Untargeted(),
         4, 4,
-        [new Deathless(), /* new OnDeathAnyDeath('summon a Skeleton', 6, (unit, dying, game) => {
-            game.playGeneratedUnit(unit.getOwner(), skeleton());
-        })*/]
+        [
+            new Deathless(),
+            new BuffTarget(1, 1).setTargeter(new SelfTarget()).setTrigger(new SoulReap())
+        ]
     );
 }
 
