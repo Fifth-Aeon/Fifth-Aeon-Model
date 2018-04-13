@@ -9,8 +9,8 @@ import { EvalContext } from '../../mechanic';
 export class DeathTrigger extends Trigger {
     protected static id = 'Death';
 
-    public getText() {
-        return 'Death';
+    public getText(mechanicText: string) {
+        return `Death: ${mechanicText}`;
     }
 
     public register(card: Card, game: Game) {
@@ -36,7 +36,7 @@ export class SoulReap extends Trigger {
     protected static id = 'SoulReap';
 
     public getText(mechanicText: string) {
-        return `Soul Reap': ${mechanicText}`;
+        return `Soul Reap: ${mechanicText}`;
     }
 
     public register(card: Card, game: Game) {

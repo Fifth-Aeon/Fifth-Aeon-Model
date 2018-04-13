@@ -8,9 +8,14 @@ export abstract class Targeter {
     protected static id: string;
     protected targets: Array<Unit> = [];
     protected optional = false;
+    protected usePronoun = false;
 
     public static getId() {
         return this.id;
+    }
+
+    public getId(): string {
+        return (this.constructor as any).id;
     }
 
     public needsInput(): boolean {
@@ -31,8 +36,20 @@ export abstract class Targeter {
 
     abstract getText(): string;
 
+    public getTextOrPronoun(): string {
+        return this.usePronoun ? this.getPronoun() : this.getText();
+    }
+
+    public getPronoun(): string {
+        return 'it';
+    }
+
     public getValidTargets(card: Card, game: Game) {
         return new Array<Unit>();
+    }
+
+    public shouldUsePronoun(usePronoun: boolean) {
+        this.usePronoun = usePronoun;
     }
 
     public isTargetable(card: Card, game: Game): boolean {

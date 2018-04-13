@@ -48,7 +48,7 @@ export class WebTarget extends TargetedMechanic {
     }
 
     public getText(card: Card) {
-        return `Exaust ${this.targeter.getText()}. It loses flying.`;
+        return `Exaust ${this.targeter.getTextOrPronoun()}. It loses flying.`;
     }
 }
 

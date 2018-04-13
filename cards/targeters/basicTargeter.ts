@@ -110,6 +110,9 @@ export class AllUnits extends Targeter {
     public getText() {
         return 'all units';
     }
+    public getPronoun() {
+        return 'them';
+    }
     public needsInput() {
         return false;
     }

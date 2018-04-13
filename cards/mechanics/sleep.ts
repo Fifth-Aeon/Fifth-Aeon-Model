@@ -67,7 +67,7 @@ export class SleepTarget extends TargetedMechanic {
     }
 
     public getText(card: Card) {
-        return `Put ${this.targeter.getText()} to sleep for ${this.turns === 1 ? 'a turn' : this.turns + ' turns'}.`;
+        return `Put ${this.targeter.getTextOrPronoun()} to sleep for ${this.turns === 1 ? 'a turn' : this.turns + ' turns'}.`;
     }
 
     public evaluateTarget(source: Card, target: Unit, game: Game) {

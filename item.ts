@@ -56,7 +56,7 @@ export class Item extends Card {
     }
 
     public getText(game: Game, hasPrefix: boolean = true): string {
-        let prefix = hasPrefix ? `Attaches to ${this.hostTargeter.getText()}. ` : '';
+        let prefix = hasPrefix ? `Attaches to ${this.hostTargeter.getTextOrPronoun()}. ` : '';
         return prefix + this.mechanics.map(mechanic => mechanic.getText(this, game)).join(' ');
     }
 
@@ -71,7 +71,7 @@ export class Item extends Card {
             clone.enter(host, game);
             if ((<TriggeredMechanic>clone).getTrigger) {
                 (<TriggeredMechanic>clone).getTrigger().register(this, game);
-                if ((<TriggeredMechanic>clone).getTrigger().getText() === 'Play') {
+                if ((<TriggeredMechanic>clone).getTrigger().getId() === 'Play') {
                     (<TriggeredMechanic>clone).onTrigger(this, game);
                 }
             }

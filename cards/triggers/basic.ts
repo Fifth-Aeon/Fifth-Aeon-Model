@@ -1,8 +1,9 @@
-import { Trigger } from '../../trigger';
-import { Game } from '../../game';
 import { Card } from '../../card';
-import { GameEvent, EventType } from '../../gameEvent';
+import { Game } from '../../game';
+import { EventType, GameEvent } from '../../gameEvent';
 import { EvalContext } from '../../mechanic';
+import { removeFirstCapital } from '../../strings';
+import { Trigger } from '../../trigger';
 
 
 export class Play extends Trigger {
@@ -34,7 +35,7 @@ export class UnitEntersPlay extends Trigger {
     protected static id = 'UnitEntersPlay';
 
     public getText(mechanicText: string) {
-        return `When a unit enters play ${mechanicText}`;
+        return `When a unit is summoned ${removeFirstCapital(mechanicText)}`;
     }
 
     public register(card: Card, game: Game) {

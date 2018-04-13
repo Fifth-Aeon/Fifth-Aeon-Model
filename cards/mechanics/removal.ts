@@ -14,7 +14,7 @@ export class Annihilate extends TargetedMechanic {
     }
 
     public getText(card: Card) {
-        return `Annihilate ${this.targeter.getText()}.`;
+        return `Annihilate ${this.targeter.getTextOrPronoun()}.`;
     }
 
     public evaluateTarget(source: Card, target: Unit, game: Game) {
@@ -31,7 +31,7 @@ export class KillTarget extends TargetedMechanic {
     }
 
     public getText(card: Card) {
-        return `Kill ${this.targeter.getText()}.`;
+        return `Kill ${this.targeter.getTextOrPronoun()}.`;
     }
 
     public evaluateTarget(source: Card, target: Unit, game: Game) {

@@ -14,7 +14,7 @@ export class ShuffleIntoDeck extends TargetedMechanic {
     }
 
     public getText(card: Card) {
-        return `Shuffle ${this.targeter.getText()} into their owner's deck.`;
+        return `Shuffle ${this.targeter.getTextOrPronoun()} into their owner's deck.`;
     }
 
     public evaluateTarget(source: Card, target: Unit, game: Game) {

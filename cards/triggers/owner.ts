@@ -5,12 +5,13 @@ import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 import { Trigger } from '../../trigger';
 import { Player } from '../../player';
+import { removeFirstCapital } from '../../strings';
 
 export class OwnerAttacked extends Trigger {
     protected static id = 'OwnerAttacked';
 
     public getText(mechanicText: string) {
-        return `When this unit’s owner is attacked ${mechanicText}`;
+        return `When this unit’s owner is attacked ${removeFirstCapital(mechanicText)}`;
     }
 
     public register(card: Card, game: Game) {

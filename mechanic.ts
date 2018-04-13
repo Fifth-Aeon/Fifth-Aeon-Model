@@ -129,6 +129,10 @@ export abstract class TargetedMechanic extends TriggeredMechanic {
         return this;
     }
 
+    public getTargeter() {
+        return this.targeter;
+    }
+
     public evaluateEffect(card: Card, game: Game) {
         return sumBy(this.targeter.getTargets(card, game),
             (target) => this.evaluateTarget(card, target, game));

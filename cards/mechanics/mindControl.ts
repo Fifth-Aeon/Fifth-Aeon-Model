@@ -15,7 +15,7 @@ export class MindControl extends TargetedMechanic {
     }
 
     public getText(card: Card, game: Game) {
-        return `Take control of ${this.targeter.getText()}.`;
+        return `Take control of ${this.targeter.getTextOrPronoun()}.`;
     }
 
     public evaluateTarget(source: Card, unit: Unit, game: Game) {

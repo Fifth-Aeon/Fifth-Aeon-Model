@@ -64,7 +64,7 @@ export class DealDamage extends TargetedMechanic {
     }
 
     public getText(card: Card, game: Game) {
-        return `Deal ${this.amount} damage to ${this.targeter.getText()}.`;
+        return `Deal ${this.amount} damage to ${this.targeter.getTextOrPronoun()}.`;
     }
 
     public evaluateTarget(source: Card, target: Unit, game: Game) {
@@ -117,7 +117,7 @@ export class DamageSpawnOnKill extends DealDamage {
     }
 
     public getText(card: Card) {
-        return `Deal ${this.amount} damage to ${this.targeter.getText()}. If it dies summon a ${this.name}.`;
+        return `Deal ${this.amount} damage to ${this.targeter.getTextOrPronoun()}. If it dies summon a ${this.name}.`;
     }
 }
 
@@ -136,8 +136,8 @@ export class DealResourceDamage extends DealDamage {
 
     public getText(card: Card, game: Game) {
         if (game)
-            return `Deal damage to ${this.targeter.getText()} equal to your ${this.resource} (${this.getDamage(card, game)}).`;
+            return `Deal damage to ${this.targeter.getTextOrPronoun()} equal to your ${this.resource} (${this.getDamage(card, game)}).`;
         else
-            return `Deal damage to ${this.targeter.getText()} equal to your ${this.resource}.`;
+            return `Deal damage to ${this.targeter.getTextOrPronoun()} equal to your ${this.resource}.`;
     }
 }

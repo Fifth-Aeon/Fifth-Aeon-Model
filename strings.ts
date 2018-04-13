@@ -25,3 +25,7 @@ function symbol(number: number) {
 export function formatBuff(damage: number, life: number) {
     return `${symbol(damage)}${damage}/${symbol(life)}${life}`;
 }
+
+export function removeFirstCapital(text: string) {
+    return text[0].toLocaleLowerCase() + text.substr(1);
+}

@@ -19,7 +19,7 @@ export class CurePoison extends TargetedMechanic {
     }
 
     public getText(card: Card) {
-        return `Cure ${this.targeter.getText()}.`;
+        return `Cure ${this.targeter.getTextOrPronoun()}.`;
     }
 }
 
@@ -72,7 +72,7 @@ export class PoisonTarget extends TargetedMechanic {
     }
 
     public getText(card: Card) {
-        return `Poison ${this.targeter.getText()}.`;
+        return `Poison ${this.targeter.getTextOrPronoun()}.`;
     }
 
     public evaluateTarget(source: Card, target: Unit, game: Game) {

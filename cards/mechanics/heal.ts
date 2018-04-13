@@ -16,7 +16,7 @@ export class RefreshTarget extends TargetedMechanic {
     }
 
     public getText(card: Card) {
-        return `Refresh ${this.targeter.getText()}.`;
+        return `Refresh ${this.targeter.getTextOrPronoun()}.`;
     }
 
     public evaluateTarget(source: Card, target: Unit) {

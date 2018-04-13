@@ -55,7 +55,7 @@ export class ImprisonTarget extends TargetedMechanic {
     }
 
     public getText(card: Card) {
-        return `Cause ${this.targeter.getText()} to become unable to attack or block.`;
+        return `Cause ${this.targeter.getTextOrPronoun()} to become unable to attack or block.`;
     }
 
     public evaluateTarget(source: Card, unit: Unit, game: Game) {

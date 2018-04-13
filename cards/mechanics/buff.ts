@@ -31,7 +31,7 @@ export class BuffTarget extends TargetedMechanic {
 
     public getText(card: Card) {
         let buffText = `${this.symbol(this.damage)}${this.damage}/${this.symbol(this.life)}${this.life}`;
-        return `Give ${this.targeter.getText()} ${buffText}.`;
+        return `Give ${this.targeter.getTextOrPronoun()} ${buffText}.`;
     }
 
     public evaluateTarget(source: Card, target: Unit) {
@@ -65,8 +65,8 @@ export class BuffTargetAndGrant extends TargetedMechanic {
     public getText(card: Card) {
         let buffText = `${this.symbol(this.damage)}${this.damage}/${this.symbol(this.life)}${this.life}`;
         if (this.abilities.length > 0)
-            return `Give ${this.targeter.getText()} ${buffText} and ${this.abilityString()}.`;
-        return `Give ${this.targeter.getText()} ${buffText}.`;
+            return `Give ${this.targeter.getTextOrPronoun()} ${buffText} and ${this.abilityString()}.`;
+        return `Give ${this.targeter.getTextOrPronoun()} ${buffText}.`;
     }
 
     public evaluateTarget(source: Card, target: Unit) {
