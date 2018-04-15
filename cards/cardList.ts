@@ -66,8 +66,13 @@ export class CardList {
         }
     }
 
-    public getCard(id: string) {
-        return this.factories.get(id)();
+    public getCard(id: string): Card {
+        const factory = this.factories.get(id);
+        if (factory)
+            return factory();
+        console.error('No card with id', id);
+        const first = this.factories.values().next().value;
+        return first();
     }
 
     public getCards() {
