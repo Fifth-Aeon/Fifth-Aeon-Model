@@ -33,7 +33,7 @@ export class Permanent extends Card {
             return this.getSimpleMechanicGroupText(mechanics, game);
         const trigger = (mechanics[0] as TriggeredMechanic).getTrigger();
         mechanics = sortBy(mechanics, this.getTargeterId);
-        let lastId = null;
+        let lastId: string = null;
         const mechanicText = this.addSentanceMarkers(properList(mechanics.map(mechanic => {
             let id = this.getTargeterId(mechanic);
             if (id !== '')
