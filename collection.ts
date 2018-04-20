@@ -17,8 +17,6 @@ export interface Rewards {
     packs: number;
 }
 
-const cardIds = cardList.getIds();
-
 export class Collection {
     private records = new Map<string, number>();
     private gold: number;
@@ -170,7 +168,9 @@ export class Booster {
     constructor(private cardCount: number = 6) { }
 
     public open() {
-        let openedCards = Array<string>(this.cardCount);
+        const openedCards = Array<string>(this.cardCount);
+        const cardIds = cardList.getIds();
+
         for (let i = 0; i < this.cardCount; i++) {
             let drawn = sample(cardIds);
             openedCards[i] = drawn;

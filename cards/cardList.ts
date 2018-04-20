@@ -80,7 +80,7 @@ export class CardList {
     }
 
     public getIds() {
-        return this.instances.map(instance => instance.getId());
+        return Array.from(this.factories.keys());
     }
 
     public exists(id: string) {
