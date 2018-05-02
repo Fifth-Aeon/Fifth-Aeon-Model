@@ -1,5 +1,5 @@
 import { a } from '../../strings';
-import { Game } from '../../Game';
+import { Game } from '../../game';
 import { Card } from '../../card';
 import { CardType } from '../../cardType';
 import { TriggeredMechanic } from '../../mechanic';
