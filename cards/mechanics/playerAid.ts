@@ -1,5 +1,5 @@
 import { Mechanic, TargetedMechanic, TriggeredMechanic } from '../../mechanic';
-import { Game } from '../../Game';
+import { Game } from '../../game';
 import { Targeter } from '../../targeter';
 import { Card, GameZone } from '../../card';
 import { Unit, UnitType } from '../../unit';
