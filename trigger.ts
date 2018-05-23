@@ -1,4 +1,4 @@
-import { Card } from './Card';
+import { Card } from './card';
 import { Game } from './game';
 import { EvalContext, TriggeredMechanic } from './mechanic';
 

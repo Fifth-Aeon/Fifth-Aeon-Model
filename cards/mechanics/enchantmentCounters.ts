@@ -1,5 +1,5 @@
 import { Mechanic, TriggeredMechanic } from '../../mechanic';
-import { Game } from '../../Game';
+import { Game } from '../../game';
 import { Targeter } from '../../targeter';
 import { Card, CardType } from '../../card';
 import { Enchantment } from '../../enchantment';

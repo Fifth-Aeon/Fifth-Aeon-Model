@@ -1,5 +1,5 @@
 import { Game } from '../../game';
-import { Card } from '../../Card';
+import { Card } from '../../card';
 import { Unit } from '../../unit';
 
 import { every } from 'lodash';
