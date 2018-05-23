@@ -16,7 +16,7 @@ export class Flying extends Skill {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.CheckBlockable, params => {
                 let blocker = params.get('blocker') as Unit;
-                if (!blocker.hasMechanicWithId('flying') && !blocker.hasMechanicWithId('ranged'))
+                if (!blocker.hasMechanicWithId('Flying') && !blocker.hasMechanicWithId('Ranged'))
                     params.set('canBlock', false);
                 return params;
             }
@@ -87,7 +87,7 @@ export class Aquatic extends Skill {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.CheckBlockable, params => {
                 let blocker = params.get('blocker') as Unit;
-                if (!blocker.hasMechanicWithId('aquatic') && !blocker.hasMechanicWithId('flying'))
+                if (!blocker.hasMechanicWithId('Aquatic') && !blocker.hasMechanicWithId('Flying'))
                     params.set('canBlock', false);
                 return params;
             }
@@ -95,7 +95,7 @@ export class Aquatic extends Skill {
         (card as Unit).getEvents().addEvent(this, new GameEvent(
             EventType.CheckCanBlock, params => {
                 let attacker = params.get('attacker') as Unit;
-                if (!attacker.hasMechanicWithId('aquatic'))
+                if (!attacker.hasMechanicWithId('Aquatic'))
                     params.set('canBlock', false);
                 return params;
             }

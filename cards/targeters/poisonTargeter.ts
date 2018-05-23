@@ -43,7 +43,7 @@ export class CurePoisonTargeter extends Targeter {
         let owner = game.getPlayer(card.getOwner());
         return game.getBoard()
             .getPlayerUnits(card.getOwner())
-            .filter(unit => unit.hasMechanicWithId('poison'));
+            .filter(unit => unit.hasMechanicWithId('Poison'));
     }
 
     public getText() {
