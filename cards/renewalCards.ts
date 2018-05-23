@@ -8,7 +8,7 @@ import { Item } from '../item';
 import { Resource } from '../resource';
 
 // Targeters
-import { SingleUnit, FriendlyUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnits } from './targeters/basicTargeter';
+import { SingleUnit, FriendlyUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnits, TriggeringUnit } from './targeters/basicTargeter';
 
 
 // Trigers
@@ -32,7 +32,7 @@ import { OwnerAttacked } from './triggers/owner';
 import { RenewalMCTargeter } from './targeters/mindControlTargeter';
 import { CurePoisonTargeter } from './targeters/poisonTargeter';
 import { Dusk, Dawn } from './triggers/periodic';
-import { UnitEntersPlay } from './triggers/basic';
+import { UnitEntersPlay, FriendlyUnitEntersPlay } from './triggers/basic';
 
 export function pegasus() {
     return new Unit(
@@ -251,7 +251,8 @@ export function ruralMonk() {
         }),
         new Untargeted(),
         1, 2,
-        [new GainLife(1).setTrigger(new Serenity())]
+        [new GainLife(1)
+            .setTrigger(new Serenity())]
     );
 }
 
@@ -271,7 +272,9 @@ export function blacksmith() {
         new Untargeted(),
         1, 1,
         [
-            new BuffTarget(1, 1).setTrigger(new UnitEntersPlay())
+            new BuffTarget(1, 0)
+                .setTargeter(new TriggeringUnit())
+                .setTrigger(new FriendlyUnitEntersPlay())
         ]
     );
 }

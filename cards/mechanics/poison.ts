@@ -9,7 +9,7 @@ import { Permanent } from '../../permanent';
 export class CurePoison extends TargetedMechanic {
     protected static id = 'CurePoison';
     public onTrigger(card: Card, game: Game) {
-        this.targeter.getTargets(card, game).forEach(target => {
+        this.targeter.getTargets(card, game, this).forEach(target => {
             target.removeMechanic('poisoned', game);
         });
     }
@@ -66,7 +66,7 @@ export class PoisonTarget extends TargetedMechanic {
     protected static id = 'PoisonTarget';
 
     public onTrigger(card: Card, game: Game) {
-        for (let target of this.targeter.getTargets(card, game)) {
+        for (let target of this.targeter.getTargets(card, game, this)) {
             target.addMechanic(new Poisoned(), game);
         }
     }

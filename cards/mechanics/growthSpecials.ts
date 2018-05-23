@@ -23,7 +23,7 @@ export class DrawCardsFromUnit extends TargetedMechanic {
     }
 
     public enter(card: Card, game: Game) {
-        for (let target of this.targeter.getTargets(card, game)) {
+        for (let target of this.targeter.getTargets(card, game, this)) {
             game.getPlayer(card.getOwner()).drawCards(this.getCards(target));
         }
     }
@@ -41,7 +41,7 @@ export class DrawCardsFromUnit extends TargetedMechanic {
 export class WebTarget extends TargetedMechanic {
     protected static id = 'WebTarget';
     public enter(card: Card, game: Game) {
-        for (let target of this.targeter.getTargets(card, game)) {
+        for (let target of this.targeter.getTargets(card, game, this)) {
             target.removeMechanic('flying', game);
             target.setExausted(true);
         }

@@ -8,7 +8,7 @@ import { Resource, ResourceType } from '../resource';
 // Mechanics
 import {
     SingleUnit, Untargeted, AllUnits, AllPlayers, EnemyUnits, Friends, Enemies, Everyone,
-    FriendlyUnit, EnemyUnit, FriendlyUnits, EnemyPlayer, SelfTarget
+    FriendlyUnit, EnemyUnit, FriendlyUnits, EnemyPlayer, SelfTarget, TriggeringUnit
 } from './targeters/basicTargeter';
 import { PoisonImmune } from './mechanics/poison';
 import { ShuffleIntoDeck } from './mechanics/shuffleIntoDeck';
@@ -27,6 +27,7 @@ import { ForceField } from './mechanics/shieldEnchantments';
 import { EnchantmentSummon } from './mechanics/summonUnits';
 import { RefreshTarget } from './mechanics/heal';
 import { Dusk } from './triggers/periodic';
+import { FriendlyBiologicalUnitEntersPlay } from './triggers/bio';
 
 export function assemblyLine() {
     return new Enchantment(
@@ -398,12 +399,11 @@ export function enhancmentChamber() {
         }),
         new Untargeted(),
         0, 5,
-        [new CannotAttack(), /*
-        new UnitEntersPlay('When you summon a biological unit give it +2/+2.', 5, (source, unit) => {
-            if (unit.getOwner() === source.getOwner() && !mechanical.has(unit.getUnitType())) {
-                unit.buff(2, 2);
-            }
-        })*/ ]
+        [new CannotAttack(),
+        new BuffTarget(3, 3)
+            .setTargeter(new TriggeringUnit())
+            .setTrigger(new FriendlyBiologicalUnitEntersPlay())
+        ]
     );
 }
 
@@ -440,7 +440,7 @@ export function siegeArtillery() {
         }),
         new Untargeted(),
         1, 1,
-        [   new DealDamage(1).setTargeter(new EnemyPlayer()).setTrigger(new Dusk()) ]
+        [new DealDamage(1).setTargeter(new EnemyPlayer()).setTrigger(new Dusk())]
     );
 }
 

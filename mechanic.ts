@@ -22,6 +22,7 @@ export abstract class Mechanic {
     protected static validCardTypes = new Set([CardType.Spell, CardType.Enchantment, CardType.Unit, CardType.Item]);
     protected static ParameterTypes: {name: string, type: ParameterType}[] = [];
     protected static id: string;
+    private triggeringUnit: Unit ;
 
     static getMultiplier(vals: Array<number | EvalOperator>) {
         let multipliers = (vals.filter(val => typeof val === 'object') as EvalOperator[])
@@ -70,6 +71,14 @@ export abstract class Mechanic {
 
     public getId(): string {
         return (this.constructor as any).id;
+    }
+
+    public setTriggeringUnit(unit: Unit) {
+        this.triggeringUnit = unit;
+    }
+
+    public getTriggeringUnit() {
+        return this.triggeringUnit;
     }
 }
 
@@ -134,7 +143,7 @@ export abstract class TargetedMechanic extends TriggeredMechanic {
     }
 
     public evaluateEffect(card: Card, game: Game) {
-        return sumBy(this.targeter.getTargets(card, game),
+        return sumBy(this.targeter.getTargets(card, game, this),
             (target) => this.evaluateTarget(card, target, game));
     }
 }

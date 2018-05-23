@@ -48,7 +48,7 @@ export class CannotBlock extends Mechanic {
 export class ImprisonTarget extends TargetedMechanic {
     protected static id = 'ImprisonTarget';
     public onTrigger(card: Card, game: Game) {
-        this.targeter.getTargets(card, game).forEach(target => {
+        this.targeter.getTargets(card, game, this).forEach(target => {
             target.addMechanic(new CannotAttack(), game);
             target.addMechanic(new CannotBlock(), game);
         });

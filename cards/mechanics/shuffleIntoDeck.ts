@@ -7,7 +7,7 @@ import { Unit } from '../../unit';
 export class ShuffleIntoDeck extends TargetedMechanic {
     protected static id = 'ShuffleIntoDeck';
     public onTrigger(card: Card, game: Game) {
-        let targets = this.targeter.getTargets(card, game);
+        let targets = this.targeter.getTargets(card, game, this);
         for (let target of targets) {
             game.returnPermanentToDeck(target);
         }

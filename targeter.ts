@@ -3,6 +3,7 @@ import { Card } from './card';
 import { Unit } from './unit';
 
 import { every } from 'lodash';
+import { Mechanic } from './mechanic';
 
 export abstract class Targeter {
     protected static id: string;
@@ -26,7 +27,7 @@ export abstract class Targeter {
         this.targets = target;
     }
 
-    public getTargets(card: Card, game: Game): Array<Unit> {
+    public getTargets(card: Card, game: Game, mechanic: Mechanic): Array<Unit> {
         return this.targets;
     }
 

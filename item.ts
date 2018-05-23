@@ -51,7 +51,7 @@ export class Item extends Card {
     }
 
     public play(game: Game) {
-        let host = this.hostTargeter.getTargets(this, game)[0];
+        let host = this.hostTargeter.getTargets(this, game, null)[0];
         this.attach(host, game);
     }
 

@@ -8,7 +8,7 @@ import { Player } from '../../player';
 export class MindControl extends TargetedMechanic {
     protected static id = 'MindControl';
     public enter(card: Card, game: Game) {
-        let targets = this.targeter.getTargets(card, game);
+        let targets = this.targeter.getTargets(card, game, this);
         for (let target of targets) {
             game.changeUnitOwner(target);
         }

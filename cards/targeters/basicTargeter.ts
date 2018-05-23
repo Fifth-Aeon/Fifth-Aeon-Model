@@ -4,6 +4,23 @@ import { Unit } from '../../unit';
 
 import { every } from 'lodash';
 import { Targeter } from '../../targeter';
+import { Mechanic } from '../../mechanic';
+
+export class TriggeringUnit extends Targeter {
+    protected static id = 'OwningPlayer';
+
+    public needsInput() {
+        return false;
+    }
+
+    public getTargets(card: Card, game: Game, mechanic: Mechanic) {
+        return [mechanic.getTriggeringUnit()];
+    }
+
+    public getText() {
+        return 'that unit';
+    }
+}
 
 export class OwningPlayer extends Targeter {
     protected static id = 'OwningPlayer';
