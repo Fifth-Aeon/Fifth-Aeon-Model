@@ -8,11 +8,12 @@ import { Item } from './item';
 import { EvalContext } from './mechanic';
 
 // Mechanics to worry about
-import { Shielded } from './cards/mechanics/skills';
+import { Shielded, Lethal, Flying } from './cards/mechanics/skills';
 
 import { minBy, sample, sampleSize, maxBy, sortBy, sumBy, remove } from 'lodash';
 import { LinkedList } from 'typescript-collections';
 import { Animator } from './animator';
+import { TransformDamaged } from './cards/mechanics/decaySpecials';
 
 export enum AiDifficulty {
     Easy, Medium, Hard
@@ -303,12 +304,14 @@ export class BasicAI extends AI {
     }
 
     private categorizeBlock(attacker: Unit, blocker: Unit): BlockType {
-        let isAttackerLethal = attacker.hasMechanicWithId('Lethal') || attacker.hasMechanicWithId('TransfomTarget');
-        let isBlockerLethal = blocker.hasMechanicWithId('Lethal') || blocker.hasMechanicWithId('TransfomTarget');
+        let isAttackerLethal = attacker.hasMechanicWithId(Lethal.getId()) ||
+            attacker.hasMechanicWithId(TransformDamaged.getId());
+        let isBlockerLethal = blocker.hasMechanicWithId(Lethal.getId()) ||
+            blocker.hasMechanicWithId(TransformDamaged.getId());
 
-        let shield = (attacker.hasMechanicWithId('Shielded') as Shielded);
+        let shield = (attacker.hasMechanicWithId(Shielded.getId()) as Shielded);
         let isAttackerShilded = shield && !shield.isDepleted();
-        shield = (blocker.hasMechanicWithId('Shielded') as Shielded);
+        shield = (blocker.hasMechanicWithId(Shielded.getId()) as Shielded);
         let isBlockerShilded = shield && !shield.isDepleted();
 
         let attackerDies = !isAttackerShilded && (isBlockerLethal || blocker.getDamage() >= attacker.getLife());
@@ -333,7 +336,7 @@ export class BasicAI extends AI {
 
     private block() {
         let attackers = sortBy(this.game.getAttackers(), (attacker) =>
-            -(attacker.getDamage() + (attacker.hasMechanicWithId('Flying') !== undefined ? 1000 : 0)));
+            -(attacker.getDamage() + (attacker.hasMechanicWithId(Flying.getId()) !== undefined ? 1000 : 0)));
         let potentialBlockers = this.game.getBoard().getPlayerUnits(this.playerNumber)
             .filter(unit => !unit.isExausted());
 
