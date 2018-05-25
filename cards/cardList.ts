@@ -11,6 +11,7 @@ import { MechanicData, mechanicList } from './mechanicList';
 import * as renewal from './renewalCards';
 import * as synthesis from './synthCards';
 import { TargeterData, targeterList } from './targeterList';
+import { Untargeted } from './targeters/basicTargeter';
 
 
 
@@ -45,6 +46,8 @@ export type CardData = SpellData | UnitData | ItemData | EnchantmentData;
 
 export type CardFactory = () => Card;
 
+let defaultCard = new Card('default', 'default', '', new Resource(1), new Untargeted(), []);
+
 export class CardList {
     private factories = new Map<string, CardFactory>();
     private instances: Card[] = [];
@@ -62,6 +65,9 @@ export class CardList {
         for (let factory of factories) {
             let card = factory();
             this.factories.set(card.getDataId(), factory);
+            let existing = this.instances.findIndex(curr => curr.getDataId() === card.getDataId());
+            if (existing !== -1)
+                this.instances.splice(existing, 1);
             this.instances.push(card);
         }
     }
@@ -70,9 +76,7 @@ export class CardList {
         const factory = this.factories.get(id);
         if (factory)
             return factory();
-        console.error('No card with id', id);
-        const first = this.factories.values().next().value;
-        return first();
+        return defaultCard;
     }
 
     public getCards() {

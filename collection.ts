@@ -151,7 +151,13 @@ export class Collection {
     }
 
     public getCards() {
-        return Array.from(this.records.keys(), id => cardList.getCard(id));
+        let cards = [];
+        for (let id of Array.from(this.records.keys())) {
+            let card = cardList.getCard(id);
+            if (card.getDataId() !== 'default')
+                cards.push(card);
+        }
+        return cards;
     }
 
     public getRecordList() {
