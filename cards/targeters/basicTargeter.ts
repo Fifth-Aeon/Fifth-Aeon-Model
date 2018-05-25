@@ -14,7 +14,10 @@ export class TriggeringUnit extends Targeter {
     }
 
     public getTargets(card: Card, game: Game, mechanic: Mechanic) {
-        return [mechanic.getTriggeringUnit()];
+        let triggering = mechanic.getTriggeringUnit();
+        if (triggering)
+            return [mechanic.getTriggeringUnit()];
+        return [];
     }
 
     public getText() {
