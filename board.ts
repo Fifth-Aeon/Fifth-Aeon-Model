@@ -33,6 +33,8 @@ export class Board {
 
     public addPermanent(permanent: Permanent) {
         this.spaces[permanent.getOwner()].push(permanent);
+        if (this.spaces[permanent.getOwner()].length > this.spaceCount)
+            permanent.die();
     }
 
     public getAllUnits(): Array<Unit> {
@@ -61,10 +63,10 @@ export class Board {
         let res: Enchantment[] = [];
         let enemyPlayer = this.spaces[playerNumber];
 
-            for (let j = 0; j < this.spaces[playerNumber].length; j++) {
-                if (this.spaces[playerNumber][j].getCardType() === CardType.Enchantment)
-                        res.push(this.spaces[playerNumber][j] as Enchantment);
-            }
+        for (let j = 0; j < this.spaces[playerNumber].length; j++) {
+            if (this.spaces[playerNumber][j].getCardType() === CardType.Enchantment)
+                res.push(this.spaces[playerNumber][j] as Enchantment);
+        }
 
         return res;
     }
