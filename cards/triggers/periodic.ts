@@ -54,8 +54,9 @@ export class Dawn extends Dusk {
 export class Cycle extends Dusk {
     protected static id = 'Cycle';
 
-    public getText() {
-        return 'cycle';
+    public getText(mechanicText: string) {
+        return `Cycle: ${mechanicText}`;
+
     }
 
     public register(card: Card, game: Game) {
