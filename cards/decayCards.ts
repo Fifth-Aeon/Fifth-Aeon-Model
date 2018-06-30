@@ -315,6 +315,27 @@ export function lich() {
 }
 
 
+export function lichring() {
+    return new Item(
+        'LichRing',
+        'Lich’s Ring',
+        'skull-signet.png',
+        new Resource(2, 0, {
+            Growth: 0,
+            Decay: 2,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        new FriendlyUnit(),
+        1, 0,
+        [
+            new BuffTarget(1, 1).setTargeter(new SelfTarget()).setTrigger(new SoulReap())
+        ]
+    );
+}
+
+
 export function Hemmorage() {
     return new Card(
         'Hemorrhage',
