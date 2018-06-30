@@ -1,10 +1,11 @@
 import { Game } from '../../game';
-import { Card } from '../../card';
+import { Card, CardType } from '../../card';
 import { Unit } from '../../unit';
 
 import { every } from 'lodash';
 import { Targeter } from '../../targeter';
 import { Mechanic } from '../../mechanic';
+import { Item } from '../../item';
 
 export class TriggeringUnit extends Targeter {
     protected static id = 'OwningPlayer';
@@ -68,8 +69,12 @@ export class Untargeted extends Targeter {
 
 export class SelfTarget extends Targeter {
     protected static id = 'SelfTarget';
+
     public getTargets(card: Card, game: Game): Array<Unit> {
-        return [card as Unit];
+        let unit = card.getCardType() === CardType.Item ? (card as Item).getHost() : card as Unit;
+        if (unit && unit.getCardType() === CardType.Unit)
+            return [unit];
+        return [];
     }
 
     public getText() {

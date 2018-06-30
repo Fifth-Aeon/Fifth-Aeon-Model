@@ -16,7 +16,7 @@ export class Permanent extends Card {
     public getText(game: Game): string {
         if (this.text)
             return this.text;
-        let text = '';
+
         let groups = values(groupBy(this.mechanics, (mech) => {
             const triggered = <TriggeredMechanic>mech;
             if (triggered.getTrigger) {

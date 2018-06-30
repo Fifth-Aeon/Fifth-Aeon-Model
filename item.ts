@@ -1,13 +1,12 @@
-import { Card, CardType, GameZone } from './card';
-import { Unit } from './unit';
-import { Mechanic, TriggeredMechanic } from './mechanic';
+import { CardType, GameZone } from './card';
+import { Game } from './game';
+import { EvalContext, Mechanic, TriggeredMechanic } from './mechanic';
+import { Permanent } from './permanent';
 import { Resource } from './resource';
 import { Targeter } from './targeter';
-import { EventGroup } from './gameEvent';
-import { Game } from './game';
-import { EvalContext } from './mechanic';
+import { Unit } from './unit';
 
-export class Item extends Card {
+export class Item extends Permanent {
     private host: Unit;
     private lifeBonus: number;
     private damageBonus: number;
@@ -34,6 +33,10 @@ export class Item extends Card {
         return this.hostTargeter;
     }
 
+    public getHost() {
+        return this.host;
+    }
+
     public getDamage() {
         return this.damageBonus;
     }
@@ -57,7 +60,7 @@ export class Item extends Card {
 
     public getText(game: Game, hasPrefix: boolean = true): string {
         let prefix = hasPrefix ? `Attaches to ${this.hostTargeter.getTextOrPronoun()}. ` : '';
-        return prefix + this.mechanics.map(mechanic => mechanic.getText(this, game)).join(' ');
+        return prefix + super.getText(game);
     }
 
     public attach(host: Unit, game: Game) {

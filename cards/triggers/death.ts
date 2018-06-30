@@ -37,7 +37,7 @@ export class SoulReap extends Trigger {
     protected static id = 'SoulReap';
 
     public getText(mechanicText: string) {
-        return `Soul Reap: ${mechanicText}`;
+        return `Whenever another unit dies ${mechanicText}`;
     }
 
     public register(card: Card, game: Game) {
