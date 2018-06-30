@@ -86,7 +86,7 @@ export class BiteDamage extends DealDamage {
 
     public getText(card: Card, game: Game) {
         if (game)
-            return `Deal damage to target unit equal to your highest attack unit (${this.getDamage(card, game)}).`;
+            return `Deal damage to target unit equal to your highest attack unit [dynamic](${this.getDamage(card, game)})[/dynamic].`;
         else
             return `Deal damage to target unit equal to your highest attack unit.`;
 
@@ -136,7 +136,8 @@ export class DealResourceDamage extends DealDamage {
 
     public getText(card: Card, game: Game) {
         if (game)
-            return `Deal damage to ${this.targeter.getTextOrPronoun()} equal to your ${this.resource} (${this.getDamage(card, game)}).`;
+            return `Deal damage to ${this.targeter.getTextOrPronoun()} equal to your ${this.resource} [dynamic](${
+                this.getDamage(card, game)})[/dynamic].`;
         else
             return `Deal damage to ${this.targeter.getTextOrPronoun()} equal to your ${this.resource}.`;
     }

@@ -63,7 +63,8 @@ export class SummonUnitForGrave extends SummonUnits {
 
     public getText(card: Card, game: Game) {
         if (game)
-            return `Play ${a(this.name)} ${this.name} for each ${this.factor} units in any crypt (${this.getUnitCount(card, game)}).`;
+            return `Play ${a(this.name)} ${this.name} for each ${this.factor} units in any crypt [dynamic](${
+                this.getUnitCount(card, game)})[/dynamic].`;
         else
             return `Play ${a(this.name)} ${this.name} for each ${this.factor} units in any crypt (rounded down).`;
     }
