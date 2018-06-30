@@ -9,7 +9,7 @@ export class LethalStrike extends Trigger {
     protected static id = 'LethalStrike';
 
     public getText(mechanicText: string) {
-        return `Lethal Strike': ${mechanicText}`;
+        return `Lethal Strike: ${mechanicText}`;
     }
 
     public register(card: Card, game: Game) {
