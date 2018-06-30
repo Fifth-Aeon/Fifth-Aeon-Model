@@ -11,12 +11,12 @@ export class Affinity extends Trigger {
     private triggered = false;
 
     public getText(mechanicText: string) {
-        return `Affinity: ${mechanicText}`;
+        if (this.triggered)
+            return `Affinity: [depleted]${mechanicText}[/depleted]`;
+        else
+            return `Affinity: ${mechanicText}`;
     }
 
-    public isHidden() {
-        return this.triggered;
-    }
 
     public evaluate(host: Card, game: Game, context: EvalContext) {
         if (!this.triggered)
