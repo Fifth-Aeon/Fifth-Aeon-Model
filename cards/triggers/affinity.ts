@@ -1,10 +1,9 @@
-import { Game } from '../../game';
-import { Targeter } from '../../targeter';
 import { Card } from '../../card';
-import { Unit, UnitType } from '../../unit';
-import { GameEvent, EventType } from '../../gameEvent';
-import { Trigger } from '../../trigger';
+import { Game } from '../../game';
+import { EventType, GameEvent } from '../../gameEvent';
 import { EvalContext } from '../../mechanic';
+import { Trigger } from '../../trigger';
+import { Unit } from '../../unit';
 
 export class Affinity extends Trigger {
     protected static id = 'Affinity';
@@ -34,15 +33,14 @@ export class Affinity extends Trigger {
                 enteringUnit.getUnitType() === mutatingUnit.getUnitType()) {
                 this.mechanic.setTriggeringUnit(enteringUnit);
                 this.mechanic.onTrigger(card, game);
-
-                this.unregister(card, game);
                 this.triggered = true;
+                this.unregister(card, game);
             }
             return params;
         }));
     }
 
     public unregister(card: Card, game: Game) {
-        (card as Unit).getEvents().removeEvents(this);
+        game.gameEvents.removeEvents(this);
     }
 }

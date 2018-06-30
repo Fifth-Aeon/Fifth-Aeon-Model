@@ -17,7 +17,12 @@ export class Permanent extends Card {
         if (this.text)
             return this.text;
 
-        let groups = values(groupBy(this.mechanics, (mech) => {
+        const displayedMechanics = this.mechanics.filter(mech => {
+            const triggered = <TriggeredMechanic>mech;
+            return !triggered.getTrigger || !triggered.getTrigger().isHidden();
+        });
+
+        let groups = values(groupBy(displayedMechanics, (mech) => {
             const triggered = <TriggeredMechanic>mech;
             if (triggered.getTrigger) {
                 return triggered.getTrigger().isHidden() ? 'hidden' : triggered.getTrigger().getId();
@@ -37,7 +42,7 @@ export class Permanent extends Card {
         const mechanicText = this.addSentanceMarkers(properList(mechanics.map(mechanic => {
             let id = this.getTargeterId(mechanic);
             if (id !== '')
-                (mechanic as TargetedMechanic).getTargeter().shouldUsePronoun(id === lastId );
+                (mechanic as TargetedMechanic).getTargeter().shouldUsePronoun(id === lastId);
             lastId = id;
             return this.removeSentanceMarkers(mechanic.getText(this, game));
         })));
