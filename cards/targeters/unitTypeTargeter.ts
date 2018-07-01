@@ -18,3 +18,16 @@ export class UnitsOfType extends AllUnits {
         return 'all ' + UnitType[this.type];
     }
 }
+
+export class UnitOfType extends Targeter {
+    protected static id = 'UnitOfType';
+    constructor(private type: UnitType) {
+        super();
+    }
+    public getValidTargets(card: Card, game: Game) {
+        return game.getBoard().getAllUnits().filter(unit => unit.getUnitType() === this.type);
+    }
+    public getText() {
+        return 'target ' + UnitType[this.type];
+    }
+}
