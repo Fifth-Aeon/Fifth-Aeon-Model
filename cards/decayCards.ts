@@ -621,9 +621,9 @@ export function unbury() {
         'Unbury',
         'Unearth',
         'coffin.png',
-        new Resource(1, 0, {
+        new Resource(0, 0, {
             Growth: 0,
-            Decay: 1,
+            Decay: 3,
             Renewal: 0,
             Synthesis: 0
         }),

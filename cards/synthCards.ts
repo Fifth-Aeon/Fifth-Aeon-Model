@@ -16,7 +16,10 @@ import { Aquatic, Flying, Lethal, Ranged, Relentless, Shielded, Unblockable } fr
 import { EnchantmentSummon } from './mechanics/summonUnits';
 import { Robotic, SpyPower } from './mechanics/synthSpecials';
 // Mechanics
-import { Enemies, EnemyPlayer, EnemyUnit, EnemyUnits, FriendlyUnit, SelfTarget, SingleUnit, TriggeringUnit, Untargeted } from './targeters/basicTargeter';
+import {
+    Enemies, EnemyPlayer, EnemyUnit, EnemyUnits, FriendlyUnit,
+    SelfTarget, SingleUnit, TriggeringUnit, Untargeted
+} from './targeters/basicTargeter';
 import { BiologicalUnit, FrendlyBiologicalUnits, MechanicalUnit } from './targeters/biotargeter';
 import { UnitOfType } from './targeters/unitTypeTargeter';
 import { FriendlyBiologicalUnitEntersPlay, FriendlyMechanicalUnitEntersPlay } from './triggers/bio';
