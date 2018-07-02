@@ -33,6 +33,7 @@ import { RenewalMCTargeter } from './targeters/mindControlTargeter';
 import { CurePoisonTargeter } from './targeters/poisonTargeter';
 import { Dusk, Dawn } from './triggers/periodic';
 import { UnitEntersPlay, FriendlyUnitEntersPlay } from './triggers/basic';
+import { WinIfHighLife } from './mechanics/win';
 
 export function pegasus() {
     return new Unit(
@@ -558,5 +559,22 @@ export function pontiff() {
         new Untargeted(),
         3, 3,
         [unitTypeLordshipExclusive(UnitType.Cleric, 1, 1)]
+    );
+}
+
+
+export function overwelmingRadiance () {
+    return new Card(
+        'OverwhelmingRadiance',
+        'Overwhelming Radiance',
+        'sun.png',
+        new Resource(12, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 6,
+            Synthesis: 0
+        }),
+        new FriendlyUnits(),
+        [new WinIfHighLife(60)]
     );
 }
