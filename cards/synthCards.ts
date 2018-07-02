@@ -3,7 +3,7 @@ import { Enchantment } from '../enchantment';
 import { Item } from '../item';
 import { Resource, ResourceType } from '../resource';
 import { Unit, UnitType } from '../unit';
-import { BuffTarget, BuffTargetAndGrant } from './mechanics/buff';
+import { BuffTarget, BuffTargetAndGrant, GrantAbility } from './mechanics/buff';
 import { CannotAttack, CannotBlock } from './mechanics/cantAttack';
 import { DamageOnBlock, DealDamage, DealResourceDamage } from './mechanics/dealDamage';
 import { AugarCard, DrawCard, Peek } from './mechanics/draw';
@@ -18,12 +18,12 @@ import { Robotic, SpyPower } from './mechanics/synthSpecials';
 // Mechanics
 import {
     Enemies, EnemyPlayer, EnemyUnit, EnemyUnits, FriendlyUnit,
-    SelfTarget, SingleUnit, TriggeringUnit, Untargeted
+    SelfTarget, SingleUnit, TriggeringUnit, Untargeted, FriendlyUnits
 } from './targeters/basicTargeter';
 import { BiologicalUnit, FrendlyBiologicalUnits, MechanicalUnit, FrieldyVehicleOrStructure } from './targeters/biotargeter';
 import { UnitOfType } from './targeters/unitTypeTargeter';
 import { FriendlyBiologicalUnitEntersPlay, FriendlyMechanicalUnitEntersPlay } from './triggers/bio';
-import { Dusk } from './triggers/periodic';
+import { Dusk, Cycle, Dawn } from './triggers/periodic';
 
 
 export function assemblyLine() {
@@ -147,6 +147,71 @@ export function battleship() {
         new Untargeted(),
         7, 7,
         [new Aquatic()]
+    );
+}
+
+
+export function missleMech() {
+    return new Unit(
+        'MissileMech',
+        'Missile Mech',
+        'missile-mech.png',
+        UnitType.Vehicle,
+        new Resource(4, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 2
+        }),
+        new Untargeted(),
+        4, 4,
+        [new Ranged()]
+    );
+}
+
+export function satalite() {
+    return new Unit(
+        'SpySatalite',
+        'Spy Satalite',
+        'sattelite.png',
+        UnitType.Vehicle,
+        new Resource(5, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 2
+        }),
+        new Untargeted(),
+        0, 2,
+        [
+            new CannotAttack(),
+            new CannotBlock(),
+            new DrawCard().setTrigger(new Dawn()),
+            new Peek().setTrigger(new Dawn()),
+        ]
+    );
+}
+
+export function shieldGenerator() {
+    return new Unit(
+        'ShieldGenerator',
+        'Shield Generator',
+        'crystal-shine.png',
+        UnitType.Structure,
+        new Resource(7, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 4
+        }),
+        new Untargeted(),
+        0, 6,
+        [
+            new CannotAttack(),
+            new GrantAbility(Shielded)
+                .setTrigger(new Dawn())
+                .setTargeter(new FriendlyUnits())
+        ]
     );
 }
 
@@ -372,7 +437,7 @@ export function workbot() {
         1, 1,
         [
             new Robotic(),
-            new BuffTarget(1, 0)
+            new BuffTarget(0, 1)
                 .setTargeter(new TriggeringUnit())
                 .setTrigger(new FriendlyMechanicalUnitEntersPlay())
         ]

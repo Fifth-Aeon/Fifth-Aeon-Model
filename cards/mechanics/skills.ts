@@ -210,8 +210,12 @@ export class Shielded extends Skill {
 
     public getText(card: Card) {
         if (this.depleted)
-            return '';
+            return '[depleted]Shielded.[/depleted]';
         return `Shielded.`;
+    }
+
+    public stack() {
+        this.depleted = false;
     }
 
 
