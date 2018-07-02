@@ -14,6 +14,6 @@ export class RenewalMCTargeter extends Targeter {
     }
 
     public getText() {
-        return 'target unit with cost less or equal to half your renewal';
+        return 'target unit with cost less than or equal to half your renewal';
     }
 }

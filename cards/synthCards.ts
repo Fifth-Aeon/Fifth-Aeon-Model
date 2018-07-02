@@ -20,7 +20,7 @@ import {
     Enemies, EnemyPlayer, EnemyUnit, EnemyUnits, FriendlyUnit,
     SelfTarget, SingleUnit, TriggeringUnit, Untargeted
 } from './targeters/basicTargeter';
-import { BiologicalUnit, FrendlyBiologicalUnits, MechanicalUnit } from './targeters/biotargeter';
+import { BiologicalUnit, FrendlyBiologicalUnits, MechanicalUnit, FrieldyVehicleOrStructure } from './targeters/biotargeter';
 import { UnitOfType } from './targeters/unitTypeTargeter';
 import { FriendlyBiologicalUnitEntersPlay, FriendlyMechanicalUnitEntersPlay } from './triggers/bio';
 import { Dusk } from './triggers/periodic';
@@ -180,7 +180,7 @@ export function automataCrew() {
             Synthesis: 1
         }),
         new Untargeted(),
-        new UnitOfType(UnitType.Vehicle),
+        new FrieldyVehicleOrStructure(),
         3, 3,
         [new Robotic(), new Relentless()]
     );

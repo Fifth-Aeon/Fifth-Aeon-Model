@@ -1,6 +1,6 @@
 import { Targeter } from '../../targeter';
 import { AllUnits } from './basicTargeter';
-import { isBiological, isMechanical, Unit } from '../../unit';
+import { isBiological, isMechanical, Unit, UnitType } from '../../unit';
 import { Card } from '../../card';
 import { Game } from '../../game';
 
@@ -36,3 +36,18 @@ export class MechanicalUnit extends Targeter {
         return 'target mechanical unit';
     }
 }
+
+const validTypes = new Set([UnitType.Vehicle, UnitType.Structure]);
+export class FrieldyVehicleOrStructure extends Targeter {
+    protected static id = 'FrieldyVehicleOrStructure';
+
+    public getValidTargets(card: Card, game: Game) {
+        return game.getBoard().getAllUnits().filter(unit =>
+            validTypes.has(unit.getUnitType()) && unit.getOwner() === card.getOwner());
+    }
+    public getText() {
+        return 'target friendly Vehicle or Structure';
+    }
+}
+
+
