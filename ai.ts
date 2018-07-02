@@ -149,11 +149,11 @@ export class BasicAI extends AI {
 
         if (enchantments.length === 0)
             return;
-        let evaluated = sortBy(enchantments, card => {
+        let evaluated = sortBy(enchantments, enchant => {
             try {
-                return -this.evaluateCard(card);
+                return -this.evaluateCard(enchant);
             } catch (e) {
-                console.error('Error while evaluating', card, 'got', e);
+                console.error('Error while evaluating enchantment', enchant, 'got', e);
                 return;
             }
 
@@ -177,15 +177,19 @@ export class BasicAI extends AI {
         let playable = this.aiPlayer.getHand().filter(card => card.isPlayable(this.game));
         console.log('hand', this.aiPlayer.getHand());
         if (playable.length > 0) {
+            let scores = new Map();
             let evaluated = sortBy(playable, card => {
+                let score: number;
                 try {
-                    return -this.evaluateCard(card);
+                    score = this.evaluateCard(card);
                 } catch (e) {
+                    score = 0;
                     console.error('Error while evaluating', card, 'got', e);
-                    return 0;
                 }
+                scores.set(card.getId(), score);
+                return -score;
             });
-            console.log('eval', evaluated.map(card => card.getName() + ' ' + this.evaluateCard(card)).join(' | '));
+            console.log('eval', evaluated.map(card => card.getName() + ' ' + scores.get(card.getId())).join(' | '));
             let toPlay = evaluated[0];
             // INSERT ENCHANTMENT EVALUATE HERE
 
