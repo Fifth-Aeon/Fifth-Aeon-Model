@@ -12,7 +12,10 @@ export enum EventType {
     // Unit Events
     Played, Death, UnitDies, Attack, Block, TakeDamage, DealDamage,
     CheckBlockable, CheckCanBlock, KillUnit,
-    LeavesPlay, Annihilate
+    LeavesPlay, Annihilate,
+
+    // PLayer events
+    CardDrawn
 }
 
 export class GameEvent {

@@ -47,6 +47,7 @@ export class Player extends Unit {
         card.setOwner(this.playerNumber);
         card.setLocation(GameZone.Hand);
         this.hand.push(card);
+        this.getEvents().trigger(EventType.CardDrawn, new Map([['card', card]]));
     }
 
     public addToDeck(card: Card) {

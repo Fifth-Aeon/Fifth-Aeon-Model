@@ -17,13 +17,13 @@ import { EnchantmentSummon } from './mechanics/summonUnits';
 import { Robotic, SpyPower } from './mechanics/synthSpecials';
 // Mechanics
 import {
-    Enemies, EnemyPlayer, EnemyUnit, EnemyUnits, FriendlyUnit,
-    SelfTarget, SingleUnit, TriggeringUnit, Untargeted, FriendlyUnits
+    Enemies, EnemyPlayer, EnemyUnit, EnemyUnits, FriendlyUnit, FriendlyUnits, SelfTarget,
+    SingleUnit, TriggeringUnit, Untargeted
 } from './targeters/basicTargeter';
-import { BiologicalUnit, FrendlyBiologicalUnits, MechanicalUnit, FrieldyVehicleOrStructure } from './targeters/biotargeter';
-import { UnitOfType } from './targeters/unitTypeTargeter';
+import { BiologicalUnit, FrendlyBiologicalUnits, FrieldyVehicleOrStructure, MechanicalUnit } from './targeters/biotargeter';
 import { FriendlyBiologicalUnitEntersPlay, FriendlyMechanicalUnitEntersPlay } from './triggers/bio';
-import { Dusk, Cycle, Dawn } from './triggers/periodic';
+import { OwnerDrawsUnit } from './triggers/draw';
+import { Dawn, Dusk } from './triggers/periodic';
 
 
 export function assemblyLine() {
@@ -211,6 +211,29 @@ export function shieldGenerator() {
             new GrantAbility(Shielded)
                 .setTrigger(new Dawn())
                 .setTargeter(new FriendlyUnits())
+        ]
+    );
+}
+
+export function reaserchAI() {
+    return new Enchantment(
+        'ResearchAI',
+        'Research A.I',
+        'processor.png',
+        new Resource(7, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 4
+        }),
+        new Untargeted(),
+        6, 6,
+        [
+            new BuffTarget(1, 1)
+                .setTargeter(new TriggeringUnit())
+                .setTrigger(new OwnerDrawsUnit()),
+            new DrawCard()
+                .setTrigger(new Dawn()),
         ]
     );
 }
