@@ -6,7 +6,7 @@ import { Unit, UnitType } from '../unit';
 import { Resource } from '../resource';
 
 // Targeters
-import { SingleUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnit, AllOtherUnits, SelfTarget } from './targeters/basicTargeter';
+import { SingleUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnit, AllOtherUnits, SelfTarget, EnemyUnit } from './targeters/basicTargeter';
 import { SleepableUnit } from './targeters/poisonTargeter';
 import { BiologicalUnit } from './targeters/biotargeter';
 import { UnitWithAbility } from './targeters/mechanicTargeter';
@@ -70,6 +70,43 @@ export function fairy() {
         [new Flying(), new DrawCard(1).setTrigger(new DeathTrigger())]
     );
 }
+
+export function botanicElemental() {
+    return new Unit(
+        'BotanicElemental',
+        'Botanic Elemental',
+        'shambling-mound.png',
+        UnitType.Human,
+        new Resource(5, 0, {
+            Growth: 3,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        3, 3,
+        [new BuffTarget(1, 1).setTargeter(new SelfTarget()).setTrigger(new Dawn())]
+    );
+}
+
+export function elderDragon() {
+    return new Unit(
+        'ElderDragon',
+        'Elder Dragon',
+        'spiked-dragon-head.png',
+        UnitType.Dragon,
+        new Resource(10, 0, {
+            Growth: 6,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new EnemyUnit(),
+        8, 8,
+        [new Flying(), new DealDamage(8)]
+    );
+}
+
 
 export function mermaid() {
     return new Unit(
