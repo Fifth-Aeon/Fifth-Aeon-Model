@@ -6,7 +6,9 @@ import { Unit, UnitType } from '../unit';
 import { Resource } from '../resource';
 
 // Targeters
-import { SingleUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnit, AllOtherUnits, SelfTarget, EnemyUnit } from './targeters/basicTargeter';
+import {
+    SingleUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnit, AllOtherUnits, SelfTarget, EnemyUnit
+} from './targeters/basicTargeter';
 import { SleepableUnit } from './targeters/poisonTargeter';
 import { BiologicalUnit } from './targeters/biotargeter';
 import { UnitWithAbility } from './targeters/mechanicTargeter';
@@ -15,7 +17,7 @@ import { UnitWithAbility } from './targeters/mechanicTargeter';
 import { DrawCardsFromUnit, WebTarget } from './mechanics/growthSpecials';
 import { DealDamage, BiteDamage } from './mechanics/dealDamage';
 import { SleepTarget } from './mechanics/sleep';
-import { BuffTargetAndGrant, BuffTarget } from './mechanics/buff';
+import { BuffTargetAndGrant, BuffTarget, GrantAbility } from './mechanics/buff';
 import { SummonUnits } from './mechanics/summonUnits';
 import { Flying, Lethal, Rush, Aquatic, Relentless, Deathless, Ranged } from './mechanics/skills';
 import { Venomous, PoisonTarget } from './mechanics/poison';
@@ -23,7 +25,7 @@ import { GainLife, GainResource } from './mechanics/playerAid';
 import { DeathTrigger } from './triggers/death';
 import { KillTarget } from './mechanics/removal';
 import { Affinity } from './triggers/affinity';
-import { UnitsOfType } from './targeters/unitTypeTargeter';
+import { UnitsOfType, UnitsOfTypeAsTarget } from './targeters/unitTypeTargeter';
 import { LethalStrike } from './triggers/lethalStrike';
 import { Enchantment } from '../enchantment';
 import { Discharge } from './mechanics/enchantmentCounters';
@@ -192,6 +194,23 @@ export function CreepingCorrosion() {
         }),
         new LifeLessUnits(4),
         [new PoisonTarget()]
+    );
+}
+
+export function evolutionaryLeap() {
+    return new Card(
+        'EvolutionaryLeap',
+        'Evolutionary Leap',
+        'parmecia.png',
+        new Resource(9, 0, {
+            Growth: 6,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new UnitsOfTypeAsTarget(),
+        [new BuffTarget(4, 4), new GrantAbility(Relentless), new GrantAbility(Flying), new GrantAbility(Venomous)],
+        'Give target unit and all units of the same type +4/+4, Relentless, Flying and Venomous.'
     );
 }
 

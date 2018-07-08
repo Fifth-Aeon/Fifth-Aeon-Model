@@ -4,7 +4,7 @@ import { Enchantment } from '../enchantment';
 import { Item } from '../item';
 import { Resource } from '../resource';
 import { Unit, UnitType } from '../unit';
-import { BuffTarget, BuffTargetAndGrant } from './mechanics/buff';
+import { BuffTarget, BuffTargetAndGrant, GrantAbility } from './mechanics/buff';
 import { CannotAttack } from './mechanics/cantAttack';
 import { DamageSpawnOnKill, DealDamage } from './mechanics/dealDamage';
 import { AbominationConsume, TransformDamaged } from './mechanics/decaySpecials';
@@ -25,6 +25,7 @@ import { DamagedUnit } from './targeters/weakenedUnits';
 import { DeathTrigger, SoulReap } from './triggers/death';
 import { LethalStrike } from './triggers/lethalStrike';
 import { Dusk } from './triggers/periodic';
+import { UnitsNotOfType, UnitsOfType, FriendlyUnitsOfType } from './targeters/unitTypeTargeter';
 
 export function imp() {
     return new Unit(
@@ -115,6 +116,30 @@ export function deathAscendancy() {
             new Discharge(1),
             unitTypeLordshipAll(UnitType.Undead, 1, 1),
             notUnitLordship(UnitType.Undead, -1, -1)
+        ]
+    );
+}
+
+export function unyieldingNightmare() {
+    return new Enchantment(
+        'UnyieldingNightmare',
+        'Unyielding Nightmare',
+        'evil-moon.png',
+        new Resource(12, 0, {
+            Growth: 0,
+            Decay: 6,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        8, 3,
+        [
+            new Discharge(1),
+            new GrantAbility(Deathless)
+                .setTargeter(new FriendlyUnitsOfType(UnitType.Undead)),
+            new KillTarget()
+                .setTargeter(new UnitsNotOfType(UnitType.Undead))
+                .setTrigger(new Dusk())
         ]
     );
 }
