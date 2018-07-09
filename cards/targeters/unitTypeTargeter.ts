@@ -43,7 +43,7 @@ export class UnitsOfType extends AllUnits {
 }
 
 export class FriendlyUnitsOfType extends AllUnits {
-    protected static id = 'UnitsOfType';
+    protected static id = 'FriendlyUnitsOfType';
     constructor(private type: UnitType) {
         super();
     }

@@ -6,9 +6,8 @@ export const allDecks: DeckList[] = [];
 export const deckMap = new Map<string, DeckList>();
 
 function addDeck(deck: SavedDeck) {
-    let list = new DeckList(standardFormat);
-    list.fromSavable(deck);
-    allDecks.push(list)
+    let list = new DeckList(standardFormat, deck);
+    allDecks.push(list);
     deckMap.set(camelCase(deck.name), list);
 }
 
@@ -143,4 +142,4 @@ addDeck({
         ['ValiantDefenses', 4], ['Imprison', 4], ['CallOfJustice', 4], ['SentryAngel', 4],
         ['ArchivesSearch', 4], ['BombingRun', 2], ['GoldMine', 2], ['ObsesrvationBallon', 2]
     ]
-})
+});

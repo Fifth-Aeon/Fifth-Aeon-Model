@@ -1,5 +1,5 @@
 import { GameFormat, standardFormat } from './gameFormat';
-import { cardList} from './cards/cardList';
+import { cardList } from './cards/cardList';
 import { Card } from './card';
 import { DeckList } from './deckList';
 
@@ -151,7 +151,7 @@ export class Collection {
     }
 
     public getCards() {
-        let cards = [];
+        let cards: Card[] = [];
         for (let id of Array.from(this.records.keys())) {
             let card = cardList.getCard(id);
             if (card.getDataId() !== 'default')

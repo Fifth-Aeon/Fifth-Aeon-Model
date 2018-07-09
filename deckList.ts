@@ -4,6 +4,7 @@ import { Card } from './card';
 
 import { ResourceTypeNames } from './resource';
 import { sample, sampleSize, remove, sum } from 'lodash';
+import { Collection } from './collection';
 
 export interface SavedDeck {
     records: [string, number][];
@@ -22,14 +23,15 @@ export class DeckList {
     private cardCount = 0;
 
 
-    constructor(private format: GameFormat = standardFormat, empty = false) {
-        if (!empty)
-            this.generateRandomNColorDeck(1);
+    constructor(private format: GameFormat = standardFormat, data?: SavedDeck) {
+        if (data) {
+            this.fromSavable(data);
+        }
     }
 
-    public randomDeckWithColors(colors: Set<string>) {
+    public randomDeckWithColors(colors: Set<string>, collection: Collection) {
         this.clear();
-        let validCards = cardList.getCards().filter(card => {
+        let validCards = collection.getCards().filter(card => {
             return card.getCost().isInColors(colors);
         });
         for (let i = 0; i < this.format.minDeckSize; i++) {
@@ -62,9 +64,12 @@ export class DeckList {
         this.cardCount = 0;
     }
 
-    public generateRandomNColorDeck(n: number) {
+    public generateRandomNColorDeck(n: number, collection: Collection) {
         n = Math.max(Math.min(n, 4), 1);
-        this.randomDeckWithColors(new Set(sampleSize(ResourceTypeNames, n) as Array<string>));
+        this.randomDeckWithColors(
+            new Set(sampleSize(ResourceTypeNames, n) as Array<string>),
+            collection
+        );
     }
 
     public toJson(spacing: number = null) {

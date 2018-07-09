@@ -8,7 +8,7 @@ import { Mechanic } from '../../mechanic';
 import { Item } from '../../item';
 
 export class TriggeringUnit extends Targeter {
-    protected static id = 'OwningPlayer';
+    protected static id = 'TriggeringUnit';
 
     public needsInput() {
         return false;

@@ -25,7 +25,7 @@ export class Draft {
     private pickNumber = 0;
     private choices: Set<Card>;
     /** The players deck */
-    private deck = new DeckList(standardFormat, true);
+    private deck = new DeckList(standardFormat);
     /** The number of games a player has won */
     private wins = 0;
     /** The number of games the player has lost */
