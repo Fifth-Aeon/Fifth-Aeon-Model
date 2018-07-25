@@ -18,7 +18,7 @@ import { ReturnFromCrypt } from './mechanics/returnFromCrypt';
 import { DeathCounter } from './mechanics/shieldEnchantments';
 import { Aquatic, Deathless, Flying, Immortal, Lethal, Lifesteal, Relentless, Rush } from './mechanics/skills';
 import { SummonUnitForGrave, SummonUnitOnDamage, SummonUnits } from './mechanics/summonUnits';
-import { AllOtherUnits, EnemyUnit, FriendlyUnit, OwningPlayer, SelfTarget, SingleUnit, Untargeted } from './targeters/basicTargeter';
+import { AllOtherUnits, EnemyUnit, FriendlyUnit, OwningPlayer, SelfTarget, SingleUnit, Untargeted, EnemyPlayer } from './targeters/basicTargeter';
 import { PoisonableUnit } from './targeters/poisonTargeter';
 // Targeters
 import { DamagedUnit } from './targeters/weakenedUnits';
@@ -335,6 +335,28 @@ export function lich() {
         [
             new Deathless(),
             new BuffTarget(1, 1).setTargeter(new SelfTarget()).setTrigger(new SoulReap())
+        ]
+    );
+}
+
+
+export function cruelTyrant() {
+    return new Unit(
+        'CruelTyrant',
+        'Cruel Tyrant',
+        'overlord-helm.png',
+        UnitType.Human,
+        new Resource(7, 0, {
+            Growth: 0,
+            Decay: 4,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        4, 6,
+        [
+            new Lifesteal(),
+            new DealDamage(2).setTargeter(new EnemyPlayer()).setTrigger(new SoulReap())
         ]
     );
 }

@@ -5,6 +5,7 @@ import { Unit, UnitType } from '../../unit';
 import { GameEvent, EventType } from '../../gameEvent';
 import { Trigger } from '../../trigger';
 import { EvalContext } from '../../mechanic';
+import { removeFirstCapital } from '../../strings';
 
 export class DeathTrigger extends Trigger {
     protected static id = 'Death';
@@ -37,7 +38,7 @@ export class SoulReap extends Trigger {
     protected static id = 'SoulReap';
 
     public getText(mechanicText: string) {
-        return `Whenever another unit dies ${mechanicText}`;
+        return `Whenever another unit dies ${removeFirstCapital(mechanicText)}`;
     }
 
     public register(card: Card, game: Game) {
@@ -50,7 +51,7 @@ export class SoulReap extends Trigger {
     }
 
     public unregister(card: Card, game: Game) {
-        (card as Unit).getEvents().removeEvents(this);
+        game.gameEvents.removeEvents(this);
     }
 
     public evaluate(host: Card, game: Game, context: EvalContext) {

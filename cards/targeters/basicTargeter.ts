@@ -53,7 +53,7 @@ export class EnemyPlayer extends Targeter {
     }
 
     public getText() {
-        return 'this unit’s owner’s opponent';
+        return 'your opponent';
     }
 }
 

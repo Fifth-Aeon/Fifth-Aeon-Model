@@ -282,8 +282,8 @@ export class Unit extends Permanent {
             damage = this.events.trigger(EventType.Attack, eventParams).get('damage');
 
         // Remove actions and deal damage
-        let damage1 = this.dealDamage(target, damage);
-        let damage2 = target.dealDamage(this, target.damage);
+        let damage1 = this.dealDamageDelayed(target, damage);
+        let damage2 = target.dealDamageDelayed(this, target.damage);
         damage1.run();
         damage2.run();
         this.afterDamage(target);
@@ -317,7 +317,7 @@ export class Unit extends Permanent {
             this.died = true;
     }
 
-    private dealDamage(target: Unit, amount: number): Damager {
+    private dealDamageDelayed(target: Unit, amount: number): Damager {
         return new Damager(Math.max(amount, 0), this, target);
     }
 
@@ -339,7 +339,7 @@ export class Unit extends Permanent {
     }
 
     public dealAndApplyDamage(target: Unit, amount: number) {
-        this.dealDamage(target, amount).run();
+        this.dealDamageDelayed(target, amount).run();
     }
 
     public leaveBoard(game: Game) {

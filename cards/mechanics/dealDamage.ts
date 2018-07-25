@@ -54,7 +54,7 @@ export class DealDamage extends TargetedMechanic {
     public onTrigger(card: Card, game: Game) {
         let dmg = this.getDamage(card, game);
         for (let target of this.targeter.getTargets(card, game, this)) {
-            target.takeDamage(dmg, card);
+            card.dealDamageInstant(target, dmg);
             target.checkDeath();
         }
     }

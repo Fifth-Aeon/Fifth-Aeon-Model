@@ -77,6 +77,17 @@ export class Card {
         this.location = GameZone.Hand;
     }
 
+    public dealDamageInstant(target: Unit, amount: number) {
+        let result = target.takeDamage(amount, this);
+        if (result > 0) {
+            this.events.trigger(EventType.DealDamage, new Map<string, any>([
+                ['source', this],
+                ['target', target],
+                ['amount', amount]
+            ]));
+        }
+    }
+
     public getCost() {
         return this.cost;
     }
