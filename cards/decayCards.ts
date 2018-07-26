@@ -221,6 +221,24 @@ export function whip() {
     );
 }
 
+export function NecromancerStaff() {
+    return new Item(
+        'Necromancers Staff',
+        'Necromancer’s Staff',
+        'skull-staff.png',
+        new Resource(7, 0, {
+            Growth: 0,
+            Decay: 5,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new EnemyUnit(),
+        new FriendlyUnit(),
+        1, 3,
+        [new Lethal(), new DealDamage(1)]
+    );
+}
+
 export function assasinsDagger() {
     return new Item(
         'AssasinDagger',

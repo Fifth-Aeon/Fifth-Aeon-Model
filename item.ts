@@ -75,7 +75,7 @@ export class Item extends Permanent {
             if ((<TriggeredMechanic>clone).getTrigger) {
                 (<TriggeredMechanic>clone).getTrigger().register(this, game);
                 if ((<TriggeredMechanic>clone).getTrigger().getId() === 'Play') {
-                    (<TriggeredMechanic>clone).onTrigger(this, game);
+                    (<TriggeredMechanic>clone).onTrigger(host, game);
                 }
             }
         }
