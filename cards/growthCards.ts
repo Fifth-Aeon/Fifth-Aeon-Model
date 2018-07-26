@@ -336,7 +336,7 @@ export function hydra() {
         }),
         new Untargeted(),
         5, 5,
-        [new Flying(), new Deathless(3),
+        [new Flying(), new Deathless(2),
         new BuffTarget(1, 1)
             .setTrigger(new DeathTrigger())
             .setTargeter(new SelfTarget())]
