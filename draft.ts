@@ -33,7 +33,7 @@ export class Draft {
     private state = DraftState.Drafting;
     /** The current pick the user is on */
     private pickNumber = 0;
-    private choices: Set<Card>;
+    private choices: Set<Card> = new Set();
     /** The players deck */
     private deck = new DeckList(standardFormat);
     /** The number of games a player has won */
