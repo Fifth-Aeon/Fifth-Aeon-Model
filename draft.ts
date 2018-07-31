@@ -1,14 +1,24 @@
-import { Card } from './card';
-import { DeckList } from './deckList';
-import { standardFormat } from './gameFormat';
-import { cardList} from './cards/cardList';
-import { Rewards } from './collection';
-
 import { sampleSize } from 'lodash';
+import { Card } from './card';
+import { cardList } from './cards/cardList';
+import { Rewards } from './collection';
+import { DeckList, SavedDeck } from './deckList';
+import { standardFormat } from './gameFormat';
+
 
 enum DraftState { Drafting, Playing, Ended }
 
+export interface SavedDraft {
+    state: DraftState;
+    pickNumber: number;
+    deck: SavedDeck;
+    wins: number;
+    losses: number;
+    choices: string[];
+}
+
 export class Draft {
+    public static cost = 200;
     /** The format to draft*/
     private static format = standardFormat;
     /** The number of cards a player gets to pick each round */
@@ -30,6 +40,38 @@ export class Draft {
     private wins = 0;
     /** The number of games the player has lost */
     private losses = 0;
+
+    /**
+     * Creates an instance of Draft. Optionally takes an existing saved draft to load.
+     * @param {SavedDraft} [saved] - Saved data from a previous draft to load
+     * @memberof Draft
+     */
+    public constructor(saved?: SavedDraft) {
+        if (!saved) return;
+        this.deck = new DeckList(Draft.format, saved.deck);
+        this.wins = saved.wins;
+        this.losses = saved.losses;
+        this.state = saved.state;
+        this.pickNumber = saved.pickNumber;
+        this.choices = new Set(saved.choices.map(id => cardList.getCard(id)))
+    }
+
+    /**
+     * Transforms the object into a simple interface that can be serilized as JSON
+     *
+     * @returns {SavedDraft}
+     * @memberof Draft
+     */
+    public toSavable(): SavedDraft {
+        return {
+            deck: this.deck.getSavable(),
+            wins: this.wins,
+            losses: this.losses,
+            state: this.state,
+            pickNumber: this.pickNumber,
+            choices: Array.from(this.choices.values(), card => card.getDataId())
+        }
+    }
 
     /**
      * Determines if the player may pick another card to pick;

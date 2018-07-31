@@ -146,6 +146,10 @@ export class Collection {
             this.records.set(card.getDataId(), currValue - 1);
     }
 
+    public removeGold(amount: number) {
+        this.gold = Math.max(0, this.gold - amount);
+    }
+
     public getCardCount(card: Card) {
         return this.records.get(card.getDataId()) || 0;
     }
