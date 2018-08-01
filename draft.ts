@@ -53,7 +53,7 @@ export class Draft {
         this.losses = saved.losses;
         this.state = saved.state;
         this.pickNumber = saved.pickNumber;
-        this.choices = new Set(saved.choices.map(id => cardList.getCard(id)))
+        this.choices = new Set(Array.from(saved.choices, (id => cardList.getCard(id))));
     }
 
     /**
@@ -70,7 +70,7 @@ export class Draft {
             state: this.state,
             pickNumber: this.pickNumber,
             choices: Array.from(this.choices.values(), card => card.getDataId())
-        }
+        };
     }
 
     /**
@@ -90,7 +90,7 @@ export class Draft {
      * @memberof Draft
      */
     getChoices(): Set<Card> {
-        if (!this.choices)
+        if (!this.choices || this.choices.size === 0)
             this.choices = new Set(sampleSize(cardList.getCards(), Draft.CardsPerPick));
         return this.choices;
     }
@@ -106,7 +106,7 @@ export class Draft {
             return;
         this.deck.addCard(picked);
         this.pickNumber++;
-        this.choices = undefined;
+        this.choices = new Set();
         if (this.pickNumber === Draft.format.minDeckSize) {
             this.state = DraftState.Playing;
         }

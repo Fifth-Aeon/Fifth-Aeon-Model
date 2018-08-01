@@ -93,7 +93,7 @@ export class DeckList {
     }
 
     public fromSavable(saveData: SavedDeck) {
-        this.records = new Map(saveData.records) as Map<string, number>;
+        this.records = new Map(Array.from(saveData.records)) as Map<string, number>;
         this.id = saveData.id;
         this.name = saveData.name;
         this.avatar = saveData.avatar;
