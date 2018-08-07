@@ -14,6 +14,8 @@ import { minBy, sample, sampleSize, maxBy, sortBy, sumBy, remove } from 'lodash'
 import { LinkedList } from 'typescript-collections';
 import { Animator } from './animator';
 import { TransformDamaged } from './cards/mechanics/decaySpecials';
+import { Enchantment } from './enchantment';
+import { knapsack, KnapsackItem } from './algoritms';
 
 export enum AiDifficulty {
     Easy, Medium, Hard
@@ -42,6 +44,15 @@ export abstract class AI {
 
     abstract handleGameEvent(event: GameSyncEvent): void;
     abstract pulse(): void;
+}
+
+interface EvaluatedAction {
+    score: number;
+    cost: number;
+    card?: Card;
+    enchantmentTarget?: Enchantment;
+    target?: Unit;
+    host?: Unit;
 }
 
 export class BasicAI extends AI {
@@ -117,125 +128,94 @@ export class BasicAI extends AI {
         if (this.playerNumber !== params.turn)
             return;
         this.playResource();
-        this.sequenceActions([this.selectCardToPlay, this.modifyEnchantments, this.attack]);
+        this.sequenceActions([this.selectActions, this.attack]);
     }
 
 
-    private getBestTarget(card: Card) {
+    private getBestTarget(card: Card): EvaluatedAction {
         let targets = card.getTargeter().getValidTargets(card, this.game);
         if (targets.length === 0)
-            return { score: 0, target: null };
+            return { score: 0, cost: card.getCost().getNumeric(), card: card };
         let best = maxBy(targets, target => card.evaluateTarget(target, this.game));
-        return { target: best, score: card.evaluateTarget(best, this.game) };
+        return { target: best, score: card.evaluateTarget(best, this.game), cost: card.getCost().getNumeric(), card: card  };
     }
 
-    private evaluateCard(card: Card) {
-        let score = 0;
+    private evaluateCard(card: Card): EvaluatedAction {
+        let result: EvaluatedAction = { score: 0, cost: card.getCost().getNumeric(), card: card };
         if (card.getTargeter().needsInput()) {
             let best = this.getBestTarget(card);
             if (best.score > 0 || !card.getTargeter().isOptional())
-                score += best.score;
+                result = best;
         }
-        return score + card.evaluate(this.game, EvalContext.Play);
+        if (card.getCardType() === CardType.Item) {
+            result.host = this.getBestHost(card as Item);
+        }
+        result.score += card.evaluate(this.game, EvalContext.Play);
+        return result;
     }
 
-    private evaluateEnchantmentBoard() {
-        let player = this.game.getPlayer(this.playerNumber);
-        let res = player.getPool();
+    private evaluateEnchantment(enchantment: Enchantment): EvaluatedAction {
+        let modifyCost = enchantment.getModifyCost().getNumeric();
+        let playCost = enchantment.getCost().getNumeric();
+        return {
+            cost: modifyCost,
+            score: playCost / (modifyCost * enchantment.getPower())
+        };
+    }
 
-        let enchantments = this.game.getBoard()
-            .getAllEnemyEnchantments(this.enemyNumber)
-            .filter(enchant => res.meetsReq(enchant.getModifyCost()));
-
-        if (enchantments.length === 0)
-            return;
-        let evaluated = sortBy(enchantments, enchant => {
+    private selectActions() {
+        let playableCards = this.aiPlayer.getHand().filter(card => card.isPlayable(this.game));
+        let modifiableEnchantments = this.getModifiableEnchantments();
+        let energy = this.aiPlayer.getPool().getNumeric();
+        let actions: EvaluatedAction[] = playableCards.map(card => {
             try {
-                return -this.evaluateCard(enchant);
+                return this.evaluateCard(card);
             } catch (e) {
-                console.error('Error while evaluating enchantment', enchant, 'got', e);
-                return;
+                console.error('Error while evaluating', card, 'got', e);
+                return { score: 0, cost: 0 };
             }
+        }).concat(modifiableEnchantments.map(enchantment => {
+            return this.evaluateEnchantment(enchantment);
+        }));
 
-        });
-        return evaluated[0];
-    }
+        let actionsToRun = Array.from(knapsack(energy, actions.map(action => {
+            return {
+                w: action.cost,
+                b: action.score,
+                data: action
+            } as KnapsackItem<EvaluatedAction>;
+        })).set).map(item => item.data);
+        console.log('avalible actions', actions);
+        console.log('actions to run', actionsToRun);
 
-    private canModifyEnemyEnchant() {
-        let player = this.game.getPlayer(this.playerNumber);
-        let res = player.getPool();
-
-        let enchantments = this.game.getBoard()
-            .getAllEnemyEnchantments(this.enemyNumber)
-            .filter(enchant => res.meetsReq(enchant.getModifyCost()));
-        if (enchantments.length === 0) {
-            return false;
-        } else return true;
-    }
-
-    private selectCardToPlay() {
-        let playable = this.aiPlayer.getHand().filter(card => card.isPlayable(this.game));
-        console.log('hand', this.aiPlayer.getHand());
-        if (playable.length > 0) {
-            let scores = new Map();
-            let evaluated = sortBy(playable, card => {
-                let score: number;
-                try {
-                    score = this.evaluateCard(card);
-                } catch (e) {
-                    score = 0;
-                    console.error('Error while evaluating', card, 'got', e);
-                }
-                scores.set(card.getId(), score);
-                return -score;
-            });
-            console.log('eval', evaluated.map(card => card.getName() + ' ' + scores.get(card.getId())).join(' | '));
-            let toPlay = evaluated[0];
-            // INSERT ENCHANTMENT EVALUATE HERE
-
-            if (this.canModifyEnemyEnchant()) {
-                let evalEnemyEnchant = this.evaluateEnchantmentBoard();
-                console.log('Enchant Score', this.evaluateCard(evalEnemyEnchant));
-                if (this.evaluateCard(toPlay) < this.evaluateCard(evalEnemyEnchant)) {
-                    let player = this.game.getPlayer(this.enemyNumber);
-                    this.game.modifyEnchantment(player, evalEnemyEnchant);
-                    return;
-                }
-            }
-
-
-            console.log('play', toPlay.getName());
-
-            if (this.evaluateCard(toPlay) <= 0)
-                return;
-            let targets: Unit[] = [];
-            let host = null;
-            if (toPlay.getCardType() === CardType.Item)
-                host = this.getBestHost(toPlay as Item);
-            if (toPlay.getTargeter().needsInput()) {
-                let best = this.getBestTarget(toPlay);
-                if (!toPlay.getTargeter().isOptional() ||
-                    best.score) {
-                    targets.push(best.target);
-                }
-            }
-            this.game.playCardExtern(toPlay, targets, host);
-            this.addActionToSequence(this.selectCardToPlay, true);
-
+        for (let action of actionsToRun) {
+            this.runAction(action);
         }
+
     }
 
-    private modifyEnchantments() {
+    private runCardPlayAction(action: EvaluatedAction) {
+        let targets: Unit[] = [];
+        let host = action.host;
+        let toPlay = action.card;
+        if (action.target)
+            targets.push(action.target);
+        this.game.playCardExtern(toPlay, targets, host);
+    }
+
+    private runAction(action: EvaluatedAction) {
+        if (action.card)
+            this.runCardPlayAction(action);
+        else if (action.enchantmentTarget)
+            this.game.modifyEnchantment(this.aiPlayer, action.enchantmentTarget);
+    }
+
+    private getModifiableEnchantments() {
         let player = this.game.getPlayer(this.playerNumber);
         let res = player.getPool();
-        let enchantments = this.game.getBoard()
+        return this.game.getBoard()
             .getAllEnchantments()
             .filter(enchant => res.meetsReq(enchant.getModifyCost()));
-        if (enchantments.length === 0)
-            return;
-        let lowest = minBy(enchantments, (enchant) => enchant.getPower());
-        this.game.modifyEnchantment(player, lowest);
-        this.addActionToSequence(this.modifyEnchantments, true);
     }
 
     private getBestHost(item: Item): Unit {

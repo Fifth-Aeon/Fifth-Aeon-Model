@@ -1,4 +1,4 @@
-interface KnapsackItem<T> {
+export interface KnapsackItem<T> {
     w: number;
     b: number;
     data: T;
