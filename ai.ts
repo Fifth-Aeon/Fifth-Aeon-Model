@@ -14,17 +14,21 @@ import { EvalContext } from './mechanic';
 import { Player } from './player';
 import { Resource, ResourceTypeNames } from './resource';
 import { Unit } from './unit';
-
-
+import { DeckList } from './deckList';
 
 export enum AiDifficulty {
     Easy, Medium, Hard
+}
+
+enum BlockType {
+    AttackerDies, NeitherDies, BothDie, BlockerDies
 }
 
 export abstract class AI {
     constructor(
         protected playerNumber: number,
         protected game: ClientGame,
+        protected deck: DeckList,
         protected animator: Animator
     ) { }
 
@@ -47,8 +51,8 @@ export class BasicAI extends AI {
     private aiPlayer: Player;
     private actionSequence: LinkedList<() => void> = new LinkedList<() => void>();
 
-    constructor(playerNumber: number, game: ClientGame, animator: Animator) {
-        super(playerNumber, game, animator);
+    constructor(playerNumber: number, game: ClientGame, deck: DeckList, animator: Animator) {
+        super(playerNumber, game, deck, animator);
         this.aiPlayer = this.game.getPlayer(this.playerNumber);
         this.enemyNumber = this.game.getOtherPlayerNumber(this.playerNumber);
 
@@ -122,7 +126,7 @@ export class BasicAI extends AI {
         if (targets.length === 0)
             return { score: 0, cost: card.getCost().getNumeric(), card: card };
         let best = maxBy(targets, target => card.evaluateTarget(target, this.game));
-        return { target: best, score: card.evaluateTarget(best, this.game), cost: card.getCost().getNumeric(), card: card  };
+        return { target: best, score: card.evaluateTarget(best, this.game), cost: card.getCost().getNumeric(), card: card };
     }
 
     private evaluateCard(card: Card): EvaluatedAction {
@@ -205,14 +209,59 @@ export class BasicAI extends AI {
         return maxBy(units, unit => unit.getMultiplier(this.game, EvalContext.NonlethalRemoval));
     }
 
-    private playResource() {
-        let hand = this.aiPlayer.getHand();
+    private getReqDiff(current: Resource, needed: Resource) {
+        let diffs = {
+            total: 0,
+            resources: new Map<string, number>()
+        };
+        for (let resourceType of ResourceTypeNames) {
+            diffs.resources.set(resourceType, Math.max(needed.getOfType(resourceType) - current.getOfType(resourceType), 0));
+            diffs.total += diffs.resources.get(resourceType);
+        }
+        return diffs;
+    }
+
+    private getResourceDistance(current: Resource, needed: Resource) {
+        let energyDiff = Math.max(needed.getNumeric() - current.getNumeric(), 0);
+        let resourceReqs = 0;
+        for (let resourceType of ResourceTypeNames) {
+            resourceReqs += Math.max(needed.getOfType(resourceType) - current.getOfType(resourceType), 0);
+        }
+        return Math.max(energyDiff, resourceReqs);
+    }
+
+    // Returns the card whose resource prereqs are not met, but are the closest to being met
+    private getClosestUnmetRequirment(cards: Card[]) {
+        return minBy(cards
+            .filter(card => this.getReqDiff(this.aiPlayer.getPool(), card.getCost()).total !== 0),
+            card => this.getReqDiff(this.aiPlayer.getPool(), card.getCost()).total
+        );
+    }
+
+    private getMostCommonResource(cards: Card[]) {
         let total = new Resource(0);
-        for (let card of hand) {
+        for (let card of cards) {
             total.add(card.getCost());
         }
-        let toPlay = maxBy(ResourceTypeNames, type => total.getOfType(type));
-        this.game.playResource(toPlay);
+        return maxBy(ResourceTypeNames, type => total.getOfType(type));
+    }
+
+    private getResourceToPlay() {
+        let deckCards = this.deck.getUniqueCards();
+        let closestCardInHand = this.getClosestUnmetRequirment(this.aiPlayer.getHand());
+        let closestCardInDeck = this.getClosestUnmetRequirment(deckCards);
+        let closestCard = closestCardInHand || closestCardInDeck;
+
+        if (closestCard ) {
+            let diff = this.getReqDiff(this.aiPlayer.getPool(), closestCard.getCost());
+            return maxBy(ResourceTypeNames, type => diff.resources.get(type));
+        } else  {
+            return this.getMostCommonResource(deckCards);
+        }
+    }
+
+    private playResource() {
+        this.game.playResource(this.getResourceToPlay());
     }
 
     // Attacking/Blocking -------------------------------------------------------------------------
@@ -326,6 +375,3 @@ export class BasicAI extends AI {
     }
 }
 
-enum BlockType {
-    AttackerDies, NeitherDies, BothDie, BlockerDies
-}

@@ -59,6 +59,10 @@ export class DeckList {
         return colors;
     }
 
+    public getUniqueCards() {
+        return Array.from(this.records.keys(), id => cardList.getCard(id));
+    }
+
     public clear() {
         this.records = new Map<string, number>();
         this.cardCount = 0;
