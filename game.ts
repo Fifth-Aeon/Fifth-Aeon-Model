@@ -1,18 +1,17 @@
-import { Board } from './board';
-import { Player } from './player';
-import { Card, CardType, GameZone } from './card';
-import { Unit } from './unit';
-import { Enchantment } from './enchantment';
-import { Permanent } from './permanent';
-import { GameFormat, standardFormat } from './gameFormat';
-import { DeckList } from './deckList';
-import { Resource } from './resource';
-import { GameEvent, EventType, EventGroup } from './gameEvent';
-import { Log } from './log';
-
 import { shuffle } from 'lodash';
 import { knapsack } from './algoritms';
+import { Board } from './board';
+import { Card, CardType, GameZone } from './card';
+import { DeckList } from './deckList';
+import { Enchantment } from './enchantment';
+import { EventGroup, EventType, GameEvent } from './gameEvent';
+import { GameFormat, standardFormat } from './gameFormat';
+import { Log } from './log';
 import { EvalContext } from './mechanic';
+import { Permanent } from './permanent';
+import { Player } from './player';
+import { Unit } from './unit';
+
 
 export enum GamePhase {
     Play1, Block, DamageDistribution, Play2, End, Response
@@ -88,6 +87,7 @@ export abstract class Game {
     public promptCardChoice: (player: number, choices: Card[], min: number, max: number,
         callback: (cards: Card[]) => void, message: string) => void;
     protected onQueryResult: (cards: Card[]) => void;
+    protected client = false;
 
 
     /**
@@ -95,10 +95,11 @@ export abstract class Game {
      * informs how the game is initlized eg how
      * much health each player starts with.
      *
-     * @param {any} [format=standardFormat]
+     * @param {string} name
+     * @param {GameFormat} [format=standardFormat]
      * @memberof Game
      */
-    constructor(protected name: string, format = standardFormat, protected client: boolean = false, deckLists?: [DeckList, DeckList]) {
+    constructor(protected name: string, format = standardFormat) {
         this.format = format;
         this.board = new Board(this.format.playerCount, this.format.boardSize);
         this.cardPool = new Map<string, Card>();
@@ -108,36 +109,16 @@ export abstract class Game {
         this.blockers = [];
         this.crypt = [[], []];
         this.gameEvents = new EventGroup();
+        this.promptCardChoice = this.deferChoice;
+    }
 
-        let decks: Card[][] = [[], []];
-        if (!client) {
-            decks = deckLists.map(deckList => {
-                let deck = deckList.toDeck().map(fact => {
-                    let card = fact();
-                    this.cardPool.set(card.getId(), card);
-                    return card;
-                });
-                return shuffle(deck);
-            });
-        }
-
-        this.players = [
-            new Player(this, decks[0], 0, this.format.initalResource[0], this.format.initialLife[0]),
-            new Player(this, decks[1], 1, this.format.initalResource[1], this.format.initialLife[1])
-        ];
-
+    protected addDeathHandlers() {
         this.players.forEach((player, number) => {
             player.getEvents().addEvent(null, new GameEvent(EventType.Death, (params) => {
                 this.endGame(this.getOtherPlayerNumber(number));
                 return params;
             }));
         });
-
-        if (client) {
-            this.players.forEach(player => player.disableDraw());
-        }
-
-        this.promptCardChoice = this.deferChoice;
     }
 
     public addGameEvent(event: GameSyncEvent) {

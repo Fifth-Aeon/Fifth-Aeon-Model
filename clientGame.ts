@@ -1,18 +1,16 @@
-import { Game, GamePhase, GameActionType, SyncEventType, GameAction, GameSyncEvent } from './game';
-import { GameFormat, standardFormat } from './gameFormat';
-import { Log } from './log';
-
-import { Player } from './player';
-import { Card, CardType } from './card';
-import { Unit } from './unit';
-import { Item } from './item';
-import { Enchantment } from './enchantment';
-import { Resource, ResourceTypeNames } from './resource';
-
-import { maxBy } from 'lodash';
-import { EventType } from './gameEvent';
 import { Animator } from './animator';
+import { Card, CardType } from './card';
 import { cardList } from './cards/cardList';
+import { Enchantment } from './enchantment';
+import { Game, GameActionType, GamePhase, GameSyncEvent, SyncEventType } from './game';
+import { EventType } from './gameEvent';
+import { GameFormat, standardFormat } from './gameFormat';
+import { Item } from './item';
+import { Log } from './log';
+import { Player } from './player';
+import { Unit } from './unit';
+
+
 
 export class ClientGame extends Game {
     // Handlers to syncronize events
@@ -25,12 +23,21 @@ export class ClientGame extends Game {
         log: Log = null,
         format: GameFormat = standardFormat
     ) {
-        super(name, format, true);
+        super(name, format);
         this.log = log;
         if (this.log)
             this.log.attachToGame(this);
         this.syncEventHandlers = new Map<SyncEventType, (playerNo: number, event: GameSyncEvent) => void>();
         this.addSyncHandlers();
+
+        this.players = [
+            new Player(this, [], 0, this.format.initalResource[0], this.format.initialLife[0]),
+            new Player(this, [], 1, this.format.initalResource[1], this.format.initialLife[1])
+        ];
+
+        this.players.forEach(player => player.disableDraw());
+        this.addDeathHandlers();
+
     }
 
     public getLog() {

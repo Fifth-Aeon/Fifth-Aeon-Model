@@ -1,13 +1,16 @@
-import { Game, GamePhase, GameActionType, SyncEventType, GameAction, GameSyncEvent } from './game';
-import { GameFormat, standardFormat } from './gameFormat';
-
+import { isArray } from 'util';
+import { CardType, Card } from './card';
+import { DeckList } from './deckList';
 import { Enchantment } from './enchantment';
-import { CardType } from './card';
+import { Game, GameAction, GameActionType, GamePhase, GameSyncEvent, SyncEventType } from './game';
+import { EventType } from './gameEvent';
+import { GameFormat, standardFormat } from './gameFormat';
 import { Item } from './item';
 import { Unit } from './unit';
-import { DeckList } from './deckList';
-import { EventType } from './gameEvent';
-import { isArray } from 'util';
+import { Player } from './player';
+import { shuffle } from 'lodash';
+
+
 
 
 type ActionCb = (act: GameAction) => boolean;
@@ -15,10 +18,26 @@ export class ServerGame extends Game {
     // A table of handlers used to respond to actions taken by players
     protected actionHandelers: Map<GameActionType, ActionCb>;
 
-    constructor(name: string, format: GameFormat = standardFormat, decks: [DeckList, DeckList]) {
-        super(name, format, false, decks);
+    constructor(name: string, format: GameFormat = standardFormat, deckLists: [DeckList, DeckList]) {
+        super(name, format);
         this.actionHandelers = new Map<GameActionType, ActionCb>();
         this.addActionHandelers();
+
+        const decks = deckLists.map(deckList => {
+            let deck = deckList.toDeck().map(fact => {
+                let card = fact();
+                this.cardPool.set(card.getId(), card);
+                return card;
+            });
+            return shuffle(deck);
+        });
+
+        this.players = [
+            new Player(this, decks[0], 0, this.format.initalResource[0], this.format.initialLife[0]),
+            new Player(this, decks[1], 1, this.format.initalResource[1], this.format.initialLife[1])
+        ];
+
+        this.addDeathHandlers();
     }
 
     public startGame() {
