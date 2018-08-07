@@ -7,6 +7,7 @@ import { Resource } from './resource';
 import { EventType } from './gameEvent';
 
 import { shuffle } from 'lodash';
+import { ChoiceHeuristic } from './ai';
 
 export class Player extends Unit {
     private format: GameFormat;
@@ -136,7 +137,7 @@ export class Player extends Unit {
                 this.addToDeck(card);
                 this.drawCard();
             });
-        }, 'to replace');
+        }, 'to replace', ChoiceHeuristic.ReplaceHeuristic);
     }
 
     public discard(game: Game, count: number = 1, cb?: (cards: Card[]) => void) {
@@ -150,7 +151,7 @@ export class Player extends Unit {
                 game.addToCrypt(card);
             });
             if (cb) cb(cards);
-        }, 'to discard');
+        }, 'to discard', ChoiceHeuristic.DiscardHeuristic);
     }
 
     public searchForCard(game: Game, count: number) {
@@ -162,7 +163,7 @@ export class Player extends Unit {
                         this.drawGeneratedCard(card);
                         deck.splice(deck.indexOf(card), 1);
                     });
-                }, 'to draw');
+                }, 'to draw', ChoiceHeuristic.DrawHeuristic);
             });
     }
 

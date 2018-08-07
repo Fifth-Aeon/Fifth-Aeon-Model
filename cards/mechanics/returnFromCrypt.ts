@@ -4,6 +4,7 @@ import { Card } from '../../card';
 import { CardType } from '../../cardType';
 import { TriggeredMechanic } from '../../mechanic';
 import { ParameterType } from '../parameters';
+import { ChoiceHeuristic } from '../../ai';
 
 export class ReturnFromCrypt extends TriggeredMechanic {
     protected static id = 'ReturnFromCrypt';
@@ -24,7 +25,7 @@ export class ReturnFromCrypt extends TriggeredMechanic {
                 player.drawGeneratedCard(raisedCard);
                 crypt.splice(crypt.indexOf(raisedCard), 1);
             });
-        }, 'to draw');
+        }, 'to draw', ChoiceHeuristic.DrawHeuristic);
     }
 
     public getText(card: Card) {

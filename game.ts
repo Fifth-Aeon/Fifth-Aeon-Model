@@ -11,6 +11,7 @@ import { EvalContext } from './mechanic';
 import { Permanent } from './permanent';
 import { Player } from './player';
 import { Unit } from './unit';
+import { ChoiceHeuristic } from './ai';
 
 
 export enum GamePhase {
@@ -84,8 +85,15 @@ export abstract class Game {
     protected log: Log;
     protected winner = -1;
     protected generatedCardId = 1;
-    public promptCardChoice: (player: number, choices: Card[], min: number, max: number,
-        callback: (cards: Card[]) => void, message: string) => void;
+    public promptCardChoice: (
+        player: number,
+        choices: Card[],
+        min: number,
+        max: number,
+        callback: (cards: Card[]) => void,
+        message: string,
+        evaluator: ChoiceHeuristic
+    ) => void;
     protected onQueryResult: (cards: Card[]) => void;
     protected client = false;
 

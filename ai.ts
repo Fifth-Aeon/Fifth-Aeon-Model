@@ -1,4 +1,4 @@
-import { maxBy, minBy, remove, sampleSize, sortBy, sumBy } from 'lodash';
+import { maxBy, minBy, remove, sampleSize, meanBy, sortBy, sumBy, take } from 'lodash';
 import { LinkedList } from 'typescript-collections';
 import { knapsack, KnapsackItem } from './algoritms';
 import { Animator } from './animator';
@@ -43,6 +43,13 @@ interface EvaluatedAction {
     enchantmentTarget?: Enchantment;
     target?: Unit;
     host?: Unit;
+}
+
+export enum ChoiceHeuristic {
+    DrawHeuristic,
+    DiscardHeuristic,
+    ReplaceHeuristic,
+    HighestStatsHeuristic
 }
 
 export class BasicAI extends AI {
@@ -92,20 +99,75 @@ export class BasicAI extends AI {
         next();
     }
 
-    private makeChoice(player: number, cards: Array<Card>, min: number = 1, max: number = 1,
-        callback: (cards: Card[]) => void = null) {
+    private cardDrawHeuristic(card: Card): number {
+        return Math.abs(this.aiPlayer.getPool().getNumeric() - card.getCost().getNumeric());
+    }
+
+    private evaluateToDraw(choices: Card[], min: number, max: number): Card[] {
+        return take(sortBy(choices, card =>
+            this.cardDrawHeuristic(card)
+        ), max);
+    }
+
+    private evaluateToDiscard(choices: Card[], min: number, max: number): Card[] {
+        return take(sortBy(choices, card =>
+            -this.cardDrawHeuristic(card)
+        ), min);
+    }
+
+    private evaluateToReplace(choices: Card[], min: number, max: number): Card[] {
+        let worst = sortBy(choices, card =>
+            -this.cardDrawHeuristic(card)
+        );
+        let mandatory = take(worst, min);
+        let optional = worst.slice(min);
+        if (optional.length > 0) {
+            let average = meanBy(this.deck.getUniqueCards(), this.cardDrawHeuristic.bind(this));
+            optional = optional.filter(card => this.cardDrawHeuristic(card) > average);
+        }
+        return mandatory.concat(optional);
+    }
+
+    private highestStatHeuristic(choices: Card[], min: number, max: number): Card[] {
+        return take(sortBy(choices as Unit[], unit => -unit.getStats()), max);
+    }
+
+    private getHeuristic(heuristicType: ChoiceHeuristic): (choices: Card[], min: number, max: number) => Card[] {
+        switch (heuristicType) {
+            case ChoiceHeuristic.DrawHeuristic:
+                return this.evaluateToDraw.bind(this);
+            case ChoiceHeuristic.DiscardHeuristic:
+                return this.evaluateToDiscard.bind(this);
+            case ChoiceHeuristic.HighestStatsHeuristic:
+                return this.highestStatHeuristic.bind(this);
+            case ChoiceHeuristic.ReplaceHeuristic:
+                return this.evaluateToReplace.bind(this);
+        }
+    }
+
+    private getCardToChoose(options: Array<Card>, min: number = 1, max: number = 1, heuristicType: ChoiceHeuristic) {
+        if (options.length < min)
+            return options;
+        let evaluator = this.getHeuristic(heuristicType);
+        return evaluator(options, min, max);
+    }
+
+    private makeChoice(
+        player: number, options: Array<Card>, min: number = 1, max: number = 1,
+        callback: (cards: Card[]) => void = null,
+        message: string,
+        heuristicType: ChoiceHeuristic
+    ) {
         if (!callback) {
             console.log('A.I skip choice (doesn\'t need input)');
             return;
         }
-        this.game.deferChoice(player, cards, min, max, callback);
+        this.game.deferChoice(player, options, min, max, callback);
         if (player !== this.playerNumber) {
             console.log('A.I skip choice (choice is for player)', player, this.playerNumber);
             return;
         }
-        let choice = sampleSize(cards, min);
-        console.log('A.I make choice', choice);
-        this.game.makeChoice(this.playerNumber, choice);
+        this.game.makeChoice(this.playerNumber, this.getCardToChoose(options, min, max, heuristicType));
     }
 
     public handleGameEvent(event: GameSyncEvent) {
@@ -147,6 +209,7 @@ export class BasicAI extends AI {
         let modifyCost = enchantment.getModifyCost().getNumeric();
         let playCost = enchantment.getCost().getNumeric();
         return {
+            enchantmentTarget: enchantment,
             cost: modifyCost,
             score: playCost / (modifyCost * enchantment.getPower())
         };
@@ -177,7 +240,10 @@ export class BasicAI extends AI {
         console.log('avalible actions', actions);
         console.log('actions to run', actionsToRun);
 
-        this.sequenceActions(actionsToRun.map(action => () => this.runAction(action)));
+        if (actionsToRun.length > 0) {
+            this.runAction(maxBy(actionsToRun, evaluated => evaluated.score));
+            this.addActionToSequence(this.selectActions, true);
+        }
     }
 
     private runCardPlayAction(action: EvaluatedAction) {
@@ -221,14 +287,6 @@ export class BasicAI extends AI {
         return diffs;
     }
 
-    private getResourceDistance(current: Resource, needed: Resource) {
-        let energyDiff = Math.max(needed.getNumeric() - current.getNumeric(), 0);
-        let resourceReqs = 0;
-        for (let resourceType of ResourceTypeNames) {
-            resourceReqs += Math.max(needed.getOfType(resourceType) - current.getOfType(resourceType), 0);
-        }
-        return Math.max(energyDiff, resourceReqs);
-    }
 
     // Returns the card whose resource prereqs are not met, but are the closest to being met
     private getClosestUnmetRequirment(cards: Card[]) {
@@ -252,10 +310,10 @@ export class BasicAI extends AI {
         let closestCardInDeck = this.getClosestUnmetRequirment(deckCards);
         let closestCard = closestCardInHand || closestCardInDeck;
 
-        if (closestCard ) {
+        if (closestCard) {
             let diff = this.getReqDiff(this.aiPlayer.getPool(), closestCard.getCost());
             return maxBy(ResourceTypeNames, type => diff.resources.get(type));
-        } else  {
+        } else {
             return this.getMostCommonResource(deckCards);
         }
     }
