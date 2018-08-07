@@ -1,39 +1,25 @@
-import { GameActionType, GamePhase, GameAction, GameSyncEvent, SyncEventType } from './game';
-import { ClientGame } from './clientGame';
-import { Resource, ResourceTypeNames } from './resource';
-import { Player } from './player';
+import { maxBy, minBy, remove, sampleSize, sortBy, sumBy } from 'lodash';
+import { LinkedList } from 'typescript-collections';
+import { knapsack, KnapsackItem } from './algoritms';
+import { Animator } from './animator';
 import { Card, CardType } from './card';
-import { Unit } from './unit';
+import { TransformDamaged } from './cards/mechanics/decaySpecials';
+// Mechanics to worry about
+import { Flying, Lethal, Shielded } from './cards/mechanics/skills';
+import { ClientGame } from './clientGame';
+import { Enchantment } from './enchantment';
+import { GamePhase, GameSyncEvent, SyncEventType } from './game';
 import { Item } from './item';
 import { EvalContext } from './mechanic';
+import { Player } from './player';
+import { Resource, ResourceTypeNames } from './resource';
+import { Unit } from './unit';
 
-// Mechanics to worry about
-import { Shielded, Lethal, Flying } from './cards/mechanics/skills';
 
-import { minBy, sample, sampleSize, maxBy, sortBy, sumBy, remove } from 'lodash';
-import { LinkedList } from 'typescript-collections';
-import { Animator } from './animator';
-import { TransformDamaged } from './cards/mechanics/decaySpecials';
-import { Enchantment } from './enchantment';
-import { knapsack, KnapsackItem } from './algoritms';
 
 export enum AiDifficulty {
     Easy, Medium, Hard
 }
-
-/*
-AI Plan
-
-On my turn
-1. Play resource
-2. Analyze playable cards
-3. Play cards useful for combat (eg, remove blockers)
-4. Maybe attack
-5. Play cards not useful for combat (eg, non fast units)
-
-During my opponents turn
-1. Analyze block
-*/
 
 export abstract class AI {
     constructor(
@@ -131,7 +117,6 @@ export class BasicAI extends AI {
         this.sequenceActions([this.selectActions, this.attack]);
     }
 
-
     private getBestTarget(card: Card): EvaluatedAction {
         let targets = card.getTargeter().getValidTargets(card, this.game);
         if (targets.length === 0)
@@ -188,10 +173,7 @@ export class BasicAI extends AI {
         console.log('avalible actions', actions);
         console.log('actions to run', actionsToRun);
 
-        for (let action of actionsToRun) {
-            this.runAction(action);
-        }
-
+        this.sequenceActions(actionsToRun.map(action => () => this.runAction(action)));
     }
 
     private runCardPlayAction(action: EvaluatedAction) {
