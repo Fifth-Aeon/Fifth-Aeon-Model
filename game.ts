@@ -343,7 +343,6 @@ export abstract class Game {
             for (let blocker of damageOrder) {
                 let assignedDamage = Math.min(blocker.getLife(), remainingDamage);
                 remainingDamage -= assignedDamage;
-                // console.log(this.name, attacker.getName(), 'assigns', assignedDamage, 'to', blocker.getName());
                 blocker.getEvents().trigger(EventType.Block, new Map([['attacker', attacker]]));
                 blocker.getEvents().trigger(EventType.Attack, new Map([['blocker', blocker]]));
                 attacker.fight(blocker, assignedDamage);

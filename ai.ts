@@ -159,12 +159,10 @@ export class BasicAI extends AI {
         heuristicType: ChoiceHeuristic
     ) {
         if (!callback) {
-            // console.log('A.I skip choice (doesn\'t need input)');
             return;
         }
         this.game.deferChoice(player, options, min, max, callback);
         if (player !== this.playerNumber) {
-            // console.log('A.I skip choice (choice is for player)', player, this.playerNumber);
             return;
         }
         this.game.makeChoice(this.playerNumber, this.getCardToChoose(options, min, max, heuristicType));

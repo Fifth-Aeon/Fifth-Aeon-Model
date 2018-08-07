@@ -138,8 +138,6 @@ export class Player extends Unit {
                 this.addToDeck(card);
                 this.drawCard();
             });
-            if (this.playerNumber === 1 && game.getName() === 'player')
-                console.log('after replacing', cards.length, 'ai has', this.hand.length)
         }, 'to replace', ChoiceHeuristic.ReplaceHeuristic);
     }
 
