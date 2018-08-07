@@ -256,7 +256,7 @@ export class ClientGame extends Game {
         if (params.discarded)
             this.addToCrypt(this.unpackCard(params.card));
         else
-            this.players[params.playerNo].addSyncedToHand(this.unpackCard(params.card));
+            this.players[params.playerNo].addToHand(this.unpackCard(params.card));
     }
 
     private syncTurnStart(localPlayerNumber: number, event: GameSyncEvent, params: any) {

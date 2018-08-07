@@ -52,7 +52,7 @@ export class ServerGame extends Game {
         this.mulligan();
 
         this.addGameEvent(new GameSyncEvent(SyncEventType.TurnStart, { turn: this.turn, turnNum: this.turnNum }));
-        return this.events;
+        return [...this.events];
     }
 
 

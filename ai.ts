@@ -159,12 +159,12 @@ export class BasicAI extends AI {
         heuristicType: ChoiceHeuristic
     ) {
         if (!callback) {
-            console.log('A.I skip choice (doesn\'t need input)');
+            // console.log('A.I skip choice (doesn\'t need input)');
             return;
         }
         this.game.deferChoice(player, options, min, max, callback);
         if (player !== this.playerNumber) {
-            console.log('A.I skip choice (choice is for player)', player, this.playerNumber);
+            // console.log('A.I skip choice (choice is for player)', player, this.playerNumber);
             return;
         }
         this.game.makeChoice(this.playerNumber, this.getCardToChoose(options, min, max, heuristicType));
@@ -237,8 +237,6 @@ export class BasicAI extends AI {
                 data: action
             } as KnapsackItem<EvaluatedAction>;
         })).set).map(item => item.data);
-        console.log('avalible actions', actions);
-        console.log('actions to run', actionsToRun);
 
         if (actionsToRun.length > 0) {
             this.runAction(maxBy(actionsToRun, evaluated => evaluated.score));

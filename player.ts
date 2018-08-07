@@ -45,14 +45,6 @@ export class Player extends Unit {
         return this.hand;
     }
 
-
-    public addSyncedToHand(card: Card) {
-        if (this.drawRequests > 0) {
-            this.addToHand(card);
-            this.drawRequests--;
-        }
-    }
-
     public addToHand(card: Card) {
         card.setOwner(this.playerNumber);
         card.setLocation(GameZone.Hand);
@@ -146,6 +138,8 @@ export class Player extends Unit {
                 this.addToDeck(card);
                 this.drawCard();
             });
+            if (this.playerNumber === 1 && game.getName() === 'player')
+                console.log('after replacing', cards.length, 'ai has', this.hand.length)
         }, 'to replace', ChoiceHeuristic.ReplaceHeuristic);
     }
 
@@ -178,7 +172,6 @@ export class Player extends Unit {
 
     public drawCard() {
         if (this.drawDisabled) {
-            this.drawRequests++;
             return;
         }
         let drawn = sample(this.deck);

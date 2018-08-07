@@ -129,6 +129,10 @@ export abstract class Game {
         });
     }
 
+    public getName() {
+        return this.name;
+    }
+
     public addGameEvent(event: GameSyncEvent) {
         this.events.push(event);
     }
