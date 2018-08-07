@@ -18,6 +18,7 @@ export class Player extends Unit {
     private hasPlayedResource = false;
     public dataId = '';
     private drawDisabled = false;
+    private drawRequests = 0;
 
     private hardHandLimit = 12;
     private softHandLimit = 8;
@@ -42,6 +43,14 @@ export class Player extends Unit {
 
     public getHand() {
         return this.hand;
+    }
+
+
+    public addSyncedToHand(card: Card) {
+        if (this.drawRequests > 0) {
+            this.addToHand(card);
+            this.drawRequests--;
+        }
     }
 
     public addToHand(card: Card) {
@@ -115,7 +124,7 @@ export class Player extends Unit {
     }
 
     public removeCardFromHand(card: Card) {
-        remove(this.hand, (toRem: Card) => toRem === card);
+        remove(this.hand, (toRem: Card) => toRem.getId() === card.getId());
     }
 
     public getDeck() {
@@ -168,8 +177,10 @@ export class Player extends Unit {
     }
 
     public drawCard() {
-        if (this.drawDisabled)
+        if (this.drawDisabled) {
+            this.drawRequests++;
             return;
+        }
         let drawn = sample(this.deck);
         remove(this.deck, drawn);
         if (!drawn)

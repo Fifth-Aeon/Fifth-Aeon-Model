@@ -181,7 +181,8 @@ export abstract class Game {
         if (this.currentChoices[player] !== null) {
             this.currentChoices[player].callback(cards);
         } else {
-            console.error('Error, no defered choice handler for', cards, 'from', player);
+            console.error(`Error in game ${this.name} no defered choice handler for ${
+                cards.map(card => card.getName())} from ${player}`);
         }
         this.currentChoices[player] = null;
     }

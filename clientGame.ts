@@ -35,7 +35,11 @@ export class ClientGame extends Game {
             new Player(this, [], 1, this.format.initalResource[1], this.format.initialLife[1])
         ];
 
-        this.players.forEach(player => player.disableDraw());
+        for (let i = 0; i < this.players.length; i++) {
+            this.players[i].disableDraw();
+            for (let j = 0; j < this.format.initialDraw[i]; j++)
+                this.players[i].drawCard();
+        }
         this.addDeathHandlers();
 
     }
@@ -252,7 +256,7 @@ export class ClientGame extends Game {
         if (params.discarded)
             this.addToCrypt(this.unpackCard(params.card));
         else
-            this.players[params.playerNo].addToHand(this.unpackCard(params.card));
+            this.players[params.playerNo].addSyncedToHand(this.unpackCard(params.card));
     }
 
     private syncTurnStart(localPlayerNumber: number, event: GameSyncEvent, params: any) {

@@ -5,6 +5,7 @@ import { Mechanic, TriggeredMechanic } from '../../mechanic';
 import { Player } from '../../player';
 import { Unit, UnitType } from '../../unit';
 import { ParameterType } from '../parameters';
+import { ChoiceHeuristic } from '../../ai';
 
 
 export class DrawCard extends TriggeredMechanic {
@@ -39,7 +40,7 @@ export class Peek extends TriggeredMechanic {
         game.queryCards(
             (queried: Game) => queried.getPlayer(queried.getOtherPlayerNumber(card.getOwner())).getHand(),
             (hand) => {
-                game.promptCardChoice(card.getOwner(), hand, 0, 0, null, '', () => 0);
+                game.promptCardChoice(card.getOwner(), hand, 0, 0, null, '', ChoiceHeuristic.DrawHeuristic);
             });
     }
 
