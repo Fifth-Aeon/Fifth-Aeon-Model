@@ -1,33 +1,36 @@
 import { Card } from './card';
 import { Game } from './game';
 import { Permanent } from './permanent';
+import { DeckList } from './deckList';
 
+interface ScenarioPlayer {
+    initialPermanents: Permanent[];
+    lifeTotals: number;
+    initalHands: Card[];
+    deck?: DeckList;
+}
 export interface ScenarioData {
-    initialPermanents: [Permanent[], Permanent[]];
-    lifeTotals: [number, number];
-    initalHands: [Card[], Card[]];
+    name: string;
+    description: string;
+    playerSetups: [ScenarioPlayer, ScenarioPlayer];
 }
 
 export class Scenario {
-    private initialPermanents: [Permanent[], Permanent[]];
-    private lifeTotals: [number, number];
-    private initalHands: [Card[], Card[]];
-
+    private  playerSetups: [ScenarioPlayer, ScenarioPlayer];
     constructor(data: ScenarioData) {
-        this.initialPermanents = data.initialPermanents;
-        this.lifeTotals = data.lifeTotals;
-        this.initalHands = data.initalHands;
+        this.playerSetups = data.playerSetups;
     }
 
     public apply(game: Game) {
         for (let playerNumber = 0; playerNumber < 2; playerNumber++) {
             let player = game.getPlayer(playerNumber);
-            player.addLife(this.lifeTotals[playerNumber] - player.getLife());
+            player.addLife(this.playerSetups[playerNumber].lifeTotals - player.getLife());
 
-            for (let permanent of this.initialPermanents[playerNumber]) {
+            for (let permanent of this.playerSetups[playerNumber].initialPermanents) {
+                player.drawGeneratedCard(permanent);
                 game.playCard(player, permanent);
             }
-            for (let card of this.initalHands[playerNumber]) {
+            for (let card of this.playerSetups[playerNumber].initalHands) {
                 player.drawGeneratedCard(card);
             }
         }
