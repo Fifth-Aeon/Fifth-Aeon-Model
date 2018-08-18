@@ -86,15 +86,13 @@ export class Aquatic extends Skill {
             if (!blocker.hasMechanicWithId(Aquatic.getId()) && !blocker.hasMechanicWithId(Flying.getId()))
                 params.canBlock = false;
             return params;
-        }
-        );
+        });
         (card as Unit).getEvents().CheckCanBlock.addEvent(this, params => {
             let attacker = params.attacker as Unit;
             if (!attacker.hasMechanicWithId(Aquatic.getId()))
                 params.canBlock = false;
             return params;
-        }
-        );
+        });
     }
 
     public remove(card: Card, game: Game) {

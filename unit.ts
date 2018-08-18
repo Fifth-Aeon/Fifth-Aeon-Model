@@ -183,7 +183,7 @@ export class Unit extends Permanent {
             !this.blockDisabled &&
             !this.exausted &&
             (toBlock.isAttacking() || hypothetical) &&
-            toBlock.getEvents().CheckCanBlock.trigger({ attacker: toBlock, canBlock: true }).canBlock &&
+            this.getEvents().CheckCanBlock.trigger({ attacker: toBlock, canBlock: true }).canBlock &&
             toBlock.getEvents().CheckBlockable.trigger({ blocker: this, canBlock: true }).canBlock;
     }
 
