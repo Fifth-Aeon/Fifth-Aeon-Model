@@ -24,13 +24,13 @@ export class Lordship extends Mechanic {
         let targets = this.getTargets(source, game);
         targets.forEach(unit => this.applyToUnit(unit, game));
 
-        game.gameEvents.addEvent(this, new GameEvent(EventType.UnitEntersPlay, (params) => {
-            let enteringUnit = params.get('enteringUnit') as Unit;
+        game.getEvents().unitEntersPlay.addEvent(this, params => {
+            let enteringUnit = params.enteringUnit as Unit;
             if (this.filter(source, enteringUnit)) {
                 this.applyToUnit(enteringUnit, game);
             }
             return params;
-        }));
+        });
     }
 
     private getTargets(source: Unit, game: Game) {

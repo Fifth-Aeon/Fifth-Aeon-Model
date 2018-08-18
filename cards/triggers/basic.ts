@@ -42,13 +42,11 @@ export class UnitEntersPlay extends Trigger {
     }
 
     public register(card: Card, game: Game) {
-        game.getEvents().addEvent(this, new GameEvent(EventType.UnitEntersPlay, (params) => {
-            const unit: Unit = params.get('enteringUnit');
-            this.mechanic.setTriggeringUnit(unit);
-
+        game.getEvents().unitEntersPlay.addEvent(this,  (params) => {
+            this.mechanic.setTriggeringUnit(params.enteringUnit);
             this.mechanic.onTrigger(card, game);
             return params;
-        }));
+        });
     }
 
     public unregister(card: Card, game: Game) {
@@ -68,14 +66,14 @@ export class FriendlyUnitEntersPlay extends Trigger {
     }
 
     public register(card: Card, game: Game) {
-        game.getEvents().addEvent(this, new GameEvent(EventType.UnitEntersPlay, (params) => {
-            const unit: Unit = params.get('enteringUnit');
+        game.getEvents().unitEntersPlay.addEvent(this,  (params) => {
+            const unit: Unit = params.enteringUnit;
             if (unit.getOwner() === card.getOwner()) {
                 this.mechanic.setTriggeringUnit(unit);
                 this.mechanic.onTrigger(card, game);
             }
             return params;
-        }));
+        });
     }
 
     public unregister(card: Card, game: Game) {

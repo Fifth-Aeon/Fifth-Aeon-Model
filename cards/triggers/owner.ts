@@ -15,13 +15,12 @@ export class OwnerAttacked extends Trigger {
     }
 
     public register(card: Card, game: Game) {
-        game.gameEvents.addEvent(this, new GameEvent(EventType.PlayerAttacked, (params) => {
-            let player = params.get('target') as number;
-            if (player === card.getOwner()) {
+        game.getEvents().playerAttacked.addEvent(this, params => {
+            if (params.target === card.getOwner()) {
                 this.mechanic.onTrigger(card, game);
             }
             return params;
-        }));
+        });
     }
 
     public unregister(card: Card, game: Game) {

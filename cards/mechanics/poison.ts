@@ -30,12 +30,10 @@ export class Poisoned extends Mechanic {
     private level = 1;
     public enter(card: Card, game: Game) {
         let unit = card as Unit;
-        game.gameEvents.addEvent(this, new GameEvent(EventType.StartOfTurn, (params) => {
-            let player = params.get('player') as number;
-            if (player === unit.getOwner())
+        game.getEvents().startOfTurn.addEvent(this, params => {
+            if (params.player === unit.getOwner())
                 unit.buff(-this.level, -this.level);
-            return params;
-        }));
+        });
     }
 
     public stack() {

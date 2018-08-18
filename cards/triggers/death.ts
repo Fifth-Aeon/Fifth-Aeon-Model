@@ -42,16 +42,15 @@ export class SoulReap extends Trigger {
     }
 
     public register(card: Card, game: Game) {
-        game.gameEvents.addEvent(this, new GameEvent(EventType.UnitDies, (params) => {
-            const unit: Unit = params.get('deadUnit');
-            this.mechanic.setTriggeringUnit(unit);
+        game.getEvents().unitDies.addEvent(this, (params) => {
+            this.mechanic.setTriggeringUnit(params.deadUnit);
             this.mechanic.onTrigger(card, game);
             return params;
-        }));
+        });
     }
 
     public unregister(card: Card, game: Game) {
-        game.gameEvents.removeEvents(this);
+        game.getEvents().removeEvents(this);
     }
 
     public evaluate(host: Card, game: Game, context: EvalContext) {

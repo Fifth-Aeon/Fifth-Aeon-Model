@@ -14,14 +14,12 @@ export class FriendlyBiologicalUnitEntersPlay extends Trigger {
     }
 
     public register(card: Card, game: Game) {
-        game.getEvents().addEvent(this, new GameEvent(EventType.UnitEntersPlay, (params) => {
-            const unit: Unit = params.get('enteringUnit');
-            if (unit.getOwner() === card.getOwner() && isBiological(unit)) {
-                this.mechanic.setTriggeringUnit(unit);
+        game.getEvents().unitEntersPlay.addEvent(this,  (params) => {
+            if (params.enteringUnit.getOwner() === card.getOwner() && isBiological(params.enteringUnit)) {
+                this.mechanic.setTriggeringUnit(params.enteringUnit);
                 this.mechanic.onTrigger(card, game);
             }
-            return params;
-        }));
+        });
     }
 
     public unregister(card: Card, game: Game) {
@@ -41,14 +39,13 @@ export class FriendlyMechanicalUnitEntersPlay extends Trigger {
     }
 
     public register(card: Card, game: Game) {
-        game.getEvents().addEvent(this, new GameEvent(EventType.UnitEntersPlay, (params) => {
-            const unit: Unit = params.get('enteringUnit');
+        game.getEvents().unitEntersPlay.addEvent(this,  (params) => {
+            const unit: Unit = params.enteringUnit;
             if (unit.getOwner() === card.getOwner() && isMechanical(unit)) {
                 this.mechanic.setTriggeringUnit(unit);
                 this.mechanic.onTrigger(card, game);
             }
-            return params;
-        }));
+        });
     }
 
     public unregister(card: Card, game: Game) {

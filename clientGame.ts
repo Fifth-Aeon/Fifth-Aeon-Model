@@ -285,8 +285,9 @@ export class ClientGame extends Game {
 
     private syncPhaseChange(localPlayerNumber: number, event: GameSyncEvent, params: any) {
         if (event.params.phase === GamePhase.Block)
-            this.gameEvents.trigger(EventType.PlayerAttacked,
-                new Map([['target', this.getOtherPlayerNumber(this.getActivePlayer())]]));
+            this.gameEvents.playerAttacked.trigger(
+                { target: this.getOtherPlayerNumber(this.getActivePlayer()) }
+            );
         if (event.params.phase === GamePhase.Play2) {
             this.resolveCombat();
         }

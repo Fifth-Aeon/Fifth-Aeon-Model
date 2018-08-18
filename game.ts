@@ -12,6 +12,7 @@ import { Permanent } from './permanent';
 import { Player } from './player';
 import { Unit } from './unit';
 import { ChoiceHeuristic } from './ai';
+import { GameEventSystem } from './events/eventSystems';
 
 
 export enum GamePhase {
@@ -79,7 +80,7 @@ export abstract class Game {
     // A map of cards loaded from the server so far
     protected cardPool: Map<string, Card>;
     // A group of game logic events that are not connected to any individual unit
-    public gameEvents: EventGroup;
+    public gameEvents: GameEventSystem;
     // Flag to tell us which player's choice we are waiting for (null if not waiting)
     protected currentChoices: Choice[] = [null, null];
     protected log: Log;
@@ -116,7 +117,7 @@ export abstract class Game {
         this.attackers = [];
         this.blockers = [];
         this.crypt = [[], []];
-        this.gameEvents = new EventGroup();
+        this.gameEvents = new GameEventSystem();
         this.promptCardChoice = this.deferChoice;
     }
 
@@ -386,7 +387,7 @@ export abstract class Game {
     }
 
     protected startEndPhase() {
-        this.gameEvents.trigger(EventType.EndOfTurn, new Map());
+        this.gameEvents.endOfTurn.trigger({ player: this.turn });
         this.changePhase(GamePhase.End);
         this.getCurrentPlayer().discardExtra(this);
     }
@@ -403,9 +404,7 @@ export abstract class Game {
         let currentPlayerEntities = this.getCurrentPlayerUnits();
         currentPlayerEntities.forEach(unit => unit.refresh());
         this.players[this.turn].startTurn();
-        this.gameEvents.trigger(EventType.StartOfTurn, new Map([
-            ['player', this.turn]
-        ]));
+        this.gameEvents.startOfTurn.trigger({ player: this.turn });
     }
 
     // Unit Zone Changes ------------------------------------------------------
@@ -462,9 +461,7 @@ export abstract class Game {
             this.removePermanant(unit);
             this.addToCrypt(unit);
             unit.detachItems(this);
-            this.gameEvents.trigger(EventType.UnitDies, new Map([
-                ['deadUnit', unit]
-            ]));
+            this.gameEvents.unitDies.trigger({ deadUnit: unit });
             return params;
         }, Infinity));
         unit.getEvents().addEvent(null, new GameEvent(EventType.Annihilate, (params) => {
@@ -472,9 +469,8 @@ export abstract class Game {
             return params;
         }));
         this.board.addPermanent(unit);
-        this.gameEvents.trigger(EventType.UnitEntersPlay, new Map<string, any>([
-            ['enteringUnit', unit]
-        ]));
+
+        this.gameEvents.unitEntersPlay.trigger({ enteringUnit: unit });
         unit.checkDeath();
     }
 

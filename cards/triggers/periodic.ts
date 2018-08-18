@@ -13,16 +13,15 @@ export class Dusk extends Trigger {
     }
 
     public register(card: Card, game: Game) {
-        game.gameEvents.addEvent(this, new GameEvent(EventType.EndOfTurn, (params) => {
+        game.getEvents().startOfTurn.addEvent(this, (params) => {
             if (game.getCurrentPlayer().getPlayerNumber() === card.getOwner()) {
                 this.mechanic.onTrigger(card, game);
             }
-            return params;
-        }));
+        });
     }
 
     public unregister(card: Card, game: Game) {
-        game.gameEvents.removeEvents(this);
+        game.getEvents().removeEvents(this);
     }
 
     public evaluate(host: Card, game: Game) {
@@ -38,12 +37,11 @@ export class Dawn extends Dusk {
     }
 
     public register(card: Card, game: Game) {
-        game.gameEvents.addEvent(this, new GameEvent(EventType.StartOfTurn, (params) => {
+        game.getEvents().startOfTurn.addEvent(this, (params) => {
             if (game.getCurrentPlayer().getPlayerNumber() === card.getOwner()) {
                 this.mechanic.onTrigger(card, game);
             }
-            return params;
-        }));
+        });
     }
 
     public evaluate(host: Card, game: Game) {
@@ -60,10 +58,9 @@ export class Cycle extends Dusk {
     }
 
     public register(card: Card, game: Game) {
-        game.gameEvents.addEvent(this, new GameEvent(EventType.EndOfTurn, (params) => {
+        game.getEvents().startOfTurn.addEvent(this, (params) => {
             this.mechanic.onTrigger(card, game);
-            return params;
-        }));
+        });
     }
 
     public evaluate(host: Card, game: Game) {

@@ -17,9 +17,8 @@ export class Sleeping extends Mechanic {
     public enter(card: Card, game: Game) {
         let unit = card as Unit;
         unit.setExausted(true);
-        game.gameEvents.addEvent(this, new GameEvent(EventType.StartOfTurn, (params) => {
-            let player = params.get('player') as number;
-            if (player === unit.getOwner()) {
+        game.getEvents().startOfTurn.addEvent(this, params => {
+            if (params.player === unit.getOwner()) {
                 unit.setExausted(true);
                 this.turns--;
                 if (this.turns < 1) {
@@ -27,7 +26,7 @@ export class Sleeping extends Mechanic {
                 }
             }
             return params;
-        }));
+        });
     }
 
     public stack() {

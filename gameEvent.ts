@@ -14,7 +14,7 @@ export enum EventType {
     CheckBlockable, CheckCanBlock, KillUnit,
     LeavesPlay, Annihilate,
 
-    // PLayer events
+    // Player events
     CardDrawn
 }
 
@@ -26,6 +26,8 @@ export class GameEvent {
         public priority: number = 5
     ) { }
 }
+
+
 
 export class EventGroup {
     private events: Map<EventType, Array<GameEvent>>;

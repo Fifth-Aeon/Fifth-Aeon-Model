@@ -234,13 +234,11 @@ export class Relentless extends Skill {
     protected static id = 'Relentless';
 
     public enter(card: Card, game: Game) {
-        game.gameEvents.addEvent(this, new GameEvent(
-            EventType.EndOfTurn, params => {
-                let target = card as Unit;
-                target.refresh();
-                return params;
-            }
-        ));
+        game.getEvents().endOfTurn.addEvent(this, params => {
+            let target = card as Unit;
+            target.refresh();
+            return params;
+        });
     }
 
     public remove(card: Card, game: Game) {
@@ -268,14 +266,13 @@ export class Deathless extends Skill {
     public enter(card: Card, game: Game) {
         let unit = card as Unit;
         unit.getEvents().addEvent(this, new GameEvent(EventType.Death, (params) => {
-            game.gameEvents.addEvent(this, new GameEvent(EventType.EndOfTurn, (eotParams) => {
+            game.getEvents().endOfTurn.addEvent(this, _ => {
                 this.charges--;
                 if (this.charges <= 0)
                     unit.removeMechanic(this.getId(), game);
                 game.playFromCrypt(unit);
                 game.gameEvents.removeEvents(this);
-                return eotParams;
-            }));
+            });
             return params;
         }));
     }
@@ -309,10 +306,9 @@ export class Immortal extends Skill {
     public enter(card: Card, game: Game) {
         let unit = card as Unit;
         unit.getEvents().addEvent(this, new GameEvent(EventType.Death, (params) => {
-            game.gameEvents.addEvent(this, new GameEvent(EventType.EndOfTurn, (eotParams) => {
+            game.getEvents().endOfTurn.addEvent(this, _ => {
                 game.playFromCrypt(unit);
-                return eotParams;
-            }));
+            });
             return params;
         }));
     }

@@ -59,8 +59,9 @@ export class ServerGame extends Game {
     // Serverside phase logic
     protected endPhaseOne() {
         if (this.isAttacking()) {
-            this.gameEvents.trigger(EventType.PlayerAttacked,
-                new Map([['target', this.getOtherPlayerNumber(this.getActivePlayer())]]));
+            this.gameEvents.playerAttacked.trigger(
+                { target: this.getOtherPlayerNumber(this.getActivePlayer()) }
+            );
             if (this.blockersExist()) {
                 this.changePhase(GamePhase.Block);
             } else {

@@ -19,12 +19,11 @@ export class Recharge extends Mechanic {
 
     public enter(card: Card, game: Game) {
         let enchantment = card as Enchantment;
-        game.gameEvents.addEvent(this, new GameEvent(EventType.StartOfTurn, (params) => {
-            let player = params.get('player') as number;
-            if (player === enchantment.getOwner())
+        game.getEvents().startOfTurn.addEvent(this, (params) => {
+            if (params.player === enchantment.getOwner())
                 enchantment.changePower(this.amountPerTurn);
             return params;
-        }));
+        });
     }
 
     public remove(card: Card, game: Game) {
@@ -47,12 +46,11 @@ export class Discharge extends Recharge {
 
     public enter(card: Card, game: Game) {
         let enchantment = card as Enchantment;
-        game.gameEvents.addEvent(this, new GameEvent(EventType.StartOfTurn, (params) => {
-            let player = params.get('player') as number;
-            if (player === enchantment.getOwner())
+        game.getEvents().startOfTurn.addEvent(this, (params) => {
+            if (params.player === enchantment.getOwner())
                 enchantment.changePower(-this.amountPerTurn);
             return params;
-        }));
+        });
     }
 
     public remove(card: Card, game: Game) {
