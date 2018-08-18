@@ -3,7 +3,7 @@ import { Game, GamePhase } from '../../game';
 import { Targeter } from '../../targeter';
 import { Card, CardType } from '../../card';
 import { Unit, UnitType } from '../../unit';
-import { GameEvent, EventType } from '../../gameEvent';
+
 import { Enchantment } from '../../enchantment';
 import { a } from '../../strings';
 import { ParameterType } from '../parameters';
@@ -110,16 +110,15 @@ export class SummonUnitOnDamage extends Mechanic {
     }
 
     public enter(card: Card, game: Game) {
-        (card as Unit).getEvents().addEvent(this, new GameEvent(
-            EventType.DealDamage, params => {
-                let target = params.get('target') as Unit;
+        (card as Unit).getEvents().DealDamage.addEvent(this,  params => {
+                let target = params.target as Unit;
                 if (target.getUnitType() === UnitType.Player) {
                     let owner = game.getPlayer(card.getOwner());
                     game.playGeneratedUnit(owner, this.factory());
                 }
                 return params;
             }
-        ));
+        );
     }
 
     public remove(card: Card, game: Game) {

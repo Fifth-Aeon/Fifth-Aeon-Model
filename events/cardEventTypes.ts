@@ -12,5 +12,19 @@ export interface BlockEvent {
 }
 
 export interface AttackEvent {
-    blocker: Unit;
+    damage: number;
+    attacker: Unit;
+    defender: Unit;
 }
+
+export interface TakeDamageEvent {
+    target: Unit;
+    source: Card;
+    amount: number;
+}
+
+export interface KillUnitEvent {
+    source: Card;
+    target: Unit;
+}
+

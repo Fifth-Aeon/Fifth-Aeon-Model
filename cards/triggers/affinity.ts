@@ -1,6 +1,6 @@
 import { Card } from '../../card';
 import { Game } from '../../game';
-import { EventType, GameEvent } from '../../gameEvent';
+
 import { EvalContext } from '../../mechanic';
 import { Trigger } from '../../trigger';
 import { Unit } from '../../unit';

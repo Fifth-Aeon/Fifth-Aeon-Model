@@ -3,7 +3,7 @@ import { Game } from '../../game';
 import { Targeter } from '../../targeter';
 import { Card, CardType } from '../../card';
 import { Enchantment } from '../../enchantment';
-import { GameEvent, EventType } from '../../gameEvent';
+
 import { ParameterType } from '../parameters';
 
 export class Recharge extends Mechanic {

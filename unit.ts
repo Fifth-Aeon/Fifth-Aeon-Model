@@ -3,12 +3,14 @@ import { Player } from './player';
 import { Permanent } from './permanent';
 import { Card, CardType, GameZone } from './card';
 import { Item } from './item';
-import { EventGroup, EventType } from './gameEvent';
+
 import { Resource } from './resource';
 import { Targeter } from './targeter';
 import { Mechanic, EvalContext, TriggeredMechanic } from './mechanic';
 
 import { remove } from 'lodash';
+import { AttackEvent, DealDamageEvent } from './events/cardEventTypes';
+import { EventList } from './events/eventSystems';
 
 export enum UnitType {
     Player, Human, Cleric, Wolf, Spider, Snake, Automaton, Monster, Mammal, Soldier,
@@ -21,18 +23,18 @@ export function isBiological(unit: Unit) { return !mechanical.has(unit.getUnitTy
 export function isMechanical(unit: Unit) { return mechanical.has(unit.getUnitType()); }
 
 class Damager {
-    private events: EventGroup;
+    private events: EventList<DealDamageEvent>;
     constructor(private amount: number, private source: Unit, private target: Unit) {
-        this.events = source.getEvents().getSubgroup(EventType.DealDamage);
+        this.events = source.getEvents().DealDamage;
     }
     public run() {
         let result = this.target.takeDamage(this.amount, this.source);
         if (result > 0) {
-            this.events.trigger(EventType.DealDamage, new Map<string, any>([
-                ['source', this.source],
-                ['target', this.target],
-                ['amount', this.amount]
-            ]));
+            this.events.trigger({
+                source: this.source,
+                target: this.target,
+                amount: this.amount
+            });
         }
     }
 }
@@ -62,7 +64,6 @@ export class Unit extends Permanent {
         cost: Resource, targeter: Targeter, damage: number, maxLife: number, mechanics: Array<Mechanic>) {
         super(dataId, name, imageUrl, cost, targeter, mechanics);
         this.unitType = type;
-        this.events = new EventGroup();
         this.exausted = false;
         this.ready = false;
         this.attackDisabled = false;
@@ -182,14 +183,8 @@ export class Unit extends Permanent {
             !this.blockDisabled &&
             !this.exausted &&
             (toBlock.isAttacking() || hypothetical) &&
-            toBlock.getEvents().trigger(EventType.CheckCanBlock, new Map<string, any>([
-                ['attacker', toBlock],
-                ['canBlock', true]
-            ])).get('canBlock') &&
-            toBlock.getEvents().trigger(EventType.CheckBlockable, new Map<string, any>([
-                ['blocker', this],
-                ['canBlock', true]
-            ])).get('canBlock');
+            toBlock.getEvents().CheckCanBlock.trigger({ attacker: toBlock, canBlock: true }).canBlock &&
+            toBlock.getEvents().CheckBlockable.trigger({ blocker: this, canBlock: true }).canBlock;
     }
 
     public isReady() {
@@ -273,13 +268,14 @@ export class Unit extends Permanent {
 
     public fight(target: Unit, damage: number = null) {
         // Trigger an attack event
-        let eventParams = new Map<string, any>([
-            ['damage', this.damage],
-            ['attacker', this],
-            ['defender', target]
-        ]);
+        let eventParams = {
+            damage: this.damage,
+            attacker: this,
+            defender: target
+        } as AttackEvent;
+
         if (damage === null)
-            damage = this.events.trigger(EventType.Attack, eventParams).get('damage');
+            damage = this.events.Attack.trigger(eventParams).damage;
 
         // Remove actions and deal damage
         let damage1 = this.dealDamageDelayed(target, damage);
@@ -294,11 +290,11 @@ export class Unit extends Permanent {
     }
 
     public takeDamage(amount: number, source: Card): number {
-        amount = this.events.trigger(EventType.TakeDamage, new Map<string, any>([
-            ['target', this],
-            ['source', source],
-            ['amount', amount]
-        ])).get('amount');
+        amount = this.events.TakeDamage.trigger({
+            target: this,
+            source: source,
+            amount: amount
+        }).amount;
         this.life -= amount;
         this.checkDeath();
         return amount;
@@ -323,10 +319,7 @@ export class Unit extends Permanent {
 
     private afterDamage(target: Unit) {
         if (target.location === GameZone.Crypt) {
-            this.events.trigger(EventType.KillUnit, new Map<string, any>([
-                ['source', this],
-                ['target', target]
-            ]));
+            this.events.KillUnit.trigger({ source: this, target });
         }
     }
 
@@ -343,7 +336,7 @@ export class Unit extends Permanent {
     }
 
     public leaveBoard(game: Game) {
-        this.events.trigger(EventType.LeavesPlay, new Map([['leavingUnit', this]]));
+        this.events.LeavesPlay.trigger(new Map([['leavingUnit', this]]));
         this.blockedUnitId = null;
         this.ready = false;
         this.exausted = false;
@@ -357,7 +350,7 @@ export class Unit extends Permanent {
         if (this.location !== GameZone.Board || this.dying)
             return;
         this.dying = true;
-        this.events.trigger(EventType.Death, new Map());
+        this.events.Death.trigger(new Map());
         this.location = GameZone.Crypt;
         this.dying = false;
         this.died = false;
@@ -371,6 +364,6 @@ export class Unit extends Permanent {
     }
 
     public annihilate() {
-        this.events.trigger(EventType.Annihilate, new Map());
+        this.events.Annihilate.trigger(new Map());
     }
 }

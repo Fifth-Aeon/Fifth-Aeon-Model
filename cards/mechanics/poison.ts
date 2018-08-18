@@ -3,7 +3,7 @@ import { Game } from '../../game';
 import { Targeter } from '../../targeter';
 import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
-import { GameEvent, EventType } from '../../gameEvent';
+
 import { Permanent } from '../../permanent';
 
 export class CurePoison extends TargetedMechanic {
@@ -84,12 +84,12 @@ export class Venomous extends Mechanic {
 
     public enter(card: Card, game: Game) {
         let unit = card as Unit;
-        unit.getEvents().addEvent(this, new GameEvent(EventType.DealDamage, (params) => {
-            let target = params.get('target') as Unit;
+        unit.getEvents().DealDamage.addEvent(this,  (params) => {
+            let target = params.target;
             if (target.getUnitType() !== UnitType.Player)
                 target.addMechanic(new Poisoned(), game);
             return params;
-        }));
+        });
     }
 
     public remove(card: Card, game: Game) {

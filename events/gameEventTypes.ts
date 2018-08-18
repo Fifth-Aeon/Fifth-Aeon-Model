@@ -21,3 +21,16 @@ export interface PlayerAttackedEvent {
 export interface UnitDiesEvent {
     deadUnit: Unit;
 }
+
+export interface CheckCanBlockEvent {
+    attacker: Unit;
+    canBlock: boolean;
+}
+
+export interface CheckBlockableEvent {
+    blocker: Unit;
+    canBlock: boolean;
+}
+
+
+

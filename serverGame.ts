@@ -3,7 +3,7 @@ import { CardType, Card } from './card';
 import { DeckList } from './deckList';
 import { Enchantment } from './enchantment';
 import { Game, GameAction, GameActionType, GamePhase, GameSyncEvent, SyncEventType } from './game';
-import { EventType } from './gameEvent';
+
 import { GameFormat, standardFormat } from './gameFormat';
 import { Item } from './item';
 import { Unit } from './unit';

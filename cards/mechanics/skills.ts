@@ -3,7 +3,7 @@ import { Game, GamePhase } from '../../game';
 import { Targeter } from '../../targeter';
 import { Card, CardType } from '../../card';
 import { Unit, UnitType } from '../../unit';
-import { GameEvent, EventType } from '../../gameEvent';
+
 
 abstract class Skill extends Mechanic {
     protected static validCardTypes = new Set([CardType.Unit, CardType.Item]);
@@ -13,14 +13,12 @@ export class Flying extends Skill {
     protected static id = 'Flying';
 
     public enter(card: Card, game: Game) {
-        (card as Unit).getEvents().addEvent(this, new GameEvent(
-            EventType.CheckBlockable, params => {
-                let blocker = params.get('blocker') as Unit;
-                if (!blocker.hasMechanicWithId(Flying.id) && !blocker.hasMechanicWithId(Ranged.getId()))
-                    params.set('canBlock', false);
-                return params;
-            }
-        ));
+        (card as Unit).getEvents().CheckBlockable.addEvent(this, params => {
+            let blocker = params.blocker as Unit;
+            if (!blocker.hasMechanicWithId(Flying.id) && !blocker.hasMechanicWithId(Ranged.getId()))
+                params.canBlock = false;
+            return params;
+        });
     }
 
     public remove(card: Card, game: Game) {
@@ -40,12 +38,11 @@ export class Unblockable extends Skill {
     protected static id = 'Unblockable';
 
     public enter(card: Card, game: Game) {
-        (card as Unit).getEvents().addEvent(this, new GameEvent(
-            EventType.CheckBlockable, params => {
-                params.set('canBlock', false);
-                return params;
-            }
-        ));
+        (card as Unit).getEvents().CheckBlockable.addEvent(this, params => {
+            params.canBlock = false;
+            return params;
+        }
+        );
     }
 
     public remove(card: Card, game: Game) {
@@ -84,22 +81,20 @@ export class Aquatic extends Skill {
     protected static id = 'Aquatic';
 
     public enter(card: Card, game: Game) {
-        (card as Unit).getEvents().addEvent(this, new GameEvent(
-            EventType.CheckBlockable, params => {
-                let blocker = params.get('blocker') as Unit;
-                if (!blocker.hasMechanicWithId( Aquatic.getId()) && !blocker.hasMechanicWithId(Flying.getId()))
-                    params.set('canBlock', false);
-                return params;
-            }
-        ));
-        (card as Unit).getEvents().addEvent(this, new GameEvent(
-            EventType.CheckCanBlock, params => {
-                let attacker = params.get('attacker') as Unit;
-                if (!attacker.hasMechanicWithId(Aquatic.getId()))
-                    params.set('canBlock', false);
-                return params;
-            }
-        ));
+        (card as Unit).getEvents().CheckBlockable.addEvent(this, params => {
+            let blocker = params.blocker as Unit;
+            if (!blocker.hasMechanicWithId(Aquatic.getId()) && !blocker.hasMechanicWithId(Flying.getId()))
+                params.canBlock = false;
+            return params;
+        }
+        );
+        (card as Unit).getEvents().CheckCanBlock.addEvent(this, params => {
+            let attacker = params.attacker as Unit;
+            if (!attacker.hasMechanicWithId(Aquatic.getId()))
+                params.canBlock = false;
+            return params;
+        }
+        );
     }
 
     public remove(card: Card, game: Game) {
@@ -136,12 +131,11 @@ export class Lifesteal extends Skill {
     protected static id = 'Lifesteal';
 
     public enter(card: Card, game: Game) {
-        (card as Unit).getEvents().addEvent(this, new GameEvent(
-            EventType.DealDamage, params => {
-                game.getPlayer(card.getOwner()).addLife(params.get('amount'));
-                return params;
-            }
-        ));
+        (card as Unit).getEvents().DealDamage.addEvent(this, params => {
+            game.getPlayer(card.getOwner()).addLife(params.amount);
+            return params;
+        }
+        );
     }
 
     public remove(card: Card, game: Game) {
@@ -161,14 +155,13 @@ export class Lethal extends Skill {
     protected static id = 'Lethal';
 
     public enter(card: Card, game: Game) {
-        (card as Unit).getEvents().addEvent(this, new GameEvent(
-            EventType.DealDamage, params => {
-                let target = params.get('target') as Unit;
-                if (target.getUnitType() !== UnitType.Player)
-                    target.kill(true);
-                return params;
-            }
-        ));
+        (card as Unit).getEvents().DealDamage.addEvent(this, params => {
+            let target = params.target as Unit;
+            if (target.getUnitType() !== UnitType.Player)
+                target.kill(true);
+            return params;
+        }
+        );
     }
 
     public remove(card: Card, game: Game) {
@@ -192,15 +185,12 @@ export class Shielded extends Skill {
     private depleted = false;
     public enter(card: Card, game: Game) {
         this.depleted = false;
-        (card as Unit).getEvents().addEvent(this, new GameEvent(
-            EventType.TakeDamage, params => {
-                if (this.depleted || params.get('amount') === 0)
-                    return params;
-                params.set('amount', 0);
-                this.depleted = true;
+        (card as Unit).getEvents().TakeDamage.addEvent(this, params => {
+            if (this.depleted || params.amount === 0)
                 return params;
-            },
-            0));
+            params.amount = 0;
+            this.depleted = true;
+        });
     }
 
     public remove(card: Card, game: Game) {
@@ -265,7 +255,7 @@ export class Deathless extends Skill {
 
     public enter(card: Card, game: Game) {
         let unit = card as Unit;
-        unit.getEvents().addEvent(this, new GameEvent(EventType.Death, (params) => {
+        unit.getEvents().Death.addEvent(this, (params) => {
             game.getEvents().endOfTurn.addEvent(this, _ => {
                 this.charges--;
                 if (this.charges <= 0)
@@ -274,7 +264,7 @@ export class Deathless extends Skill {
                 game.gameEvents.removeEvents(this);
             });
             return params;
-        }));
+        });
     }
 
     public clone() {
@@ -305,12 +295,12 @@ export class Immortal extends Skill {
 
     public enter(card: Card, game: Game) {
         let unit = card as Unit;
-        unit.getEvents().addEvent(this, new GameEvent(EventType.Death, (params) => {
+        unit.getEvents().Death.addEvent(this, (params) => {
             game.getEvents().endOfTurn.addEvent(this, _ => {
                 game.playFromCrypt(unit);
             });
             return params;
-        }));
+        });
     }
 
     public remove(card: Card, game: Game) {

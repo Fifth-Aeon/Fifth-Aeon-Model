@@ -1,8 +1,10 @@
-import { sortBy, remove } from 'lodash';
+import { remove, sortBy } from 'lodash';
 import { Mechanic } from '../mechanic';
 import { Trigger } from '../trigger';
-import { UnitEntersPlayEvent, StartOfTurnEvent, EndOfTurnEvent, PlayerAttackedEvent, UnitDiesEvent } from './gameEventTypes';
-import { DealDamageEvent, BlockEvent, AttackEvent } from './cardEventTypes';
+import { AttackEvent, BlockEvent, DealDamageEvent, KillUnitEvent, TakeDamageEvent } from './cardEventTypes';
+import { CheckBlockableEvent, CheckCanBlockEvent, EndOfTurnEvent, PlayerAttackedEvent,
+    StartOfTurnEvent, UnitDiesEvent, UnitEntersPlayEvent } from './gameEventTypes';
+import { CardDrawnEvent } from './playerEventTypes';
 
 class GameEvent<T> {
     public source: Mechanic | Trigger | null;
@@ -12,12 +14,13 @@ class GameEvent<T> {
     ) { }
 }
 
-class EventList<T> {
+export class EventList<T> {
     private events: GameEvent<T>[] = [];
 
-    public addEvent(source: Mechanic | Trigger |  null, callback: (params: T) => void) {
+    public addEvent(source: Mechanic | Trigger |  null, callback: (params: T) => void, priority = 5) {
         let event = new GameEvent<T>(callback);
         event.source = source;
+        event.priority = priority;
         this.events.push(event);
         this.events = sortBy(this.events, (ev: GameEvent<T>) => ev.priority);
         event.source = source;
@@ -62,23 +65,37 @@ export class GameEventSystem extends EventSystem {
 }
 
 export class CardEventSystem extends EventSystem  {
-    playEvents = new EventList();
-    DeathEvents = new EventList();
-    UnitDiesEvents = new EventList();
-    AttackEvents = new EventList<AttackEvent>();
-    BlockEvents = new EventList<BlockEvent>();
-    TakeDamageEvents = new EventList();
-    DealDamageEvents = new EventList<DealDamageEvent>();
-    CheckBlockableEvents = new EventList();
-    CheckCanBlockEvents = new EventList();
-    KillUnitEvents = new EventList();
-    LeavesPlayEvents = new EventList();
-    AnnihilateEvents = new EventList();
+    play = new EventList();
+    Death = new EventList();
+    UnitDies = new EventList();
+    Attack = new EventList<AttackEvent>();
+    Block = new EventList<BlockEvent>();
+    TakeDamage = new EventList<TakeDamageEvent>();
+    DealDamage = new EventList<DealDamageEvent>();
+    CheckBlockable = new EventList<CheckBlockableEvent>();
+    CheckCanBlock = new EventList<CheckCanBlockEvent>();
+    KillUnit = new EventList<KillUnitEvent>();
+    LeavesPlay = new EventList();
+    Annihilate = new EventList();
 
     eventLists = [
-        this.playEvents, this.DeathEvents, this.UnitDiesEvents,
-        this.AttackEvents, this.BlockEvents, this.TakeDamageEvents,
-        this.DealDamageEvents, this.CheckBlockableEvents, this.CheckCanBlockEvents,
-        this.KillUnitEvents, this.LeavesPlayEvents, this.AnnihilateEvents
+        this.play,
+        this.Death,
+        this.UnitDies,
+        this.Attack,
+        this.Block,
+        this.TakeDamage,
+        this.DealDamage,
+        this.CheckBlockable,
+        this.CheckCanBlock,
+        this.KillUnit,
+        this.LeavesPlay,
+        this.Annihilate
     ];
+}
+
+export class PlayerEventSystem   {
+    CardDrawn = new EventList<CardDrawnEvent>();
+
+    eventLists = [this.CardDrawn];
 }

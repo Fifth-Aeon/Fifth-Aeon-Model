@@ -3,7 +3,7 @@ import { Game } from '../../game';
 import { Targeter } from '../../targeter';
 import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
-import { GameEvent, EventType } from '../../gameEvent';
+
 import { formatBuff } from '../../strings';
 import { Permanent } from '../../permanent';
 
@@ -41,10 +41,9 @@ export class Lordship extends Mechanic {
 
     private applyToUnit(unit: Unit, game: Game) {
         this.addEffect(unit, game);
-        unit.getEvents().addEvent(this, new GameEvent(EventType.LeavesPlay, (params) => {
+        unit.getEvents().LeavesPlay.addEvent(this,  (params) => {
             this.removeFromUnit(unit, game);
-            return params;
-        }));
+        });
     }
 
     private removeFromUnit(unit: Unit, game: Game) {

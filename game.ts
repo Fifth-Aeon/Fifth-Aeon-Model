@@ -4,7 +4,7 @@ import { Board } from './board';
 import { Card, CardType, GameZone } from './card';
 import { DeckList } from './deckList';
 import { Enchantment } from './enchantment';
-import { EventGroup, EventType, GameEvent } from './gameEvent';
+
 import { GameFormat, standardFormat } from './gameFormat';
 import { Log } from './log';
 import { EvalContext } from './mechanic';
@@ -123,10 +123,10 @@ export abstract class Game {
 
     protected addDeathHandlers() {
         this.players.forEach((player, number) => {
-            player.getEvents().addEvent(null, new GameEvent(EventType.Death, (params) => {
+            player.getEvents().Death.addEvent(null, (params) => {
                 this.endGame(this.getOtherPlayerNumber(number));
                 return params;
-            }));
+            });
         });
     }
 
@@ -344,8 +344,8 @@ export abstract class Game {
             for (let blocker of damageOrder) {
                 let assignedDamage = Math.min(blocker.getLife(), remainingDamage);
                 remainingDamage -= assignedDamage;
-                blocker.getEvents().trigger(EventType.Block, new Map([['attacker', attacker]]));
-                blocker.getEvents().trigger(EventType.Attack, new Map([['blocker', blocker]]));
+                blocker.getEvents().Block.trigger( { attacker});
+                blocker.getEvents().Attack.trigger({ attacker: attacker, damage: assignedDamage, defender: blocker});
                 attacker.fight(blocker, assignedDamage);
                 blocker.setBlocking(null);
             }
@@ -448,26 +448,26 @@ export abstract class Game {
     }
 
     public addEnchantment(enchantment: Enchantment, owner: number) {
-        enchantment.getEvents().addEvent(null, new GameEvent(EventType.Death, (params) => {
+        enchantment.getEvents().Death.addEvent(null,  (params) => {
             this.removePermanant(enchantment);
             this.addToCrypt(enchantment);
             return params;
-        }, Infinity));
+        }, Infinity);
         this.board.addPermanent(enchantment);
     }
 
     public addUnit(unit: Unit, owner: number, etb: boolean = true) {
-        unit.getEvents().addEvent(null, new GameEvent(EventType.Death, (params) => {
+        unit.getEvents().Death.addEvent(null,  (params) => {
             this.removePermanant(unit);
             this.addToCrypt(unit);
             unit.detachItems(this);
             this.gameEvents.unitDies.trigger({ deadUnit: unit });
             return params;
-        }, Infinity));
-        unit.getEvents().addEvent(null, new GameEvent(EventType.Annihilate, (params) => {
+        }, Infinity);
+        unit.getEvents().Annihilate.addEvent(null,  (params) => {
             this.removePermanant(unit);
             return params;
-        }));
+        });
         this.board.addPermanent(unit);
 
         this.gameEvents.unitEntersPlay.trigger({ enteringUnit: unit });

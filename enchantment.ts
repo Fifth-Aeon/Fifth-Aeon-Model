@@ -5,7 +5,7 @@ import { Unit } from './unit';
 import { Mechanic } from './mechanic';
 import { Resource } from './resource';
 import { Targeter } from './targeter';
-import { EventGroup, EventType, GameEvent } from './gameEvent';
+
 import { Game } from './game';
 import { EvalContext } from './mechanic';
 
@@ -63,7 +63,7 @@ export class Enchantment extends Permanent {
     public die() {
         if (this.location !== GameZone.Board)
             return;
-        this.events.trigger(EventType.Death, new Map());
+        this.events.Death.trigger({});
         this.location = GameZone.Crypt;
     }
 

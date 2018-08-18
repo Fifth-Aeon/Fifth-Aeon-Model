@@ -1,6 +1,6 @@
 import { Game } from '../../game';
 import { Card } from '../../card';
-import { EventType, GameEvent } from '../../gameEvent';
+
 import { Mechanic, TriggeredMechanic } from '../../mechanic';
 import { Player } from '../../player';
 import { Unit, UnitType } from '../../unit';
@@ -80,14 +80,13 @@ export class DiscardOnDamage extends Mechanic {
     protected static id = 'DiscardOnDamage';
 
     public enter(card: Card, game: Game) {
-        (card as Unit).getEvents().addEvent(this, new GameEvent(
-            EventType.DealDamage, params => {
-                let target = params.get('target') as Unit;
+        (card as Unit).getEvents().DealDamage.addEvent(this,  params => {
+                let target = params.target;
                 if (target.getUnitType() === UnitType.Player)
                     game.getPlayer((target as Player).getPlayerNumber()).discard(game);
                 return params;
             }
-        ));
+        );
     }
 
     public remove(card: Card, game: Game) {

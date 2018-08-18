@@ -4,10 +4,11 @@ import { Player } from './player';
 import { Mechanic, EvalContext, TriggeredMechanic } from './mechanic';
 import { Targeter } from './targeter';
 import { Unit } from './unit';
-import { EventGroup, EventType } from './gameEvent';
+
 
 
 import { remove, sumBy, groupBy } from 'lodash';
+import { CardEventSystem } from './events/eventSystems';
 
 export enum GameZone {
     Deck, Hand, Board, Crypt
@@ -31,7 +32,7 @@ export class Card {
     protected imageUrl: string;
     protected location: GameZone;
     protected text: string = null;
-    protected events: EventGroup = new EventGroup();
+    protected events = new CardEventSystem();
 
     protected targeter: Targeter;
 
@@ -80,11 +81,11 @@ export class Card {
     public dealDamageInstant(target: Unit, amount: number) {
         let result = target.takeDamage(amount, this);
         if (result > 0) {
-            this.events.trigger(EventType.DealDamage, new Map<string, any>([
-                ['source', this],
-                ['target', target],
-                ['amount', amount]
-            ]));
+            this.events.DealDamage.trigger({
+                source: this,
+                target: target,
+                amount: amount
+            });
         }
     }
 
@@ -136,7 +137,7 @@ export class Card {
                 (<TriggeredMechanic>mechanic).getTrigger().register(this, game);
             mechanic.enter(this, game);
         });
-        this.events.trigger(EventType.Played, new Map());
+        this.events.play.trigger({});
         if (!this.isUnit()) {
             game.addToCrypt(this);
         }

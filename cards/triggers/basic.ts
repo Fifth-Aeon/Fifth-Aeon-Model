@@ -1,6 +1,6 @@
 import { Card, CardType } from '../../card';
 import { Game } from '../../game';
-import { EventType, GameEvent } from '../../gameEvent';
+
 import { EvalContext } from '../../mechanic';
 import { removeFirstCapital } from '../../strings';
 import { Trigger } from '../../trigger';
@@ -15,12 +15,12 @@ export class Play extends Trigger {
     }
 
     public register(card: Card, game: Game) {
-        card.getEvents().addEvent(this, new GameEvent(EventType.Played, (params) => {
+        card.getEvents().play.addEvent(this,  (params) => {
             if (card.getCardType() === CardType.Unit)
                 this.mechanic.setTriggeringUnit(card as Unit);
             this.mechanic.onTrigger(card, game);
             return params;
-        }));
+        });
     }
 
     public unregister(card: Card, game: Game) {

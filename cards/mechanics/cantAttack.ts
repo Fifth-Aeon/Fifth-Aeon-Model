@@ -3,7 +3,7 @@ import { Game, GamePhase } from '../../game';
 import { Targeter } from '../../targeter';
 import { Card, CardType } from '../../card';
 import { Unit } from '../../unit';
-import { GameEvent, EventType } from '../../gameEvent';
+
 
 export class CannotAttack extends Mechanic {
     protected static id = 'CannotAttack';

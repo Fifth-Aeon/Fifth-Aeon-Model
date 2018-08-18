@@ -1,9 +1,7 @@
-import { TargetedMechanic, EvalContext } from '../../mechanic';
-import { Game } from '../../game';
-import { Targeter } from '../../targeter';
 import { Card } from '../../card';
-import { Unit, UnitType } from '../../unit';
-import { GameEvent, EventType } from '../../gameEvent';
+import { Game } from '../../game';
+import { EvalContext, TargetedMechanic } from '../../mechanic';
+import { Unit } from '../../unit';
 
 export class Annihilate extends TargetedMechanic {
     protected static id = 'Annihilate';

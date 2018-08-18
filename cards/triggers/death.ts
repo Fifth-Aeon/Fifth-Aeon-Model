@@ -2,7 +2,7 @@ import { Game } from '../../game';
 import { Targeter } from '../../targeter';
 import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
-import { GameEvent, EventType } from '../../gameEvent';
+
 import { Trigger } from '../../trigger';
 import { EvalContext } from '../../mechanic';
 import { removeFirstCapital } from '../../strings';
@@ -16,11 +16,10 @@ export class DeathTrigger extends Trigger {
 
     public register(card: Card, game: Game) {
         let unit = card as Unit;
-        unit.getEvents().addEvent(this, new GameEvent(EventType.Death, (params) => {
+        unit.getEvents().Death.addEvent(this,  (params) => {
             this.mechanic.setTriggeringUnit(unit);
             this.mechanic.onTrigger(card, game);
-            return params;
-        }));
+        });
     }
 
     public unregister(card: Card, game: Game) {

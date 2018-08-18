@@ -3,7 +3,7 @@ import { Game } from '../../game';
 import { Targeter } from '../../targeter';
 import { Card, GameZone, CardType } from '../../card';
 import { Unit, UnitType } from '../../unit';
-import { GameEvent, EventType } from '../../gameEvent';
+
 
 import { remove, take, sumBy } from 'lodash';
 import { ParameterType } from '../parameters';
@@ -24,13 +24,13 @@ export class TransformDamaged extends Mechanic {
 
     public enter(card: Card, game: Game) {
         let unit = card as Unit;
-        unit.getEvents().addEvent(this, new GameEvent(EventType.DealDamage, (params) => {
-            let target = params.get('target') as Unit;
+        unit.getEvents().DealDamage.addEvent(this,  (params) => {
+            let target = params.target;
             if (target.getUnitType() === UnitType.Player)
                 return params;
             target.transform(this.transformation(), game);
             return params;
-        }));
+        });
     }
 
     public remove(card: Card, game: Game) {

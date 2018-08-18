@@ -3,7 +3,7 @@ import { Game } from '../../game';
 import { Targeter } from '../../targeter';
 import { Card } from '../../card';
 import { Unit, UnitType } from '../../unit';
-import { GameEvent, EventType } from '../../gameEvent';
+
 import { properCase, properList } from '../../strings';
 
 

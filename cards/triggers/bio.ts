@@ -3,7 +3,7 @@ import { Trigger } from '../../trigger';
 import { removeFirstCapital } from '../../strings';
 import { Card } from '../../card';
 import { Game } from '../../game';
-import { GameEvent, EventType } from '../../gameEvent';
+
 import { EvalContext } from '../../mechanic';
 
 export class FriendlyBiologicalUnitEntersPlay extends Trigger {

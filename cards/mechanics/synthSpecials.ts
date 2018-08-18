@@ -3,7 +3,7 @@ import { Game, GamePhase } from '../../game';
 import { Targeter } from '../../targeter';
 import { Card, CardType } from '../../card';
 import { Unit, UnitType } from '../../unit';
-import { GameEvent, EventType } from '../../gameEvent';
+
 
 import { Sleeping } from './sleep';
 import { Poisoned } from './poison';
@@ -44,14 +44,13 @@ export class SpyPower extends Mechanic {
     protected static validCardTypes = Permanent.cardTypes;
 
     public enter(card: Card, game: Game) {
-        (card as Unit).getEvents().addEvent(this, new GameEvent(
-            EventType.DealDamage, params => {
-                let target = params.get('target') as Unit;
+        (card as Unit).getEvents().DealDamage.addEvent(this,  params => {
+                let target = params.target as Unit;
                 if (target.getUnitType() === UnitType.Player)
                     game.getPlayer(card.getOwner()).drawCard();
                 return params;
             }
-        ));
+        );
     }
 
     public remove(card: Card, game: Game) {

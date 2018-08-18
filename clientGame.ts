@@ -3,7 +3,7 @@ import { Card, CardType } from './card';
 import { cardList } from './cards/cardList';
 import { Enchantment } from './enchantment';
 import { Game, GameActionType, GamePhase, GameSyncEvent, SyncEventType } from './game';
-import { EventType } from './gameEvent';
+
 import { GameFormat, standardFormat } from './gameFormat';
 import { Item } from './item';
 import { Log } from './log';
@@ -138,8 +138,8 @@ export class ClientGame extends Game {
                 await this.animator.getAnimationDelay(damageOrder.length * 2);
                 let assignedDamage = Math.min(blocker.getLife(), remainingDamage);
                 remainingDamage -= assignedDamage;
-                blocker.getEvents().trigger(EventType.Block, new Map([['attacker', attacker]]));
-                blocker.getEvents().trigger(EventType.Attack, new Map([['blocker', blocker]]));
+                blocker.getEvents().Block.trigger( { attacker});
+                blocker.getEvents().Attack.trigger({ attacker: attacker, damage: assignedDamage, defender: blocker});
                 attacker.fight(blocker, assignedDamage);
                 blocker.setBlocking(null);
                 await this.animator.getAnimationDelay(damageOrder.length * 2);

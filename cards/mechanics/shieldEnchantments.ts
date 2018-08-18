@@ -1,7 +1,7 @@
 import { Card, CardType } from '../../card';
 import { Enchantment } from '../../enchantment';
 import { Game } from '../../game';
-import { EventType, GameEvent } from '../../gameEvent';
+
 import { Mechanic } from '../../mechanic';
 import { Player } from '../../player';
 import { Unit } from '../../unit';
@@ -13,13 +13,13 @@ abstract class ShieldEnchantment extends Mechanic {
     public enter(card: Card, game: Game) {
         let enchantment = card as Enchantment;
         game.getPlayer(enchantment.getOwner()).getEvents()
-            .addEvent(this, new GameEvent(EventType.TakeDamage, (params) => {
-                let player = params.get('target') as Player;
-                let amount = params.get('amount') as number;
-                let source = params.get('source') as Card;
-                params.set('amount', this.effect(enchantment, player, amount, source));
+            .TakeDamage.addEvent(this,  (params) => {
+                let player = params.target as Player;
+                let amount = params.amount as number;
+                let source = params.source as Card;
+                params.amount = this.effect(enchantment, player, amount, source);
                 return params;
-            }));
+            });
     }
 
     public remove(card: Card, game: Game) {

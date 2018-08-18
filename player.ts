@@ -4,10 +4,11 @@ import { sample, remove } from 'lodash';
 import { GameFormat } from './gameFormat';
 import { Game, GameSyncEvent, SyncEventType } from './game';
 import { Resource } from './resource';
-import { EventType } from './gameEvent';
+
 
 import { shuffle } from 'lodash';
 import { ChoiceHeuristic } from './ai';
+import { PlayerEventSystem } from './events/eventSystems';
 
 export class Player extends Unit {
     private format: GameFormat;
@@ -19,6 +20,7 @@ export class Player extends Unit {
     public dataId = '';
     private drawDisabled = false;
     private drawRequests = 0;
+    protected playerEvents = new PlayerEventSystem();
 
     private hardHandLimit = 12;
     private softHandLimit = 8;
@@ -49,7 +51,11 @@ export class Player extends Unit {
         card.setOwner(this.playerNumber);
         card.setLocation(GameZone.Hand);
         this.hand.push(card);
-        this.getEvents().trigger(EventType.CardDrawn, new Map([['card', card]]));
+        this.getPlayerEvents().CardDrawn.trigger({ card });
+    }
+
+    public getPlayerEvents() {
+        return this.playerEvents;
     }
 
     public addToDeck(card: Card) {
@@ -112,7 +118,7 @@ export class Player extends Unit {
     }
 
     public die() {
-        this.events.trigger(EventType.Death, new Map());
+        this.events.Death.trigger({});
     }
 
     public removeCardFromHand(card: Card) {

@@ -4,7 +4,7 @@ import { Targeter } from '../../targeter';
 import { Card, GameZone } from '../../card';
 import { Unit, UnitType } from '../../unit';
 import { Resource } from '../../resource';
-import { GameEvent, EventType } from '../../gameEvent';
+
 
 import { remove } from 'lodash';
 import { ParameterType } from '../parameters';

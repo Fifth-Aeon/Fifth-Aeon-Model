@@ -3,7 +3,7 @@ import { Game } from '../../game';
 import { Targeter } from '../../targeter';
 import { Card, CardType, GameZone } from '../../card';
 import { Unit } from '../../unit';
-import { GameEvent, EventType } from '../../gameEvent';
+
 import { ParameterType } from '../parameters';
 import { ResourceType } from '../../resource';
 
@@ -19,13 +19,12 @@ export class DamageOnBlock extends Mechanic {
     }
 
     public enter(card: Card, game: Game) {
-        (card as Unit).getEvents().addEvent(this, new GameEvent(
-            EventType.Block, params => {
-                let attacker = params.get('attacker') as Unit;
+        (card as Unit).getEvents().Block.addEvent(this,  params => {
+                let attacker = params.attacker;
                 attacker.takeDamage(this.damage, card);
                 return params;
             }
-        ));
+        );
     }
 
     public remove(card: Card, game: Game) {
