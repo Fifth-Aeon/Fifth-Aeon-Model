@@ -15,6 +15,7 @@ export interface SavedCollection {
 export interface Rewards {
     gold: number;
     packs: number;
+    cards?: number;
 }
 
 export class Collection {
@@ -42,6 +43,16 @@ export class Collection {
     public addReward(reward: Rewards) {
         this.packs += reward.packs;
         this.gold += reward.gold;
+        if (reward.cards) {
+            let cardsAwareded = [];
+            for (let i = 0; i < reward.cards; i++) {
+                let awareded = this.getRandomCardId();
+                cardsAwareded.push(awareded)
+                this.addCard(awareded, 1);
+            }
+            return cardsAwareded;
+        }
+        return [];
     }
 
     public removePack() {
@@ -171,6 +182,13 @@ export class Collection {
                 number: entry[1]
             };
         }).sort((rec1, rec2) => rec1.card.getCost().getNumeric() - rec2.card.getCost().getNumeric());
+    }
+
+    private getRandomCardId() {
+        const cardIds = cardList.getIds();
+
+        return sample(cardIds);
+
     }
 }
 
