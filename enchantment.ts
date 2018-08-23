@@ -63,7 +63,7 @@ export class Enchantment extends Permanent {
     public die() {
         if (this.location !== GameZone.Board)
             return;
-        this.events.Death.trigger({});
+        this.events.death.trigger({});
         this.location = GameZone.Crypt;
     }
 

@@ -76,7 +76,7 @@ export class Permanent extends Card {
     }
 
     public leaveBoard(game: Game) {
-        this.events.LeavesPlay.trigger({leavingUnit: this});
+        this.events.leavesPlay.trigger({leavingUnit: this});
         this.mechanics.forEach(mechanic => {
             mechanic.remove(this, game);
         });
@@ -85,7 +85,7 @@ export class Permanent extends Card {
     public die() {
         if (this.location !== GameZone.Board)
             return;
-        this.events.Death.trigger({});
+        this.events.death.trigger({});
         this.location = GameZone.Crypt;
     }
 }

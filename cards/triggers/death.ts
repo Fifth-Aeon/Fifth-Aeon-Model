@@ -16,7 +16,7 @@ export class DeathTrigger extends Trigger {
 
     public register(card: Card, game: Game) {
         let unit = card as Unit;
-        unit.getEvents().Death.addEvent(this,  (params) => {
+        unit.getEvents().death.addEvent(this,  (params) => {
             this.mechanic.setTriggeringUnit(unit);
             this.mechanic.onTrigger(card, game);
         });

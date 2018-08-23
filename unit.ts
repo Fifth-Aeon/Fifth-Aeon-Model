@@ -25,7 +25,7 @@ export function isMechanical(unit: Unit) { return mechanical.has(unit.getUnitTyp
 class Damager {
     private events: EventList<DealDamageEvent>;
     constructor(private amount: number, private source: Unit, private target: Unit) {
-        this.events = source.getEvents().DealDamage;
+        this.events = source.getEvents().dealDamage;
     }
     public run() {
         let result = this.target.takeDamage(this.amount, this.source);
@@ -183,8 +183,8 @@ export class Unit extends Permanent {
             !this.blockDisabled &&
             !this.exausted &&
             (toBlock.isAttacking() || hypothetical) &&
-            this.getEvents().CheckCanBlock.trigger({ attacker: toBlock, canBlock: true }).canBlock &&
-            toBlock.getEvents().CheckBlockable.trigger({ blocker: this, canBlock: true }).canBlock;
+            this.getEvents().checkCanBlock.trigger({ attacker: toBlock, canBlock: true }).canBlock &&
+            toBlock.getEvents().checkBlockable.trigger({ blocker: this, canBlock: true }).canBlock;
     }
 
     public isReady() {
@@ -275,7 +275,7 @@ export class Unit extends Permanent {
         } as AttackEvent;
 
         if (damage === null)
-            damage = this.events.Attack.trigger(eventParams).damage;
+            damage = this.events.attack.trigger(eventParams).damage;
 
         // Remove actions and deal damage
         let damage1 = this.dealDamageDelayed(target, damage);
@@ -290,7 +290,7 @@ export class Unit extends Permanent {
     }
 
     public takeDamage(amount: number, source: Card): number {
-        amount = this.events.TakeDamage.trigger({
+        amount = this.events.takeDamage.trigger({
             target: this,
             source: source,
             amount: amount
@@ -319,7 +319,7 @@ export class Unit extends Permanent {
 
     private afterDamage(target: Unit) {
         if (target.location === GameZone.Crypt) {
-            this.events.KillUnit.trigger({ source: this, target });
+            this.events.killUnit.trigger({ source: this, target });
         }
     }
 
@@ -336,7 +336,7 @@ export class Unit extends Permanent {
     }
 
     public leaveBoard(game: Game) {
-        this.events.LeavesPlay.trigger(new Map([['leavingUnit', this]]));
+        this.events.leavesPlay.trigger(new Map([['leavingUnit', this]]));
         this.blockedUnitId = null;
         this.ready = false;
         this.exausted = false;
@@ -350,7 +350,7 @@ export class Unit extends Permanent {
         if (this.location !== GameZone.Board || this.dying)
             return;
         this.dying = true;
-        this.events.Death.trigger(new Map());
+        this.events.death.trigger(new Map());
         this.location = GameZone.Crypt;
         this.dying = false;
         this.died = false;
@@ -364,6 +364,6 @@ export class Unit extends Permanent {
     }
 
     public annihilate() {
-        this.events.Annihilate.trigger(new Map());
+        this.events.annihilate.trigger(new Map());
     }
 }

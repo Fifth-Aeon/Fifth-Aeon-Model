@@ -66,31 +66,31 @@ export class GameEventSystem extends EventSystem {
 
 export class CardEventSystem extends EventSystem  {
     play = new EventList();
-    Death = new EventList();
-    UnitDies = new EventList();
-    Attack = new EventList<AttackEvent>();
-    Block = new EventList<BlockEvent>();
-    TakeDamage = new EventList<TakeDamageEvent>();
-    DealDamage = new EventList<DealDamageEvent>();
-    CheckBlockable = new EventList<CheckBlockableEvent>();
-    CheckCanBlock = new EventList<CheckCanBlockEvent>();
-    KillUnit = new EventList<KillUnitEvent>();
-    LeavesPlay = new EventList();
-    Annihilate = new EventList();
+    death = new EventList();
+    unitDies = new EventList();
+    attack = new EventList<AttackEvent>();
+    block = new EventList<BlockEvent>();
+    takeDamage = new EventList<TakeDamageEvent>();
+    dealDamage = new EventList<DealDamageEvent>();
+    checkBlockable = new EventList<CheckBlockableEvent>();
+    checkCanBlock = new EventList<CheckCanBlockEvent>();
+    killUnit = new EventList<KillUnitEvent>();
+    leavesPlay = new EventList();
+    annihilate = new EventList();
 
     eventLists = [
         this.play,
-        this.Death,
-        this.UnitDies,
-        this.Attack,
-        this.Block,
-        this.TakeDamage,
-        this.DealDamage,
-        this.CheckBlockable,
-        this.CheckCanBlock,
-        this.KillUnit,
-        this.LeavesPlay,
-        this.Annihilate
+        this.death,
+        this.unitDies,
+        this.attack,
+        this.block,
+        this.takeDamage,
+        this.dealDamage,
+        this.checkBlockable,
+        this.checkCanBlock,
+        this.killUnit,
+        this.leavesPlay,
+        this.annihilate
     ];
 }
 

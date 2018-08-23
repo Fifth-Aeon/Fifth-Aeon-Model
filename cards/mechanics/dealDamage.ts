@@ -19,7 +19,7 @@ export class DamageOnBlock extends Mechanic {
     }
 
     public enter(card: Card, game: Game) {
-        (card as Unit).getEvents().Block.addEvent(this,  params => {
+        (card as Unit).getEvents().block.addEvent(this,  params => {
                 let attacker = params.attacker;
                 attacker.takeDamage(this.damage, card);
                 return params;

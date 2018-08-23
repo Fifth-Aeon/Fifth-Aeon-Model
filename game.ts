@@ -123,7 +123,7 @@ export abstract class Game {
 
     protected addDeathHandlers() {
         this.players.forEach((player, number) => {
-            player.getEvents().Death.addEvent(null, (params) => {
+            player.getEvents().death.addEvent(null, (params) => {
                 this.endGame(this.getOtherPlayerNumber(number));
                 return params;
             });
@@ -344,8 +344,8 @@ export abstract class Game {
             for (let blocker of damageOrder) {
                 let assignedDamage = Math.min(blocker.getLife(), remainingDamage);
                 remainingDamage -= assignedDamage;
-                blocker.getEvents().Block.trigger( { attacker});
-                blocker.getEvents().Attack.trigger({ attacker: attacker, damage: assignedDamage, defender: blocker});
+                blocker.getEvents().block.trigger( { attacker});
+                blocker.getEvents().attack.trigger({ attacker: attacker, damage: assignedDamage, defender: blocker});
                 attacker.fight(blocker, assignedDamage);
                 blocker.setBlocking(null);
             }
@@ -448,7 +448,7 @@ export abstract class Game {
     }
 
     public addEnchantment(enchantment: Enchantment, owner: number) {
-        enchantment.getEvents().Death.addEvent(null,  (params) => {
+        enchantment.getEvents().death.addEvent(null,  (params) => {
             this.removePermanant(enchantment);
             this.addToCrypt(enchantment);
             return params;
@@ -457,14 +457,14 @@ export abstract class Game {
     }
 
     public addUnit(unit: Unit, owner: number, etb: boolean = true) {
-        unit.getEvents().Death.addEvent(null,  (params) => {
+        unit.getEvents().death.addEvent(null,  (params) => {
             this.removePermanant(unit);
             this.addToCrypt(unit);
             unit.detachItems(this);
             this.gameEvents.unitDies.trigger({ deadUnit: unit });
             return params;
         }, Infinity);
-        unit.getEvents().Annihilate.addEvent(null,  (params) => {
+        unit.getEvents().annihilate.addEvent(null,  (params) => {
             this.removePermanant(unit);
             return params;
         });

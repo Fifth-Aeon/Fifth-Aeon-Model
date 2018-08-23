@@ -138,8 +138,8 @@ export class ClientGame extends Game {
                 await this.animator.getAnimationDelay(damageOrder.length * 2);
                 let assignedDamage = Math.min(blocker.getLife(), remainingDamage);
                 remainingDamage -= assignedDamage;
-                blocker.getEvents().Block.trigger( { attacker});
-                blocker.getEvents().Attack.trigger({ attacker: attacker, damage: assignedDamage, defender: blocker});
+                blocker.getEvents().block.trigger( { attacker});
+                blocker.getEvents().attack.trigger({ attacker: attacker, damage: assignedDamage, defender: blocker});
                 attacker.fight(blocker, assignedDamage);
                 blocker.setBlocking(null);
                 await this.animator.getAnimationDelay(damageOrder.length * 2);

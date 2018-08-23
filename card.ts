@@ -81,7 +81,7 @@ export class Card {
     public dealDamageInstant(target: Unit, amount: number) {
         let result = target.takeDamage(amount, this);
         if (result > 0) {
-            this.events.DealDamage.trigger({
+            this.events.dealDamage.trigger({
                 source: this,
                 target: target,
                 amount: amount

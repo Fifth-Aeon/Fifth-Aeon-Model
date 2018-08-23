@@ -118,7 +118,7 @@ export class Player extends Unit {
     }
 
     public die() {
-        this.events.Death.trigger({});
+        this.events.death.trigger({});
     }
 
     public removeCardFromHand(card: Card) {

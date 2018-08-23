@@ -13,7 +13,7 @@ export class Dusk extends Trigger {
     }
 
     public register(card: Card, game: Game) {
-        game.getEvents().startOfTurn.addEvent(this, (params) => {
+        game.getEvents().endOfTurn.addEvent(this, (params) => {
             if (game.getCurrentPlayer().getPlayerNumber() === card.getOwner()) {
                 this.mechanic.onTrigger(card, game);
             }
@@ -21,7 +21,7 @@ export class Dusk extends Trigger {
     }
 
     public unregister(card: Card, game: Game) {
-        game.getEvents().removeEvents(this);
+        game.getEvents().endOfTurn.removeEvents(this);
     }
 
     public evaluate(host: Card, game: Game) {

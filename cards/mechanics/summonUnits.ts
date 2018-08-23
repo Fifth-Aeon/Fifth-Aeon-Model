@@ -110,7 +110,7 @@ export class SummonUnitOnDamage extends Mechanic {
     }
 
     public enter(card: Card, game: Game) {
-        (card as Unit).getEvents().DealDamage.addEvent(this,  params => {
+        (card as Unit).getEvents().dealDamage.addEvent(this,  params => {
                 let target = params.target as Unit;
                 if (target.getUnitType() === UnitType.Player) {
                     let owner = game.getPlayer(card.getOwner());
