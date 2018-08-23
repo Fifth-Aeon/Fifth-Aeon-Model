@@ -47,7 +47,7 @@ export class Collection {
             let cardsAwareded = [];
             for (let i = 0; i < reward.cards; i++) {
                 let awareded = this.getRandomCardId();
-                cardsAwareded.push(awareded)
+                cardsAwareded.push(awareded);
                 this.addCard(awareded, 1);
             }
             return cardsAwareded;
