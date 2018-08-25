@@ -25,7 +25,7 @@ export function isMechanical(unit: Unit) { return mechanical.has(unit.getUnitTyp
 class Damager {
     private events: EventList<DealDamageEvent>;
     constructor(private amount: number, private source: Unit, private target: Unit) {
-        this.events = source.getEvents().dealDamage;
+        this.events = source.getEvents().dealDamage.copy();
     }
     public run() {
         let result = this.target.takeDamage(this.amount, this.source);

@@ -1,11 +1,10 @@
-import { Mechanic, TargetedMechanic, EvalContext } from '../../mechanic';
-import { Game } from '../../game';
-import { Targeter } from '../../targeter';
 import { Card, CardType, GameZone } from '../../card';
-import { Unit } from '../../unit';
-
-import { ParameterType } from '../parameters';
+import { Game } from '../../game';
+import { EvalContext, Mechanic, TargetedMechanic } from '../../mechanic';
 import { ResourceType } from '../../resource';
+import { Unit } from '../../unit';
+import { ParameterType } from '../parameters';
+
 
 export class DamageOnBlock extends Mechanic {
     protected static id = 'DamageOnBlock';

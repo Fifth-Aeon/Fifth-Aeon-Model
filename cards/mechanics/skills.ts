@@ -132,8 +132,7 @@ export class Lifesteal extends Skill {
         (card as Unit).getEvents().dealDamage.addEvent(this, params => {
             game.getPlayer(card.getOwner()).addLife(params.amount);
             return params;
-        }
-        );
+        });
     }
 
     public remove(card: Card, game: Game) {
@@ -153,13 +152,11 @@ export class Lethal extends Skill {
     protected static id = 'Lethal';
 
     public enter(card: Card, game: Game) {
-        (card as Unit).getEvents().dealDamage.addEvent(this, params => {
-            let target = params.target as Unit;
-            if (target.getUnitType() !== UnitType.Player)
-                target.kill(true);
-            return params;
-        }
-        );
+        card.getEvents().dealDamage.addEvent(this, params => {
+            console.log('lethal', params);
+            if (params.target.getUnitType() !== UnitType.Player)
+                params.target.die();
+        });
     }
 
     public remove(card: Card, game: Game) {

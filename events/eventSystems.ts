@@ -26,6 +26,12 @@ export class EventList<T> {
         event.source = source;
     }
 
+    public copy() {
+        let copy = new EventList<T>();
+        copy.events = [...this.events];
+        return copy;
+    }
+
     public trigger(params: T) {
         let len = this.events.length;
         for (let i = 0; i < this.events.length; i++) {
