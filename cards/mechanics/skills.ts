@@ -153,7 +153,6 @@ export class Lethal extends Skill {
 
     public enter(card: Card, game: Game) {
         card.getEvents().dealDamage.addEvent(this, params => {
-            console.log('lethal', params);
             if (params.target.getUnitType() !== UnitType.Player)
                 params.target.die();
         });
