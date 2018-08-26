@@ -29,7 +29,7 @@ export class Dusk extends Trigger {
     }
 }
 
-export class Dawn extends Dusk {
+export class Dawn extends Trigger {
     protected static id = 'Dawn';
 
     public getText(mechanicText: string) {
@@ -44,12 +44,16 @@ export class Dawn extends Dusk {
         });
     }
 
+    public unregister(card: Card, game: Game) {
+        game.getEvents().startOfTurn.removeEvents(this);
+    }
+
     public evaluate(host: Card, game: Game) {
         return 1.5;
     }
 }
 
-export class Cycle extends Dusk {
+export class Cycle extends Trigger {
     protected static id = 'Cycle';
 
     public getText(mechanicText: string) {
@@ -61,6 +65,10 @@ export class Cycle extends Dusk {
         game.getEvents().startOfTurn.addEvent(this, (params) => {
             this.mechanic.onTrigger(card, game);
         });
+    }
+
+    public unregister(card: Card, game: Game) {
+        game.getEvents().startOfTurn.removeEvents(this);
     }
 
     public evaluate(host: Card, game: Game) {
