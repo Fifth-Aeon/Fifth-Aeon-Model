@@ -13,7 +13,7 @@ import { shuffle } from 'lodash';
 
 
 
-type ActionCb = (act: GameAction) => boolean;
+type ActionCb = (act: GameAction) => boolean | Promise<boolean>;
 export class ServerGame extends Game {
     // A table of handlers used to respond to actions taken by players
     protected actionHandelers: Map<GameActionType, ActionCb>;
@@ -72,17 +72,17 @@ export class ServerGame extends Game {
         }
     }
 
-    protected endBlockPhase() {
+    protected async endBlockPhase() {
         let damageDistribution = this.generateDamageDistribution();
         let reorderables = this.getModableDamageDistributions();
         if (reorderables.size > 0) {
             this.changePhase(GamePhase.DamageDistribution);
         } else {
-            this.resolveCombat();
+            await this.resolveCombat();
         }
     }
 
-    protected nextPhase() {
+    protected async nextPhase() {
         switch (this.phase) {
             case GamePhase.Play1:
                 this.endPhaseOne();
@@ -91,10 +91,10 @@ export class ServerGame extends Game {
                 this.startEndPhase();
                 break;
             case GamePhase.Block:
-                this.endBlockPhase();
+                await this.endBlockPhase();
                 break;
             case GamePhase.DamageDistribution:
-                this.resolveCombat();
+                await this.resolveCombat();
                 break;
         }
     }
@@ -110,7 +110,7 @@ export class ServerGame extends Game {
    * @returns {GameSyncEvent[]}
    * @memberof Game
    */
-    public handleAction(action: GameAction): GameSyncEvent[] | null {
+    public async handleAction(action: GameAction) {
         let mark = this.events.length;
         let handeler = this.actionHandelers.get(action.type);
         if (!handeler)
@@ -121,8 +121,9 @@ export class ServerGame extends Game {
             console.error('Cant take action, waiting for', this.currentChoices);
             return null;
         }
-        let sig = handeler(action);
-        if (sig !== true)
+        let result = handeler(action);
+        let ok = typeof result === 'boolean' ? result : await result;
+        if (ok !== true)
             return null;
         return this.events.slice(mark);
     }
@@ -296,12 +297,12 @@ export class ServerGame extends Game {
         return true;
     }
 
-    protected passAction(act: GameAction): boolean {
+    protected async passAction(act: GameAction) {
         if (!this.isActivePlayer(act.player)) {
             console.error('Cant pass, not active player player', this.getActivePlayer(), GamePhase[this.phase], this.turn);
             return false;
         }
-        this.nextPhase();
+        await this.nextPhase();
         return true;
     }
 }
