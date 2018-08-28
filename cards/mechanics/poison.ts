@@ -1,10 +1,9 @@
-import { Mechanic, TargetedMechanic, EvalContext } from '../../mechanic';
-import { Game } from '../../game';
-import { Targeter } from '../../targeter';
 import { Card } from '../../card';
+import { Game } from '../../game';
+import { EvalContext, Mechanic, TargetedMechanic } from '../../mechanic';
+import { Permanent } from '../../permanent';
 import { Unit, UnitType } from '../../unit';
 
-import { Permanent } from '../../permanent';
 
 export class CurePoison extends TargetedMechanic {
     protected static id = 'CurePoison';
@@ -30,7 +29,7 @@ export class Poisoned extends Mechanic {
     private level = 1;
     public enter(card: Card, game: Game) {
         let unit = card as Unit;
-        game.getEvents().startOfTurn.addEvent(this, params => {
+        game.getEvents().startOfTurn.addEvent(this, async params => {
             if (params.player === unit.getOwner())
                 unit.buff(-this.level, -this.level);
         });
@@ -84,11 +83,11 @@ export class Venomous extends Mechanic {
 
     public enter(card: Card, game: Game) {
         let unit = card as Unit;
-        unit.getEvents().dealDamage.addEvent(this,  (params) => {
+        unit.getEvents().dealDamage.addEvent(this,  async params => {
             let target = params.target;
             if (target.getUnitType() !== UnitType.Player)
                 target.addMechanic(new Poisoned(), game);
-            return params;
+
         });
     }
 

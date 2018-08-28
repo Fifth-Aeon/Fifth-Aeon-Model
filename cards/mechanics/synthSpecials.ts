@@ -44,13 +44,11 @@ export class SpyPower extends Mechanic {
     protected static validCardTypes = Permanent.cardTypes;
 
     public enter(card: Card, game: Game) {
-        (card as Unit).getEvents().dealDamage.addEvent(this,  params => {
-                let target = params.target as Unit;
-                if (target.getUnitType() === UnitType.Player)
-                    game.getPlayer(card.getOwner()).drawCard();
-                return params;
-            }
-        );
+        (card as Unit).getEvents().dealDamage.addEvent(this, async params => {
+            let target = params.target as Unit;
+            if (target.getUnitType() === UnitType.Player)
+                game.getPlayer(card.getOwner()).drawCard();
+        });
     }
 
     public remove(card: Card, game: Game) {

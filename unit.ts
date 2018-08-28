@@ -27,8 +27,8 @@ class Damager {
     constructor(private amount: number, private source: Unit, private target: Unit) {
         this.events = source.getEvents().dealDamage.copy();
     }
-    public run() {
-        let result = this.target.takeDamage(this.amount, this.source);
+    public async run() {
+        let result = await this.target.takeDamage(this.amount, this.source);
         if (result > 0) {
             this.events.trigger({
                 source: this.source,
@@ -178,13 +178,13 @@ export class Unit extends Permanent {
             !this.exausted;
     }
 
-    public canBlockTarget(toBlock: Unit, hypothetical: boolean = false) {
+    public async canBlockTarget(toBlock: Unit, hypothetical: boolean = false) {
         return toBlock === null ||
             !this.blockDisabled &&
             !this.exausted &&
             (toBlock.isAttacking() || hypothetical) &&
-            this.getEvents().checkCanBlock.trigger({ attacker: toBlock, canBlock: true }).canBlock &&
-            toBlock.getEvents().checkBlockable.trigger({ blocker: this, canBlock: true }).canBlock;
+            (await this.getEvents().checkCanBlock.trigger({ attacker: toBlock, canBlock: true })).canBlock &&
+            (await toBlock.getEvents().checkBlockable.trigger({ blocker: this, canBlock: true })).canBlock;
     }
 
     public isReady() {
@@ -266,7 +266,7 @@ export class Unit extends Permanent {
         return `${this.name} (${this.cost}) - (${this.damage}/${this.life})`;
     }
 
-    public fight(target: Unit, damage: number = null) {
+    public async fight(target: Unit, damage: number = null) {
         // Trigger an attack event
         let eventParams = {
             damage: this.damage,
@@ -275,13 +275,13 @@ export class Unit extends Permanent {
         } as AttackEvent;
 
         if (damage === null)
-            damage = this.events.attack.trigger(eventParams).damage;
+            damage = (await this.events.attack.trigger(eventParams)).damage;
 
         // Remove actions and deal damage
         let damage1 = this.dealDamageDelayed(target, damage);
         let damage2 = target.dealDamageDelayed(this, target.damage);
-        damage1.run();
-        damage2.run();
+        await damage1.run();
+        await damage2.run();
         this.afterDamage(target);
         target.afterDamage(this);
 
@@ -289,12 +289,12 @@ export class Unit extends Permanent {
         target.setExausted(true);
     }
 
-    public takeDamage(amount: number, source: Card): number {
-        amount = this.events.takeDamage.trigger({
+    public async takeDamage(amount: number, source: Card) {
+        amount =  (await this.events.takeDamage.trigger({
             target: this,
             source: source,
             amount: amount
-        }).amount;
+        })).amount;
         this.life -= amount;
         this.checkDeath();
         return amount;

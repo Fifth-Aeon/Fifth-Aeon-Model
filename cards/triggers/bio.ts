@@ -14,7 +14,7 @@ export class FriendlyBiologicalUnitEntersPlay extends Trigger {
     }
 
     public register(card: Card, game: Game) {
-        game.getEvents().unitEntersPlay.addEvent(this,  (params) => {
+        game.getEvents().unitEntersPlay.addEvent(this,  async params => {
             if (params.enteringUnit.getOwner() === card.getOwner() && isBiological(params.enteringUnit)) {
                 this.mechanic.setTriggeringUnit(params.enteringUnit);
                 this.mechanic.onTrigger(card, game);
@@ -39,7 +39,7 @@ export class FriendlyMechanicalUnitEntersPlay extends Trigger {
     }
 
     public register(card: Card, game: Game) {
-        game.getEvents().unitEntersPlay.addEvent(this,  (params) => {
+        game.getEvents().unitEntersPlay.addEvent(this,  async params => {
             const unit: Unit = params.enteringUnit;
             if (unit.getOwner() === card.getOwner() && isMechanical(unit)) {
                 this.mechanic.setTriggeringUnit(unit);

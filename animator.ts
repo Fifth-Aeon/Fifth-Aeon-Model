@@ -1,6 +1,5 @@
-import { Card } from './card';
-import { Unit } from './unit';
 import { Player } from './player';
+import { Unit } from './unit';
 
 export class Animator {
     private battleAnimationSubscribers = new Array<(ev: BattleAnimationEvent) => void>();

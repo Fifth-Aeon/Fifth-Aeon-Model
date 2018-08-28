@@ -80,13 +80,11 @@ export class DiscardOnDamage extends Mechanic {
     protected static id = 'DiscardOnDamage';
 
     public enter(card: Card, game: Game) {
-        (card as Unit).getEvents().dealDamage.addEvent(this,  params => {
-                let target = params.target;
-                if (target.getUnitType() === UnitType.Player)
-                    game.getPlayer((target as Player).getPlayerNumber()).discard(game);
-                return params;
-            }
-        );
+        (card as Unit).getEvents().dealDamage.addEvent(this, async params => {
+            let target = params.target;
+            if (target.getUnitType() === UnitType.Player)
+                game.getPlayer((target as Player).getPlayerNumber()).discard(game);
+        });
     }
 
     public remove(card: Card, game: Game) {

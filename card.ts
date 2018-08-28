@@ -78,8 +78,8 @@ export class Card {
         this.location = GameZone.Hand;
     }
 
-    public dealDamageInstant(target: Unit, amount: number) {
-        let result = target.takeDamage(amount, this);
+    public async dealDamageInstant(target: Unit, amount: number) {
+        let result = await target.takeDamage(amount, this);
         if (result > 0) {
             this.events.dealDamage.trigger({
                 source: this,

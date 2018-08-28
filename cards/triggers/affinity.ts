@@ -26,7 +26,7 @@ export class Affinity extends Trigger {
 
     public register(card: Card, game: Game) {
         let mutatingUnit = card as Unit;
-        game.getEvents().unitEntersPlay.addEvent(this, (params) => {
+        game.getEvents().unitEntersPlay.addEvent(this, async params => {
             let enteringUnit = params.enteringUnit;
             if (enteringUnit !== mutatingUnit &&
                 enteringUnit.getOwner() === mutatingUnit.getOwner() &&
@@ -36,7 +36,6 @@ export class Affinity extends Trigger {
                 this.triggered = true;
                 this.unregister(card, game);
             }
-            return params;
         });
     }
 

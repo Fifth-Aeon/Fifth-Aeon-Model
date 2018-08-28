@@ -9,7 +9,7 @@ import { CardDrawnEvent } from './playerEventTypes';
 class GameEvent<T> {
     public source: Mechanic | Trigger | null;
     constructor(
-        public trigger: (params: T) => void,
+        public trigger: (params: T) => Promise<any>,
         public priority: number = 5
     ) { }
 }
@@ -17,7 +17,7 @@ class GameEvent<T> {
 export class EventList<T> {
     private events: GameEvent<T>[] = [];
 
-    public addEvent(source: Mechanic | Trigger |  null, callback: (params: T) => void, priority = 5) {
+    public addEvent(source: Mechanic | Trigger |  null, callback: (params: T) => Promise<any>, priority = 5) {
         let event = new GameEvent<T>(callback);
         event.source = source;
         event.priority = priority;
@@ -32,11 +32,11 @@ export class EventList<T> {
         return copy;
     }
 
-    public trigger(params: T) {
+    public async trigger(params: T) {
         let len = this.events.length;
         for (let i = 0; i < this.events.length; i++) {
             let event = this.events[i];
-            event.trigger(params);
+            await event.trigger(params);
             if (this.events.length < len) {
                 i -= (len - this.events.length);
                 len = this.events.length;

@@ -13,12 +13,9 @@ abstract class ShieldEnchantment extends Mechanic {
     public enter(card: Card, game: Game) {
         let enchantment = card as Enchantment;
         game.getPlayer(enchantment.getOwner()).getEvents()
-            .takeDamage.addEvent(this,  (params) => {
+            .takeDamage.addEvent(this, async params => {
                 let player = params.target as Player;
-                let amount = params.amount as number;
-                let source = params.source as Card;
-                params.amount = this.effect(enchantment, player, amount, source);
-                return params;
+                params.amount = this.effect(enchantment, player, params.amount, params.source);
             });
     }
 

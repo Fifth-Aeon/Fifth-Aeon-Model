@@ -140,7 +140,7 @@ export class ClientGame extends Game {
                 remainingDamage -= assignedDamage;
                 blocker.getEvents().block.trigger( { attacker});
                 blocker.getEvents().attack.trigger({ attacker: attacker, damage: assignedDamage, defender: blocker});
-                attacker.fight(blocker, assignedDamage);
+                await attacker.fight(blocker, assignedDamage);
                 blocker.setBlocking(null);
                 await this.animator.getAnimationDelay(damageOrder.length * 2);
             }

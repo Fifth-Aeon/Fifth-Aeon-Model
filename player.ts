@@ -19,7 +19,6 @@ export class Player extends Unit {
     private hasPlayedResource = false;
     public dataId = '';
     private drawDisabled = false;
-    private drawRequests = 0;
     protected playerEvents = new PlayerEventSystem();
 
     private hardHandLimit = 12;

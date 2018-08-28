@@ -24,12 +24,11 @@ export class Lordship extends Mechanic {
         let targets = this.getTargets(source, game);
         targets.forEach(unit => this.applyToUnit(unit, game));
 
-        game.getEvents().unitEntersPlay.addEvent(this, params => {
+        game.getEvents().unitEntersPlay.addEvent(this, async params => {
             let enteringUnit = params.enteringUnit as Unit;
             if (this.filter(source, enteringUnit)) {
                 this.applyToUnit(enteringUnit, game);
             }
-            return params;
         });
     }
 
@@ -41,7 +40,7 @@ export class Lordship extends Mechanic {
 
     private applyToUnit(unit: Unit, game: Game) {
         this.addEffect(unit, game);
-        unit.getEvents().leavesPlay.addEvent(this,  (params) => {
+        unit.getEvents().leavesPlay.addEvent(this, async params => {
             this.removeFromUnit(unit, game);
         });
     }

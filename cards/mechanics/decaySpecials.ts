@@ -24,12 +24,11 @@ export class TransformDamaged extends Mechanic {
 
     public enter(card: Card, game: Game) {
         let unit = card as Unit;
-        unit.getEvents().dealDamage.addEvent(this,  (params) => {
+        unit.getEvents().dealDamage.addEvent(this, async params => {
             let target = params.target;
             if (target.getUnitType() === UnitType.Player)
-                return params;
+                return;
             target.transform(this.transformation(), game);
-            return params;
         });
     }
 
@@ -65,7 +64,7 @@ export class AbominationConsume extends TriggeredMechanic {
                 remove(crypt, eaten);
             });
         }, 'to combine',
-        ChoiceHeuristic.HighestStatsHeuristic);
+            ChoiceHeuristic.HighestStatsHeuristic);
     }
 
     private getValidPool(card: Card, game: Game): Unit[] {

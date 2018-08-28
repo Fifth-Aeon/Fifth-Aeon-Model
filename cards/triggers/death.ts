@@ -16,7 +16,7 @@ export class DeathTrigger extends Trigger {
 
     public register(card: Card, game: Game) {
         let unit = card as Unit;
-        unit.getEvents().death.addEvent(this,  (params) => {
+        unit.getEvents().death.addEvent(this,  async params => {
             this.mechanic.setTriggeringUnit(unit);
             this.mechanic.onTrigger(card, game);
         });
@@ -41,10 +41,9 @@ export class SoulReap extends Trigger {
     }
 
     public register(card: Card, game: Game) {
-        game.getEvents().unitDies.addEvent(this, (params) => {
+        game.getEvents().unitDies.addEvent(this, async params => {
             this.mechanic.setTriggeringUnit(params.deadUnit);
             this.mechanic.onTrigger(card, game);
-            return params;
         });
     }
 

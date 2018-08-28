@@ -15,11 +15,11 @@ export class Play extends Trigger {
     }
 
     public register(card: Card, game: Game) {
-        card.getEvents().play.addEvent(this,  (params) => {
+        card.getEvents().play.addEvent(this, async params => {
             if (card.getCardType() === CardType.Unit)
                 this.mechanic.setTriggeringUnit(card as Unit);
             this.mechanic.onTrigger(card, game);
-            return params;
+
         });
     }
 
@@ -42,10 +42,10 @@ export class UnitEntersPlay extends Trigger {
     }
 
     public register(card: Card, game: Game) {
-        game.getEvents().unitEntersPlay.addEvent(this,  (params) => {
+        game.getEvents().unitEntersPlay.addEvent(this, async params => {
             this.mechanic.setTriggeringUnit(params.enteringUnit);
             this.mechanic.onTrigger(card, game);
-            return params;
+
         });
     }
 
@@ -66,13 +66,13 @@ export class FriendlyUnitEntersPlay extends Trigger {
     }
 
     public register(card: Card, game: Game) {
-        game.getEvents().unitEntersPlay.addEvent(this,  (params) => {
+        game.getEvents().unitEntersPlay.addEvent(this, async params => {
             const unit: Unit = params.enteringUnit;
             if (unit.getOwner() === card.getOwner()) {
                 this.mechanic.setTriggeringUnit(unit);
                 this.mechanic.onTrigger(card, game);
             }
-            return params;
+
         });
     }
 

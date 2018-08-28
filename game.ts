@@ -123,9 +123,8 @@ export abstract class Game {
 
     protected addDeathHandlers() {
         this.players.forEach((player, number) => {
-            player.getEvents().death.addEvent(null, (params) => {
+            player.getEvents().death.addEvent(null, async _ => {
                 this.endGame(this.getOtherPlayerNumber(number));
-                return params;
             });
         });
     }
@@ -326,7 +325,7 @@ export abstract class Game {
         return this.orderableAttacks;
     }
 
-    protected resolveCombat() {
+    protected async resolveCombat() {
         let attackers = this.getAttackers();
         let blockers = this.getBlockers();
         let defendingPlayer = this.players[this.getOtherPlayerNumber(this.getCurrentPlayer().getPlayerNumber())];
@@ -344,9 +343,9 @@ export abstract class Game {
             for (let blocker of damageOrder) {
                 let assignedDamage = Math.min(blocker.getLife(), remainingDamage);
                 remainingDamage -= assignedDamage;
-                blocker.getEvents().block.trigger( { attacker});
-                blocker.getEvents().attack.trigger({ attacker: attacker, damage: assignedDamage, defender: blocker});
-                attacker.fight(blocker, assignedDamage);
+                blocker.getEvents().block.trigger({ attacker });
+                blocker.getEvents().attack.trigger({ attacker: attacker, damage: assignedDamage, defender: blocker });
+                await attacker.fight(blocker, assignedDamage);
                 blocker.setBlocking(null);
             }
         }
@@ -448,25 +447,22 @@ export abstract class Game {
     }
 
     public addEnchantment(enchantment: Enchantment, owner: number) {
-        enchantment.getEvents().death.addEvent(null,  (params) => {
+        enchantment.getEvents().death.addEvent(null, async _ => {
             this.removePermanant(enchantment);
             this.addToCrypt(enchantment);
-            return params;
         }, Infinity);
         this.board.addPermanent(enchantment);
     }
 
     public addUnit(unit: Unit, owner: number, etb: boolean = true) {
-        unit.getEvents().death.addEvent(null,  (params) => {
+        unit.getEvents().death.addEvent(null, async _ => {
             this.removePermanant(unit);
             this.addToCrypt(unit);
             unit.detachItems(this);
             this.gameEvents.unitDies.trigger({ deadUnit: unit });
-            return params;
         }, Infinity);
-        unit.getEvents().annihilate.addEvent(null,  (params) => {
+        unit.getEvents().annihilate.addEvent(null, async _ => {
             this.removePermanant(unit);
-            return params;
         });
         this.board.addPermanent(unit);
 

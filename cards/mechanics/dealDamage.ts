@@ -18,16 +18,14 @@ export class DamageOnBlock extends Mechanic {
     }
 
     public enter(card: Card, game: Game) {
-        (card as Unit).getEvents().block.addEvent(this,  params => {
-                let attacker = params.attacker;
-                attacker.takeDamage(this.damage, card);
-                return params;
-            }
-        );
+        card.getEvents().block.addEvent(this, async params => {
+            let attacker = params.attacker;
+            return attacker.takeDamage(this.damage, card);
+        });
     }
 
     public remove(card: Card, game: Game) {
-        (card as Unit).getEvents().removeEvents(this);
+        card.getEvents().removeEvents(this);
     }
 
     public evaluate(card: Card) {
@@ -52,8 +50,9 @@ export class DealDamage extends TargetedMechanic {
     public onTrigger(card: Card, game: Game) {
         let dmg = this.getDamage(card, game);
         for (let target of this.targeter.getTargets(card, game, this)) {
-            card.dealDamageInstant(target, dmg);
-            target.checkDeath();
+            card.dealDamageInstant(target, dmg).then(_ => {
+                target.checkDeath();
+            });
         }
     }
 
@@ -106,11 +105,12 @@ export class DamageSpawnOnKill extends DealDamage {
 
     public onTrigger(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game, this)) {
-            target.takeDamage(this.amount, card);
-            target.checkDeath();
-            if (target.getLocation() === GameZone.Crypt) {
-                game.playGeneratedUnit(card.getOwner(), this.factory());
-            }
+            target.takeDamage(this.amount, card).then(_ => {
+                target.checkDeath();
+                if (target.getLocation() === GameZone.Crypt) {
+                    game.playGeneratedUnit(card.getOwner(), this.factory());
+                }
+            });
         }
     }
 

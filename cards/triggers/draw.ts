@@ -18,7 +18,7 @@ export class OwnerDrawsUnit extends Trigger {
     public register(card: Card, game: Game) {
         this.owner = game.getPlayer(card.getOwner());
 
-        this.owner.getPlayerEvents().CardDrawn.addEvent(this,  (params) => {
+        this.owner.getPlayerEvents().CardDrawn.addEvent(this,  async params => {
             let drawn = params.card;
             if (drawn.getCardType() === CardType.Unit) {
                 this.mechanic.setTriggeringUnit(drawn as Unit);

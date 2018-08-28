@@ -15,12 +15,11 @@ export class Serenity extends Trigger {
     }
 
     public register(card: Card, game: Game) {
-        game.getEvents().endOfTurn.addEvent(this, (params) => {
+        game.getEvents().endOfTurn.addEvent(this, async params => {
             if (game.getCurrentPlayer().getPlayerNumber() === card.getOwner() &&
                 game.getPhase() === GamePhase.Play1) {
                 this.mechanic.onTrigger(card, game);
             }
-            return params;
         });
 
     }
