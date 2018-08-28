@@ -15,7 +15,7 @@ export class Dusk extends Trigger {
     public register(card: Card, game: Game) {
         game.getEvents().endOfTurn.addEvent(this, async params => {
             if (game.getCurrentPlayer().getPlayerNumber() === card.getOwner()) {
-                this.mechanic.onTrigger(card, game);
+                await this.mechanic.onTrigger(card, game);
             }
         });
     }
@@ -39,7 +39,7 @@ export class Dawn extends Trigger {
     public register(card: Card, game: Game) {
         game.getEvents().startOfTurn.addEvent(this, async params => {
             if (game.getCurrentPlayer().getPlayerNumber() === card.getOwner()) {
-                this.mechanic.onTrigger(card, game);
+                await this.mechanic.onTrigger(card, game);
             }
         });
     }
@@ -63,7 +63,7 @@ export class Cycle extends Trigger {
 
     public register(card: Card, game: Game) {
         game.getEvents().startOfTurn.addEvent(this, async params => {
-            this.mechanic.onTrigger(card, game);
+            await this.mechanic.onTrigger(card, game);
         });
     }
 

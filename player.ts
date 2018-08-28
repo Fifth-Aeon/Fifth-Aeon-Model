@@ -26,6 +26,7 @@ export class Player extends Unit {
 
     constructor(private parent: Game, cards: Array<Card>, private playerNumber: number, initResource: Resource, life: number) {
         super('Player', 'Player', 'hearts.png', UnitType.Player, new Resource(0), null, 0, life, []);
+        this.id = (playerNumber === 0 ? 'player' : 'enemy');
         this.deck = cards;
         this.deck.forEach(card => card.setOwner(playerNumber));
         this.hand = [];

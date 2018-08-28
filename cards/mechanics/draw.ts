@@ -18,7 +18,7 @@ export class DrawCard extends TriggeredMechanic {
         super();
     }
 
-    public onTrigger(card: Card, game: Game) {
+    public async onTrigger(card: Card, game: Game) {
         game.getPlayer(card.getOwner()).drawCards(this.count);
     }
 
@@ -36,7 +36,7 @@ export class DrawCard extends TriggeredMechanic {
 export class Peek extends TriggeredMechanic {
     protected static id = 'Peek';
 
-    public onTrigger(card: Card, game: Game) {
+    public async onTrigger(card: Card, game: Game) {
         game.queryCards(
             (queried: Game) => queried.getPlayer(queried.getOtherPlayerNumber(card.getOwner())).getHand(),
             (hand) => {
@@ -62,7 +62,7 @@ export class Discard extends TriggeredMechanic {
     constructor(private count: number = 1) {
         super();
     }
-    public onTrigger(card: Card, game: Game) {
+    public async onTrigger(card: Card, game: Game) {
         let target = game.getPlayer(game.getOtherPlayerNumber(card.getOwner()));
         target.discard(game, this.count);
     }
@@ -103,7 +103,7 @@ export class DiscardOnDamage extends Mechanic {
 export class AugarCard extends TriggeredMechanic {
     protected static id = 'AugarCard';
 
-    public onTrigger(card: Card, game: Game) {
+    public async onTrigger(card: Card, game: Game) {
         let owner = game.getPlayer(card.getOwner());
         let synth = owner.getPool().getOfType('Synthesis');
 

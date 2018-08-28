@@ -18,7 +18,7 @@ export class Serenity extends Trigger {
         game.getEvents().endOfTurn.addEvent(this, async params => {
             if (game.getCurrentPlayer().getPlayerNumber() === card.getOwner() &&
                 game.getPhase() === GamePhase.Play1) {
-                this.mechanic.onTrigger(card, game);
+                await this.mechanic.onTrigger(card, game);
             }
         });
 

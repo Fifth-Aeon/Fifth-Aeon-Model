@@ -63,7 +63,7 @@ export class Item extends Permanent {
         return prefix + super.getText(game);
     }
 
-    public attach(host: Unit, game: Game) {
+    public async attach(host: Unit, game: Game) {
         host.buff(this.damageBonus, this.lifeBonus);
         host.addItem(this);
         this.host = host;
@@ -75,7 +75,7 @@ export class Item extends Permanent {
             if ((<TriggeredMechanic>clone).getTrigger) {
                 (<TriggeredMechanic>clone).getTrigger().register(this, game);
                 if ((<TriggeredMechanic>clone).getTrigger().getId() === 'Play') {
-                    (<TriggeredMechanic>clone).onTrigger(host, game);
+                    await (<TriggeredMechanic>clone).onTrigger(host, game);
                 }
             }
         }

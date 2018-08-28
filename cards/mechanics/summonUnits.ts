@@ -23,7 +23,7 @@ export class SummonUnits extends TriggeredMechanic {
         this.name = factory().getName();
     }
 
-    public onTrigger(card: Card, game: Game) {
+    public async onTrigger(card: Card, game: Game) {
         let owner = game.getPlayer(card.getOwner());
         for (let i = 0; i < this.getUnitCount(card, game); i++) {
             game.playGeneratedUnit(owner, this.factory());
@@ -74,7 +74,7 @@ export class EnchantmentSummon extends SummonUnits {
     protected static id = 'EnchantmentSummon';
     protected static validCardTypes = new Set([CardType.Enchantment]);
 
-    public onTrigger(card: Card, game: Game) {
+    public async onTrigger(card: Card, game: Game) {
         let owner = game.getPlayer(card.getOwner());
         let enchant = card as Enchantment;
         for (let i = 0; i < this.getUnitCount(card, game); i++) {

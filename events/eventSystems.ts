@@ -6,7 +6,7 @@ import { CheckBlockableEvent, CheckCanBlockEvent, EndOfTurnEvent, PlayerAttacked
     StartOfTurnEvent, UnitDiesEvent, UnitEntersPlayEvent } from './gameEventTypes';
 import { CardDrawnEvent } from './playerEventTypes';
 
-class GameEvent<T> {
+class AsyncGameEvent<T> {
     public source: Mechanic | Trigger | null;
     constructor(
         public trigger: (params: T) => Promise<any>,
@@ -14,20 +14,71 @@ class GameEvent<T> {
     ) { }
 }
 
-export class EventList<T> {
-    private events: GameEvent<T>[] = [];
+class GameEvent<T> {
+    public source: Mechanic | Trigger | null;
+    constructor(
+        public trigger: (params: T) => any,
+        public priority: number = 5
+    ) { }
+}
 
-    public addEvent(source: Mechanic | Trigger |  null, callback: (params: T) => Promise<any>, priority = 5) {
+abstract class EventList<T> {
+    protected events: GameEvent<T>[] | AsyncGameEvent<T>[];
+
+    public removeEvents(source: Mechanic | Trigger | null) {
+        remove(this.events, event => {
+            return event.source === source;
+        });
+    }
+}
+
+
+export class SyncEventList<T> extends EventList<T> {
+    protected events: GameEvent<T>[] = [];
+
+    public addEvent(source: Mechanic | Trigger |  null, callback: (params: T) => any, priority = 5) {
         let event = new GameEvent<T>(callback);
         event.source = source;
         event.priority = priority;
         this.events.push(event);
-        this.events = sortBy(this.events, (ev: GameEvent<T>) => ev.priority);
+        this.events = sortBy(this.events, (ev: AsyncGameEvent<T>) => ev.priority);
         event.source = source;
     }
 
     public copy() {
-        let copy = new EventList<T>();
+        let copy = new SyncEventList<T>();
+        copy.events = [...this.events];
+        return copy;
+    }
+
+    public trigger(params: T) {
+        let len = this.events.length;
+        for (let i = 0; i < this.events.length; i++) {
+            let event = this.events[i];
+            event.trigger(params);
+            if (this.events.length < len) {
+                i -= (len - this.events.length);
+                len = this.events.length;
+            }
+        }
+        return params;
+    }
+}
+
+export class AsyncEventList<T> extends EventList<T> {
+    protected events: AsyncGameEvent<T>[] = [];
+
+    public addEvent(source: Mechanic | Trigger |  null, callback: (params: T) => Promise<any>, priority = 5) {
+        let event = new AsyncGameEvent<T>(callback);
+        event.source = source;
+        event.priority = priority;
+        this.events.push(event);
+        this.events = sortBy(this.events, (ev: AsyncGameEvent<T>) => ev.priority);
+        event.source = source;
+    }
+
+    public copy() {
+        let copy = new AsyncEventList<T>();
         copy.events = [...this.events];
         return copy;
     }
@@ -44,12 +95,6 @@ export class EventList<T> {
         }
         return params;
     }
-
-    public removeEvents(source: Mechanic | Trigger | null) {
-        remove(this.events, event => {
-            return event.source === source;
-        });
-    }
 }
 
 abstract class EventSystem {
@@ -61,28 +106,28 @@ abstract class EventSystem {
 }
 
 export class GameEventSystem extends EventSystem {
-    unitEntersPlay = new EventList<UnitEntersPlayEvent>();
-    startOfTurn = new EventList<StartOfTurnEvent>();
-    endOfTurn = new EventList<EndOfTurnEvent>();
-    playerAttacked = new EventList<PlayerAttackedEvent>();
-    unitDies = new EventList<UnitDiesEvent>();
+    unitEntersPlay = new AsyncEventList<UnitEntersPlayEvent>();
+    startOfTurn = new AsyncEventList<StartOfTurnEvent>();
+    endOfTurn = new AsyncEventList<EndOfTurnEvent>();
+    playerAttacked = new AsyncEventList<PlayerAttackedEvent>();
+    unitDies = new AsyncEventList<UnitDiesEvent>();
 
-    eventLists = [this.unitEntersPlay, this.startOfTurn, this.endOfTurn, this.playerAttacked];
+    eventLists = [this.unitEntersPlay, this.startOfTurn, this.endOfTurn, this.playerAttacked, this.unitDies];
 }
 
 export class CardEventSystem extends EventSystem  {
-    play = new EventList();
-    death = new EventList();
-    unitDies = new EventList();
-    attack = new EventList<AttackEvent>();
-    block = new EventList<BlockEvent>();
-    takeDamage = new EventList<TakeDamageEvent>();
-    dealDamage = new EventList<DealDamageEvent>();
-    checkBlockable = new EventList<CheckBlockableEvent>();
-    checkCanBlock = new EventList<CheckCanBlockEvent>();
-    killUnit = new EventList<KillUnitEvent>();
-    leavesPlay = new EventList();
-    annihilate = new EventList();
+    play = new AsyncEventList();
+    death = new AsyncEventList();
+    unitDies = new AsyncEventList();
+    attack = new AsyncEventList<AttackEvent>();
+    block = new AsyncEventList<BlockEvent>();
+    takeDamage = new AsyncEventList<TakeDamageEvent>();
+    dealDamage = new AsyncEventList<DealDamageEvent>();
+    checkBlockable = new SyncEventList<CheckBlockableEvent>();
+    checkCanBlock = new SyncEventList<CheckCanBlockEvent>();
+    killUnit = new AsyncEventList<KillUnitEvent>();
+    leavesPlay = new AsyncEventList();
+    annihilate = new AsyncEventList();
 
     eventLists = [
         this.play,
@@ -101,7 +146,7 @@ export class CardEventSystem extends EventSystem  {
 }
 
 export class PlayerEventSystem   {
-    CardDrawn = new EventList<CardDrawnEvent>();
+    CardDrawn = new AsyncEventList<CardDrawnEvent>();
 
     eventLists = [this.CardDrawn];
 }

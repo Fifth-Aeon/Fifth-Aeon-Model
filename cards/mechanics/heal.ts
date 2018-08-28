@@ -9,7 +9,7 @@ import { properCase, properList } from '../../strings';
 
 export class RefreshTarget extends TargetedMechanic {
     protected static id = 'RefreshTarget';
-    public onTrigger(card: Card, game: Game) {
+    public async onTrigger(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game, this)) {
             target.refresh();
         }

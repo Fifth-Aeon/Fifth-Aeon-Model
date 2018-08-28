@@ -79,7 +79,7 @@ export class ChangePower extends TriggeredMechanic {
         this.desc += ' ' + Math.abs(diff) + ' power.';
     }
 
-    public onTrigger(card: Card, game: Game) {
+    public async onTrigger(card: Card, game: Game) {
         let enchantment = card as Enchantment;
         enchantment.changePower(this.diff);
     }

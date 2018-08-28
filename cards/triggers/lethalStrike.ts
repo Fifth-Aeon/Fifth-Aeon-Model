@@ -14,7 +14,7 @@ export class LethalStrike extends Trigger {
         let unit = card as Unit;
         unit.getEvents().killUnit.addEvent(this,  async params => {
             this.mechanic.setTriggeringUnit(params.target);
-            this.mechanic.onTrigger(card, game);
+            await this.mechanic.onTrigger(card, game);
         });
     }
 

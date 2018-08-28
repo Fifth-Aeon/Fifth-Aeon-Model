@@ -85,7 +85,7 @@ export abstract class Mechanic {
 
 export abstract class TriggeredMechanic extends Mechanic {
     protected triggerType: Trigger = new Play();
-    public onTrigger(parent: Card, game: Game) { }
+    public async onTrigger(parent: Card, game: Game) { }
 
 
     public evaluate(card: Card, game: Game, context: EvalContext): number | EvalOperator {

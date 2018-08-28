@@ -14,7 +14,7 @@ export class WinIfHighLife extends TriggeredMechanic {
         super();
     }
 
-    public onTrigger(card: Card, game: Game) {
+    public async onTrigger(card: Card, game: Game) {
         let friendlyPlayer = game.getPlayer(card.getOwner());
         let enemyPlayer = game.getPlayer(game.getOtherPlayerNumber(card.getOwner()));
 

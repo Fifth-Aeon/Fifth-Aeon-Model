@@ -18,8 +18,7 @@ export class Play extends Trigger {
         card.getEvents().play.addEvent(this, async params => {
             if (card.getCardType() === CardType.Unit)
                 this.mechanic.setTriggeringUnit(card as Unit);
-            this.mechanic.onTrigger(card, game);
-
+            await this.mechanic.onTrigger(card, game);
         });
     }
 
@@ -44,8 +43,7 @@ export class UnitEntersPlay extends Trigger {
     public register(card: Card, game: Game) {
         game.getEvents().unitEntersPlay.addEvent(this, async params => {
             this.mechanic.setTriggeringUnit(params.enteringUnit);
-            this.mechanic.onTrigger(card, game);
-
+            await this.mechanic.onTrigger(card, game);
         });
     }
 
@@ -70,7 +68,7 @@ export class FriendlyUnitEntersPlay extends Trigger {
             const unit: Unit = params.enteringUnit;
             if (unit.getOwner() === card.getOwner()) {
                 this.mechanic.setTriggeringUnit(unit);
-                this.mechanic.onTrigger(card, game);
+                await this.mechanic.onTrigger(card, game);
             }
 
         });

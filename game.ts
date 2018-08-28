@@ -1,19 +1,16 @@
-import { shuffle } from 'lodash';
+import { ChoiceHeuristic } from './ai';
 import { knapsack } from './algoritms';
 import { Board } from './board';
 import { Card, CardType, GameZone } from './card';
-import { DeckList } from './deckList';
 import { Enchantment } from './enchantment';
-
+import { GameEventSystem } from './events/eventSystems';
 import { GameFormat, standardFormat } from './gameFormat';
 import { Log } from './log';
 import { EvalContext } from './mechanic';
 import { Permanent } from './permanent';
 import { Player } from './player';
 import { Unit } from './unit';
-import { ChoiceHeuristic } from './ai';
-import { GameEventSystem } from './events/eventSystems';
-
+import { Animator } from './animator';
 
 export enum GamePhase {
     Play1, Block, DamageDistribution, Play2, End, Response
@@ -83,6 +80,8 @@ export abstract class Game {
     public gameEvents: GameEventSystem;
     // Flag to tell us which player's choice we are waiting for (null if not waiting)
     protected currentChoices: Choice[] = [null, null];
+
+    protected animator: Animator = new Animator();
     protected log: Log;
     protected winner = -1;
     protected generatedCardId = 1;
@@ -131,6 +130,10 @@ export abstract class Game {
 
     public getName() {
         return this.name;
+    }
+
+    public getAnimator() {
+        return this.animator;
     }
 
     public addGameEvent(event: GameSyncEvent) {

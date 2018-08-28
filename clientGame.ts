@@ -19,7 +19,7 @@ export class ClientGame extends Game {
     constructor(
         name: string,
         protected runGameAction: (type: GameActionType, params: any) => void,
-        private animator: Animator,
+        protected animator: Animator,
         log: Log = null,
         format: GameFormat = standardFormat
     ) {

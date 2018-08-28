@@ -17,7 +17,7 @@ export class OwnerAttacked extends Trigger {
     public register(card: Card, game: Game) {
         game.getEvents().playerAttacked.addEvent(this, async params => {
             if (params.target === card.getOwner()) {
-                this.mechanic.onTrigger(card, game);
+                await this.mechanic.onTrigger(card, game);
             }
         });
     }

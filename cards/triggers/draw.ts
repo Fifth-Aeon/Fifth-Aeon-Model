@@ -22,7 +22,7 @@ export class OwnerDrawsUnit extends Trigger {
             let drawn = params.card;
             if (drawn.getCardType() === CardType.Unit) {
                 this.mechanic.setTriggeringUnit(drawn as Unit);
-                this.mechanic.onTrigger(card, game);
+                await this.mechanic.onTrigger(card, game);
             }
         });
     }

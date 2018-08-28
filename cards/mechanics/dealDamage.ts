@@ -47,12 +47,14 @@ export class DealDamage extends TargetedMechanic {
         super();
     }
 
-    public onTrigger(card: Card, game: Game) {
+    public async onTrigger(card: Card, game: Game) {
         let dmg = this.getDamage(card, game);
         for (let target of this.targeter.getTargets(card, game, this)) {
-            card.dealDamageInstant(target, dmg).then(_ => {
-                target.checkDeath();
-            });
+            await card.dealDamageInstant(target, dmg);
+            target.checkDeath();
+            console.log('arrow', { source: card, sink: target }, card.getName(), target.getName()   );
+            game.getAnimator().triggerTrargetedAnimation({ source: card, sink: target });
+            await game.getAnimator().getAnimationDelay();
         }
     }
 
@@ -103,7 +105,7 @@ export class DamageSpawnOnKill extends DealDamage {
         this.name = factory().getName();
     }
 
-    public onTrigger(card: Card, game: Game) {
+    public async onTrigger(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game, this)) {
             target.takeDamage(this.amount, card).then(_ => {
                 target.checkDeath();

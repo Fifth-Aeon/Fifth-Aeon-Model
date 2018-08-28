@@ -16,7 +16,7 @@ export class ReturnFromCrypt extends TriggeredMechanic {
         super();
     }
 
-    public onTrigger(card: Card, game: Game) {
+    public async onTrigger(card: Card, game: Game) {
         let crypt = game.getCrypt(card.getOwner());
         let validCards = this.getValidCards(card, game);
         let player = game.getPlayer(card.getOwner());

@@ -53,7 +53,7 @@ export class AbominationConsume extends TriggeredMechanic {
     protected static id = 'AbominationConsume';
     protected static validCardTypes = new Set([CardType.Unit, CardType.Item]);
 
-    public onTrigger(card: Card, game: Game) {
+    public async onTrigger(card: Card, game: Game) {
         let crypt = game.getCrypt(card.getOwner());
         let valid = crypt.filter(cryptCard => cryptCard.isUnit());
         let unit = card as Unit;

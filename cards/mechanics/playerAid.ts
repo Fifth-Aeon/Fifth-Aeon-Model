@@ -15,7 +15,7 @@ export class GainLife extends TriggeredMechanic {
         super();
     }
 
-    public onTrigger(card: Card, game: Game) {
+    public async onTrigger(card: Card, game: Game) {
         let player = game.getPlayer(card.getOwner());
         player.addLife(this.amount);
     }
@@ -39,7 +39,7 @@ export class GainResource extends TriggeredMechanic {
         super();
     }
 
-    public onTrigger(card: Card, game: Game) {
+    public async onTrigger(card: Card, game: Game) {
         let player = game.getPlayer(card.getOwner());
         player.getPool().add(this.resource);
     }

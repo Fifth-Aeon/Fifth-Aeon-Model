@@ -18,7 +18,7 @@ export class BuffTarget extends TargetedMechanic {
         super();
     }
 
-    public onTrigger(card: Card, game: Game) {
+    public async onTrigger(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game, this)) {
             target.buff(this.damage, this.life);
         }
@@ -44,7 +44,7 @@ export class BuffTargetAndGrant extends TargetedMechanic {
         super();
     }
 
-    public onTrigger(card: Card, game: Game) {
+    public async onTrigger(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game, this)) {
             target.buff(this.damage, this.life);
             for (let ability of this.abilities) {
@@ -82,7 +82,7 @@ export class GrantAbility extends TargetedMechanic {
         this.instance = new ability();
     }
 
-    public onTrigger(card: Card, game: Game) {
+    public async onTrigger(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game, this)) {
             target.addMechanic(new this.ability(), game);
         }

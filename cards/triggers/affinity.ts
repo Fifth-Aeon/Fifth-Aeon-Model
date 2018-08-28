@@ -32,7 +32,7 @@ export class Affinity extends Trigger {
                 enteringUnit.getOwner() === mutatingUnit.getOwner() &&
                 enteringUnit.getUnitType() === mutatingUnit.getUnitType()) {
                 this.mechanic.setTriggeringUnit(enteringUnit);
-                this.mechanic.onTrigger(card, game);
+                await this.mechanic.onTrigger(card, game);
                 this.triggered = true;
                 this.unregister(card, game);
             }

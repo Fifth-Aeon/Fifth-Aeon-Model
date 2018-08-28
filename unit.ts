@@ -10,7 +10,7 @@ import { Mechanic, EvalContext, TriggeredMechanic } from './mechanic';
 
 import { remove } from 'lodash';
 import { AttackEvent, DealDamageEvent } from './events/cardEventTypes';
-import { EventList } from './events/eventSystems';
+import { AsyncEventList } from './events/eventSystems';
 
 export enum UnitType {
     Player, Human, Cleric, Wolf, Spider, Snake, Automaton, Monster, Mammal, Soldier,
@@ -23,7 +23,7 @@ export function isBiological(unit: Unit) { return !mechanical.has(unit.getUnitTy
 export function isMechanical(unit: Unit) { return mechanical.has(unit.getUnitType()); }
 
 class Damager {
-    private events: EventList<DealDamageEvent>;
+    private events: AsyncEventList<DealDamageEvent>;
     constructor(private amount: number, private source: Unit, private target: Unit) {
         this.events = source.getEvents().dealDamage.copy();
     }
@@ -178,13 +178,13 @@ export class Unit extends Permanent {
             !this.exausted;
     }
 
-    public async canBlockTarget(toBlock: Unit, hypothetical: boolean = false) {
+    public canBlockTarget(toBlock: Unit, hypothetical: boolean = false) {
         return toBlock === null ||
             !this.blockDisabled &&
             !this.exausted &&
             (toBlock.isAttacking() || hypothetical) &&
-            (await this.getEvents().checkCanBlock.trigger({ attacker: toBlock, canBlock: true })).canBlock &&
-            (await toBlock.getEvents().checkBlockable.trigger({ blocker: this, canBlock: true })).canBlock;
+            (this.getEvents().checkCanBlock.trigger({ attacker: toBlock, canBlock: true })).canBlock &&
+            (toBlock.getEvents().checkBlockable.trigger({ blocker: this, canBlock: true })).canBlock;
     }
 
     public isReady() {
@@ -290,7 +290,7 @@ export class Unit extends Permanent {
     }
 
     public async takeDamage(amount: number, source: Card) {
-        amount =  (await this.events.takeDamage.trigger({
+        amount = (await this.events.takeDamage.trigger({
             target: this,
             source: source,
             amount: amount
