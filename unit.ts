@@ -239,7 +239,7 @@ export class Unit extends Permanent {
         this.checkDeath();
     }
 
-    public play(game: Game) {
+    public async play(game: Game) {
         super.play(game);
         this.exausted = false;
         this.location = GameZone.Board;

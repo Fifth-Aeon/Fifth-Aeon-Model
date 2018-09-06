@@ -57,7 +57,7 @@ export class ServerGame extends Game {
 
 
     // Serverside phase logic
-    protected endPhaseOne() {
+    protected async endPhaseOne() {
         if (this.isAttacking()) {
             this.gameEvents.playerAttacked.trigger(
                 { target: this.getOtherPlayerNumber(this.getActivePlayer()) }
@@ -68,7 +68,7 @@ export class ServerGame extends Game {
                 this.resolveCombat();
             }
         } else {
-            this.startEndPhase();
+            await this.startEndPhase();
         }
     }
 
@@ -85,10 +85,10 @@ export class ServerGame extends Game {
     protected async nextPhase() {
         switch (this.phase) {
             case GamePhase.Play1:
-                this.endPhaseOne();
+                await this.endPhaseOne();
                 break;
             case GamePhase.Play2:
-                this.startEndPhase();
+                await this.startEndPhase();
                 break;
             case GamePhase.Block:
                 await this.endBlockPhase();

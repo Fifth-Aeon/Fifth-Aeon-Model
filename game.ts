@@ -388,13 +388,14 @@ export abstract class Game {
         this.addGameEvent(new GameSyncEvent(SyncEventType.PhaseChange, { phase: nextPhase }));
     }
 
-    protected startEndPhase() {
-        this.gameEvents.endOfTurn.trigger({ player: this.turn });
+    protected async startEndPhase() {
+        await this.gameEvents.endOfTurn.trigger({ player: this.turn });
         this.changePhase(GamePhase.End);
-        this.getCurrentPlayer().discardExtra(this);
+        await this.getCurrentPlayer().discardExtra(this);
     }
 
     public nextTurn() {
+        console.log(this.name, 'nt', this.turnNum);
         this.turn = this.getOtherPlayerNumber(this.turn);
         this.turnNum++;
         this.addGameEvent(new GameSyncEvent(SyncEventType.TurnStart, { turn: this.turn, turnNum: this.turnNum }));

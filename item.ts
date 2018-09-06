@@ -53,7 +53,7 @@ export class Item extends Permanent {
         return CardType.Item;
     }
 
-    public play(game: Game) {
+    public async play(game: Game) {
         let host = this.hostTargeter.getTargets(this, game, null)[0];
         this.attach(host, game);
     }

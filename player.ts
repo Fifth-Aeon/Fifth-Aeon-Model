@@ -129,7 +129,7 @@ export class Player extends Unit {
         return this.deck;
     }
 
-    public discardExtra(game: Game) {
+    public async discardExtra(game: Game) {
         let num = this.hand.length - this.softHandLimit;
         if (num > 0)
             this.discard(game, num, () => game.nextTurn());

@@ -80,7 +80,7 @@ export class Enchantment extends Permanent {
         return CardType.Enchantment;
     }
 
-    public play(game: Game) {
+    public async play(game: Game) {
         super.play(game);
         this.power = this.basePower;
         this.location = GameZone.Board;

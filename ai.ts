@@ -32,7 +32,7 @@ export abstract class AI {
         protected animator: Animator
     ) { }
 
-    abstract handleGameEvent(event: GameSyncEvent): void;
+    abstract async handleGameEvent(event: GameSyncEvent): Promise<any>;
     abstract pulse(): void;
 }
 
@@ -158,6 +158,7 @@ export class BasicAI extends AI {
         message: string,
         heuristicType: ChoiceHeuristic
     ) {
+        console.log('ai', player);
         if (!callback) {
             return;
         }
@@ -168,13 +169,14 @@ export class BasicAI extends AI {
         this.game.makeChoice(this.playerNumber, this.getCardToChoose(options, min, max, heuristicType));
     }
 
-    public handleGameEvent(event: GameSyncEvent) {
-        this.game.syncServerEvent(this.playerNumber, event);
+    public async handleGameEvent(event: GameSyncEvent) {
+        await this.game.syncServerEvent(this.playerNumber, event);
         if (this.eventHandlers.has(event.type))
             this.eventHandlers.get(event.type)(event);
     }
 
     private onTurnStart(params: any) {
+        console.log('ai ots', params, this.playerNumber);
         if (this.playerNumber !== params.turn)
             return;
         this.playResource();

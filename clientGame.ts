@@ -14,7 +14,7 @@ import { Unit } from './unit';
 
 export class ClientGame extends Game {
     // Handlers to syncronize events
-    protected syncEventHandlers: Map<SyncEventType, (playerNo: number, event: GameSyncEvent, params: any) => void>;
+    protected syncEventHandlers: Map<SyncEventType, (playerNo: number, event: GameSyncEvent, params: any) => (void | Promise<void>)>;
 
     constructor(
         name: string,
@@ -49,7 +49,7 @@ export class ClientGame extends Game {
     }
 
     // Game Actions ----------------------------------------------------------
-    public playCardExtern(card: Card, targets: Unit[] = [], host: Unit = null) {
+    public async playCardExtern(card: Card, targets: Unit[] = [], host: Unit = null) {
         let targetIds = targets.map(target => target.getId());
         card.getTargeter().setTargets(targets);
         if (card.getCardType() === CardType.Item) {
@@ -61,7 +61,7 @@ export class ClientGame extends Game {
             id: card.getId(), targetIds: targetIds,
             hostId: host ? host.getId() : null
         });
-        this.playCard(this.players[card.getOwner()], card);
+        await this.playCard(this.players[card.getOwner()], card);
     }
 
     public setAttackOrder(attacker: Unit, order: Unit[]) {
@@ -179,12 +179,15 @@ export class ClientGame extends Game {
      * @param {GameSyncEvent} event
      * @memberof Game
      */
-    public syncServerEvent(localPlayerNumber: number, event: GameSyncEvent) {
+    public async syncServerEvent(localPlayerNumber: number, event: GameSyncEvent) {
         let params = event.params;
         this.events.push(event);
         let handler = this.syncEventHandlers.get(event.type);
-        if (handler)
-            handler(localPlayerNumber, event, params);
+        if (handler) {
+            let result = handler(localPlayerNumber, event, params);
+            if (result !== undefined)
+                await result;
+        }
     }
 
     private idsToCards(ids: Array<string>) {
@@ -261,6 +264,7 @@ export class ClientGame extends Game {
 
     private syncTurnStart(localPlayerNumber: number, event: GameSyncEvent, params: any) {
         if (this.turnNum === 1) {
+            console.log('sts', this.turnNum);
             this.mulligan();
             this.turn = params.turn;
             this.turnNum = params.turnNum;
@@ -283,7 +287,7 @@ export class ClientGame extends Game {
         }
     }
 
-    private syncPhaseChange(localPlayerNumber: number, event: GameSyncEvent, params: any) {
+    private async syncPhaseChange(localPlayerNumber: number, event: GameSyncEvent, params: any) {
         if (event.params.phase === GamePhase.Block)
             this.gameEvents.playerAttacked.trigger(
                 { target: this.getOtherPlayerNumber(this.getActivePlayer()) }
@@ -294,7 +298,7 @@ export class ClientGame extends Game {
         if (event.params.phase === GamePhase.DamageDistribution)
             this.generateDamageDistribution();
         if (event.params.phase === GamePhase.End)
-            this.startEndPhase();
+            await this.startEndPhase();
         else
             this.changePhase(event.params.phase);
     }
