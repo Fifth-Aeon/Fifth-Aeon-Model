@@ -64,6 +64,7 @@ export class Discard extends TriggeredMechanic {
     }
     public async onTrigger(card: Card, game: Game) {
         let target = game.getPlayer(game.getOtherPlayerNumber(card.getOwner()));
+        await game.getAnimator().triggerTrargetedAnimation({ source: card, sink: target });
         target.discard(game, this.count);
     }
 
