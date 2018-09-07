@@ -50,20 +50,20 @@ export class Enchantment extends Permanent {
 
     public empowerOrDiminish(player: Player, game: Game) {
         player.reduceResource(new Resource(this.changeCost));
-        this.changePower(player.getPlayerNumber() === this.owner ? 1 : -1);
+        return this.changePower(player.getPlayerNumber() === this.owner ? 1 : -1);
     }
 
-    public changePower(diff: number) {
+    public async changePower(diff: number) {
         this.power += diff;
         if (this.power <= 0) {
-            this.die();
+            await this.die();
         }
     }
 
-    public die() {
+    public async die() {
         if (this.location !== GameZone.Board)
             return;
-        this.events.death.trigger({});
+        await this.events.death.trigger({});
         this.location = GameZone.Crypt;
     }
 

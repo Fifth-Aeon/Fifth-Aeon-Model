@@ -138,7 +138,7 @@ export class Card {
             mechanic.enter(this, game);
         });
         await this.events.play.trigger({});
-        if (!this.isUnit()) {
+        if (this.getCardType() === CardType.Spell) {
             game.addToCrypt(this);
         }
     }

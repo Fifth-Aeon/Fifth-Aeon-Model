@@ -3,8 +3,8 @@ import { Unit } from './unit';
 import { Card } from './card';
 
 export class Animator {
-    private battleAnimationSubscribers = new Array<(ev: BattleAnimationEvent) => void>();
-    private targetAnimationSubscribers = new Array<(ev: TargetedAnimationEvent) => void>();
+    private battleAnimationSubscribers = new Array<(ev: BattleAnimationEvent) => Promise<any>>();
+    private targetAnimationSubscribers = new Array<(ev: TargetedAnimationEvent) => Promise<any>>();
     private nextAnimiationTime: number;
     private animating = false;
 
@@ -28,17 +28,23 @@ export class Animator {
         return this.animating;
     }
 
+    public makeDelay(timeInMs: number) {
+        return new Promise<boolean>((resolve) => {
+            setTimeout(() => resolve(true), timeInMs);
+        });
+    }
+
     public getAnimationDelay(slices = 1) {
         return new Promise<boolean>((resolve) => {
             setTimeout(() => resolve(true), this.getAnimationTime() / slices);
         });
     }
 
-    public addBattleAnimiatonHandler(handler: (event: BattleAnimationEvent) => void) {
+    public addBattleAnimiatonHandler(handler: (event: BattleAnimationEvent) => Promise<any>) {
         this.battleAnimationSubscribers.push(handler);
     }
 
-    public addTrargetedAnimiatonHandler(handler: (event: TargetedAnimationEvent) => void) {
+    public addTrargetedAnimiatonHandler(handler: (event: TargetedAnimationEvent) => Promise<any>) {
         this.targetAnimationSubscribers.push(handler);
     }
 
@@ -49,10 +55,9 @@ export class Animator {
         }
     }
 
-    public triggerTrargetedAnimation(data: TargetedAnimationEvent) {
-        this.nextAnimiationTime = 2000;
+    public async triggerTrargetedAnimation(data: TargetedAnimationEvent) {
         for (let handler of this.targetAnimationSubscribers) {
-            handler(data);
+            await handler(data);
         }
     }
 }

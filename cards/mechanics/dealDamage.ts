@@ -52,7 +52,6 @@ export class DealDamage extends TargetedMechanic {
         for (let target of this.targeter.getTargets(card, game, this)) {
             await card.dealDamageInstant(target, dmg);
             target.checkDeath();
-            console.log('arrow', { source: card, sink: target }, card.getName(), target.getName()   );
             game.getAnimator().triggerTrargetedAnimation({ source: card, sink: target });
             await game.getAnimator().getAnimationDelay();
         }
