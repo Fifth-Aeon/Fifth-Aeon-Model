@@ -264,7 +264,6 @@ export class ClientGame extends Game {
 
     private syncTurnStart(localPlayerNumber: number, event: GameSyncEvent, params: any) {
         if (this.turnNum === 1) {
-            console.log('sts', this.turnNum);
             this.mulligan();
             this.turn = params.turn;
             this.turnNum = params.turnNum;

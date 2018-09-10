@@ -158,7 +158,6 @@ export class BasicAI extends AI {
         message: string,
         heuristicType: ChoiceHeuristic
     ) {
-        console.log('ai', player);
         if (!callback) {
             return;
         }
@@ -176,7 +175,6 @@ export class BasicAI extends AI {
     }
 
     private onTurnStart(params: any) {
-        console.log('ai ots', params, this.playerNumber);
         if (this.playerNumber !== params.turn)
             return;
         this.playResource();

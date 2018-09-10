@@ -36,12 +36,12 @@ export class DrawCard extends TriggeredMechanic {
 export class Peek extends TriggeredMechanic {
     protected static id = 'Peek';
 
-    public async onTrigger(card: Card, game: Game) {
-        game.queryCards(
+    public onTrigger(card: Card, game: Game) {
+        return game.queryCards(
             (queried: Game) => queried.getPlayer(queried.getOtherPlayerNumber(card.getOwner())).getHand(),
-            (hand) => {
-                game.promptCardChoice(card.getOwner(), hand, 0, 0, null, '', ChoiceHeuristic.DrawHeuristic);
-            });
+        ).then(hand => {
+            return game.promptCardChoice(card.getOwner(), hand, 0, 0, null, '', ChoiceHeuristic.DrawHeuristic);
+        });
     }
 
     public getText(card: Card) {
@@ -109,11 +109,13 @@ export class AugarCard extends TriggeredMechanic {
         let synth = owner.getPool().getOfType('Synthesis');
 
         if (synth < 4) {
-            owner.replace(game, 0, 1);
+            console.log('p rep', game.getName());
+            await owner.replace(game, 0, 1);
+            console.log('d rep');
         } else if (synth < 8) {
             owner.drawCard();
         } else {
-            owner.searchForCard(game, 1);
+            await owner.searchForCard(game, 1);
         }
     }
 

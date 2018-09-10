@@ -50,7 +50,7 @@ export abstract class Game {
     public id: string;
     // A board containing units in play
     protected board: Board;
-    // Where dead cards go
+    /* Where dead cards go */
     protected crypt: [Card[], Card[]];
     // The number of player whose turn it currently is
     protected turn: number;
@@ -66,6 +66,8 @@ export abstract class Game {
     protected lastPhase: GamePhase;
     // A list of all events that have taken place this game and need to be sent to clients
     protected events: GameSyncEvent[];
+    // t
+    private gameEventListeners: Array<(event: GameSyncEvent) => void> = [];
     // A list of  units currently attacking
     protected attackers: Unit[];
     // A list of blocks by the defending player
@@ -80,11 +82,17 @@ export abstract class Game {
     public gameEvents: GameEventSystem;
     // Flag to tell us which player's choice we are waiting for (null if not waiting)
     protected currentChoices: Choice[] = [null, null];
-
+    // Flag to tell us if an asyncronous game process (such as event animations) is currently running
+    protected processRunning = false;
+    // An animator triggers animations which UI can animate (or ignrore)
     protected animator: Animator = new Animator();
+    // A log used to display information about what has happened to the player. May be null.
     protected log: Log;
+    // The number of the player who has won the game or -1 if its not over yet
     protected winner = -1;
+    // The ID of the next generated card
     protected generatedCardId = 1;
+    // A function that is invoked when the player must make a choice
     public promptCardChoice: (
         player: number,
         choices: Card[],
@@ -93,8 +101,10 @@ export abstract class Game {
         callback: (cards: Card[]) => void,
         message: string,
         evaluator: ChoiceHeuristic
-    ) => void;
+    ) => Promise<any>;
+    // A function that is invoked when a query to the server is answered
     protected onQueryResult: (cards: Card[]) => void;
+    // A boolean that tells whether this is a client or server game
     protected client = false;
 
 
@@ -103,7 +113,7 @@ export abstract class Game {
      * informs how the game is initlized eg how
      * much health each player starts with.
      *
-     * @param {string} name
+     * @param {string} name - used to identify the instance of the game for debugging
      * @param {GameFormat} [format=standardFormat]
      * @memberof Game
      */
@@ -128,6 +138,10 @@ export abstract class Game {
         });
     }
 
+    public addGameSyncEventListner(callback: (event: GameSyncEvent) => void) {
+        this.gameEventListeners.push(callback);
+    }
+
     public getName() {
         return this.name;
     }
@@ -138,6 +152,9 @@ export abstract class Game {
 
     public addGameEvent(event: GameSyncEvent) {
         this.events.push(event);
+        for (let callback of this.gameEventListeners) {
+            callback(event);
+        }
     }
 
     public mulligan() {
@@ -172,16 +189,22 @@ export abstract class Game {
     }
 
     // Player choice =--------------------------------------------------------
-    public deferChoice(player: number, choices: Card[], min: number, max: number, callback: (cards: Card[]) => void) {
-        if (!callback)
-            return;
-        this.currentChoices[player] = {
-            player: player,
-            validCards: new Set(choices),
-            min: min,
-            max: max,
-            callback: callback
-        };
+    public deferChoice(player: number, choices: Card[], min: number, max: number, action: (cards: Card[]) => void) {
+        if (!action)
+            return Promise.resolve();
+
+        return new Promise(resolve => {
+            this.currentChoices[player] = {
+                player: player,
+                validCards: new Set(choices),
+                min: min,
+                max: max,
+                callback: cards => {
+                    action(cards);
+                    resolve();
+                }
+            };
+        });
     }
 
     protected makeDeferedChoice(player: number, cards: Card[]) {
@@ -206,21 +229,24 @@ export abstract class Game {
 
 
     // Server Query Logic ----------------------------------------------
-
     protected setQueryResult(cards: Card[]) {
         if (this.onQueryResult)
             this.onQueryResult(cards);
     }
 
-    public queryCards(getCards: (game: Game) => Card[], callback: (cards: Card[]) => void) {
+    public queryCards(getCards: (game: Game) => Card[]): Promise<Card[]> | null {
         if (this.client) {
-            this.onQueryResult = callback;
+            return new Promise((resolve) => {
+                this.onQueryResult = (results: Card[]) => {
+                    resolve(results);
+                };
+            });
         } else {
             let cards = getCards(this);
-            callback(cards);
             this.addGameEvent(new GameSyncEvent(SyncEventType.QueryResult, {
                 cards: cards.map(card => card.getPrototype())
             }));
+            return Promise.resolve(cards);
         }
     }
 
@@ -250,7 +276,8 @@ export abstract class Game {
     }
 
     public canTakeAction() {
-        return this.currentChoices[0] === null && this.currentChoices[1] === null;
+        return !this.processRunning &&
+            this.currentChoices[0] === null && this.currentChoices[1] === null;
     }
 
     // Combat -------------------------------------------------------------
@@ -389,9 +416,12 @@ export abstract class Game {
     }
 
     protected async startEndPhase() {
-        await this.gameEvents.endOfTurn.trigger({ player: this.turn });
+        console.log('start startEndPhase', this.name);
         this.changePhase(GamePhase.End);
+        await this.gameEvents.endOfTurn.trigger({ player: this.turn });
         await this.getCurrentPlayer().discardExtra(this);
+        console.log('end startEndPhase', this.name);
+
     }
 
     public nextTurn() {

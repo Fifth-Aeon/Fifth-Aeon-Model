@@ -1,5 +1,6 @@
 import { Scenario } from '../scenario';
 import { pikeman } from '../cards/renewalCards';
+import { testCard } from '../cards/synthCards';
 
 let mission1 = new Scenario({
     name: 'Introduction',
@@ -7,7 +8,7 @@ let mission1 = new Scenario({
     playerSetups: [{
         lifeTotals: 25,
         initalHands: [pikeman()],
-        initialPermanents:  [pikeman()]
+        initialPermanents:  [testCard()]
     }, {
         lifeTotals: 5,
         initalHands: [],

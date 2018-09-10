@@ -138,7 +138,8 @@ export class Player extends Unit {
     }
 
     public replace(game: Game, min: number, max: number) {
-        game.promptCardChoice(this.getPlayerNumber(), this.hand, min, max, (cards: Card[]) => {
+        console.log(game.promptCardChoice);
+        return game.promptCardChoice(this.getPlayerNumber(), this.hand, min, max, (cards: Card[]) => {
             cards.forEach(card => {
                 this.removeCardFromHand(card);
                 this.addToDeck(card);
@@ -162,16 +163,18 @@ export class Player extends Unit {
     }
 
     public searchForCard(game: Game, count: number) {
-        game.queryCards(
-            (queried: Game) => shuffle(queried.getPlayer(this.playerNumber).getDeck()),
-            (deck: Card[]) => {
-                game.promptCardChoice(this.playerNumber, deck, 0, count, (cards: Card[]) => {
-                    cards.forEach(card => {
-                        this.drawGeneratedCard(card);
-                        deck.splice(deck.indexOf(card), 1);
-                    });
-                }, 'to draw', ChoiceHeuristic.DrawHeuristic);
-            });
+        return game.queryCards(
+            (queried: Game) => shuffle(queried.getPlayer(this.playerNumber).getDeck()))
+            .then(
+                (deck: Card[]) => {
+                    return game.promptCardChoice(this.playerNumber, deck, 0, count, (cards: Card[]) => {
+                        cards.forEach(card => {
+                            this.drawGeneratedCard(card);
+                            deck.splice(deck.indexOf(card), 1);
+                        });
+                    }, 'to draw', ChoiceHeuristic.DrawHeuristic);
+                }
+            );
     }
 
     public drawCard() {

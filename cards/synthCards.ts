@@ -6,7 +6,7 @@ import { Unit, UnitType } from '../unit';
 import { BuffTarget, BuffTargetAndGrant, GrantAbility } from './mechanics/buff';
 import { CannotAttack, CannotBlock } from './mechanics/cantAttack';
 import { DamageOnBlock, DealDamage, DealResourceDamage } from './mechanics/dealDamage';
-import { AugarCard, DrawCard, Peek } from './mechanics/draw';
+import { AugarCard, DrawCard, Peek, Discard } from './mechanics/draw';
 import { RefreshTarget } from './mechanics/heal';
 import { friendlyLordship } from './mechanics/lordship';
 import { Poisoned, PoisonImmune } from './mechanics/poison';
@@ -24,6 +24,30 @@ import { BiologicalUnit, FrendlyBiologicalUnits, FrieldyVehicleOrStructure, Mech
 import { FriendlyBiologicalUnitEntersPlay, FriendlyMechanicalUnitEntersPlay } from './triggers/bio';
 import { OwnerDrawsUnit } from './triggers/draw';
 import { Dawn, Dusk } from './triggers/periodic';
+
+
+export function testCard() {
+    return new Unit(
+        'TEST',
+        'TEST',
+        'imp.png',
+        UnitType.Demon,
+        new Resource(1, 0, {
+            Growth: 0,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        1, 1,
+        [
+            new AugarCard().setTrigger(new Dusk()),
+            new DealDamage().setTrigger(new Dusk()).setTargeter(new EnemyPlayer()),
+            new AugarCard().setTrigger(new Dusk()),
+        ]
+    );
+}
+
 
 
 export function assemblyLine() {
