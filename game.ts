@@ -408,6 +408,10 @@ export abstract class Game {
         return false;
     }
 
+    public addCardToPool(card: Card) {
+        this.cardPool.set(card.getId(), card);
+    }
+
     // Game Flow Logic (phases, turns) -------------------------------------------------
 
     protected changePhase(nextPhase: GamePhase) {
@@ -553,6 +557,8 @@ export abstract class Game {
     }
 
     public getCardById(id: string): Card | undefined {
+        if (!this.cardPool.has(id))
+            console.error(`No Card with id "${id}" in pool`, this.cardPool);
         return this.cardPool.get(id);
     }
 

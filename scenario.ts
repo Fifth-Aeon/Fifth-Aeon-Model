@@ -27,10 +27,12 @@ export class Scenario {
             player.addLife(this.playerSetups[playerNumber].lifeTotals - player.getLife());
 
             for (let permanent of this.playerSetups[playerNumber].initialPermanents) {
+                game.addCardToPool(permanent);
                 player.drawGeneratedCard(permanent);
                 game.playCard(player, permanent);
             }
             for (let card of this.playerSetups[playerNumber].initalHands) {
+                game.addCardToPool(card);
                 player.drawGeneratedCard(card);
             }
         }
