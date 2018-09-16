@@ -6,6 +6,7 @@ export class Animator {
     private battleAnimationSubscribers = new Array<(ev: BattleAnimationEvent) => void>();
     private nextAnimationTime: number;
     private animating = false;
+    private onAnimationEnd: () => any = () => null;
 
     constructor(
         private multiplier = 1
@@ -21,6 +22,15 @@ export class Animator {
 
     public endAnimation() {
         this.animating = false;
+        this.onAnimationEnd();
+    }
+
+    public async awaitAnimationEnd() {
+        return new Promise((resolve) => {
+            this.onAnimationEnd = () => {
+                resolve();
+            };
+        });
     }
 
     public isAnimating() {
