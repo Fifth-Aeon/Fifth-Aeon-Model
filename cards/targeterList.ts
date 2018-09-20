@@ -1,19 +1,17 @@
 
 
 import { values } from 'lodash';
-import { Mechanic } from '../mechanic';
 import { Targeter } from '../targeter';
-
-
-import * as biotargeters from './targeters/biotargeter';
 import * as basicTargeters from './targeters/basicTargeter';
+import * as biotargeters from './targeters/biotargeter';
 import * as mechanicTargeters from './targeters/mechanicTargeter';
 import * as poisonTargeter from './targeters/poisonTargeter';
 import * as powerTargeter from './targeters/powerTargeter';
-import * as unitTypeTargeter from './targeters/unitTypeTargeter';
 import * as weakenedUnits from './targeters/weakenedUnits';
 
-const targeterGroups = [biotargeters, basicTargeters, mechanicTargeters, poisonTargeter, powerTargeter, unitTypeTargeter, weakenedUnits];
+
+
+const targeterGroups = [biotargeters, basicTargeters, mechanicTargeters, poisonTargeter, powerTargeter, weakenedUnits];
 
 export interface TargeterData {
     id: string;
