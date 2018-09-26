@@ -1,7 +1,6 @@
-import { Targeter } from '../../targeter';
 import { Card } from '../../card';
 import { Game } from '../../game';
-import { isBiological, isMechanical } from '../../unit';
+import { Targeter } from '../../targeter';
 
 export class DamagedUnit extends Targeter {
     protected static id = 'DamagedUnit';

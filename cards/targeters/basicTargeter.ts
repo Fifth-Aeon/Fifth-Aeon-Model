@@ -1,11 +1,10 @@
-import { Game } from '../../game';
 import { Card, CardType } from '../../card';
+import { Game } from '../../game';
+import { Item } from '../../item';
+import { Mechanic } from '../../mechanic';
+import { Targeter } from '../../targeter';
 import { Unit } from '../../unit';
 
-import { every } from 'lodash';
-import { Targeter } from '../../targeter';
-import { Mechanic } from '../../mechanic';
-import { Item } from '../../item';
 
 export class TriggeringUnit extends Targeter {
     protected static id = 'TriggeringUnit';

@@ -1,5 +1,5 @@
 import { shuffle } from 'lodash';
-import { knapsack } from './algoritms';
+import { knapsack } from './algorithms';
 import { Board } from './board';
 import { Card, CardType, GameZone } from './card';
 import { DeckList } from './deckList';
@@ -65,7 +65,7 @@ export abstract class Game {
     protected format: GameFormat;
     // The phase of the current players turn (eg main phase, attack phase)
     protected phase: GamePhase;
-    // The previous phase (used to return from responce phases)
+    // The previous phase (used to return from response phases)
     protected lastPhase: GamePhase;
     // A list of all events that have taken place this game and need to be sent to clients
     protected events: GameSyncEvent[];
@@ -75,7 +75,7 @@ export abstract class Game {
     protected blockers: [Unit, Unit][];
     // A map of the order to apply damage in combat
     protected attackDamageOrder: Map<string, Unit[]> = null;
-    // A list attack orders that can be rearanged
+    // A list attack orders that can be rearranged
     protected orderableAttacks: Map<string, Unit[]> = null;
     // A map of cards loaded from the server so far
     protected cardPool: Map<string, Card>;
@@ -101,7 +101,7 @@ export abstract class Game {
 
     /**
      * Constructs a game given a format. The format
-     * informs how the game is initlized eg how
+     * informs how the game is initialized eg how
      * much health each player starts with.
      *
      * @param {string} name
@@ -182,11 +182,11 @@ export abstract class Game {
         };
     }
 
-    protected makeDeferedChoice(player: number, cards: Card[]) {
+    protected makeDeferredChoice(player: number, cards: Card[]) {
         if (this.currentChoices[player] !== null) {
             this.currentChoices[player].callback(cards);
         } else {
-            console.error(`Error in game ${this.name} no defered choice handler for ${
+            console.error(`Error in game ${this.name} no deferred choice handler for ${
                 cards.map(card => card.getName())} from ${player}`);
         }
         this.currentChoices[player] = null;
@@ -351,11 +351,11 @@ export abstract class Game {
             }
         }
 
-        // Unblocked attackers damage the defening player
+        // Unblocked attackers damage the defending player
         for (let attacker of attackers) {
             if (!this.attackDamageOrder.has(attacker.getId())) {
                 attacker.dealAndApplyDamage(defendingPlayer, attacker.getDamage());
-                attacker.setExausted(true);
+                attacker.setExhausted(true);
             }
             attacker.toggleAttacking();
         }
@@ -409,7 +409,7 @@ export abstract class Game {
 
     // Unit Zone Changes ------------------------------------------------------
     public playPermanent(permanent: Permanent, owner: number) {
-        if (!this.board.canPlayPermanant(permanent))
+        if (!this.board.canPlayPermanent(permanent))
             return;
         switch (permanent.getCardType()) {
             case CardType.Unit:
@@ -425,31 +425,31 @@ export abstract class Game {
         let originalOwner = unit.getOwner();
         let newOwner = this.getOtherPlayerNumber(originalOwner);
 
-        this.removePermanant(unit);
+        this.removePermanent(unit);
         unit.setOwner(newOwner);
         unit.getTargeter().setTargets([]);
         this.addUnit(unit, newOwner, false);
     }
 
     public returnPermanentToDeck(perm: Permanent) {
-        this.removePermanant(perm);
+        this.removePermanent(perm);
         this.players[perm.getOwner()].addToDeck(perm);
     }
 
     public returnPermanentToHand(perm: Permanent) {
-        this.removePermanant(perm);
+        this.removePermanent(perm);
         this.players[perm.getOwner()].addToHand(perm);
     }
 
-    protected removePermanant(perm: Permanent) {
+    protected removePermanent(perm: Permanent) {
         perm.leaveBoard(this);
         perm.getEvents().removeEvents(null);
-        this.board.removePermanant(perm);
+        this.board.removePermanent(perm);
     }
 
     public addEnchantment(enchantment: Enchantment, owner: number) {
         enchantment.getEvents().death.addEvent(null,  (params) => {
-            this.removePermanant(enchantment);
+            this.removePermanent(enchantment);
             this.addToCrypt(enchantment);
             return params;
         }, Infinity);
@@ -458,14 +458,14 @@ export abstract class Game {
 
     public addUnit(unit: Unit, owner: number, etb: boolean = true) {
         unit.getEvents().death.addEvent(null,  (params) => {
-            this.removePermanant(unit);
+            this.removePermanent(unit);
             this.addToCrypt(unit);
             unit.detachItems(this);
             this.gameEvents.unitDies.trigger({ deadUnit: unit });
             return params;
         }, Infinity);
         unit.getEvents().annihilate.addEvent(null,  (params) => {
-            this.removePermanant(unit);
+            this.removePermanent(unit);
             return params;
         });
         this.board.addPermanent(unit);

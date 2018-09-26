@@ -73,7 +73,7 @@ export class Enchantment extends Permanent {
 
     public isPlayable(game: Game): boolean {
         return super.isPlayable(game) &&
-            game.getBoard().canPlayPermanant(this.getOwner());
+            game.getBoard().canPlayPermanent(this.getOwner());
     }
 
     public getCardType() {

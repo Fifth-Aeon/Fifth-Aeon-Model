@@ -131,7 +131,7 @@ export class SummonUnitOnDamage extends Mechanic {
 
     public evaluate(card: Card, game: Game) {
         // TODO something cleverer
-        // Look at hether opponetn can Block?
+        // Look at whether opponent can Block?
         return this.unit.evaluate(game, EvalContext.Play);
     }
 }

@@ -16,12 +16,12 @@ import { shuffle } from 'lodash';
 type ActionCb = (act: GameAction) => boolean;
 export class ServerGame extends Game {
     // A table of handlers used to respond to actions taken by players
-    protected actionHandelers: Map<GameActionType, ActionCb>;
+    protected actionHandlers: Map<GameActionType, ActionCb>;
 
     constructor(name: string, format: GameFormat = standardFormat, deckLists: [DeckList, DeckList]) {
         super(name, format);
-        this.actionHandelers = new Map<GameActionType, ActionCb>();
-        this.addActionHandelers();
+        this.actionHandlers = new Map<GameActionType, ActionCb>();
+        this.addActionHandlers();
 
         const decks = deckLists.map(deckList => {
             let deck = deckList.toDeck().map(fact => {
@@ -33,8 +33,8 @@ export class ServerGame extends Game {
         });
 
         this.players = [
-            new Player(this, decks[0], 0, this.format.initalResource[0], this.format.initialLife[0]),
-            new Player(this, decks[1], 1, this.format.initalResource[1], this.format.initialLife[1])
+            new Player(this, decks[0], 0, this.format.initialResource[0], this.format.initialLife[0]),
+            new Player(this, decks[1], 1, this.format.initialResource[1], this.format.initialLife[1])
         ];
 
         this.addDeathHandlers();
@@ -56,7 +56,7 @@ export class ServerGame extends Game {
     }
 
 
-    // Serverside phase logic
+    // Server side phase logic
     protected endPhaseOne() {
         if (this.isAttacking()) {
             this.gameEvents.playerAttacked.trigger(
@@ -104,7 +104,7 @@ export class ServerGame extends Game {
 
     /**
    * Handles a players action and returns a list of events that
-   * resulted from that aciton.
+   * resulted from that action.
    *
    * @param {GameAction} action
    * @returns {GameSyncEvent[]}
@@ -112,8 +112,8 @@ export class ServerGame extends Game {
    */
     public handleAction(action: GameAction): GameSyncEvent[] | null {
         let mark = this.events.length;
-        let handeler = this.actionHandelers.get(action.type);
-        if (!handeler)
+        let handler = this.actionHandlers.get(action.type);
+        if (!handler)
             return [];
         if (action.type !== GameActionType.CardChoice &&
             (this.currentChoices[0] !== null ||
@@ -121,26 +121,26 @@ export class ServerGame extends Game {
             console.error('Cant take action, waiting for', this.currentChoices);
             return null;
         }
-        let sig = handeler(action);
+        let sig = handler(action);
         if (sig !== true)
             return null;
         return this.events.slice(mark);
     }
 
-    protected addActionHandeler(type: GameActionType, cb: ActionCb) {
-        this.actionHandelers.set(type, cb.bind(this));
+    protected addActionHandler(type: GameActionType, cb: ActionCb) {
+        this.actionHandlers.set(type, cb.bind(this));
     }
 
-    protected addActionHandelers() {
-        this.addActionHandeler(GameActionType.Pass, this.passAction);
-        this.addActionHandeler(GameActionType.PlayResource, this.playResourceAction);
-        this.addActionHandeler(GameActionType.PlayCard, this.playCardAction);
-        this.addActionHandeler(GameActionType.ToggleAttack, this.toggleAttackAction);
-        this.addActionHandeler(GameActionType.DeclareBlocker, this.declareBlockerAction);
-        this.addActionHandeler(GameActionType.CardChoice, this.cardChoiceAction);
-        this.addActionHandeler(GameActionType.ModifyEnchantment, this.modifyEnchantmentAction);
-        this.addActionHandeler(GameActionType.DistributeDamage, this.distributeDamageAction);
-        this.addActionHandeler(GameActionType.Quit, this.quit);
+    protected addActionHandlers() {
+        this.addActionHandler(GameActionType.Pass, this.passAction);
+        this.addActionHandler(GameActionType.PlayResource, this.playResourceAction);
+        this.addActionHandler(GameActionType.PlayCard, this.playCardAction);
+        this.addActionHandler(GameActionType.ToggleAttack, this.toggleAttackAction);
+        this.addActionHandler(GameActionType.DeclareBlocker, this.declareBlockerAction);
+        this.addActionHandler(GameActionType.CardChoice, this.cardChoiceAction);
+        this.addActionHandler(GameActionType.ModifyEnchantment, this.modifyEnchantmentAction);
+        this.addActionHandler(GameActionType.DistributeDamage, this.distributeDamageAction);
+        this.addActionHandler(GameActionType.Quit, this.quit);
     }
 
     protected distributeDamageAction(act: GameAction): boolean {
@@ -192,7 +192,7 @@ export class ServerGame extends Game {
             console.error(`Reject choice. Included invalid options.`, cards, this.currentChoices[act.player].validCards);
             return false;
         }
-        this.makeDeferedChoice(act.player, cards);
+        this.makeDeferredChoice(act.player, cards);
         this.addGameEvent(new GameSyncEvent(SyncEventType.ChoiceMade, {
             player: act.player,
             choice: act.params.choice
@@ -239,8 +239,8 @@ export class ServerGame extends Game {
     }
 
     /* Preconditions
-        - It is the first phase of the acitng players turn
-        - Unit is on the battlfield,
+        - It is the first phase of the acting players turn
+        - Unit is on the battlefield,
         - Unit can attack
     */
     protected toggleAttackAction(act: GameAction): boolean {
@@ -255,7 +255,7 @@ export class ServerGame extends Game {
 
     /* Preconditions
        - It is the block phase of the opposing players turn
-       - Unit is on the battlfield,
+       - Unit is on the battlefield,
        - Unit can attack
     */
     protected declareBlockerAction(act: GameAction) {

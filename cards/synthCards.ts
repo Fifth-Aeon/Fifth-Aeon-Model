@@ -20,7 +20,7 @@ import {
     Enemies, EnemyPlayer, EnemyUnit, EnemyUnits, FriendlyUnit, FriendlyUnits, SelfTarget,
     SingleUnit, TriggeringUnit, Untargeted
 } from './targeters/basicTargeter';
-import { BiologicalUnit, FrendlyBiologicalUnits, FrieldyVehicleOrStructure, MechanicalUnit } from './targeters/biotargeter';
+import { BiologicalUnit, FriendlyBiologicalUnits, FriendlyVehicleOrStructure, MechanicalUnit } from './targeters/biotargeter';
 import { FriendlyBiologicalUnitEntersPlay, FriendlyMechanicalUnitEntersPlay } from './triggers/bio';
 import { OwnerDrawsUnit } from './triggers/draw';
 import { Dawn, Dusk } from './triggers/periodic';
@@ -57,7 +57,7 @@ export function medicalConvoy() {
         }),
         new Untargeted(),
         2, 2,
-        [new RefreshTarget().setTargeter(new FrendlyBiologicalUnits())]
+        [new RefreshTarget().setTargeter(new FriendlyBiologicalUnits())]
     );
 }
 
@@ -151,7 +151,7 @@ export function battleship() {
 }
 
 
-export function missleMech() {
+export function missileMech() {
     return new Unit(
         'MissileMech',
         'Missile Mech',
@@ -169,10 +169,10 @@ export function missleMech() {
     );
 }
 
-export function satalite() {
+export function satellite() {
     return new Unit(
         'SpySatalite',
-        'Spy Satalite',
+        'Spy Satellite',
         'sattelite.png',
         UnitType.Vehicle,
         new Resource(5, 0, {
@@ -215,7 +215,7 @@ export function shieldGenerator() {
     );
 }
 
-export function reaserchAI() {
+export function researchAI() {
     return new Enchantment(
         'ResearchAI',
         'Research A.I',
@@ -268,7 +268,7 @@ export function automataCrew() {
             Synthesis: 1
         }),
         new Untargeted(),
-        new FrieldyVehicleOrStructure(),
+        new FriendlyVehicleOrStructure(),
         3, 3,
         [new Robotic(), new Relentless()]
     );
@@ -277,7 +277,7 @@ export function automataCrew() {
 export function occularImplant() {
     return new Item(
         'OccularImplant',
-        'Occular Implant',
+        'Ocular Implant',
         'cyber-eye.png',
         new Resource(5, 0, {
             Growth: 0,
@@ -513,7 +513,7 @@ export function enhancmentChamber() {
 export function observationBallon() {
     return new Unit(
         'ObsesrvationBallon',
-        'Observation Ballon',
+        'Observation Balloon',
         'air-balloon.png',
         UnitType.Vehicle,
         new Resource(2, 0, {

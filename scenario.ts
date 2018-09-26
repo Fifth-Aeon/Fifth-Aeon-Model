@@ -6,7 +6,7 @@ import { DeckList } from './deckList';
 interface ScenarioPlayer {
     initialPermanents: Permanent[];
     lifeTotals: number;
-    initalHands: Card[];
+    initialHands: Card[];
     deck?: DeckList;
 }
 export interface ScenarioData {
@@ -30,7 +30,7 @@ export class Scenario {
                 player.drawGeneratedCard(permanent);
                 game.playCard(player, permanent);
             }
-            for (let card of this.playerSetups[playerNumber].initalHands) {
+            for (let card of this.playerSetups[playerNumber].initialHands) {
                 player.drawGeneratedCard(card);
             }
         }

@@ -39,25 +39,25 @@ export class Permanent extends Card {
         const trigger = (mechanics[0] as TriggeredMechanic).getTrigger();
         mechanics = sortBy(mechanics, this.getTargeterId);
         let lastId: string = null;
-        const mechanicText = this.addSentanceMarkers(properList(mechanics.map(mechanic => {
+        const mechanicText = this.addSentenceMarkers(properList(mechanics.map(mechanic => {
             let id = this.getTargeterId(mechanic);
             if (id !== '')
                 (mechanic as TargetedMechanic).getTargeter().shouldUsePronoun(id === lastId);
             lastId = id;
-            return this.removeSentanceMarkers(mechanic.getText(this, game));
+            return this.removeSentenceMarkers(mechanic.getText(this, game));
         })));
 
         return trigger.getText(mechanicText);
     }
 
-    private removeSentanceMarkers(text: string) {
+    private removeSentenceMarkers(text: string) {
         const first = text[0];
         const last = text[text.length - 1];
         const mid = text.substring(1, text.length - 1);
         return first.toLocaleLowerCase() + mid + (last === '.' ? '' : last);
     }
 
-    private addSentanceMarkers(text: string) {
+    private addSentenceMarkers(text: string) {
         const first = text[0];
         const mid = text.substring(1, text.length);
         return first.toLocaleUpperCase() + mid + '.';

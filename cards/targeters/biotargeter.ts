@@ -14,8 +14,8 @@ export class BiologicalUnit extends Targeter {
     }
 }
 
-export class FrendlyBiologicalUnits extends AllUnits {
-    protected static id = 'FrendlyBiologicalUnits';
+export class FriendlyBiologicalUnits extends AllUnits {
+    protected static id = 'FriendlyBiologicalUnits';
     public getText() {
         return 'friendly biological units';
     }
@@ -38,8 +38,8 @@ export class MechanicalUnit extends Targeter {
 }
 
 const validTypes = new Set([UnitType.Vehicle, UnitType.Structure]);
-export class FrieldyVehicleOrStructure extends Targeter {
-    protected static id = 'FrieldyVehicleOrStructure';
+export class FriendlyVehicleOrStructure extends Targeter {
+    protected static id = 'FriendlyVehicleOrStructure';
 
     public getValidTargets(card: Card, game: Game) {
         return game.getBoard().getAllUnits().filter(unit =>

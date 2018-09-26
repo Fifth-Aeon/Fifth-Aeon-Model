@@ -44,13 +44,13 @@ export class Collection {
         this.packs += reward.packs;
         this.gold += reward.gold;
         if (reward.cards) {
-            let cardsAwareded = [];
+            let cardsAwarded  = [];
             for (let i = 0; i < reward.cards; i++) {
-                let awareded = this.getRandomCardId();
-                cardsAwareded.push(awareded);
-                this.addCard(awareded, 1);
+                let awarded = this.getRandomCardId();
+                cardsAwarded.push(awarded );
+                this.addCard(awarded , 1);
             }
-            return cardsAwareded;
+            return cardsAwarded;
         }
         return [];
     }

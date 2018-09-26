@@ -48,7 +48,7 @@ export class CurePoisonTargeter extends Targeter {
     }
 
     public getText() {
-        return 'target posioned unit';
+        return 'target poisoned unit';
     }
 
     public isOptional() {

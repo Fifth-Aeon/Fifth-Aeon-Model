@@ -1,7 +1,6 @@
-import { Mechanic, TargetedMechanic, EvalContext } from '../../mechanic';
-import { Game, GamePhase } from '../../game';
-import { Targeter } from '../../targeter';
 import { Card, CardType } from '../../card';
+import { Game } from '../../game';
+import { EvalContext, Mechanic, TargetedMechanic } from '../../mechanic';
 import { Unit } from '../../unit';
 
 

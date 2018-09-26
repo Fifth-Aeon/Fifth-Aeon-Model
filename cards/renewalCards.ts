@@ -11,10 +11,10 @@ import { Resource } from '../resource';
 import { SingleUnit, FriendlyUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnits, TriggeringUnit } from './targeters/basicTargeter';
 
 
-// Trigers
+// Triggers
 import { Serenity } from './triggers/serenity';
 
-// Mecchanics
+// Mechanics
 import { CannotAttack, ImprisonTarget } from './mechanics/cantAttack';
 import { ShuffleIntoDeck } from './mechanics/shuffleIntoDeck';
 import { MindControl } from './mechanics/mindControl';
@@ -93,7 +93,7 @@ export function valiantDefenses() {
 export function supremeAgeis() {
     return new Enchantment(
         'SupremeAgeis',
-        'Supreme Ageis',
+        'Supreme Aegis',
         'rosa-shield.png',
         new Resource(7, 0, {
             Growth: 0,
@@ -128,7 +128,7 @@ export function archer() {
 export function general() {
     return new Unit(
         'General',
-        'Pretorian General',
+        'Praetorian General',
         'galea.png',
         UnitType.Soldier,
         new Resource(4, 0, {
@@ -494,10 +494,10 @@ export function recruitment() {
     );
 }
 
-export function armstice() {
+export function armistice() {
     return new Card(
         'Armstice',
-        'Armstice',
+        'Armistice',
         'tied-scroll.png',
         new Resource(6, 0, {
             Growth: 0,

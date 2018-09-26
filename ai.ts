@@ -1,6 +1,6 @@
 import { maxBy, minBy, remove, sampleSize, meanBy, sortBy, sumBy, take } from 'lodash';
 import { LinkedList } from 'typescript-collections';
-import { knapsack, KnapsackItem } from './algoritms';
+import { knapsack, KnapsackItem } from './algorithms';
 import { Animator } from './animator';
 import { Card, CardType } from './card';
 import { TransformDamaged } from './cards/mechanics/decaySpecials';
@@ -91,7 +91,7 @@ export class BasicAI extends AI {
     }
 
     private continue() {
-        if (this.animator.isAnimiating())
+        if (this.animator.isAnimating())
             return;
         if (!this.game.canTakeAction() || !this.game.isActivePlayer(this.playerNumber))
             return;
@@ -284,8 +284,8 @@ export class BasicAI extends AI {
     }
 
 
-    // Returns the card whose resource prereqs are not met, but are the closest to being met
-    private getClosestUnmetRequirment(cards: Card[]) {
+    // Returns the card whose resource pre reqs are not met, but are the closest to being met
+    private getClosestUnmetRequirement(cards: Card[]) {
         return minBy(cards
             .filter(card => this.getReqDiff(this.aiPlayer.getPool(), card.getCost()).total !== 0),
             card => this.getReqDiff(this.aiPlayer.getPool(), card.getCost()).total
@@ -302,8 +302,8 @@ export class BasicAI extends AI {
 
     private getResourceToPlay() {
         let deckCards = this.deck.getUniqueCards();
-        let closestCardInHand = this.getClosestUnmetRequirment(this.aiPlayer.getHand());
-        let closestCardInDeck = this.getClosestUnmetRequirment(deckCards);
+        let closestCardInHand = this.getClosestUnmetRequirement(this.aiPlayer.getHand());
+        let closestCardInDeck = this.getClosestUnmetRequirement(deckCards);
         let closestCard = closestCardInHand || closestCardInDeck;
 
         if (closestCard) {
@@ -324,7 +324,7 @@ export class BasicAI extends AI {
             .filter(unit => unit.canAttack())
             .filter(unit => unit.getDamage() > 0);
         let potentialBlockers = this.game.getBoard().getPlayerUnits(this.enemyNumber)
-            .filter(unit => !unit.isExausted());
+            .filter(unit => !unit.isExhausted());
 
         for (let attacker of potentialAttackers) {
             let hasBlocker = false;
@@ -357,12 +357,12 @@ export class BasicAI extends AI {
             blocker.hasMechanicWithId(TransformDamaged.getId());
 
         let shield = (attacker.hasMechanicWithId(Shielded.getId()) as Shielded);
-        let isAttackerShilded = shield && !shield.isDepleted();
+        let isAttackerShielded = shield && !shield.isDepleted();
         shield = (blocker.hasMechanicWithId(Shielded.getId()) as Shielded);
-        let isBlockerShilded = shield && !shield.isDepleted();
+        let isBlockerShielded = shield && !shield.isDepleted();
 
-        let attackerDies = !isAttackerShilded && (isBlockerLethal || blocker.getDamage() >= attacker.getLife());
-        let blockerDies = !isBlockerShilded && (isAttackerLethal || attacker.getDamage() >= blocker.getLife());
+        let attackerDies = !isAttackerShielded && (isBlockerLethal || blocker.getDamage() >= attacker.getLife());
+        let blockerDies = !isBlockerShielded && (isAttackerLethal || attacker.getDamage() >= blocker.getLife());
 
         if (attackerDies && blockerDies) {
             return BlockType.BothDie;
@@ -385,7 +385,7 @@ export class BasicAI extends AI {
         let attackers = sortBy(this.game.getAttackers(), (attacker) =>
             -(attacker.getDamage() + (attacker.hasMechanicWithId(Flying.getId()) !== undefined ? 1000 : 0)));
         let potentialBlockers = this.game.getBoard().getPlayerUnits(this.playerNumber)
-            .filter(unit => !unit.isExausted());
+            .filter(unit => !unit.isExhausted());
 
         let totalDamage = sumBy(attackers, (attacker) => attacker.getDamage());
         let life = this.aiPlayer.getLife();

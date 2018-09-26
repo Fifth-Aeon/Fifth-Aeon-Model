@@ -242,7 +242,7 @@ export function NecromancerStaff() {
 export function assasinsDagger() {
     return new Item(
         'AssasinDagger',
-        'Assasin\'s dagger',
+        'Assassin’s dagger',
         'dripping-blade.png',
         new Resource(1, 0, {
             Growth: 0,
@@ -261,7 +261,7 @@ export function assasinsDagger() {
 export function NecromancerTome() {
     return new Item(
         'NecromancerTome',
-        'Necromancers\'s Tome',
+        'Necromancer’s Tome',
         'evil-book.png',
         new Resource(5, 0, {
             Growth: 0,

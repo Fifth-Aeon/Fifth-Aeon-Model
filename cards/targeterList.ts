@@ -27,7 +27,7 @@ class TargeterList {
             const instance = new constructor();
             const id = constructor.getId();
             if (this.constructors.has(id))
-                console.warn('Warning, overwrting targeter ID', id);
+                console.warn('Warning, overwriting targeter ID', id);
             this.constructors.set(id, constructor);
             this.constructorList.push(constructor);
         }

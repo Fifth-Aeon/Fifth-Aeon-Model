@@ -6,11 +6,11 @@ let mission1 = new Scenario({
     description: 'Test',
     playerSetups: [{
         lifeTotals: 25,
-        initalHands: [pikeman()],
+        initialHands: [pikeman()],
         initialPermanents:  [pikeman()]
     }, {
         lifeTotals: 5,
-        initalHands: [],
+        initialHands: [],
         initialPermanents: [],
     }]
 });

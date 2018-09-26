@@ -57,7 +57,7 @@ export class Resource {
         ].filter(type => type.diff > 0);
     }
 
-    public asSentance() {
+    public asSentence() {
         const base = this.numeric + ' energy';
         const reqs: Array<[string, number]> = toPairs(this.types).filter(pair => pair[1] > 0);
         if (reqs.length === 0)

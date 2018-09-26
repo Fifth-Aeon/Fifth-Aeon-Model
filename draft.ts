@@ -23,13 +23,13 @@ export class Draft {
     private static format = standardFormat;
     /** The number of cards a player gets to pick each round */
     private static CardsPerPick = 4;
-    /** Maxiumium number of games a player can win before the run ends */
+    /** Maximum number of games a player can win before the run ends */
     private static MaxWins = 12;
-    /** Maxiumum number of games a player can lose before the run ends */
+    /** Maximum number of games a player can lose before the run ends */
     private static MaxLosses = 3;
 
     /** The current state of the draft.
-     * Tells us if the player is seleccting cards, playing games or if its over */
+     * Tells us if the player is selecting cards, playing games or if its over */
     private state = DraftState.Drafting;
     /** The current pick the user is on */
     private pickNumber = 0;
@@ -57,7 +57,7 @@ export class Draft {
     }
 
     /**
-     * Transforms the object into a simple interface that can be serilized as JSON
+     * Transforms the object into a simple interface that can be serialized as JSON
      *
      * @returns {SavedDraft}
      * @memberof Draft
@@ -170,7 +170,7 @@ export class Draft {
     }
 
     /**
-     * Prematurly ends the draft
+     * Prematurely ends the draft
      * @memberof Draft
      */
     retire() {

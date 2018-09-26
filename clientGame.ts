@@ -13,7 +13,7 @@ import { Unit } from './unit';
 
 
 export class ClientGame extends Game {
-    // Handlers to syncronize events
+    // Handlers to synchronize events
     protected syncEventHandlers: Map<SyncEventType, (playerNo: number, event: GameSyncEvent, params: any) => void>;
 
     constructor(
@@ -31,8 +31,8 @@ export class ClientGame extends Game {
         this.addSyncHandlers();
 
         this.players = [
-            new Player(this, [], 0, this.format.initalResource[0], this.format.initialLife[0]),
-            new Player(this, [], 1, this.format.initalResource[1], this.format.initialLife[1])
+            new Player(this, [], 0, this.format.initialResource[0], this.format.initialLife[0]),
+            new Player(this, [], 1, this.format.initialResource[1], this.format.initialLife[1])
         ];
 
         for (let i = 0; i < this.players.length; i++) {
@@ -94,7 +94,7 @@ export class ClientGame extends Game {
     }
 
     public makeChoice(player: number, cards: Card[]) {
-        this.makeDeferedChoice(player, cards);
+        this.makeDeferredChoice(player, cards);
         this.runGameAction(GameActionType.CardChoice, {
             choice: cards.map(card => card.getId())
         });
@@ -120,7 +120,7 @@ export class ClientGame extends Game {
             this.generateDamageDistribution();
         }
 
-        this.animator.startAnimiation();
+        this.animator.startAnimation();
 
         // Apply blocks in order decided by attacker
         for (let attackerID of Array.from(this.attackDamageOrder.keys())) {
@@ -146,7 +146,7 @@ export class ClientGame extends Game {
             }
         }
 
-        // Unblocked attackers damage the defening player
+        // Unblocked attackers damage the defending player
         for (let attacker of attackers) {
             if (!this.attackDamageOrder.has(attacker.getId())) {
                 this.animator.triggerBattleAnimation({
@@ -157,7 +157,7 @@ export class ClientGame extends Game {
                 await this.animator.getAnimationDelay(2);
                 attacker.dealAndApplyDamage(defendingPlayer, attacker.getDamage());
                 attacker.toggleAttacking();
-                attacker.setExausted(true);
+                attacker.setExhausted(true);
                 await this.animator.getAnimationDelay(2);
             } else {
                 attacker.toggleAttacking();
@@ -165,13 +165,13 @@ export class ClientGame extends Game {
 
         }
 
-        this.animator.endAnimiation();
+        this.animator.endAnimation();
         this.attackDamageOrder = null;
         this.changePhase(GamePhase.Play2);
     }
 
 
-    // Syncronization Logic --------------------------------------------------------
+    // Synchronization Logic --------------------------------------------------------
     /**
      * Syncs an event that happened on the server into the state of this game model
      *
@@ -301,7 +301,7 @@ export class ClientGame extends Game {
 
     private syncChoiceMade(localPlayerNumber: number, event: GameSyncEvent, params: any) {
         if (params.player !== localPlayerNumber)
-            this.makeDeferedChoice(params.player, this.idsToCards(params.choice));
+            this.makeDeferredChoice(params.player, this.idsToCards(params.choice));
     }
 
     private syncQueryResult(localPlayerNumber: number, event: GameSyncEvent, params: any) {

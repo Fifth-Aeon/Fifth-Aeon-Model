@@ -105,7 +105,7 @@ export class DeckList {
         this.customMetadata = saveData.customMetadata;
         for (let key of Array.from(this.records.keys())) {
             if (!cardList.exists(key)) {
-                throw Error(`Deck ${this.name} tried to load non-existant card with id ${key}.`);
+                throw Error(`Deck ${this.name} tried to load non-existent card with id ${key}.`);
             }
         }
     }

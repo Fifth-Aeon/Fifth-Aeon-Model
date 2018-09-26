@@ -48,7 +48,7 @@ export class Unit extends Permanent {
     private dying = false;
 
     // Actions
-    protected exausted: boolean;
+    protected exhausted: boolean;
     protected ready: boolean;
     protected attacking: boolean;
     protected blockedUnitId: string | null;
@@ -64,7 +64,7 @@ export class Unit extends Permanent {
         cost: Resource, targeter: Targeter, damage: number, maxLife: number, mechanics: Array<Mechanic>) {
         super(dataId, name, imageUrl, cost, targeter, mechanics);
         this.unitType = type;
-        this.exausted = false;
+        this.exhausted = false;
         this.ready = false;
         this.attackDisabled = false;
         this.blockDisabled = false;
@@ -88,7 +88,7 @@ export class Unit extends Permanent {
 
     public isPlayable(game: Game): boolean {
         return super.isPlayable(game) &&
-            game.getBoard().canPlayPermanant(this);
+            game.getBoard().canPlayPermanent(this);
     }
 
     public transform(unit: Unit, game: Game) {
@@ -165,8 +165,8 @@ export class Unit extends Permanent {
         return this.maxLife + this.damage;
     }
 
-    public setExausted(exausted: boolean) {
-        this.exausted = exausted;
+    public setExhausted(exhausted: boolean) {
+        this.exhausted = exhausted;
     }
 
     public setBlocking(blockedId: string) {
@@ -175,13 +175,13 @@ export class Unit extends Permanent {
 
     public canBlock() {
         return !this.blockDisabled &&
-            !this.exausted;
+            !this.exhausted;
     }
 
     public canBlockTarget(toBlock: Unit, hypothetical: boolean = false) {
         return toBlock === null ||
             !this.blockDisabled &&
-            !this.exausted &&
+            !this.exhausted &&
             (toBlock.isAttacking() || hypothetical) &&
             this.getEvents().checkCanBlock.trigger({ attacker: toBlock, canBlock: true }).canBlock &&
             toBlock.getEvents().checkBlockable.trigger({ blocker: this, canBlock: true }).canBlock;
@@ -199,8 +199,8 @@ export class Unit extends Permanent {
         return this.blockedUnitId !== null;
     }
 
-    public isExausted() {
-        return this.exausted;
+    public isExhausted() {
+        return this.exhausted;
     }
 
     public toggleAttacking() {
@@ -218,7 +218,7 @@ export class Unit extends Permanent {
     }
 
     public canAttack() {
-        return !this.attackDisabled && this.ready && !this.exausted;
+        return !this.attackDisabled && this.ready && !this.exhausted;
     }
 
     public getBlockedUnitId() {
@@ -241,7 +241,7 @@ export class Unit extends Permanent {
 
     public play(game: Game) {
         super.play(game);
-        this.exausted = false;
+        this.exhausted = false;
         this.location = GameZone.Board;
         this.life = this.maxLife;
         game.playPermanent(this, this.owner);
@@ -249,7 +249,7 @@ export class Unit extends Permanent {
 
     public refresh() {
         this.ready = true;
-        this.exausted = false;
+        this.exhausted = false;
         this.life = this.maxLife;
         this.setBlocking(null);
     }
@@ -259,7 +259,7 @@ export class Unit extends Permanent {
     }
 
     public canActivate(): boolean {
-        return !this.exausted;
+        return !this.exhausted;
     }
 
     public toString() {
@@ -285,8 +285,8 @@ export class Unit extends Permanent {
         this.afterDamage(target);
         target.afterDamage(this);
 
-        this.setExausted(true);
-        target.setExausted(true);
+        this.setExhausted(true);
+        target.setExhausted(true);
     }
 
     public takeDamage(amount: number, source: Card): number {
@@ -339,7 +339,7 @@ export class Unit extends Permanent {
         this.events.leavesPlay.trigger(new Map([['leavingUnit', this]]));
         this.blockedUnitId = null;
         this.ready = false;
-        this.exausted = false;
+        this.exhausted = false;
         this.died = false;
         this.mechanics.forEach(mechanic => {
             mechanic.remove(this, game);

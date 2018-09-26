@@ -1,8 +1,6 @@
-import { Targeter } from '../../targeter';
-import { AllUnits } from './basicTargeter';
 import { Card } from '../../card';
-import { Unit } from '../../unit';
 import { Game } from '../../game';
+import { Targeter } from '../../targeter';
 
 export class UnitWithAbility extends Targeter {
     protected static id = 'UnitWithAbility';

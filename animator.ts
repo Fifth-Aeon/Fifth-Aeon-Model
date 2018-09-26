@@ -4,7 +4,7 @@ import { Player } from './player';
 
 export class Animator {
     private battleAnimationSubscribers = new Array<(ev: BattleAnimationEvent) => void>();
-    private nextAnimiationTime: number;
+    private nextAnimationTime: number;
     private animating = false;
 
     constructor(
@@ -12,18 +12,18 @@ export class Animator {
     ) { }
 
     private getAnimationTime() {
-        return this.nextAnimiationTime * this.multiplier;
+        return this.nextAnimationTime * this.multiplier;
     }
 
-    public startAnimiation() {
+    public startAnimation() {
         this.animating = true;
     }
 
-    public endAnimiation() {
+    public endAnimation() {
         this.animating = false;
     }
 
-    public isAnimiating() {
+    public isAnimating() {
         return this.animating;
     }
 
@@ -33,12 +33,12 @@ export class Animator {
         });
     }
 
-    public addBattleAnimiatonHandler(handler: (event: BattleAnimationEvent) => void) {
+    public addBattleAnimationHandler(handler: (event: BattleAnimationEvent) => void) {
         this.battleAnimationSubscribers.push(handler);
     }
 
     public triggerBattleAnimation(battleData: BattleAnimationEvent) {
-        this.nextAnimiationTime = 2000 + battleData.defenders.length * 750;
+        this.nextAnimationTime = 2000 + battleData.defenders.length * 750;
         for (let handler of this.battleAnimationSubscribers) {
             handler(battleData);
         }

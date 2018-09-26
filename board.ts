@@ -4,7 +4,7 @@ import { Unit } from './unit';
 import { Enchantment } from './enchantment';
 
 /**
- * A simple board where each side can place up to a fixed number of units without any positoning.
+ * A simple board where each side can place up to a fixed number of units without any positioning.
  *
  * @export
  * @class Board
@@ -23,7 +23,7 @@ export class Board {
         return this.spaceCount - this.spaces[player].length;
     }
 
-    public canPlayPermanant(playerOrPerm: number | Permanent) {
+    public canPlayPermanent(playerOrPerm: number | Permanent) {
         if (typeof playerOrPerm !== 'object') {
             return this.spaces[playerOrPerm].length < this.spaceCount;
         } else {
@@ -75,11 +75,11 @@ export class Board {
         return this.spaces[playerNumber].filter(perm => perm.isUnit()) as Unit[];
     }
 
-    public getPlayerPermanants(playerNumber: number) {
+    public getPlayerPermanents(playerNumber: number) {
         return this.spaces[playerNumber];
     }
 
-    public removePermanant(perm: Permanent) {
+    public removePermanent(perm: Permanent) {
         for (let i = 0; i < this.spaces.length; i++) {
             for (let j = 0; j < this.spaces[i].length; j++) {
                 if (this.spaces[i][j] === perm)

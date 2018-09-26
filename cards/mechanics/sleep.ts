@@ -16,10 +16,10 @@ export class Sleeping extends Mechanic {
     }
     public enter(card: Card, game: Game) {
         let unit = card as Unit;
-        unit.setExausted(true);
+        unit.setExhausted(true);
         game.getEvents().startOfTurn.addEvent(this, params => {
             if (params.player === unit.getOwner()) {
-                unit.setExausted(true);
+                unit.setExhausted(true);
                 this.turns--;
                 if (this.turns < 1) {
                     unit.removeMechanic(this.getId(), game);

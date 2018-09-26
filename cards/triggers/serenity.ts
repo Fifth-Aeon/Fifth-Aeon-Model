@@ -1,9 +1,7 @@
-import { Game, GamePhase } from '../../game';
-import { Targeter } from '../../targeter';
 import { Card } from '../../card';
-import { Unit, UnitType } from '../../unit';
-
+import { Game, GamePhase } from '../../game';
 import { Trigger } from '../../trigger';
+
 
 export class Serenity extends Trigger {
     protected static id = 'Serenity';

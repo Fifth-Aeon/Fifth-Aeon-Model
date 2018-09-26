@@ -43,12 +43,12 @@ export class WebTarget extends TargetedMechanic {
     public enter(card: Card, game: Game) {
         for (let target of this.targeter.getTargets(card, game, this)) {
             target.removeMechanic('flying', game);
-            target.setExausted(true);
+            target.setExhausted(true);
         }
     }
 
     public getText(card: Card) {
-        return `Exaust ${this.targeter.getTextOrPronoun()}. It loses flying.`;
+        return `Exhaust ${this.targeter.getTextOrPronoun()}. It loses flying.`;
     }
 }
 
