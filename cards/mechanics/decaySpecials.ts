@@ -7,7 +7,7 @@ import { Unit, UnitType } from '../../unit';
 
 import { remove, take, sumBy } from 'lodash';
 import { ParameterType } from '../parameters';
-import { ChoiceHeuristic } from '../../ai';
+import { ChoiceHeuristic } from '../../ai/defaultAi';
 
 export class TransformDamaged extends Mechanic {
     protected static id = 'TransformDamaged';
@@ -45,9 +45,6 @@ export class TransformDamaged extends Mechanic {
         return 6;
     }
 
-    public getId() {
-        return 'transfomTarget';
-    }
 }
 
 export class AbominationConsume extends TriggeredMechanic {

@@ -5,7 +5,7 @@ import { Mechanic, TriggeredMechanic } from '../../mechanic';
 import { Player } from '../../player';
 import { Unit, UnitType } from '../../unit';
 import { ParameterType } from '../parameters';
-import { ChoiceHeuristic } from '../../ai';
+import { ChoiceHeuristic } from '../../ai/defaultAi';
 
 
 export class DrawCard extends TriggeredMechanic {

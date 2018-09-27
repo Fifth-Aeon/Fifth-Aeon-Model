@@ -4,7 +4,7 @@ import { Card } from '../../card';
 import { CardType } from '../../cardType';
 import { TriggeredMechanic } from '../../mechanic';
 import { ParameterType } from '../parameters';
-import { ChoiceHeuristic } from '../../ai';
+import { ChoiceHeuristic } from '../../ai/defaultAi';
 
 export class ReturnFromCrypt extends TriggeredMechanic {
     protected static id = 'ReturnFromCrypt';

@@ -11,7 +11,7 @@ import { EvalContext } from './mechanic';
 import { Permanent } from './permanent';
 import { Player } from './player';
 import { Unit } from './unit';
-import { ChoiceHeuristic } from './ai';
+import { ChoiceHeuristic } from './ai/defaultAi';
 import { GameEventSystem } from './events/eventSystems';
 
 

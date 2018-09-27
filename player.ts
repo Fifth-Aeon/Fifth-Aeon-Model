@@ -7,7 +7,7 @@ import { Resource } from './resource';
 
 
 import { shuffle } from 'lodash';
-import { ChoiceHeuristic } from './ai';
+import { ChoiceHeuristic } from './ai/defaultAi';
 import { PlayerEventSystem } from './events/eventSystems';
 
 export class Player extends Unit {
