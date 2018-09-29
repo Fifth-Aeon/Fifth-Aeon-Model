@@ -1,18 +1,16 @@
-import { shuffle } from 'lodash';
+import { ChoiceHeuristic } from './ai/defaultAi';
 import { knapsack } from './algorithms';
 import { Board } from './board';
 import { Card, CardType, GameZone } from './card';
-import { DeckList } from './deckList';
 import { Enchantment } from './enchantment';
-
+import { GameEventSystem } from './events/eventSystems';
 import { GameFormat, standardFormat } from './gameFormat';
 import { Log } from './log';
 import { EvalContext } from './mechanic';
 import { Permanent } from './permanent';
 import { Player } from './player';
 import { Unit } from './unit';
-import { ChoiceHeuristic } from './ai/defaultAi';
-import { GameEventSystem } from './events/eventSystems';
+
 
 
 export enum GamePhase {

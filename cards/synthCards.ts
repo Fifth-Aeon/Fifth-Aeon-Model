@@ -487,7 +487,7 @@ export function comsTower() {
 }
 
 
-export function enhancmentChamber() {
+export function enhancementChamber() {
     return new Unit(
         'EnhancmentChamber',
         'Enhancement Chamber',

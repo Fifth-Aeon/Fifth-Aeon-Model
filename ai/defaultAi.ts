@@ -16,7 +16,11 @@ import { Resource, ResourceTypeNames } from '../resource';
 import { Unit } from '../unit';
 import { AI } from './ai';
 
-/** A heuristic to be used when making a choice */
+/**
+ * Determines which heuristic to be used when the A.I makes a choice.
+ * Choices are any time the game asks a user to select 1 or more cards,
+ * such as when discarding or searching their deck.
+ */
 export enum ChoiceHeuristic {
     DrawHeuristic,
     DiscardHeuristic,
@@ -24,8 +28,10 @@ export enum ChoiceHeuristic {
     HighestStatsHeuristic
 }
 
-/** Represents an action (playing a card, an item or an enchantment)
- * whose value has already been determined (By a heuristic) */
+/**
+ * Represents an action (playing a card, an item or an enchantment)
+ * whose value has already been determined (By a heuristic)
+ */
 interface EvaluatedAction {
     score: number;
     cost: number;
