@@ -235,7 +235,7 @@ export class DefaultAI extends AI {
     /** Gets the best target for a card with a targeter.
      * The best target is considered to be the one with the highest evaluateTarget value.
      */
-    private getBestTarget(card: Card): EvaluatedAction {
+    protected getBestTarget(card: Card): EvaluatedAction {
         let targets = card.getTargeter().getValidTargets(card, this.game);
         if (targets.length === 0)
             return { score: 0, cost: card.getCost().getNumeric(), card: card };
@@ -250,7 +250,7 @@ export class DefaultAI extends AI {
      * @returns {EvaluatedAction} - The EvaluatedAction with the score and any targets
      * @memberof DefaultAI
      */
-    private evaluateCard(card: Card): EvaluatedAction {
+    protected evaluateCard(card: Card): EvaluatedAction {
         let result: EvaluatedAction = { score: 0, cost: card.getCost().getNumeric(), card: card };
         if (card.getTargeter().needsInput()) {
             let best = this.getBestTarget(card);
@@ -288,7 +288,7 @@ export class DefaultAI extends AI {
      * Then we use a knapsack algorithm to get the highest total value of actions with our available energy.
      *
      */
-    private selectActions() {
+    protected selectActions() {
         let playableCards = this.aiPlayer.getHand().filter(card => card.isPlayable(this.game));
         let modifiableEnchantments = this.getModifiableEnchantments();
         let energy = this.aiPlayer.getPool().getNumeric();
@@ -435,7 +435,7 @@ export class DefaultAI extends AI {
      * @private
      * @memberof DefaultAI
      */
-    private attack() {
+    protected attack() {
         let potentialAttackers = this.game.getBoard().getPlayerUnits(this.playerNumber)
             .filter(unit => unit.canAttack())
             .filter(unit => unit.getDamage() > 0);
