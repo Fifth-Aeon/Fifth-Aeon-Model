@@ -35,3 +35,7 @@ export abstract class AI {
     abstract pulse(): void;
 }
 
+export interface AIConstructor {
+    new(playerNumber: number, game: ClientGame, deck: DeckList, animator: Animator): AI;
+}
+
