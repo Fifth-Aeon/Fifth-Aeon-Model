@@ -80,11 +80,25 @@ export class DefaultAI extends AI {
         super(playerNumber, game, deck, animator);
         this.aiPlayer = this.game.getPlayer(this.playerNumber);
         this.enemyNumber = this.game.getOtherPlayerNumber(this.playerNumber);
+        this.game.setOwningPlayer(this.playerNumber);
 
         this.game.promptCardChoice = this.makeChoice.bind(this);
         this.eventHandlers.set(SyncEventType.TurnStart, event => this.onTurnStart(event.params));
         this.eventHandlers.set(SyncEventType.PhaseChange, event => this.onPhaseChange(event.params));
-        this.eventHandlers.set(SyncEventType.ChoiceMade, event => this.continue());
+        this.eventHandlers.set(SyncEventType.ChoiceMade, event => this.think());
+    }
+
+    /** Triggers the A.I to consider what its next action should be */
+    private think() {
+        if (!this.game.isActivePlayer(this.playerNumber))
+            return;
+        if (this.game.getPhase() === GamePhase.Block) {
+            this.block();
+        } else {
+            if (this.game.canPlayResource())
+                this.playResource();
+            this.sequenceActions([this.selectActions, this.attack]);
+        }
     }
 
     /**
@@ -128,7 +142,10 @@ export class DefaultAI extends AI {
         if (!this.game.canTakeAction() || !this.game.isActivePlayer(this.playerNumber))
             return;
         let next = this.dequeue() || this.game.pass.bind(this.game);
-        next();
+        let result = next();
+        if (result === false) {
+            console.log('A.I attempted to take illegal action', next);
+        }
     }
 
     /** A simple heuristic to determine which card is best to draw
@@ -228,8 +245,7 @@ export class DefaultAI extends AI {
     private onTurnStart(params: any) {
         if (this.playerNumber !== params.turn)
             return;
-        this.playResource();
-        this.sequenceActions([this.selectActions, this.attack]);
+        this.think();
     }
 
     /** Gets the best target for a card with a targeter.
@@ -577,7 +593,6 @@ export class DefaultAI extends AI {
     private onPhaseChange(params: any) {
         if (!this.game.isActivePlayer(this.playerNumber))
             return;
-        if (params.phase === GamePhase.Block)
-            this.block();
+        this.think();
     }
 }
