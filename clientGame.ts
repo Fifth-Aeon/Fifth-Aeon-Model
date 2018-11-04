@@ -15,6 +15,8 @@ import { Unit } from './unit';
 export class ClientGame extends Game {
     // Handlers to synchronize events
     protected syncEventHandlers: Map<SyncEventType, (playerNo: number, event: GameSyncEvent, params: any) => void>;
+    // The player number of the player contorting this game
+    private owningPlayer: number;
 
     constructor(
         name: string,
@@ -48,8 +50,31 @@ export class ClientGame extends Game {
         return this.log;
     }
 
+
     // Game Actions ----------------------------------------------------------
+
+    /** Checks if the player controlling this game can play a given card with given targets */
+    public canPlayCard(card: Card, targets: Unit[] = [], host: Unit = null) {
+        if (!this.isPlayerTurn(this.owningPlayer))
+            return false;
+        if (!card.isPlayable(this))
+            return false;
+        card.getTargeter().setTargets(targets);
+        if (!card.getTargeter().targetsAreValid(card, this))
+            return false;
+        // Item Host
+        if (card.getCardType() === CardType.Item) {
+            let item = card as Item;
+            item.getHostTargeter().setTargets([host]);
+            if (!item.getHostTargeter().targetsAreValid(card, this))
+                return false;
+        }
+        return true;
+    }
+
     public playCardExtern(card: Card, targets: Unit[] = [], host: Unit = null) {
+        if (!this.canPlayCard(card, targets, host))
+            return false;
         let targetIds = targets.map(target => target.getId());
         card.getTargeter().setTargets(targets);
         if (card.getCardType() === CardType.Item) {
@@ -74,17 +99,21 @@ export class ClientGame extends Game {
 
     public modifyEnchantment(player: Player, enchantment: Enchantment) {
         if (!enchantment.canChangePower(player, this))
-            return;
+            return false;
         enchantment.empowerOrDiminish(player, this);
         this.runGameAction(GameActionType.ModifyEnchantment, { enchantmentId: enchantment.getId() });
     }
 
     public declareAttacker(unit: Unit) {
+        if (!unit.canAttack())
+            return false;
         unit.toggleAttacking();
         this.runGameAction(GameActionType.ToggleAttack, { unitId: unit.getId() });
     }
 
     public declareBlocker(blocker: Unit, attacker: Unit | null) {
+        if (!blocker.canBlockTarget(attacker))
+            return false;
         let attackerId = attacker ? attacker.getId() : null;
         blocker.setBlocking(attackerId);
         this.runGameAction(GameActionType.DeclareBlocker, {
@@ -93,19 +122,51 @@ export class ClientGame extends Game {
         });
     }
 
+    public canMakeChoice(player: number, cards: Card[]) {
+        if (this.currentChoices[player] === null) {
+            console.error('Reject choice from', player);
+            return false;
+        }
+        let min = Math.min(this.currentChoices[player].validCards.size, this.currentChoices[player].min);
+        let max = this.currentChoices[player].max;
+        if (cards.length > max || cards.length < min) {
+            console.error(`Reject choice. Out of range cards but only got ${cards.length}.`);
+            return false;
+        }
+        if (!cards.every(card => this.currentChoices[player].validCards.has(card))) {
+            console.error(`Reject choice. Included invalid options.`, cards, this.currentChoices[player].validCards);
+            return false;
+        }
+        return true;
+    }
+
     public makeChoice(player: number, cards: Card[]) {
+        if (!this.canMakeChoice(player, cards))
+            return false;
         this.makeDeferredChoice(player, cards);
         this.runGameAction(GameActionType.CardChoice, {
             choice: cards.map(card => card.getId())
         });
     }
 
+    public canPlayResource(): boolean {
+        return this.players[this.owningPlayer].canPlayResource();
+    }
+
     public playResource(type: string) {
+        if (!this.canPlayResource())
+            return false;
         this.runGameAction(GameActionType.PlayResource, { type: type });
     }
 
     public pass() {
+        if (this.players[this.owningPlayer].canPlayResource())
+            return false;
         this.runGameAction(GameActionType.Pass, {});
+    }
+
+    public setOwningPlayer(player: number) {
+        this.owningPlayer = player;
     }
 
 
@@ -138,8 +199,8 @@ export class ClientGame extends Game {
                 await this.animator.getAnimationDelay(damageOrder.length * 2);
                 let assignedDamage = Math.min(blocker.getLife(), remainingDamage);
                 remainingDamage -= assignedDamage;
-                blocker.getEvents().block.trigger( { attacker});
-                blocker.getEvents().attack.trigger({ attacker: attacker, damage: assignedDamage, defender: blocker});
+                blocker.getEvents().block.trigger({ attacker });
+                blocker.getEvents().attack.trigger({ attacker: attacker, damage: assignedDamage, defender: blocker });
                 attacker.fight(blocker, assignedDamage);
                 blocker.setBlocking(null);
                 await this.animator.getAnimationDelay(damageOrder.length * 2);
