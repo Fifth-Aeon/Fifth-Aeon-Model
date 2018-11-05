@@ -118,7 +118,7 @@ export class ServerGame extends Game {
         if (action.type !== GameActionType.CardChoice &&
             (this.currentChoices[0] !== null ||
                 this.currentChoices[1] !== null)) {
-            console.error('Cant take action, waiting for', this.currentChoices);
+            console.error(`Cant take action, ${GameActionType[action.type]} waiting for`, this.currentChoices);
             return null;
         }
         let sig = handler(action);

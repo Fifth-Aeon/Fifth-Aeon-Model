@@ -314,7 +314,9 @@ export class ClientGame extends Game {
     }
 
     private syncDrawEvent(localPlayerNumber: number, event: GameSyncEvent, params: any) {
-        if (params.discarded)
+        if (params.fatigue)
+            this.players[params.playerNo].fatigue()
+        else if (params.discarded)
             this.addToCrypt(this.unpackCard(params.card));
         else
             this.players[params.playerNo].addToHand(this.unpackCard(params.card));

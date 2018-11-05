@@ -1,17 +1,14 @@
+import { remove, sample, shuffle } from 'lodash';
+import { ChoiceHeuristic } from './ai/defaultAi';
 import { Card, GameZone } from './card';
-import { Unit, UnitType } from './unit';
-import { sample, remove } from 'lodash';
-import { GameFormat } from './gameFormat';
+import { ClientGame } from './clientGame';
+import { PlayerEventSystem } from './events/eventSystems';
 import { Game, GameSyncEvent, SyncEventType } from './game';
 import { Resource } from './resource';
-
-
-import { shuffle } from 'lodash';
-import { ChoiceHeuristic } from './ai/defaultAi';
-import { PlayerEventSystem } from './events/eventSystems';
+import { Unit, UnitType } from './unit';
+import { ServerGame } from './serverGame';
 
 export class Player extends Unit {
-    private format: GameFormat;
     private hand: Array<Card>;
     private deck: Array<Card>;
     private resource: Resource;
@@ -19,11 +16,11 @@ export class Player extends Unit {
     private hasPlayedResource = false;
     public dataId = '';
     private drawDisabled = false;
-    private drawRequests = 0;
     protected playerEvents = new PlayerEventSystem();
 
     private hardHandLimit = 12;
     private softHandLimit = 8;
+    private fatigueLevel = 0;
 
     constructor(private parent: Game, cards: Array<Card>, private playerNumber: number, initResource: Resource, life: number) {
         super('Player', 'Player', 'hearts.png', UnitType.Player, new Resource(0), null, 0, life, []);
@@ -174,14 +171,30 @@ export class Player extends Unit {
             });
     }
 
+    public fatigue() {
+        this.takeDamage(Math.pow(2, this.fatigueLevel), this);
+        this.fatigueLevel += 1;
+
+        let parent = this.parent;
+        if (!(parent instanceof ServerGame))
+            return;
+
+        parent.addGameEvent(new GameSyncEvent(SyncEventType.Draw, {
+            playerNo: this.playerNumber,
+            fatigue: true
+        }));
+    }
+
     public drawCard() {
         if (this.drawDisabled) {
             return;
         }
         let drawn = sample(this.deck);
         remove(this.deck, drawn);
-        if (!drawn)
+        if (!drawn) {
+            this.fatigue();
             return;
+        }
         if (this.hand.length > this.hardHandLimit) {
             this.parent.addToCrypt(drawn);
         } else {

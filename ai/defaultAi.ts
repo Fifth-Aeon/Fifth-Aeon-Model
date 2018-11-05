@@ -90,13 +90,14 @@ export class DefaultAI extends AI {
 
     /** Triggers the A.I to consider what its next action should be */
     private think() {
-        if (!this.game.isActivePlayer(this.playerNumber))
+        if (!this.game.isActivePlayer(this.playerNumber) || !this.game.canTakeAction())
             return;
         if (this.game.getPhase() === GamePhase.Block) {
             this.block();
         } else {
-            if (this.game.canPlayResource())
+            if (this.game.canPlayResource()) {
                 this.playResource();
+            }
             this.sequenceActions([this.selectActions, this.attack]);
         }
     }
