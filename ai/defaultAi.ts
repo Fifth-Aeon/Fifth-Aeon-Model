@@ -1,5 +1,4 @@
 import { maxBy, meanBy, minBy, remove, sortBy, sumBy, take } from 'lodash';
-import { LinkedList } from 'typescript-collections';
 import { knapsack, KnapsackItem } from '../algorithms';
 import { Animator } from '../animator';
 import { Card, CardType } from '../card';
@@ -65,7 +64,6 @@ export class DefaultAI extends AI {
     private eventHandlers: Map<SyncEventType, (params: any) => void> = new Map();
     private enemyNumber: number;
     private aiPlayer: Player;
-    private actionSequence: LinkedList<() => void> = new LinkedList<() => void>();
 
     /**
      * Creates an instance of DefaultAI.
@@ -76,22 +74,17 @@ export class DefaultAI extends AI {
      * @param {Animator} animator - An animator to avoid acting during animations
      * @memberof DefaultAI
      */
-    constructor(playerNumber: number, game: ClientGame, deck: DeckList, animator: Animator) {
-        super(playerNumber, game, deck, animator);
+    constructor(playerNumber: number, game: ClientGame, deck: DeckList) {
+        super(playerNumber, game, deck);
         this.aiPlayer = this.game.getPlayer(this.playerNumber);
         this.enemyNumber = this.game.getOtherPlayerNumber(this.playerNumber);
         this.game.setOwningPlayer(this.playerNumber);
 
         this.game.promptCardChoice = this.makeChoice.bind(this);
-        this.eventHandlers.set(SyncEventType.TurnStart, event => this.onTurnStart(event.params));
-        this.eventHandlers.set(SyncEventType.PhaseChange, event => this.onPhaseChange(event.params));
-        this.eventHandlers.set(SyncEventType.ChoiceMade, event => this.think());
     }
 
     /** Triggers the A.I to consider what its next action should be */
-    private think() {
-        if (!this.game.isActivePlayer(this.playerNumber) || !this.game.canTakeAction())
-            return;
+    protected think() {
         if (this.game.getPhase() === GamePhase.Block) {
             this.block();
         } else {
@@ -99,55 +92,6 @@ export class DefaultAI extends AI {
                 this.playResource();
             }
             this.sequenceActions([this.selectActions, this.attack]);
-        }
-    }
-
-    /**
-     * Invoked by the client when the A.I should take another action
-    */
-    public pulse() {
-        this.continue();
-    }
-
-    /**
-     * Adds an action to be run the next time the game requests the A.I to do something
-     * @param action The action to be added to the sequence
-     * @param front If true the action will be added to the beginning of the sequence, otherwise it will go at the end.
-     */
-    private addActionToSequence(action: () => void, front: boolean = false) {
-        this.actionSequence.add(action.bind(this), front ? 0 : this.actionSequence.size());
-    }
-
-    /**
-     * Adds a list of actions to be run to end of the sequence.
-     * @param actions - The actions to add
-     */
-    private sequenceActions(actions: Array<() => void>) {
-        this.actionSequence = new LinkedList<() => void>();
-        for (let action of actions) {
-            this.addActionToSequence(action);
-        }
-    }
-
-    /** Gets the next action from the action sequence and removes it */
-    private dequeue(): () => void {
-        let val = this.actionSequence.first();
-        this.actionSequence.remove(val);
-        return val;
-    }
-
-    /** Checks if we can take an action, if we can then takes the next one in the action sequence. */
-    private continue() {
-        if (this.animator.isAnimating()) {
-            return;
-        }
-        if (!this.game.canTakeAction() || !this.game.isActivePlayer(this.playerNumber)) {
-            return;
-        }
-        let next = this.dequeue() || this.game.pass.bind(this.game);
-        let result = next();
-        if (result === false) {
-            console.error('A.I attempted to take illegal action', next);
         }
     }
 
@@ -239,17 +183,7 @@ export class DefaultAI extends AI {
             this.eventHandlers.get(event.type)(event);
     }
 
-    /** Invoked when the A.I's turn starts with the following basic plan.
-     *
-     * 1. Play a resource
-     * 2. Take as many useful actions (playing cards or modifying resourced) as possible
-     * 3. Make any advantageous attacks.
-     */
-    private onTurnStart(params: any) {
-        if (this.playerNumber !== params.turn)
-            return;
-        this.think();
-    }
+
 
     /** Gets the best target for a card with a targeter.
      * The best target is considered to be the one with the highest evaluateTarget value.
@@ -332,8 +266,10 @@ export class DefaultAI extends AI {
 
         if (actionsToRun.length > 0) {
             this.addActionToSequence(this.selectActions, true);
-            this.addActionToSequence(() => this.runAction(maxBy(actionsToRun, evaluated => evaluated.score)), true);
+            this.addActionToSequence(() => this.runEvaluatedAction(maxBy(actionsToRun, evaluated => evaluated.score)), true);
         }
+        
+        return true;
     }
 
     /** Plays a card based on an action */
@@ -347,7 +283,7 @@ export class DefaultAI extends AI {
     }
 
     /** Runs an action (either playing a card or modifying an enchantment) */
-    private runAction(action: EvaluatedAction) {
+    private runEvaluatedAction(action: EvaluatedAction) {
         if (action.card)
             return this.runCardPlayAction(action);
         else if (action.enchantmentTarget)
@@ -473,6 +409,7 @@ export class DefaultAI extends AI {
                 this.game.declareAttacker(attacker);
             }
         }
+        return true;
     }
 
     /**
@@ -529,7 +466,7 @@ export class DefaultAI extends AI {
     /** Declares a blocker as blocking a particular attacker */
     private makeBlockAction(params: { blocker: Unit, attacker: Unit }) {
         return () => {
-            this.game.declareBlocker(params.blocker, params.attacker);
+            return this.game.declareBlocker(params.blocker, params.attacker);
         };
     }
 
@@ -587,15 +524,5 @@ export class DefaultAI extends AI {
         this.sequenceActions(actions);
     }
 
-    /**
-     * Executed when the phase changes.
-     *
-     * If the new phase is the block phase and we are the active player then we trigger blocking logic.
-     * (this indicates we are being attacked)
-     */
-    private onPhaseChange(params: any) {
-        if (!this.game.isActivePlayer(this.playerNumber))
-            return;
-        this.think();
-    }
+
 }

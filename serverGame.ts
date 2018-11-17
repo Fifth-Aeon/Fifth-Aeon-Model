@@ -298,7 +298,7 @@ export class ServerGame extends Game {
 
     protected passAction(act: GameAction): boolean {
         if (!this.isActivePlayer(act.player)) {
-            console.error('Cant pass, not active player player', this.getActivePlayer(), GamePhase[this.phase], this.turn);
+            console.error(`Player ${act.player} Can't pass, they are not thee active player (${this.getActivePlayer()} is)`, GamePhase[this.phase], this.turn);
             return false;
         }
         this.nextPhase();
