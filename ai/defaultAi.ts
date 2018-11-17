@@ -138,14 +138,16 @@ export class DefaultAI extends AI {
 
     /** Checks if we can take an action, if we can then takes the next one in the action sequence. */
     private continue() {
-        if (this.animator.isAnimating())
+        if (this.animator.isAnimating()) {
             return;
-        if (!this.game.canTakeAction() || !this.game.isActivePlayer(this.playerNumber))
+        }
+        if (!this.game.canTakeAction() || !this.game.isActivePlayer(this.playerNumber)) {
             return;
+        }
         let next = this.dequeue() || this.game.pass.bind(this.game);
         let result = next();
         if (result === false) {
-            console.log('A.I attempted to take illegal action', next);
+            console.error('A.I attempted to take illegal action', next);
         }
     }
 
@@ -329,8 +331,8 @@ export class DefaultAI extends AI {
         })).set).map(item => item.data);
 
         if (actionsToRun.length > 0) {
-            this.runAction(maxBy(actionsToRun, evaluated => evaluated.score));
             this.addActionToSequence(this.selectActions, true);
+            this.addActionToSequence(() => this.runAction(maxBy(actionsToRun, evaluated => evaluated.score)), true);
         }
     }
 
@@ -341,15 +343,15 @@ export class DefaultAI extends AI {
         let toPlay = action.card;
         if (action.target)
             targets.push(action.target);
-        this.game.playCardExtern(toPlay, targets, host);
+        return this.game.playCardExtern(toPlay, targets, host);
     }
 
     /** Runs an action (either playing a card or modifying an enchantment) */
     private runAction(action: EvaluatedAction) {
         if (action.card)
-            this.runCardPlayAction(action);
+            return this.runCardPlayAction(action);
         else if (action.enchantmentTarget)
-            this.game.modifyEnchantment(this.aiPlayer, action.enchantmentTarget);
+            return this.game.modifyEnchantment(this.aiPlayer, action.enchantmentTarget);
     }
 
     /** Returns the enchantments we have enough energy to empower or diminish */
@@ -358,7 +360,7 @@ export class DefaultAI extends AI {
         let res = player.getPool();
         return this.game.getBoard()
             .getAllEnchantments()
-            .filter(enchant => res.meetsReq(enchant.getModifyCost()));
+            .filter(enchant => this.game.canModifyEnchantment(enchant));
     }
 
     /**

@@ -97,6 +97,10 @@ export class ClientGame extends Game {
         });
     }
 
+    public canModifyEnchantment(enchantment: Enchantment) {
+        return enchantment.canChangePower(this.getPlayer[this.owningPlayer], this)
+    }
+
     public modifyEnchantment(player: Player, enchantment: Enchantment) {
         if (!enchantment.canChangePower(player, this))
             return false;
