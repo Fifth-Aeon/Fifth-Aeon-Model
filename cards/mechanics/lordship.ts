@@ -1,11 +1,10 @@
-import { Mechanic } from '../../mechanic';
-import { Game } from '../../game';
-import { Targeter } from '../../targeter';
 import { Card } from '../../card';
+import { Game } from '../../game';
+import { Mechanic } from '../../mechanic';
+import { Permanent } from '../../permanent';
+import { formatBuff } from '../../strings';
 import { Unit, UnitType } from '../../unit';
 
-import { formatBuff } from '../../strings';
-import { Permanent } from '../../permanent';
 
 export class Lordship extends Mechanic {
     protected static id = 'Lordship';
@@ -36,12 +35,11 @@ export class Lordship extends Mechanic {
     private getTargets(source: Unit, game: Game) {
         return game.getBoard().getAllUnits()
             .filter(target => this.filter(source, target));
-
     }
 
     private applyToUnit(unit: Unit, game: Game) {
         this.addEffect(unit, game);
-        unit.getEvents().leavesPlay.addEvent(this,  (params) => {
+        unit.getEvents().leavesPlay.addEvent(this, (params) => {
             this.removeFromUnit(unit, game);
         });
     }
@@ -52,8 +50,7 @@ export class Lordship extends Mechanic {
     }
 
     public remove(card: Card, game: Game) {
-        let targets = game.getBoard().getAllUnits()
-            .filter(unit => this.filter(card as Unit, unit))
+        this.getTargets(card as Unit, game)
             .forEach(unit => this.removeFromUnit(unit, game));
         game.gameEvents.removeEvents(this);
     }

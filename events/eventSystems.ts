@@ -34,7 +34,7 @@ export class EventList<T> {
 
     public trigger(params: T) {
         let len = this.events.length;
-        for (let i = 0; i < this.events.length; i++) {
+        for (let i = 0; i < this.events.length && i >= 0; i++) {
             let event = this.events[i];
             event.trigger(params);
             if (this.events.length < len) {
