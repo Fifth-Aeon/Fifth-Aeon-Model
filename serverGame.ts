@@ -244,10 +244,10 @@ export class ServerGame extends Game {
         - Unit can attack
     */
     protected toggleAttackAction(act: GameAction): boolean {
-        let player = this.players[act.player];
         let unit = this.getPlayerUnitById(act.player, act.params.unitId);
-        if (!this.isPlayerTurn(act.player) || this.phase !== GamePhase.Play1 || !unit || !unit.canAttack())
+        if (!this.isPlayerTurn(act.player) || this.phase !== GamePhase.Play1 || !unit || !unit.canAttack()) {
             return false;
+        }
         unit.toggleAttacking();
         this.addGameEvent(new GameSyncEvent(SyncEventType.AttackToggled, { player: act.player, unitId: act.params.unitId }));
         return true;

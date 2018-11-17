@@ -104,8 +104,12 @@ export class ClientGame extends Game {
         this.runGameAction(GameActionType.ModifyEnchantment, { enchantmentId: enchantment.getId() });
     }
 
+    public canAttackWith(unit: Unit) {
+        return this.isPlayerTurn(this.owningPlayer) && this.phase === GamePhase.Play1  && unit.canAttack()
+    }
+
     public declareAttacker(unit: Unit) {
-        if (!unit.canAttack())
+        if (!this.canAttackWith(unit))
             return false;
         unit.toggleAttacking();
         this.runGameAction(GameActionType.ToggleAttack, { unitId: unit.getId() });
