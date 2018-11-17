@@ -154,12 +154,14 @@ export class ClientGame extends Game {
     }
 
     public canPlayResource(): boolean {
-        return this.players[this.owningPlayer].canPlayResource();
+        return this.isPlayerTurn(this.owningPlayer) && this.players[this.owningPlayer].canPlayResource();
     }
 
     public playResource(type: string) {
         if (!this.canPlayResource())
             return false;
+        let res = this.format.basicResources.get(type);
+        this.players[this.owningPlayer].playResource(res);
         this.runGameAction(GameActionType.PlayResource, { type: type });
     }
 
@@ -336,7 +338,8 @@ export class ClientGame extends Game {
     }
 
     private syncPlayResource(localPlayerNumber: number, event: GameSyncEvent, params: any) {
-        this.players[params.playerNo].playResource(params.resource);
+        if (params.playerNo != localPlayerNumber)
+            this.players[params.playerNo].playResource(params.resource);
     }
 
     private syncAttackToggled(localPlayerNumber: number, event: GameSyncEvent, params: any) {
