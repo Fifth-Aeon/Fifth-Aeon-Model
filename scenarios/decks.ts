@@ -139,7 +139,9 @@ addDeck({
     id: -1,
     'records': [
         ['Armstice', 4], ['AncientSage', 2], ['AssemblyLine', 4], ['Dove', 4],
-        ['ValiantDefenses', 4], ['Imprison', 4], ['CallOfJustice', 4], ['SentryAngel', 4],
+        //['ValiantDefenses', 4],
+        ['AtomicStrike', 4], 
+        ['Imprison', 4], ['CallOfJustice', 4], ['SentryAngel', 4],
         ['ArchivesSearch', 4], ['BombingRun', 2], ['GoldMine', 2], ['ObsesrvationBallon', 2]
     ]
 });
