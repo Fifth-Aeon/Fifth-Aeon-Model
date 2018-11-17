@@ -229,7 +229,7 @@ export abstract class Game {
         if (typeof player === 'number')
             player = this.getPlayer(player);
         card.setOwner(player.getPlayerNumber());
-        card.setId(this.generatedCardId.toString(16));
+        card.setId(this.generatedCardId.toString(10));
         this.cardPool.set(card.getId(), card);
         this.generatedCardId++;
         player.playCard(this, card, true);
