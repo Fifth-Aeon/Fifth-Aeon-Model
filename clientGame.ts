@@ -82,11 +82,11 @@ export class ClientGame extends Game {
                 console.error('Item', card.getName(), 'requires a host.');
             (card as Item).getHostTargeter().setTargets([host]);
         }
+        this.playCard(this.players[card.getOwner()], card);
         this.runGameAction(GameActionType.PlayCard, {
             id: card.getId(), targetIds: targetIds,
             hostId: host ? host.getId() : null
         });
-        this.playCard(this.players[card.getOwner()], card);
     }
 
     public setAttackOrder(attacker: Unit, order: Unit[]) {
@@ -243,6 +243,14 @@ export class ClientGame extends Game {
 
 
     // Synchronization Logic --------------------------------------------------------
+    private nextExpectedEvent = 0;
+
+    public isSyncronized() {
+        return this.getExpectedCards() == 0;
+    }
+
+    public onSync: () => void;
+
     /**
      * Syncs an event that happened on the server into the state of this game model
      *
@@ -251,11 +259,22 @@ export class ClientGame extends Game {
      * @memberof Game
      */
     public syncServerEvent(localPlayerNumber: number, event: GameSyncEvent) {
+
+        if (event.number != this.nextExpectedEvent) {
+            console.error('Event arrived out of order', event.number, this.events.length);
+        }
         let params = event.params;
         this.events.push(event);
         let handler = this.syncEventHandlers.get(event.type);
-        if (handler)
-            handler(localPlayerNumber, event, params);
+        if (handler) {
+            try {
+            } catch (e) {
+                console.error('Error while syncing event', SyncEventType[event.type], event, 'for', localPlayerNumber);
+                throw e;
+            }
+        }
+        this.nextExpectedEvent++;
+
     }
 
     private idsToCards(ids: Array<string>) {
@@ -323,6 +342,10 @@ export class ClientGame extends Game {
         enchantment.empowerOrDiminish(this.getCurrentPlayer(), this);
     }
 
+    public getExpectedCards() {
+        return this.players[0].getExpectedDraws() + this.players[1].getExpectedDraws();
+    }
+
     private syncDrawEvent(localPlayerNumber: number, event: GameSyncEvent, params: any) {
         if (params.fatigue)
             this.players[params.playerNo].fatigue()
@@ -330,6 +353,12 @@ export class ClientGame extends Game {
             this.addToCrypt(this.unpackCard(params.card));
         else
             this.players[params.playerNo].addToHand(this.unpackCard(params.card));
+        this.players[params.playerNo].setCardSynced();
+
+        if (this.isSyncronized() && this.onSync) {
+            this.onSync();
+            this.onSync = undefined;
+        }
     }
 
     private syncTurnStart(localPlayerNumber: number, event: GameSyncEvent, params: any) {

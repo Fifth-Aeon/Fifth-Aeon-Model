@@ -8,8 +8,6 @@ export interface AIConstructor {
     new(playerNumber: number, game: ClientGame, deck: DeckList): AI;
 }
 
-
-
 /**
  * An Artificial Intelligence that can play the game.
  * 
@@ -49,9 +47,6 @@ export abstract class AI {
 
     /** Checks if we can take an action, if we can then takes the next one in the action sequence. */
     protected applyNextAction() {
-        if (this.animator.isAnimating()) {
-            return;
-        }
         if (!this.game.canTakeAction() || !this.game.isActivePlayer(this.playerNumber)) {
             return;
         }
@@ -81,7 +76,7 @@ export abstract class AI {
 
         if (this.timer !== undefined) clearInterval(this.timer);
         this.timer = setInterval(() => {
-            if (!this.thinking && !this.animator.isAnimating())
+            if (!this.thinking && !this.animator.isAnimating() && this.game.isSyncronized())
                 this.applyNextAction();
         }, delayTimeMs);
     }
@@ -108,6 +103,10 @@ export abstract class AI {
      * Signals to the A.I that it has gained priority and may take actions
      */
     public onGainPriority() {
+        if (!this.game.isSyncronized()) {
+            this.game.onSync = () => this.onGainPriority();
+            return;
+        }
         this.thinking = true;
         this.think();
         this.thinking = false;

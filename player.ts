@@ -1,4 +1,4 @@
-import { remove, sample, shuffle } from 'lodash';
+import { remove } from 'lodash';
 import { ChoiceHeuristic } from './ai/defaultAi';
 import { Card, GameZone } from './card';
 import { ClientGame } from './clientGame';
@@ -49,6 +49,10 @@ export class Player extends Unit {
         card.setLocation(GameZone.Hand);
         this.hand.push(card);
         this.getPlayerEvents().CardDrawn.trigger({ card });
+    }
+
+    public removeCardFromHand(card: Card) {
+        remove(this.hand, (toRem: Card) => toRem.getId() === card.getId());
     }
 
     public getPlayerEvents() {
@@ -108,7 +112,7 @@ export class Player extends Unit {
     }
 
     public playCard(game: Game, card: Card, free: boolean = false) {
-        remove(this.hand, (toRem: Card) => toRem === card);
+        this.removeCardFromHand(card);
         if (!free)
             this.reduceResource(card.getCost());
         card.play(game);
@@ -118,20 +122,20 @@ export class Player extends Unit {
         this.events.death.trigger({});
     }
 
-    public removeCardFromHand(card: Card) {
-        remove(this.hand, (toRem: Card) => toRem.getId() === card.getId());
-    }
-
+  
     public getDeck() {
         return this.deck;
     }
 
     public discardExtra(game: Game) {
         let num = this.hand.length - this.softHandLimit;
-        if (num > 0)
+        if (num > 0) {
+            //console.log(game.getName(), ` ${this.playerNumber} has ${ this.hand.length} thus discarding ${num} extra cards`);
             this.discard(game, num, () => game.nextTurn());
-        else
+        } else {
+            //console.log(game.getName(), `no discard neccisary ${this.playerNumber} has ${ this.hand.length} `);
             game.nextTurn();
+        }
     }
 
     public replace(game: Game, min: number, max: number) {
@@ -160,7 +164,11 @@ export class Player extends Unit {
 
     public searchForCard(game: Game, count: number) {
         game.queryCards(
-            (queried: Game) => shuffle(queried.getPlayer(this.playerNumber).getDeck()),
+            (queried: Game) => {
+                if (game instanceof ServerGame)
+                    return game.shuffle(queried.getPlayer(this.playerNumber).getDeck())
+                throw new Error('Cannot query non-server game');
+            },
             (deck: Card[]) => {
                 game.promptCardChoice(this.playerNumber, deck, 0, count, (cards: Card[]) => {
                     cards.forEach(card => {
@@ -185,11 +193,22 @@ export class Player extends Unit {
         }));
     }
 
+    private expectedDraws = 0;
+
+    public getExpectedDraws() {
+        return this.expectedDraws
+    }
+
+    public setCardSynced() {
+        this.expectedDraws--;
+    }
+
     public drawCard() {
         if (this.drawDisabled) {
+            this.expectedDraws++;
             return;
         }
-        let drawn = sample(this.deck);
+        let drawn = this.deck[0];
         remove(this.deck, drawn);
         if (!drawn) {
             this.fatigue();

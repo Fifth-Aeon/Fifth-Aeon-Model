@@ -1,20 +1,22 @@
 import { isArray } from 'util';
-import { CardType, Card } from './card';
+import { CardType } from './card';
 import { DeckList } from './deckList';
 import { Enchantment } from './enchantment';
 import { Game, GameAction, GameActionType, GamePhase, GameSyncEvent, SyncEventType } from './game';
-
 import { GameFormat, standardFormat } from './gameFormat';
 import { Item } from './item';
-import { Unit } from './unit';
 import { Player } from './player';
-import { shuffle } from 'lodash';
-
-
+import { Unit } from './unit';
+import Prando from 'prando'
 
 
 type ActionCb = (act: GameAction) => boolean;
 export class ServerGame extends Game {
+    private static rng: Prando;
+    public static setSeed(seed: string | number) {
+        this.rng = new Prando(seed);
+    }
+
     // A table of handlers used to respond to actions taken by players
     protected actionHandlers: Map<GameActionType, ActionCb>;
 
@@ -29,8 +31,8 @@ export class ServerGame extends Game {
                 this.cardPool.set(card.getId(), card);
                 return card;
             });
-            return shuffle(deck);
-        });
+            return this.shuffle(deck);
+        });    
 
         this.players = [
             new Player(this, decks[0], 0, this.format.initialResource[0], this.format.initialLife[0]),
@@ -38,6 +40,18 @@ export class ServerGame extends Game {
         ];
 
         this.addDeathHandlers();
+    }
+
+    public shuffle<T>(items: T[]): T[] {
+        let copies = [...items];
+        const end = copies.length - 1;
+        for (let i = 0; i < end; i++) {
+            let swapPos = ServerGame.rng.nextInt(i + 1, end);
+            let temp = copies[swapPos];
+            copies[swapPos] = copies[i];
+            copies[i] = temp;
+        }
+        return copies;
     }
 
     public startGame() {

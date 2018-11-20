@@ -43,6 +43,7 @@ interface Choice {
 }
 
 export class GameSyncEvent {
+    public number: number;
     constructor(public type: SyncEventType, public params: any) { }
 }
 
@@ -84,6 +85,8 @@ export abstract class Game {
     protected log: Log;
     protected winner = -1;
     protected generatedCardId = 1;
+    protected lastPlayedCardName: string;
+    public lastCardsPlayed: string[] = [];
     public promptCardChoice: (
         player: number,
         choices: Card[],
@@ -133,6 +136,7 @@ export abstract class Game {
     }
 
     public addGameEvent(event: GameSyncEvent) {
+        event.number = this.events.length;
         this.events.push(event);
     }
 
@@ -184,8 +188,9 @@ export abstract class Game {
         if (this.currentChoices[player] !== null) {
             this.currentChoices[player].callback(cards);
         } else {
-            console.error(`Error in game ${this.name} no deferred choice handler for ${
+            console.error(`${this.getName()} - Error in game ${this.name} no deferred choice handler for ${
                 cards.map(card => card.getName())} from ${player}`);
+            throw new Error();
         }
         this.currentChoices[player] = null;
     }
@@ -222,7 +227,10 @@ export abstract class Game {
 
     // Card Play Logic ---------------------------------------------------
     public playCard(player: Player, card: Card) {
+        this.lastPlayedCardName = card.getName();
+        this.lastCardsPlayed.push(card.getName());
         player.playCard(this, card);
+
     }
 
     public playGeneratedUnit(player: Player | number, card: Card) {
@@ -342,8 +350,8 @@ export abstract class Game {
             for (let blocker of damageOrder) {
                 let assignedDamage = Math.min(blocker.getLife(), remainingDamage);
                 remainingDamage -= assignedDamage;
-                blocker.getEvents().block.trigger( { attacker});
-                blocker.getEvents().attack.trigger({ attacker: attacker, damage: assignedDamage, defender: blocker});
+                blocker.getEvents().block.trigger({ attacker });
+                blocker.getEvents().attack.trigger({ attacker: attacker, damage: assignedDamage, defender: blocker });
                 attacker.fight(blocker, assignedDamage);
                 blocker.setBlocking(null);
             }
@@ -379,6 +387,10 @@ export abstract class Game {
 
     public addCardToPool(card: Card) {
         this.cardPool.set(card.getId(), card);
+    }
+
+    public getPastEvents() {
+        return this.events;
     }
 
     // Game Flow Logic (phases, turns) -------------------------------------------------
@@ -450,7 +462,7 @@ export abstract class Game {
     }
 
     public addEnchantment(enchantment: Enchantment, owner: number) {
-        enchantment.getEvents().death.addEvent(null,  (params) => {
+        enchantment.getEvents().death.addEvent(null, (params) => {
             this.removePermanent(enchantment);
             this.addToCrypt(enchantment);
             return params;
@@ -459,14 +471,14 @@ export abstract class Game {
     }
 
     public addUnit(unit: Unit, owner: number, etb: boolean = true) {
-        unit.getEvents().death.addEvent(null,  (params) => {
+        unit.getEvents().death.addEvent(null, (params) => {
             this.removePermanent(unit);
             this.addToCrypt(unit);
             unit.detachItems(this);
             this.gameEvents.unitDies.trigger({ deadUnit: unit });
             return params;
         }, Infinity);
-        unit.getEvents().annihilate.addEvent(null,  (params) => {
+        unit.getEvents().annihilate.addEvent(null, (params) => {
             this.removePermanent(unit);
             return params;
         });
