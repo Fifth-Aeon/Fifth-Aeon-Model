@@ -89,9 +89,10 @@ export class DefaultAI extends AI {
             this.block();
         } else {
             if (this.game.canPlayResource()) {
-                this.playResource();
+                this.sequenceActions([this.playResource, this.selectActions, this.attack]);
+            } else {
+                this.sequenceActions([this.selectActions, this.attack]);
             }
-            this.sequenceActions([this.selectActions, this.attack]);
         }
     }
 
@@ -268,7 +269,7 @@ export class DefaultAI extends AI {
             this.addActionToSequence(this.selectActions, true);
             this.addActionToSequence(() => this.runEvaluatedAction(maxBy(actionsToRun, evaluated => evaluated.score)), true);
         }
-        
+
         return true;
     }
 
@@ -371,7 +372,7 @@ export class DefaultAI extends AI {
     }
 
     private playResource() {
-        this.game.playResource(this.getResourceToPlay());
+        return this.game.playResource(this.getResourceToPlay());
     }
 
     // Attacking/Blocking -------------------------------------------------------------------------

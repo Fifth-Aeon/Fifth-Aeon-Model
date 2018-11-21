@@ -2,7 +2,6 @@ import { Animator } from '../animator';
 import { ClientGame } from '../clientGame';
 import { DeckList } from '../deckList';
 import { GameSyncEvent } from '../game';
-import { LinkedList } from 'typescript-collections';
 
 export interface AIConstructor {
     new(playerNumber: number, game: ClientGame, deck: DeckList): AI;
@@ -10,15 +9,15 @@ export interface AIConstructor {
 
 /**
  * An Artificial Intelligence that can play the game.
- * 
+ *
  * This class contains logic for timing A.I actions but no implemenetaiton of gameplay logic.
  */
 export abstract class AI {
     private timer: any;
-    protected isImmediateMode: boolean;
-    protected actionSequence: LinkedList<() => boolean> = new LinkedList<() => boolean>();
-    protected animator: Animator
-    protected thinking = true;
+    protected isImmediateMode = false;
+    protected actionSequence: Array<() => boolean> = [];
+    protected animator: Animator;
+    protected thinking = false;
 
     /**
      * Construct an Artificial Intelligence that can play the game
@@ -42,7 +41,7 @@ export abstract class AI {
      */
     public handleGameEvent(event: GameSyncEvent): void {
         this.game.syncServerEvent(this.playerNumber, event);
-    };
+    }
 
 
     /** Checks if we can take an action, if we can then takes the next one in the action sequence. */
@@ -50,18 +49,17 @@ export abstract class AI {
         if (!this.game.canTakeAction() || !this.game.isActivePlayer(this.playerNumber)) {
             return;
         }
-        let next = this.dequeue() || this.game.pass.bind(this.game);
+        let next = this.actionSequence.shift() || this.game.pass.bind(this.game);
         this.runAction(next);
     }
 
-    /** 
+    /**
      * Executes an action checking if it returns an error status code.
      * If it does then prints out a message.
      */
     private runAction(action: () => boolean) {
-        let isOk = action();
-        if (isOk === false) {
-            console.error('A.I attempted to take illegal action', action);
+        if (action() === false) {
+            console.error(`A.I ${this.playerNumber} attempted to take illegal action`, action);
         }
     }
 
@@ -94,7 +92,7 @@ export abstract class AI {
      * Tells the A.I to stop taking any moves when the game is over
      */
     public stopActing() {
-        this.actionSequence.clear();
+        this.actionSequence.length = 0;
         this.isImmediateMode = false;
         if (this.timer !== undefined) clearInterval(this.timer);
     }
@@ -122,7 +120,10 @@ export abstract class AI {
         if (this.isImmediateMode) {
             this.runAction(boundAction);
         } else {
-            this.actionSequence.add(boundAction, front ? 0 : this.actionSequence.size());
+            if (front)
+                this.actionSequence.unshift(boundAction);
+            else
+                this.actionSequence.push(boundAction);
         }
     }
 
@@ -136,18 +137,8 @@ export abstract class AI {
                 this.runAction(action);
             }
         } else {
-            this.actionSequence = new LinkedList<() => boolean>();
-            for (let action of actions) {
-                this.addActionToSequence(action);
-            }
+            this.actionSequence = actions.map(action => action.bind(this));
         }
-    }
-
-    /** Gets the next action from the action sequence and removes it */
-    private dequeue(): () => void {
-        let val = this.actionSequence.first();
-        this.actionSequence.remove(val);
-        return val;
     }
 }
 

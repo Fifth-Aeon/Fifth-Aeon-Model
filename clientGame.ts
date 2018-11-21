@@ -17,6 +17,10 @@ export class ClientGame extends Game {
     protected syncEventHandlers: Map<SyncEventType, (playerNo: number, event: GameSyncEvent, params: any) => void>;
     // The player number of the player contorting this game
     private owningPlayer: number;
+    private nextExpectedEvent = 0;
+
+    public onSync: () => void;
+
 
     constructor(
         name: string,
@@ -98,7 +102,7 @@ export class ClientGame extends Game {
     }
 
     public canModifyEnchantment(enchantment: Enchantment) {
-        return enchantment.canChangePower(this.getPlayer[this.owningPlayer], this)
+        return enchantment.canChangePower(this.getPlayer[this.owningPlayer], this);
     }
 
     public modifyEnchantment(player: Player, enchantment: Enchantment) {
@@ -109,7 +113,7 @@ export class ClientGame extends Game {
     }
 
     public canAttackWith(unit: Unit) {
-        return this.isPlayerTurn(this.owningPlayer) && this.phase === GamePhase.Play1  && unit.canAttack()
+        return this.isPlayerTurn(this.owningPlayer) && this.phase === GamePhase.Play1  && unit.canAttack();
     }
 
     public declareAttacker(unit: Unit) {
@@ -243,13 +247,11 @@ export class ClientGame extends Game {
 
 
     // Synchronization Logic --------------------------------------------------------
-    private nextExpectedEvent = 0;
 
     public isSyncronized() {
-        return this.getExpectedCards() == 0;
+        return this.getExpectedCards() === 0;
     }
 
-    public onSync: () => void;
 
     /**
      * Syncs an event that happened on the server into the state of this game model
@@ -260,7 +262,7 @@ export class ClientGame extends Game {
      */
     public syncServerEvent(localPlayerNumber: number, event: GameSyncEvent) {
 
-        if (event.number != this.nextExpectedEvent) {
+        if (event.number !== this.nextExpectedEvent) {
             console.error('Event arrived out of order', event.number, this.events.length);
         }
         let params = event.params;
@@ -268,6 +270,7 @@ export class ClientGame extends Game {
         let handler = this.syncEventHandlers.get(event.type);
         if (handler) {
             try {
+                handler(localPlayerNumber, event, event.params);
             } catch (e) {
                 console.error('Error while syncing event', SyncEventType[event.type], event, 'for', localPlayerNumber);
                 throw e;
@@ -348,7 +351,7 @@ export class ClientGame extends Game {
 
     private syncDrawEvent(localPlayerNumber: number, event: GameSyncEvent, params: any) {
         if (params.fatigue)
-            this.players[params.playerNo].fatigue()
+            this.players[params.playerNo].fatigue();
         else if (params.discarded)
             this.addToCrypt(this.unpackCard(params.card));
         else
@@ -371,7 +374,7 @@ export class ClientGame extends Game {
     }
 
     private syncPlayResource(localPlayerNumber: number, event: GameSyncEvent, params: any) {
-        if (params.playerNo != localPlayerNumber)
+        if (params.playerNo !== localPlayerNumber)
             this.players[params.playerNo].playResource(params.resource);
     }
 
