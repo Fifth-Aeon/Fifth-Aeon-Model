@@ -3,10 +3,6 @@ import { ClientGame } from '../clientGame';
 import { DeckList } from '../deckList';
 import { GameSyncEvent } from '../game';
 
-export interface AIConstructor {
-    new(playerNumber: number, game: ClientGame, deck: DeckList): AI;
-}
-
 /**
  * An Artificial Intelligence that can play the game.
  *

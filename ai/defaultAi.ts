@@ -14,6 +14,7 @@ import { Player } from '../player';
 import { Resource, ResourceTypeNames } from '../resource';
 import { Unit } from '../unit';
 import { AI } from './ai';
+import { aiList } from './aiList';
 
 /**
  * Determines which heuristic to be used when the A.I makes a choice.
@@ -525,5 +526,6 @@ export class DefaultAI extends AI {
         this.sequenceActions(actions);
     }
 
-
 }
+
+aiList.registerConstructor(DefaultAI);
