@@ -199,7 +199,7 @@ export class ServerGame extends Game {
         let min = Math.min(this.currentChoices[act.player].validCards.size, this.currentChoices[act.player].min);
         let max = this.currentChoices[act.player].max;
         if (cards.length > max || cards.length < min) {
-            console.error(`Reject choice. Out of range cards but only got ${cards.length}.`);
+            console.error(`Reject choice. Wanted between ${min} and ${max} cards but got ${cards.length}.`);
             return false;
         }
         if (!cards.every(card => this.currentChoices[act.player].validCards.has(card))) {

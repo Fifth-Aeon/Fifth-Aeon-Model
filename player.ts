@@ -122,7 +122,7 @@ export class Player extends Unit {
         this.events.death.trigger({});
     }
 
-  
+
     public getDeck() {
         return this.deck;
     }
@@ -130,10 +130,8 @@ export class Player extends Unit {
     public discardExtra(game: Game) {
         let num = this.hand.length - this.softHandLimit;
         if (num > 0) {
-            //console.log(game.getName(), ` ${this.playerNumber} has ${ this.hand.length} thus discarding ${num} extra cards`);
             this.discard(game, num, () => game.nextTurn());
         } else {
-            //console.log(game.getName(), `no discard neccisary ${this.playerNumber} has ${ this.hand.length} `);
             game.nextTurn();
         }
     }
@@ -203,6 +201,10 @@ export class Player extends Unit {
         this.expectedDraws--;
     }
 
+    private canDrawCard(){
+        return this.hand.length >= this.hardHandLimit;
+    }
+
     public drawCard() {
         if (this.drawDisabled) {
             this.expectedDraws++;
@@ -214,20 +216,23 @@ export class Player extends Unit {
             this.fatigue();
             return;
         }
-        if (this.hand.length > this.hardHandLimit) {
+        
+        const shouldDiscard = this.canDrawCard();
+        if (shouldDiscard) {
             this.parent.addToCrypt(drawn);
         } else {
             this.addToHand(drawn);
         }
+       
         this.parent.addGameEvent(new GameSyncEvent(SyncEventType.Draw, {
             playerNo: this.playerNumber,
             card: drawn.getPrototype(),
-            discarded: this.hand.length > this.hardHandLimit
+            discarded: shouldDiscard
         }));
     }
 
     public drawGeneratedCard(card: Card) {
-        if (this.hand.length > this.hardHandLimit) {
+        if (this.canDrawCard()) {
             this.parent.addToCrypt(card);
         } else {
             this.addToHand(card);

@@ -45,7 +45,8 @@ export abstract class AI {
         if (!this.game.canTakeAction() || !this.game.isActivePlayer(this.playerNumber)) {
             return;
         }
-        let next = this.actionSequence.shift() || this.game.pass.bind(this.game);
+
+        let next = this.actionSequence.shift() || (() => this.game.pass());
         this.runAction(next);
     }
 
@@ -72,6 +73,7 @@ export abstract class AI {
         this.timer = setInterval(() => {
             if (!this.thinking && !this.animator.isAnimating() && this.game.isSyncronized())
                 this.applyNextAction();
+
         }, delayTimeMs);
     }
 

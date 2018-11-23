@@ -143,7 +143,7 @@ export class ClientGame extends Game {
         let min = Math.min(this.currentChoices[player].validCards.size, this.currentChoices[player].min);
         let max = this.currentChoices[player].max;
         if (cards.length > max || cards.length < min) {
-            console.error(`Reject choice. Out of range cards but only got ${cards.length}.`);
+            console.error(`Reject choice. Wanted between ${min} and ${max} cards but got ${cards.length}.`);
             return false;
         }
         if (!cards.every(card => this.currentChoices[player].validCards.has(card))) {
@@ -347,7 +347,7 @@ export class ClientGame extends Game {
     }
 
     public getExpectedCards() {
-        return this.players[0].getExpectedDraws() + this.players[1].getExpectedDraws();
+        return Math.abs(this.players[0].getExpectedDraws()) + Math.abs(this.players[1].getExpectedDraws());
     }
 
     private syncDrawEvent(localPlayerNumber: number, event: GameSyncEvent, params: any) {
