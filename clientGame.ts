@@ -86,11 +86,12 @@ export class ClientGame extends Game {
                 console.error('Item', card.getName(), 'requires a host.');
             (card as Item).getHostTargeter().setTargets([host]);
         }
-        this.playCard(this.players[card.getOwner()], card);
         this.runGameAction(GameActionType.PlayCard, {
             id: card.getId(), targetIds: targetIds,
             hostId: host ? host.getId() : null
         });
+        this.playCard(this.players[card.getOwner()], card);
+
     }
 
     public setAttackOrder(attacker: Unit, order: Unit[]) {
