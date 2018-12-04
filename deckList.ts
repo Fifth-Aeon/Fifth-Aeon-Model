@@ -2,7 +2,7 @@ import { GameFormat, standardFormat } from './gameFormat';
 import { cardList, CardFactory } from './cards/cardList';
 import { Card } from './card';
 
-import { ResourceTypeNames } from './resource';
+import { ResourceTypeNames, ResourceType } from './resource';
 import { sample, sampleSize, remove, sum } from 'lodash';
 import { Collection } from './collection';
 
@@ -52,7 +52,7 @@ export class DeckList {
     }
 
     public getColors() {
-        let colors = new Set<string>();
+        let colors = new Set<ResourceType>();
         for (let record of this.getRecordList()) {
             record.card.getCost().getColors().forEach(color => colors.add(color));
         }

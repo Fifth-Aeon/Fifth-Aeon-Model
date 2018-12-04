@@ -177,8 +177,14 @@ export class ClientGame extends Game {
         this.runGameAction(GameActionType.PlayResource, { type: type });
     }
 
+    private wouldEndTurn() {
+        return this.isPlayerTurn(this.owningPlayer) &&
+            (this.getPhase() === GamePhase.Play1 && !this.isAttacking()) ||
+            (this.getPhase() === GamePhase.Play2);
+    }
+
     public pass() {
-        if (this.players[this.owningPlayer].canPlayResource())
+        if (this.players[this.owningPlayer].canPlayResource() && this.wouldEndTurn())
             return false;
         this.runGameAction(GameActionType.Pass, {});
     }

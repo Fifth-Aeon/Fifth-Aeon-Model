@@ -8,6 +8,7 @@ export const ResourceType = {
     'Renewal': 'Renewal'
 };
 export const ResourceTypeNames = ['Synthesis', 'Growth', 'Decay', 'Renewal'];
+export type ResourceType = 'Synthesis' | 'Growth' | 'Decay' | 'Renewal';
 export interface ResourceTypeGroup {
     [type: string]: number;
     Synthesis: number;
@@ -90,7 +91,7 @@ export class Resource {
         return true;
     }
 
-    public getColors(): Set<string> {
+    public getColors(): Set<ResourceType> {
         let set = new Set();
         for (let prop in this.types) {
             if (this.types[prop] > 0)
