@@ -1,5 +1,5 @@
 import { isArray } from 'util';
-import { CardType } from './card';
+import { CardType, Card } from './card';
 import { DeckList } from './deckList';
 import { Enchantment } from './enchantment';
 import { Game, GameAction, GameActionType, GamePhase, GameSyncEvent, SyncEventType } from './game';
@@ -7,18 +7,18 @@ import { GameFormat, standardFormat } from './gameFormat';
 import { Item } from './item';
 import { Player } from './player';
 import { Unit } from './unit';
-import Prando from 'prando'
+import Prando from 'prando';
 
 
 type ActionCb = (act: GameAction) => boolean;
 export class ServerGame extends Game {
     private static rng: Prando;
+    // A table of handlers used to respond to actions taken by players
+    protected actionHandlers: Map<GameActionType, ActionCb>;
+
     public static setSeed(seed: string | number) {
         this.rng = new Prando(seed);
     }
-
-    // A table of handlers used to respond to actions taken by players
-    protected actionHandlers: Map<GameActionType, ActionCb>;
 
     constructor(name: string, format: GameFormat = standardFormat, deckLists: [DeckList, DeckList]) {
         super(name, format);
@@ -32,7 +32,7 @@ export class ServerGame extends Game {
                 return card;
             });
             return this.shuffle(deck);
-        });    
+        });
 
         this.players = [
             new Player(this, decks[0], 0, this.format.initialResource[0], this.format.initialLife[0]),
@@ -111,6 +111,14 @@ export class ServerGame extends Game {
                 this.resolveCombat();
                 break;
         }
+    }
+
+    public queryCards(getCards: (game: ServerGame) => Card[], callback: (cards: Card[]) => void) {
+        let cards = getCards(this);
+        callback(cards);
+        this.addGameEvent(new GameSyncEvent(SyncEventType.QueryResult, {
+            cards: cards.map(card => card.getPrototype())
+        }));
     }
 
 
@@ -312,7 +320,8 @@ export class ServerGame extends Game {
 
     protected passAction(act: GameAction): boolean {
         if (!this.isActivePlayer(act.player)) {
-            console.error(`Player ${act.player} Can't pass, they are not thee active player (${this.getActivePlayer()} is)`, GamePhase[this.phase], this.turn);
+            console.error(`Player ${act.player} Can't pass, they are not thee active player (
+                ${this.getActivePlayer()} is)`, GamePhase[this.phase], this.turn);
             return false;
         }
         this.nextPhase();

@@ -9,6 +9,7 @@ import { Item } from './item';
 import { Log } from './log';
 import { Player } from './player';
 import { Unit } from './unit';
+import { ServerGame } from './serverGame';
 
 
 
@@ -18,6 +19,8 @@ export class ClientGame extends Game {
     // The player number of the player contorting this game
     private owningPlayer: number;
     private nextExpectedEvent = 0;
+    protected onQueryResult: (cards: Card[]) => void;
+    protected queryData: Card[] = null;
 
     public onSync: () => void;
 
@@ -114,7 +117,7 @@ export class ClientGame extends Game {
     }
 
     public canAttackWith(unit: Unit) {
-        return this.isPlayerTurn(this.owningPlayer) && this.phase === GamePhase.Play1  && unit.canAttack();
+        return this.isPlayerTurn(this.owningPlayer) && this.phase === GamePhase.Play1 && unit.canAttack();
     }
 
     public declareAttacker(unit: Unit) {
@@ -182,6 +185,15 @@ export class ClientGame extends Game {
 
     public setOwningPlayer(player: number) {
         this.owningPlayer = player;
+    }
+
+    public queryCards(getCards: (game: ServerGame) => Card[], callback: (cards: Card[]) => void) {
+        if (this.queryData) {
+            callback(this.queryData);
+            this.queryData = null;
+        } else {
+            this.onQueryResult = callback;
+        }
     }
 
 
@@ -410,6 +422,15 @@ export class ClientGame extends Game {
         if (params.player !== localPlayerNumber)
             this.makeDeferredChoice(params.player, this.idsToCards(params.choice));
     }
+
+
+    private setQueryResult(cards: Card[]) {
+        if (this.onQueryResult)
+            this.onQueryResult(cards);
+        else
+            this.queryData = cards;
+    }
+
 
     private syncQueryResult(localPlayerNumber: number, event: GameSyncEvent, params: any) {
         let cards = params.cards.map((proto: { id: string, data: string, owner: number }) => this.unpackCard(proto));

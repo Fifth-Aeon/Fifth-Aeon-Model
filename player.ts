@@ -22,6 +22,8 @@ export class Player extends Unit {
     private softHandLimit = 8;
     private fatigueLevel = 0;
 
+    private expectedDraws = 0;
+
     constructor(private parent: Game, cards: Array<Card>, private playerNumber: number, initResource: Resource, life: number) {
         super('Player', 'Player', 'hearts.png', UnitType.Player, new Resource(0), null, 0, life, []);
         this.deck = cards;
@@ -162,10 +164,8 @@ export class Player extends Unit {
 
     public searchForCard(game: Game, count: number) {
         game.queryCards(
-            (queried: Game) => {
-                if (game instanceof ServerGame)
-                    return game.shuffle(queried.getPlayer(this.playerNumber).getDeck())
-                throw new Error('Cannot query non-server game');
+            (queried: ServerGame) => {
+                return queried.shuffle(queried.getPlayer(this.playerNumber).getDeck());
             },
             (deck: Card[]) => {
                 game.promptCardChoice(this.playerNumber, deck, 0, count, (cards: Card[]) => {
@@ -191,17 +191,16 @@ export class Player extends Unit {
         }));
     }
 
-    private expectedDraws = 0;
 
     public getExpectedDraws() {
-        return this.expectedDraws
+        return this.expectedDraws;
     }
 
     public setCardSynced() {
         this.expectedDraws--;
     }
 
-    private canDrawCard(){
+    private canDrawCard() {
         return this.hand.length >= this.hardHandLimit;
     }
 
@@ -216,14 +215,14 @@ export class Player extends Unit {
             this.fatigue();
             return;
         }
-        
+
         const shouldDiscard = this.canDrawCard();
         if (shouldDiscard) {
             this.parent.addToCrypt(drawn);
         } else {
             this.addToHand(drawn);
         }
-       
+
         this.parent.addGameEvent(new GameSyncEvent(SyncEventType.Draw, {
             playerNo: this.playerNumber,
             card: drawn.getPrototype(),

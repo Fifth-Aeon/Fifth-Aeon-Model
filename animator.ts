@@ -27,9 +27,13 @@ export class Animator {
 
     public async awaitAnimationEnd() {
         return new Promise((resolve) => {
-            this.onAnimationEnd = () => {
+            if (this.animating) {
+                this.onAnimationEnd = () => {
+                    resolve();
+                };
+            } else {
                 resolve();
-            };
+            }
         });
     }
 

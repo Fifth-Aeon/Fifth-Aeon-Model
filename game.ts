@@ -10,6 +10,7 @@ import { EvalContext } from './mechanic';
 import { Permanent } from './permanent';
 import { Player } from './player';
 import { Unit } from './unit';
+import { ServerGame } from './serverGame';
 
 
 
@@ -96,7 +97,6 @@ export abstract class Game {
         message: string,
         evaluator: ChoiceHeuristic
     ) => void;
-    protected onQueryResult: (cards: Card[]) => void;
     protected client = false;
 
 
@@ -208,22 +208,7 @@ export abstract class Game {
 
     // Server Query Logic ----------------------------------------------
 
-    protected setQueryResult(cards: Card[]) {
-        if (this.onQueryResult)
-            this.onQueryResult(cards);
-    }
-
-    public queryCards(getCards: (game: Game) => Card[], callback: (cards: Card[]) => void) {
-        if (this.client) {
-            this.onQueryResult = callback;
-        } else {
-            let cards = getCards(this);
-            callback(cards);
-            this.addGameEvent(new GameSyncEvent(SyncEventType.QueryResult, {
-                cards: cards.map(card => card.getPrototype())
-            }));
-        }
-    }
+    public abstract queryCards(getCards: (game: ServerGame) => Card[], callback: (cards: Card[]) => void);
 
     // Card Play Logic ---------------------------------------------------
     public playCard(player: Player, card: Card) {
