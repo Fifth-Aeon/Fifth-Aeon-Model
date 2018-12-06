@@ -61,30 +61,30 @@ abstract class EventSystem {
 }
 
 export class GameEventSystem extends EventSystem {
-    unitEntersPlay = new EventList<UnitEntersPlayEvent>();
-    startOfTurn = new EventList<StartOfTurnEvent>();
-    endOfTurn = new EventList<EndOfTurnEvent>();
-    playerAttacked = new EventList<PlayerAttackedEvent>();
-    unitDies = new EventList<UnitDiesEvent>();
+    readonly unitEntersPlay = new EventList<UnitEntersPlayEvent>();
+    readonly startOfTurn = new EventList<StartOfTurnEvent>();
+    readonly endOfTurn = new EventList<EndOfTurnEvent>();
+    readonly playerAttacked = new EventList<PlayerAttackedEvent>();
+    readonly unitDies = new EventList<UnitDiesEvent>();
 
-    eventLists = [this.unitEntersPlay, this.startOfTurn, this.endOfTurn, this.playerAttacked];
+    readonly eventLists = [this.unitEntersPlay, this.startOfTurn, this.endOfTurn, this.playerAttacked];
 }
 
 export class CardEventSystem extends EventSystem  {
-    play = new EventList();
-    death = new EventList();
-    unitDies = new EventList();
-    attack = new EventList<AttackEvent>();
-    block = new EventList<BlockEvent>();
-    takeDamage = new EventList<TakeDamageEvent>();
-    dealDamage = new EventList<DealDamageEvent>();
-    checkBlockable = new EventList<CheckBlockableEvent>();
-    checkCanBlock = new EventList<CheckCanBlockEvent>();
-    killUnit = new EventList<KillUnitEvent>();
-    leavesPlay = new EventList();
-    annihilate = new EventList();
+    readonly play = new EventList();
+    readonly death = new EventList();
+    readonly unitDies = new EventList();
+    readonly attack = new EventList<AttackEvent>();
+    readonly block = new EventList<BlockEvent>();
+    readonly takeDamage = new EventList<TakeDamageEvent>();
+    readonly dealDamage = new EventList<DealDamageEvent>();
+    readonly checkBlockable = new EventList<CheckBlockableEvent>();
+    readonly checkCanBlock = new EventList<CheckCanBlockEvent>();
+    readonly killUnit = new EventList<KillUnitEvent>();
+    readonly leavesPlay = new EventList();
+    readonly annihilate = new EventList();
 
-    eventLists = [
+    readonly eventLists = [
         this.play,
         this.death,
         this.unitDies,
@@ -101,7 +101,7 @@ export class CardEventSystem extends EventSystem  {
 }
 
 export class PlayerEventSystem   {
-    CardDrawn = new EventList<CardDrawnEvent>();
+    readonly CardDrawn = new EventList<CardDrawnEvent>();
 
-    eventLists = [this.CardDrawn];
+    readonly eventLists = [this.CardDrawn];
 }
