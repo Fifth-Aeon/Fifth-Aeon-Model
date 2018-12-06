@@ -20,11 +20,10 @@ export class Serenity extends Trigger {
             }
             return params;
         });
-
     }
 
     public unregister(card: Card, game: Game) {
-        game.gameEvents.removeEvents(this);
+        game.getEvents().endOfTurn.removeEvents(this);
     }
 
     public evaluate(host: Card, game: Game) {

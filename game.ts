@@ -408,14 +408,13 @@ export abstract class Game {
 
     // Unit Zone Changes ------------------------------------------------------
     public playPermanent(permanent: Permanent, owner: number) {
-        if (!this.board.canPlayPermanent(permanent))
-            return;
+        let diesUponEntering = !this.board.canPlayPermanent(permanent);
         switch (permanent.getCardType()) {
             case CardType.Unit:
-                this.addUnit(permanent as Unit, owner);
+                this.addUnit(diesUponEntering, permanent as Unit, owner);
                 break;
             case CardType.Enchantment:
-                this.addEnchantment(permanent as Enchantment, owner);
+                this.addEnchantment(diesUponEntering, permanent as Enchantment, owner);
                 break;
         }
     }
@@ -427,7 +426,7 @@ export abstract class Game {
         this.removePermanent(unit);
         unit.setOwner(newOwner);
         unit.getTargeter().setTargets([]);
-        this.addUnit(unit, newOwner, false);
+        this.addUnit(!this.board.canPlayPermanent(unit), unit, newOwner, false);
     }
 
     public returnPermanentToDeck(perm: Permanent) {
@@ -446,23 +445,34 @@ export abstract class Game {
         this.board.removePermanent(perm);
     }
 
-    public addEnchantment(enchantment: Enchantment, owner: number) {
-        enchantment.getEvents().death.addEvent(null, (params) => {
-            this.removePermanent(enchantment);
-            this.addToCrypt(enchantment);
-            return params;
-        }, Infinity);
+    private enchantmentDeathEffects(enchantment: Enchantment) {
+        this.removePermanent(enchantment);
+        this.addToCrypt(enchantment);
+    }
+
+    public addEnchantment(diesUponEntering: boolean, enchantment: Enchantment, owner: number) {
+        if (diesUponEntering) {
+            this.enchantmentDeathEffects(enchantment);
+            return;
+        }
+        enchantment.getEvents().death.addEvent(null,
+            (params) => this.enchantmentDeathEffects(enchantment), Infinity);
         this.board.addPermanent(enchantment);
     }
 
-    public addUnit(unit: Unit, owner: number, etb: boolean = true) {
-        unit.getEvents().death.addEvent(null, (params) => {
-            this.removePermanent(unit);
-            this.addToCrypt(unit);
-            unit.detachItems(this);
-            this.gameEvents.unitDies.trigger({ deadUnit: unit });
-            return params;
-        }, Infinity);
+    private unitDeathEffects(unit: Unit) {
+        this.removePermanent(unit);
+        this.addToCrypt(unit);
+        unit.detachItems(this);
+        this.gameEvents.unitDies.trigger({ deadUnit: unit });
+    }
+
+    public addUnit(diesUponEntering: boolean, unit: Unit, owner: number, etb: boolean = true) {
+        if (diesUponEntering) {
+            this.unitDeathEffects(unit);
+            return;
+        }
+        unit.getEvents().death.addEvent(null, (params) => this.unitDeathEffects(unit), Infinity);
         unit.getEvents().annihilate.addEvent(null, (params) => {
             this.removePermanent(unit);
             return params;
