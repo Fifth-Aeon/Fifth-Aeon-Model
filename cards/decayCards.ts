@@ -18,7 +18,9 @@ import { ReturnFromCrypt } from './mechanics/returnFromCrypt';
 import { DeathCounter } from './mechanics/shieldEnchantments';
 import { Aquatic, Deathless, Flying, Immortal, Lethal, Lifesteal, Relentless, Rush } from './mechanics/skills';
 import { SummonUnitForGrave, SummonUnitOnDamage, SummonUnits } from './mechanics/summonUnits';
-import { AllOtherUnits, EnemyUnit, FriendlyUnit, OwningPlayer, SelfTarget, SingleUnit, Untargeted, EnemyPlayer } from './targeters/basicTargeter';
+import {
+    AllOtherUnits, EnemyUnit, FriendlyUnit, OwningPlayer, SelfTarget, SingleUnit, Untargeted, EnemyPlayer
+} from './targeters/basicTargeter';
 import { PoisonableUnit } from './targeters/poisonTargeter';
 // Targeters
 import { DamagedUnit } from './targeters/weakenedUnits';
@@ -132,7 +134,7 @@ export function unyieldingNightmare() {
             Synthesis: 0
         }),
         new Untargeted(),
-        8, 3,
+        5, 3,
         [
             new Discharge(1),
             new GrantAbility(Deathless)
@@ -202,7 +204,6 @@ export function raidShip() {
     );
 }
 
-
 export function whip() {
     return new Item(
         'WhipOfTorment',
@@ -257,7 +258,6 @@ export function assasinsDagger() {
     );
 }
 
-
 export function NecromancerTome() {
     return new Item(
         'NecromancerTome',
@@ -275,9 +275,6 @@ export function NecromancerTome() {
         [new Deathless()]
     );
 }
-
-
-
 
 export function reaper() {
     return new Unit(
@@ -315,8 +312,6 @@ export function specter() {
     );
 }
 
-
-
 export function skeleton() {
     return new Unit(
         'Skeleton',
@@ -334,7 +329,6 @@ export function skeleton() {
         [new Deathless()]
     );
 }
-
 
 export function lich() {
     return new Unit(
@@ -357,7 +351,6 @@ export function lich() {
     );
 }
 
-
 export function cruelTyrant() {
     return new Unit(
         'CruelTyrant',
@@ -374,11 +367,10 @@ export function cruelTyrant() {
         4, 6,
         [
             new Lifesteal(),
-            new DealDamage(2).setTargeter(new EnemyPlayer()).setTrigger(new SoulReap())
+            new DealDamage(1).setTargeter(new EnemyPlayer()).setTrigger(new SoulReap())
         ]
     );
 }
-
 
 export function lichring() {
     return new Item(
@@ -399,7 +391,6 @@ export function lichring() {
         ]
     );
 }
-
 
 export function Hemmorage() {
     return new Card(
@@ -464,7 +455,6 @@ export function raiseSkeletons() {
         [new SummonUnitForGrave(skeleton, 2)]
     );
 }
-
 
 export function toxin() {
     return new Card(
@@ -696,5 +686,3 @@ export function unbury() {
         [new ReturnFromCrypt(CardType.Unit)]
     );
 }
-
-
