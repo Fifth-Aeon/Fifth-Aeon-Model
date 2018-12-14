@@ -131,12 +131,16 @@ export class Card {
         return this.id;
     }
 
-    public play(game: Game) {
+    public enterTheBattlefield( game: Game) {
         this.mechanics.forEach(mechanic => {
-            if ((<TriggeredMechanic>mechanic).getTrigger)
-                (<TriggeredMechanic>mechanic).getTrigger().register(this, game);
+            if (mechanic instanceof TriggeredMechanic)
+                mechanic.getTrigger().register(this, game);
             mechanic.enter(this, game);
         });
+    }
+
+    public play(game: Game) {
+        this.enterTheBattlefield(game);
         this.events.play.trigger({});
         if (!this.isUnit()) {
             game.addToCrypt(this);

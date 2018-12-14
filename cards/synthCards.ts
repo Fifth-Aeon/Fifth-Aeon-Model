@@ -227,7 +227,7 @@ export function researchAI() {
             Synthesis: 4
         }),
         new Untargeted(),
-        6, 6,
+        5, 3,
         [
             new BuffTarget(1, 1)
                 .setTargeter(new TriggeringUnit())

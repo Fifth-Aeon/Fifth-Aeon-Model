@@ -411,10 +411,10 @@ export abstract class Game {
         let diesUponEntering = !this.board.canPlayPermanent(permanent);
         switch (permanent.getCardType()) {
             case CardType.Unit:
-                this.addUnit(diesUponEntering, permanent as Unit, owner);
+                this.addUnit(diesUponEntering, permanent as Unit);
                 break;
             case CardType.Enchantment:
-                this.addEnchantment(diesUponEntering, permanent as Enchantment, owner);
+                this.addEnchantment(diesUponEntering, permanent as Enchantment);
                 break;
         }
     }
@@ -426,7 +426,8 @@ export abstract class Game {
         this.removePermanent(unit);
         unit.setOwner(newOwner);
         unit.getTargeter().setTargets([]);
-        this.addUnit(!this.board.canPlayPermanent(unit), unit, newOwner, false);
+        unit.enterTheBattlefield(this);
+        this.addUnit(!this.board.canPlayPermanent(unit), unit);
     }
 
     public returnPermanentToDeck(perm: Permanent) {
@@ -450,7 +451,7 @@ export abstract class Game {
         this.addToCrypt(enchantment);
     }
 
-    public addEnchantment(diesUponEntering: boolean, enchantment: Enchantment, owner: number) {
+    public addEnchantment(diesUponEntering: boolean, enchantment: Enchantment) {
         if (diesUponEntering) {
             this.enchantmentDeathEffects(enchantment);
             return;
@@ -467,16 +468,13 @@ export abstract class Game {
         this.gameEvents.unitDies.trigger({ deadUnit: unit });
     }
 
-    public addUnit(diesUponEntering: boolean, unit: Unit, owner: number, etb: boolean = true) {
+    public addUnit(diesUponEntering: boolean, unit: Unit) {
         if (diesUponEntering) {
             this.unitDeathEffects(unit);
             return;
         }
-        unit.getEvents().death.addEvent(null, (params) => this.unitDeathEffects(unit), Infinity);
-        unit.getEvents().annihilate.addEvent(null, (params) => {
-            this.removePermanent(unit);
-            return params;
-        });
+        unit.getEvents().death.addEvent(null, () => this.unitDeathEffects(unit), Infinity);
+        unit.getEvents().annihilate.addEvent(null, () => this.removePermanent(unit));
         this.board.addPermanent(unit);
 
         this.gameEvents.unitEntersPlay.trigger({ enteringUnit: unit });
@@ -516,8 +514,6 @@ export abstract class Game {
             return this.turn;
         }
     }
-
-
 
     public getOtherPlayerNumber(playerNum: number): number {
         return (playerNum + 1) % this.players.length;
