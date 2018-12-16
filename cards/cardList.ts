@@ -14,8 +14,7 @@ import { TargeterData, targeterList } from './targeterList';
 import { Untargeted } from './targeters/basicTargeter';
 
 
-
-export interface SpellData {
+interface CardDataBase {
     id: string;
     cardType: CardType;
     name: string;
@@ -25,19 +24,26 @@ export interface SpellData {
     cost: ResourcePrototype;
 }
 
-export interface UnitData extends SpellData {
+export interface SpellData extends CardDataBase {
+    cardType: CardType.Spell;
+}
+
+export interface UnitData extends CardDataBase {
+    cardType: CardType.Unit;
     life: number;
     damage: number;
     type: UnitType;
 }
 
-export interface ItemData extends SpellData {
+export interface ItemData extends CardDataBase {
+    cardType: CardType.Item;
     life: number;
     damage: number;
     hostTargeter: TargeterData;
 }
 
-export interface EnchantmentData extends SpellData {
+export interface EnchantmentData extends CardDataBase {
+    cardType: CardType.Enchantment;
     power: number;
     empowerCost: number;
 }
