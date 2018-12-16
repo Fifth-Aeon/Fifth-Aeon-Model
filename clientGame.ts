@@ -1,5 +1,5 @@
 import { Animator } from './animator';
-import { Card, CardType } from './card';
+import { Card, CardType, CardPrototype } from './card';
 import { cardList } from './cards/cardList';
 import { Enchantment } from './enchantment';
 import { Game, GameActionType, GamePhase, GameSyncEvent, SyncEventType } from './game';
@@ -90,7 +90,8 @@ export class ClientGame extends Game {
             (card as Item).getHostTargeter().setTargets([host]);
         }
         this.runGameAction(GameActionType.PlayCard, {
-            id: card.getId(), targetIds: targetIds,
+            id: card.getId(),
+            targetIds: targetIds,
             hostId: host ? host.getId() : null
         });
         this.playCard(this.players[card.getOwner()], card);
@@ -303,7 +304,7 @@ export class ClientGame extends Game {
         return ids.map(id => this.getCardById(id));
     }
 
-    public unpackCard(proto: { id: string, data: string, owner: number }) {
+    public unpackCard(proto: CardPrototype) {
         if (this.cardPool.has(proto.id))
             return this.cardPool.get(proto.id);
         let card = cardList.getCard(proto.data);

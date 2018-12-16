@@ -18,6 +18,12 @@ export enum CardType {
     Spell, Unit, Item, Enchantment
 }
 
+export interface CardPrototype {
+    id: string;
+    data: string;
+    owner: number;
+}
+
 export class Card {
     public name: string;
     protected id: string;
@@ -107,7 +113,7 @@ export class Card {
                 this.targeter.getValidTargets(this, game).length > 0);
     }
 
-    public getPrototype() {
+    public getPrototype(): CardPrototype {
         return {
             id: this.getId(),
             data: this.getDataId(),
@@ -131,7 +137,7 @@ export class Card {
         return this.id;
     }
 
-    public enterTheBattlefield( game: Game) {
+    public enterTheBattlefield(game: Game) {
         this.mechanics.forEach(mechanic => {
             if (mechanic instanceof TriggeredMechanic)
                 mechanic.getTrigger().register(this, game);
