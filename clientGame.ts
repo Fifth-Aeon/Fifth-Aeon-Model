@@ -2,7 +2,7 @@ import { Animator } from './animator';
 import { Card, CardPrototype, CardType } from './card';
 import { cardList } from './cards/cardList';
 import { Enchantment } from './enchantment';
-import { GameActionType } from './events/gameAction';
+import { GameActionType, GameActionRunner } from './events/gameAction';
 import {
     GameSyncEvent, SyncAttackToggled, SyncBlock, SyncChoiceMade, SyncDamageDistributed,
     SyncDraw, SyncEnchantmentModified, SyncEnded, SyncEventSystem, SyncEventType, SyncPhaseChange,
@@ -33,7 +33,7 @@ export class ClientGame extends Game {
 
     constructor(
         name: string,
-        protected runGameAction: (type: GameActionType, params: any) => void,
+        protected runGameAction: GameActionRunner,
         private animator: Animator,
         log: Log = null,
         format: GameFormat = standardFormat
@@ -95,6 +95,8 @@ export class ClientGame extends Game {
             (card as Item).getHostTargeter().setTargets([host]);
         }
         this.runGameAction(GameActionType.PlayCard, {
+            type: GameActionType.PlayCard,
+            player: this.owningPlayer,
             id: card.getId(),
             targetIds: targetIds,
             hostId: host ? host.getId() : null
@@ -106,6 +108,8 @@ export class ClientGame extends Game {
     public setAttackOrder(attacker: Unit, order: Unit[]) {
         this.attackDamageOrder.set(attacker.getId(), order);
         this.runGameAction(GameActionType.DistributeDamage, {
+            type: GameActionType.DistributeDamage,
+            player: this.owningPlayer,
             attackerID: attacker.getId(),
             order: order.map(unit => unit.getId())
         });
@@ -119,7 +123,11 @@ export class ClientGame extends Game {
         if (!enchantment.canChangePower(player, this))
             return false;
         enchantment.empowerOrDiminish(player, this);
-        this.runGameAction(GameActionType.ModifyEnchantment, { enchantmentId: enchantment.getId() });
+        this.runGameAction(GameActionType.ModifyEnchantment, {
+            type: GameActionType.ModifyEnchantment,
+            player: this.owningPlayer,
+            enchantmentId: enchantment.getId()
+        });
     }
 
     public canAttackWith(unit: Unit) {
@@ -130,7 +138,11 @@ export class ClientGame extends Game {
         if (!this.canAttackWith(unit))
             return false;
         unit.toggleAttacking();
-        this.runGameAction(GameActionType.ToggleAttack, { unitId: unit.getId() });
+        this.runGameAction(GameActionType.ToggleAttack, {
+            type: GameActionType.ToggleAttack,
+            player: this.owningPlayer,
+            unitId: unit.getId()
+        });
     }
 
     public declareBlocker(blocker: Unit, attacker: Unit | null) {
@@ -139,6 +151,8 @@ export class ClientGame extends Game {
         let attackerId = attacker ? attacker.getId() : null;
         blocker.setBlocking(attackerId);
         this.runGameAction(GameActionType.DeclareBlocker, {
+            type: GameActionType.DeclareBlocker,
+            player: this.owningPlayer,
             blockerId: blocker.getId(),
             blockedId: attackerId
         });
@@ -167,6 +181,8 @@ export class ClientGame extends Game {
             return false;
         this.makeDeferredChoice(player, cards);
         this.runGameAction(GameActionType.CardChoice, {
+            type: GameActionType.CardChoice,
+            player: this.owningPlayer,
             choice: cards.map(card => card.getId())
         });
     }
@@ -180,7 +196,11 @@ export class ClientGame extends Game {
             return false;
         let res = this.format.basicResources.get(type);
         this.players[this.owningPlayer].playResource(res);
-        this.runGameAction(GameActionType.PlayResource, { type: type });
+        this.runGameAction(GameActionType.PlayResource, {
+            type: GameActionType.PlayResource,
+            player: this.owningPlayer,
+            resourceType: type
+        });
     }
 
     private wouldEndTurn() {
@@ -192,7 +212,10 @@ export class ClientGame extends Game {
     public pass() {
         if (this.players[this.owningPlayer].canPlayResource() && this.wouldEndTurn())
             return false;
-        this.runGameAction(GameActionType.Pass, {});
+        this.runGameAction(GameActionType.Pass, {
+            type: GameActionType.Pass,
+            player: this.owningPlayer,
+        });
     }
 
     public setOwningPlayer(player: number) {

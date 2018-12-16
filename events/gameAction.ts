@@ -45,6 +45,8 @@ export interface PlayResourceAction extends GameActionBase {
     readonly resourceType: string;
 }
 
+export type GameActionRunner = <T extends GameActionType>(type: T, action: GameActionFromType<T>) => void;
+
 export interface PlayCardAction extends GameActionBase {
     readonly type: GameActionType.PlayCard;
     readonly id: string;
