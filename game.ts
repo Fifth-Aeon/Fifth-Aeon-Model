@@ -11,6 +11,8 @@ import { Permanent } from './permanent';
 import { Player } from './player';
 import { Unit } from './unit';
 import { ServerGame } from './serverGame';
+import { GameAction, QuitAction } from './events/gameAction';
+import { GameSyncEvent, SyncEventType } from './events/syncEvent';
 
 
 
@@ -18,24 +20,7 @@ export enum GamePhase {
     Play1, Block, DamageDistribution, Play2, End, Response
 }
 
-export enum GameActionType {
-    Mulligan, PlayResource, PlayCard, Pass, Concede, ActivateAbility, ModifyEnchantment,
-    ToggleAttack, DeclareBlocker, DistributeDamage, CardChoice, Quit
-}
-
-export enum SyncEventType {
-    Start, AttackToggled, TurnStart, PhaseChange, PlayResource, Mulligan,
-    PlayCard, Block, Draw, ChoiceMade, QueryResult, Ended, EnchantmentModified,
-    DamageDistributed
-}
-
-export interface GameAction {
-    type: GameActionType;
-    player: number;
-    params: any;
-}
-
-interface Choice {
+export interface Choice {
     player: number;
     validCards: Set<Card>;
     min: number;
@@ -43,10 +28,6 @@ interface Choice {
     callback: (cards: Card[]) => void;
 }
 
-export class GameSyncEvent {
-    public number: number;
-    constructor(public type: SyncEventType, public params: any) { }
-}
 
 export abstract class Game {
     // Id of the game on the server
@@ -151,10 +132,14 @@ export abstract class Game {
         if (this.winner !== -1)
             return;
         this.winner = winningPlayer;
-        this.addGameEvent(new GameSyncEvent(SyncEventType.Ended, { winner: winningPlayer, quit: quit }));
+        this.addGameEvent({
+            type: SyncEventType.Ended,
+            winner: winningPlayer,
+            quit: quit
+        });
     }
 
-    protected quit(action: GameAction) {
+    protected quit(action: QuitAction) {
         this.endGame(this.getOtherPlayerNumber(action.player), true);
         return true;
     }
@@ -382,7 +367,7 @@ export abstract class Game {
 
     protected changePhase(nextPhase: GamePhase) {
         this.phase = nextPhase;
-        this.addGameEvent(new GameSyncEvent(SyncEventType.PhaseChange, { phase: nextPhase }));
+        this.addGameEvent({ type: SyncEventType.PhaseChange, phase: nextPhase });
     }
 
     protected startEndPhase() {
@@ -394,7 +379,7 @@ export abstract class Game {
     public nextTurn() {
         this.turn = this.getOtherPlayerNumber(this.turn);
         this.turnNum++;
-        this.addGameEvent(new GameSyncEvent(SyncEventType.TurnStart, { turn: this.turn, turnNum: this.turnNum }));
+        this.addGameEvent({ type: SyncEventType.TurnStart, turn: this.turn, turnNum: this.turnNum });
         this.refresh();
     }
 

@@ -7,7 +7,7 @@ import { Flying, Lethal, Shielded } from '../cards/mechanics/skills';
 import { ClientGame } from '../clientGame';
 import { DeckList } from '../deckList';
 import { Enchantment } from '../enchantment';
-import { GamePhase, GameSyncEvent, SyncEventType } from '../game';
+import { GamePhase} from '../game';
 import { Item } from '../item';
 import { EvalContext } from '../mechanic';
 import { Player } from '../player';
@@ -15,6 +15,7 @@ import { Resource, ResourceTypeNames } from '../resource';
 import { Unit } from '../unit';
 import { AI } from './ai';
 import { aiList } from './aiList';
+import { GameSyncEvent, SyncEventType, SyncEventSystem } from '../events/syncEvent';
 
 /**
  * Determines which heuristic to be used when the A.I makes a choice.
@@ -62,7 +63,6 @@ enum BlockOutcome {
  *
  */
 export class DefaultAI extends AI {
-    private eventHandlers: Map<SyncEventType, (params: any) => void> = new Map();
     private enemyNumber: number;
     private aiPlayer: Player;
 
@@ -181,8 +181,6 @@ export class DefaultAI extends AI {
     /** Handles a game event using a registered handler (or ignores it if there is no registered handler) */
     public handleGameEvent(event: GameSyncEvent) {
         this.game.syncServerEvent(this.playerNumber, event);
-        if (this.eventHandlers.has(event.type))
-            this.eventHandlers.get(event.type)(event);
     }
 
 

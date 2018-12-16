@@ -1,6 +1,6 @@
-import { ClientGame } from "../clientGame";
-import { DeckList } from "../deckList";
-import { AI } from "./ai";
+import { ClientGame } from '../clientGame';
+import { DeckList } from '../deckList';
+import { AI } from './ai';
 
 export interface AIConstructor {
     new(playerNumber: number, game: ClientGame, deck: DeckList): AI;

@@ -1,8 +1,9 @@
 
-import { Game, GameSyncEvent, SyncEventType } from './game';
+import { Game } from './game';
 import { Card } from '../game_model/card';
 import { Unit } from '../game_model/unit';
 import { properList } from '../game_model/strings';
+import { GameSyncEvent, SyncPlayCard } from './events/syncEvent';
 
 export class Log {
     private items: LogItem[] = [];
@@ -30,11 +31,11 @@ export class Log {
         });
     }
 
-    public addCardPlayed(event: GameSyncEvent) {
+    public addCardPlayed(event: SyncPlayCard) {
         this.addItem({
             image: this.getCardImage(this.getCard(event)),
             desc: this.makeCardPlayTooltip(event),
-            color: this.isEnemy(event.params.playerNo) ? 'crimson' : 'cornflowerblue'
+            color: this.isEnemy(event.playerNo) ? 'crimson' : 'cornflowerblue'
         });
     }
 
@@ -60,22 +61,22 @@ export class Log {
         this.game = game;
     }
 
-    public getCard(event: GameSyncEvent): Card {
-        return this.game.getCardById(event.params.played.id);
+    public getCard(event: SyncPlayCard): Card {
+        return this.game.getCardById(event.played.id);
     }
 
     public isEnemy(player: number) {
         return player !== this.playerNo;
     }
 
-    private makeCardPlayTooltip(event: GameSyncEvent): string {
-        let name = this.isEnemy(event.params.playerNo) ? 'Your opponent' : 'You';
+    private makeCardPlayTooltip(event: SyncPlayCard): string {
+        let name = this.isEnemy(event.playerNo) ? 'Your opponent' : 'You';
         let card = this.getCard(event);
         let targetString = '';
         if (!card)
             return '';
-        if (event.params.targetIds !== null && event.params.targetIds.length > 0) {
-            let targets: Card[] = event.params.targetIds.map((id: string) => this.game.getCardById(id));
+        if (event.targetIds !== null && event.targetIds.length > 0) {
+            let targets: Card[] = event.targetIds.map((id: string) => this.game.getCardById(id));
             targetString = ' targeting ' + targets.map(target => target ? target.getName() : 'unknown').join(' and ');
         }
         let effectString = card.isUnit() ? '' : ` It has the effect "${card.getText(this.game)}"`;

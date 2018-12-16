@@ -1,21 +1,27 @@
 import { Animator } from './animator';
-import { Card, CardType, CardPrototype } from './card';
+import { Card, CardPrototype, CardType } from './card';
 import { cardList } from './cards/cardList';
 import { Enchantment } from './enchantment';
-import { Game, GameActionType, GamePhase, GameSyncEvent, SyncEventType } from './game';
-
+import { GameActionType } from './events/gameAction';
+import {
+    GameSyncEvent, SyncAttackToggled, SyncBlock, SyncChoiceMade, SyncDamageDistributed,
+    SyncDraw, SyncEnchantmentModified, SyncEnded, SyncEventSystem, SyncEventType, SyncPhaseChange,
+    SyncPlayCard, SyncPlayResource, SyncQueryResult, SyncTurnStart, SyncFatigue
+} from './events/syncEvent';
+import { Game, GamePhase } from './game';
 import { GameFormat, standardFormat } from './gameFormat';
 import { Item } from './item';
 import { Log } from './log';
 import { Player } from './player';
-import { Unit } from './unit';
 import { ServerGame } from './serverGame';
+import { Unit } from './unit';
+
+
 
 
 
 export class ClientGame extends Game {
-    // Handlers to synchronize events
-    protected syncEventHandlers: Map<SyncEventType, (playerNo: number, event: GameSyncEvent, params: any) => void>;
+    private syncSystem = new SyncEventSystem(this);
     // The player number of the player contorting this game
     private owningPlayer: number;
     private nextExpectedEvent = 0;
@@ -36,7 +42,6 @@ export class ClientGame extends Game {
         this.log = log;
         if (this.log)
             this.log.attachToGame(this);
-        this.syncEventHandlers = new Map<SyncEventType, (playerNo: number, event: GameSyncEvent) => void>();
         this.addSyncHandlers();
 
         this.players = [
@@ -285,17 +290,14 @@ export class ClientGame extends Game {
         if (event.number !== this.nextExpectedEvent) {
             console.error('Event arrived out of order', event.number, this.events.length);
         }
-        let params = event.params;
         this.events.push(event);
-        let handler = this.syncEventHandlers.get(event.type);
-        if (handler) {
-            try {
-                handler(localPlayerNumber, event, event.params);
-            } catch (e) {
-                console.error('Error while syncing event', SyncEventType[event.type], event, 'for', localPlayerNumber);
-                throw e;
-            }
+        try {
+            this.syncSystem.handleEvent(localPlayerNumber, event);
+        } catch (e) {
+            console.error('Error while syncing event', SyncEventType[event.type], event, 'for', localPlayerNumber);
+            throw e;
         }
+
         this.nextExpectedEvent++;
 
     }
@@ -314,43 +316,39 @@ export class ClientGame extends Game {
         return card;
     }
 
-    private addSyncHandler(type: SyncEventType, cb: (playerNo: number, event: GameSyncEvent, params: any) => void) {
-        this.syncEventHandlers.set(type, cb.bind(this));
-    }
-
     private addSyncHandlers() {
-        this.addSyncHandler(SyncEventType.AttackToggled, this.syncAttackToggled);
-        this.addSyncHandler(SyncEventType.TurnStart, this.syncTurnStart);
-        this.addSyncHandler(SyncEventType.PhaseChange, this.syncPhaseChange);
-        this.addSyncHandler(SyncEventType.PlayResource, this.syncPlayResource);
-        this.addSyncHandler(SyncEventType.PlayCard, this.syncCardEvent);
-        this.addSyncHandler(SyncEventType.Block, this.syncBlock);
-        this.addSyncHandler(SyncEventType.Draw, this.syncDrawEvent);
-        this.addSyncHandler(SyncEventType.ChoiceMade, this.syncChoiceMade);
-        this.addSyncHandler(SyncEventType.QueryResult, this.syncQueryResult);
-        this.addSyncHandler(SyncEventType.Ended, this.syncEnded);
-        this.addSyncHandler(SyncEventType.EnchantmentModified, this.syncModifyEnchantment);
-        this.addSyncHandler(SyncEventType.DamageDistributed, this.syncDamageDistribution);
+        this.syncSystem.addHandler(SyncEventType.AttackToggled, this.syncAttackToggled);
+        this.syncSystem.addHandler(SyncEventType.TurnStart, this.syncTurnStart);
+        this.syncSystem.addHandler(SyncEventType.PhaseChange, this.syncPhaseChange);
+        this.syncSystem.addHandler(SyncEventType.PlayResource, this.syncPlayResource);
+        this.syncSystem.addHandler(SyncEventType.PlayCard, this.syncCardEvent);
+        this.syncSystem.addHandler(SyncEventType.Block, this.syncBlock);
+        this.syncSystem.addHandler(SyncEventType.Draw, this.syncDrawEvent);
+        this.syncSystem.addHandler(SyncEventType.ChoiceMade, this.syncChoiceMade);
+        this.syncSystem.addHandler(SyncEventType.QueryResult, this.syncQueryResult);
+        this.syncSystem.addHandler(SyncEventType.Ended, this.syncEnded);
+        this.syncSystem.addHandler(SyncEventType.EnchantmentModified, this.syncModifyEnchantment);
+        this.syncSystem.addHandler(SyncEventType.DamageDistributed, this.syncDamageDistribution);
     }
 
-    private syncDamageDistribution(localPlayerNumber: number, event: GameSyncEvent, params: any) {
+    private syncDamageDistribution(localPlayerNumber: number, event: SyncDamageDistributed) {
         if (localPlayerNumber === this.getCurrentPlayer().getPlayerNumber())
             return;
-        let attackerID = params.attackerID as string;
-        let order = params.order as string[];
+        let attackerID = event.attackerID as string;
+        let order = event.order as string[];
         this.attackDamageOrder.set(attackerID, order.map(id => this.getUnitById(id)));
     }
 
-    private syncCardEvent(localPlayerNumber: number, event: GameSyncEvent, params: any) {
-        if (params.playerNo !== localPlayerNumber) {
-            let player = this.players[params.playerNo];
-            let card = this.unpackCard(params.played);
-            if (params.targetIds) {
-                card.getTargeter().setTargets(params.targetIds
+    private syncCardEvent(localPlayerNumber: number, event: SyncPlayCard) {
+        if (event.playerNo !== localPlayerNumber) {
+            let player = this.players[event.playerNo];
+            let card = this.unpackCard(event.played);
+            if (event.targetIds) {
+                card.getTargeter().setTargets(event.targetIds
                     .map((id: string) => this.getUnitById(id)));
             }
             if (card.getCardType() === CardType.Item) {
-                (card as Item).getHostTargeter().setTargets([this.getUnitById(params.hostId)]);
+                (card as Item).getHostTargeter().setTargets([this.getUnitById(event.hostId)]);
             }
             this.playCard(player, card);
         }
@@ -358,10 +356,10 @@ export class ClientGame extends Game {
             this.log.addCardPlayed(event);
     }
 
-    private syncModifyEnchantment(localPlayerNumber: number, event: GameSyncEvent, params: any) {
+    private syncModifyEnchantment(localPlayerNumber: number, event: SyncEnchantmentModified) {
         if (localPlayerNumber === this.getCurrentPlayer().getPlayerNumber())
             return;
-        let enchantment = this.getCardById(params.enchantmentId) as Enchantment;
+        let enchantment = this.getCardById(event.enchantmentId) as Enchantment;
         enchantment.empowerOrDiminish(this.getCurrentPlayer(), this);
     }
 
@@ -369,65 +367,66 @@ export class ClientGame extends Game {
         return Math.abs(this.players[0].getExpectedDraws()) + Math.abs(this.players[1].getExpectedDraws());
     }
 
-    private syncDrawEvent(localPlayerNumber: number, event: GameSyncEvent, params: any) {
-        if (params.fatigue)
-            this.players[params.playerNo].fatigue();
-        else if (params.discarded)
-            this.addToCrypt(this.unpackCard(params.card));
+    private syncDrawEvent(localPlayerNumber: number, event: SyncDraw | SyncFatigue) {
+        if (event.fatigue === true)
+            this.players[event.playerNo].fatigue();
+        else if (event.discarded)
+            this.addToCrypt(this.unpackCard(event.card));
         else
-            this.players[params.playerNo].addToHand(this.unpackCard(params.card));
-        this.players[params.playerNo].setCardSynced();
+            this.players[event.playerNo].addToHand(this.unpackCard(event.card));
 
+        this.players[event.playerNo].setCardSynced();
         if (this.isSyncronized() && this.onSync) {
             this.onSync();
             this.onSync = undefined;
         }
     }
 
-    private syncTurnStart(localPlayerNumber: number, event: GameSyncEvent, params: any) {
+    private syncTurnStart(localPlayerNumber: number, event: SyncTurnStart) {
         if (this.turnNum === 1) {
             this.mulligan();
-            this.turn = params.turn;
-            this.turnNum = params.turnNum;
+            this.turn = event.turn;
+            this.turnNum = event.turnNum;
             this.refresh();
         }
     }
 
-    private syncPlayResource(localPlayerNumber: number, event: GameSyncEvent, params: any) {
-        if (params.playerNo !== localPlayerNumber)
-            this.players[params.playerNo].playResource(params.resource);
+    private syncPlayResource(localPlayerNumber: number, event: SyncPlayResource) {
+        if (event.playerNo !== localPlayerNumber)
+            this.players[event.playerNo].playResource(event.resource);
     }
 
-    private syncAttackToggled(localPlayerNumber: number, event: GameSyncEvent, params: any) {
-        if (params.player !== localPlayerNumber)
-            this.getUnitById(params.unitId).toggleAttacking();
+    private syncAttackToggled(localPlayerNumber: number, event: SyncAttackToggled) {
+        if (event.player !== localPlayerNumber)
+            this.getUnitById(event.unitId).toggleAttacking();
     }
 
-    private syncBlock(localPlayerNumber: number, event: GameSyncEvent, params: any) {
-        if (params.player !== localPlayerNumber) {
-            this.getUnitById(params.blockerId).setBlocking(params.blockedId);
+    private syncBlock(localPlayerNumber: number, event: SyncBlock) {
+        if (event.player !== localPlayerNumber) {
+            this.getUnitById(event.blockerId).setBlocking(event.blockedId);
         }
     }
 
-    private syncPhaseChange(localPlayerNumber: number, event: GameSyncEvent, params: any) {
-        if (event.params.phase === GamePhase.Block)
+    private syncPhaseChange(localPlayerNumber: number, event: SyncPhaseChange) {
+        if (event.phase === GamePhase.Block)
             this.gameEvents.playerAttacked.trigger(
                 { target: this.getOtherPlayerNumber(this.getActivePlayer()) }
             );
-        if (event.params.phase === GamePhase.Play2) {
+        if (event.phase === GamePhase.Play2) {
             this.resolveCombat();
         }
-        if (event.params.phase === GamePhase.DamageDistribution)
+        if (event.phase === GamePhase.DamageDistribution)
             this.generateDamageDistribution();
-        if (event.params.phase === GamePhase.End)
+
+        if (event.phase === GamePhase.End)
             this.startEndPhase();
         else
-            this.changePhase(event.params.phase);
+            this.changePhase(event.phase);
     }
 
-    private syncChoiceMade(localPlayerNumber: number, event: GameSyncEvent, params: any) {
-        if (params.player !== localPlayerNumber)
-            this.makeDeferredChoice(params.player, this.idsToCards(params.choice));
+    private syncChoiceMade(localPlayerNumber: number, event: SyncChoiceMade) {
+        if (event.player !== localPlayerNumber)
+            this.makeDeferredChoice(event.player, this.idsToCards(event.choice));
     }
 
 
@@ -439,12 +438,12 @@ export class ClientGame extends Game {
     }
 
 
-    private syncQueryResult(localPlayerNumber: number, event: GameSyncEvent, params: any) {
-        let cards = params.cards.map((proto: { id: string, data: string, owner: number }) => this.unpackCard(proto));
+    private syncQueryResult(localPlayerNumber: number, event: SyncQueryResult) {
+        let cards = event.cards.map(proto => this.unpackCard(proto));
         this.setQueryResult(cards);
     }
 
-    private syncEnded(localPlayerNumber: number, event: GameSyncEvent, params: any) {
-        this.winner = event.params.winner;
+    private syncEnded(localPlayerNumber: number, event: SyncEnded) {
+        this.winner = event.winner;
     }
 }

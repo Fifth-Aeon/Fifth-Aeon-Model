@@ -9,14 +9,45 @@ export enum SyncEventType {
 }
 
 interface GameSyncEventBase {
-    readonly number: number;
+    number?: number;
     readonly type: SyncEventType;
 }
 
 export type GameSyncEvent = SyncAttackToggled | SyncTurnStart | SyncPhaseChange |
-    SyncPlayResource | SyncPlayCard | SyncBlock | SyncDraw | SyncChoiceMade | SyncQueryResult |
+    SyncPlayResource | SyncPlayCard | SyncBlock | SyncDraw | SyncFatigue | SyncChoiceMade | SyncQueryResult |
     SyncEnded | SyncEnchantmentModified | SyncDamageDistributed;
 
+type SyncEventFromType<T extends SyncEventType> =
+    T extends SyncEventType.AttackToggled ? SyncAttackToggled :
+    T extends SyncEventType.Block ? SyncBlock :
+    T extends SyncEventType.ChoiceMade ? SyncChoiceMade :
+    T extends SyncEventType.DamageDistributed ? SyncDamageDistributed :
+    T extends SyncEventType.Draw ? SyncDraw | SyncFatigue :
+    T extends SyncEventType.EnchantmentModified ? SyncEnchantmentModified :
+    T extends SyncEventType.Ended ? SyncEnded :
+    T extends SyncEventType.PhaseChange ? SyncPhaseChange :
+    T extends SyncEventType.PlayCard ? SyncPlayCard :
+    T extends SyncEventType.PlayResource ? SyncPlayResource :
+    T extends SyncEventType.QueryResult ? SyncQueryResult :
+    SyncTurnStart;
+
+export class SyncEventSystem {
+    private handlers = new Map<SyncEventType, (localPlayerNumber: number, event: GameSyncEvent) => void>();
+
+    constructor(private parent: Object) { }
+
+    public addHandler<T extends SyncEventType>(
+        type: T,
+        handler: (localPlayerNumber: number, event: SyncEventFromType<T>) => void
+    ) {
+        this.handlers.set(type, handler.bind(this.parent));
+    }
+
+    public handleEvent(localPlayerNumber: number, event: GameSyncEvent) {
+        let handler = this.handlers.get(event.type);
+        return handler ? handler(localPlayerNumber, event) : false;
+    }
+}
 
 export interface SyncAttackToggled extends GameSyncEventBase {
     readonly type: SyncEventType.AttackToggled;
@@ -58,16 +89,23 @@ export interface SyncBlock extends GameSyncEventBase {
 
 export interface SyncDraw extends GameSyncEventBase {
     readonly type: SyncEventType.Draw;
+    readonly fatigue: false;
+
     readonly playerNo: number;
     readonly card: CardPrototype;
     readonly discarded: boolean;
-    readonly fatigue: boolean;
+}
+
+export interface SyncFatigue extends GameSyncEventBase {
+    readonly type: SyncEventType.Draw;
+    readonly fatigue: true;
+    readonly playerNo: number;
 }
 
 export interface SyncChoiceMade extends GameSyncEventBase {
     readonly type: SyncEventType.ChoiceMade;
     readonly player: number;
-    readonly choice: Choice;
+    readonly choice: string[];
 }
 
 export interface SyncQueryResult extends GameSyncEventBase {

@@ -3,10 +3,11 @@ import { ChoiceHeuristic } from './ai/defaultAi';
 import { Card, GameZone } from './card';
 import { ClientGame } from './clientGame';
 import { PlayerEventSystem } from './events/eventSystems';
-import { Game, GameSyncEvent, SyncEventType } from './game';
+import { Game } from './game';
 import { Resource } from './resource';
 import { Unit, UnitType } from './unit';
 import { ServerGame } from './serverGame';
+import { SyncEventType, SyncFatigue } from './events/syncEvent';
 
 export class Player extends Unit {
     private hand: Array<Card>;
@@ -185,10 +186,11 @@ export class Player extends Unit {
         if (!(parent instanceof ServerGame))
             return;
 
-        parent.addGameEvent(new GameSyncEvent(SyncEventType.Draw, {
+        parent.addGameEvent( {
+            type: SyncEventType.Draw,
+            fatigue: true,
             playerNo: this.playerNumber,
-            fatigue: true
-        }));
+        });
     }
 
 
@@ -223,11 +225,13 @@ export class Player extends Unit {
             this.addToHand(drawn);
         }
 
-        this.parent.addGameEvent(new GameSyncEvent(SyncEventType.Draw, {
+        this.parent.addGameEvent({
+            type: SyncEventType.Draw,
+            fatigue: false,
             playerNo: this.playerNumber,
             card: drawn.getPrototype(),
-            discarded: shouldDiscard
-        }));
+            discarded: shouldDiscard,
+        });
     }
 
     public drawGeneratedCard(card: Card) {
