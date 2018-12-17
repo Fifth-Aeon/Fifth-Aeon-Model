@@ -1,9 +1,9 @@
-import { Card } from './card';
-import { Unit } from './unit';
 import { Player } from './player';
+import { Unit } from './unit';
 
 export class Animator {
     private battleAnimationSubscribers = new Array<(ev: BattleAnimationEvent) => void>();
+    private damageIndicatorSubscribers = new Array<(ev: DamageIndicatorEvent) => void>();
     private nextAnimationTime: number;
     private animating = false;
     private onAnimationEnd: () => any = () => null;
@@ -57,11 +57,26 @@ export class Animator {
             handler(battleData);
         }
     }
+
+    public addDamageIndicatorEventHandler(handler: (event: DamageIndicatorEvent) => void) {
+        this.damageIndicatorSubscribers.push(handler);
+    }
+
+    public triggerDamageIndicatorEvent(damageData: DamageIndicatorEvent) {
+        for (let handler of this.damageIndicatorSubscribers) {
+            handler(damageData);
+        }
+    }
 }
 
 export interface BattleAnimationEvent {
     defendingPlayer: Player;
     attacker: Unit;
     defenders: Array<Unit>;
+}
+
+export interface DamageIndicatorEvent {
+    targetCard: string;
+    amount: number;
 }
 

@@ -16,10 +16,6 @@ import { Player } from './player';
 import { ServerGame } from './serverGame';
 import { Unit } from './unit';
 
-
-
-
-
 export class ClientGame extends Game {
     private syncSystem = new SyncEventSystem(this);
     // The player number of the player contorting this game
@@ -233,6 +229,9 @@ export class ClientGame extends Game {
 
 
     // Animation logic
+    private shouldAnimate(): boolean {
+        return this.owningPlayer === 0;
+    }
 
     protected async resolveCombat() {
         let attackers = this.getAttackers();
@@ -264,6 +263,12 @@ export class ClientGame extends Game {
                 blocker.getEvents().block.trigger({ attacker });
                 blocker.getEvents().attack.trigger({ attacker: attacker, damage: assignedDamage, defender: blocker });
                 attacker.fight(blocker, assignedDamage);
+
+                if (this.shouldAnimate()) {
+                    this.animator.triggerDamageIndicatorEvent({ amount: assignedDamage, targetCard: blocker.getId() });
+                    this.animator.triggerDamageIndicatorEvent({ amount: blocker.getDamage(), targetCard: attacker.getId() });
+                }
+
                 blocker.setBlocking(null);
                 await this.animator.getAnimationDelay(damageOrder.length * 2);
             }
@@ -272,13 +277,19 @@ export class ClientGame extends Game {
         // Unblocked attackers damage the defending player
         for (let attacker of attackers) {
             if (!this.attackDamageOrder.has(attacker.getId())) {
-                this.animator.triggerBattleAnimation({
-                    defendingPlayer: defendingPlayer,
-                    attacker: attacker,
-                    defenders: []
-                });
+                if (this.shouldAnimate()) {
+                    this.animator.triggerBattleAnimation({
+                        defendingPlayer: defendingPlayer,
+                        attacker: attacker,
+                        defenders: []
+                    });
+                }
+                const dmg = attacker.getDamage();
                 await this.animator.getAnimationDelay(2);
-                attacker.dealAndApplyDamage(defendingPlayer, attacker.getDamage());
+                if (this.shouldAnimate()) {
+                    this.animator.triggerDamageIndicatorEvent({ amount: dmg, targetCard: defendingPlayer.getId() });
+                }
+                attacker.dealAndApplyDamage(defendingPlayer, dmg);
                 attacker.toggleAttacking();
                 attacker.setExhausted(true);
                 await this.animator.getAnimationDelay(2);
