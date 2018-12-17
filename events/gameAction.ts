@@ -5,7 +5,7 @@ export enum GameActionType {
 
 interface GameActionBase {
     readonly type: GameActionType;
-    readonly player: number;
+    player: number;
 }
 
 export class GameActionSystem {
