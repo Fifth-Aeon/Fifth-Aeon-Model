@@ -16,8 +16,9 @@ export abstract class Trigger {
     }
     abstract register(card: Card, game: Game): void;
     abstract unregister(card: Card, game: Game): void;
-    public isHidden() { return false; }
+    public isHidden() {
+        return false;
+    }
     abstract getText(mechanicText: string): string;
     abstract evaluate(host: Card, game: Game, context: EvalContext): number;
 }
-

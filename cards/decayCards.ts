@@ -7,27 +7,51 @@ import { Unit, UnitType } from '../unit';
 import { BuffTarget, BuffTargetAndGrant, GrantAbility } from './mechanics/buff';
 import { CannotAttack } from './mechanics/cantAttack';
 import { DamageSpawnOnKill, DealDamage } from './mechanics/dealDamage';
-import { AbominationConsume, TransformDamaged } from './mechanics/decaySpecials';
+import {
+    AbominationConsume,
+    TransformDamaged
+} from './mechanics/decaySpecials';
 import { Discard, DiscardOnDamage } from './mechanics/draw';
-// Mechanics
 import { Discharge } from './mechanics/enchantmentCounters';
 import { notUnitLordship, unitTypeLordshipAll } from './mechanics/lordship';
 import { PoisonImmune, PoisonTarget } from './mechanics/poison';
 import { KillTarget } from './mechanics/removal';
 import { ReturnFromCrypt } from './mechanics/returnFromCrypt';
 import { DeathCounter } from './mechanics/shieldEnchantments';
-import { Aquatic, Deathless, Flying, Immortal, Lethal, Lifesteal, Relentless, Rush } from './mechanics/skills';
-import { SummonUnitForGrave, SummonUnitOnDamage, SummonUnits } from './mechanics/summonUnits';
 import {
-    AllOtherUnits, EnemyUnit, FriendlyUnit, OwningPlayer, SelfTarget, SingleUnit, Untargeted, EnemyPlayer
+    Aquatic,
+    Deathless,
+    Flying,
+    Immortal,
+    Lethal,
+    Lifesteal,
+    Relentless,
+    Rush
+} from './mechanics/skills';
+import {
+    SummonUnitForGrave,
+    SummonUnitOnDamage,
+    SummonUnits
+} from './mechanics/summonUnits';
+import {
+    AllOtherUnits,
+    EnemyPlayer,
+    EnemyUnit,
+    FriendlyUnit,
+    OwningPlayer,
+    SelfTarget,
+    SingleUnit,
+    Untargeted
 } from './targeters/basicTargeter';
 import { PoisonableUnit } from './targeters/poisonTargeter';
-// Targeters
+import {
+    FriendlyUnitsOfType,
+    UnitsNotOfType
+} from './targeters/unitTypeTargeter';
 import { DamagedUnit } from './targeters/weakenedUnits';
 import { DeathTrigger, SoulReap } from './triggers/death';
 import { LethalStrike } from './triggers/lethalStrike';
 import { Dusk } from './triggers/periodic';
-import { UnitsNotOfType, UnitsOfType, FriendlyUnitsOfType } from './targeters/unitTypeTargeter';
 
 export function imp() {
     return new Unit(
@@ -42,11 +66,11 @@ export function imp() {
             Synthesis: 0
         }),
         new Untargeted(),
-        1, 1,
+        1,
+        1,
         [new Flying()]
     );
 }
-
 
 export function gargoyle() {
     return new Unit(
@@ -61,7 +85,8 @@ export function gargoyle() {
             Synthesis: 0
         }),
         new Untargeted(),
-        4, 4,
+        4,
+        4,
         [new Flying(), new CannotAttack()]
     );
 }
@@ -79,7 +104,8 @@ export function tombGuardian() {
             Synthesis: 0
         }),
         new Untargeted(),
-        1, 2,
+        1,
+        2,
         [new Deathless(), new Lethal()]
     );
 }
@@ -96,7 +122,8 @@ export function abyssalVengeance() {
             Synthesis: 0
         }),
         new Untargeted(),
-        8, 4,
+        8,
+        4,
         [new DeathCounter()]
     );
 }
@@ -113,7 +140,8 @@ export function deathAscendancy() {
             Synthesis: 0
         }),
         new Untargeted(),
-        3, 4,
+        3,
+        4,
         [
             new Discharge(1),
             unitTypeLordshipAll(UnitType.Undead, 1, 1),
@@ -134,11 +162,13 @@ export function unyieldingNightmare() {
             Synthesis: 0
         }),
         new Untargeted(),
-        5, 3,
+        5,
+        3,
         [
             new Discharge(1),
-            new GrantAbility(Deathless)
-                .setTargeter(new FriendlyUnitsOfType(UnitType.Undead)),
+            new GrantAbility(Deathless).setTargeter(
+                new FriendlyUnitsOfType(UnitType.Undead)
+            ),
             new KillTarget()
                 .setTargeter(new UnitsNotOfType(UnitType.Undead))
                 .setTrigger(new Dusk())
@@ -158,7 +188,8 @@ export function impKeep() {
             Synthesis: 0
         }),
         new Untargeted(),
-        4, 2,
+        4,
+        2,
         [
             new SummonUnits(imp).setTrigger(new Dusk()),
             new DealDamage(1)
@@ -181,7 +212,8 @@ export function raider() {
             Synthesis: 0
         }),
         new Untargeted(),
-        2, 2,
+        2,
+        2,
         [new Rush()]
     );
 }
@@ -199,7 +231,8 @@ export function raidShip() {
             Synthesis: 0
         }),
         new Untargeted(),
-        2, 2,
+        2,
+        2,
         [new Aquatic(), new Rush(), new SummonUnitOnDamage(raider)]
     );
 }
@@ -217,7 +250,8 @@ export function whip() {
         }),
         new EnemyUnit(),
         new FriendlyUnit(),
-        3, 0,
+        3,
+        0,
         [new BuffTargetAndGrant(-1, -1, [])]
     );
 }
@@ -235,7 +269,8 @@ export function NecromancerStaff() {
         }),
         new EnemyUnit(),
         new FriendlyUnit(),
-        1, 3,
+        1,
+        3,
         [new Lethal(), new DealDamage(1)]
     );
 }
@@ -253,7 +288,8 @@ export function assasinsDagger() {
         }),
         new Untargeted(),
         new FriendlyUnit(),
-        1, 1,
+        1,
+        1,
         [new Lethal()]
     );
 }
@@ -271,7 +307,8 @@ export function NecromancerTome() {
         }),
         new Untargeted(),
         new FriendlyUnit(),
-        4, 0,
+        4,
+        0,
         [new Deathless()]
     );
 }
@@ -289,7 +326,8 @@ export function reaper() {
             Synthesis: 0
         }),
         new Untargeted(),
-        1, 1,
+        1,
+        1,
         [new Immortal(), new Lethal(), new Relentless(), new PoisonImmune()]
     );
 }
@@ -307,7 +345,8 @@ export function specter() {
             Synthesis: 0
         }),
         new Untargeted(),
-        5, 3,
+        5,
+        3,
         [new Flying(), new Deathless(), new DiscardOnDamage()]
     );
 }
@@ -325,7 +364,8 @@ export function skeleton() {
             Synthesis: 0
         }),
         new Untargeted(),
-        1, 1,
+        1,
+        1,
         [new Deathless()]
     );
 }
@@ -343,10 +383,13 @@ export function lich() {
             Synthesis: 0
         }),
         new Untargeted(),
-        4, 4,
+        4,
+        4,
         [
             new Deathless(),
-            new BuffTarget(1, 1).setTargeter(new SelfTarget()).setTrigger(new SoulReap())
+            new BuffTarget(1, 1)
+                .setTargeter(new SelfTarget())
+                .setTrigger(new SoulReap())
         ]
     );
 }
@@ -364,10 +407,13 @@ export function cruelTyrant() {
             Synthesis: 0
         }),
         new Untargeted(),
-        4, 6,
+        4,
+        6,
         [
             new Lifesteal(),
-            new DealDamage(1).setTargeter(new EnemyPlayer()).setTrigger(new SoulReap())
+            new DealDamage(1)
+                .setTargeter(new EnemyPlayer())
+                .setTrigger(new SoulReap())
         ]
     );
 }
@@ -385,9 +431,12 @@ export function lichring() {
         }),
         new Untargeted(),
         new FriendlyUnit(),
-        1, 0,
+        1,
+        0,
         [
-            new BuffTarget(1, 1).setTargeter(new SelfTarget()).setTrigger(new SoulReap())
+            new BuffTarget(1, 1)
+                .setTargeter(new SelfTarget())
+                .setTrigger(new SoulReap())
         ]
     );
 }
@@ -485,7 +534,8 @@ export function crawlingZombie() {
             Synthesis: 0
         }),
         new Untargeted(),
-        2, 1,
+        2,
+        1,
         []
     );
 }
@@ -503,7 +553,8 @@ export function rottingZombie() {
             Synthesis: 0
         }),
         new Untargeted(),
-        2, 2,
+        2,
+        2,
         [new SummonUnits(crawlingZombie, 1).setTrigger(new DeathTrigger())]
     );
 }
@@ -537,7 +588,8 @@ export function Saboteur() {
             Synthesis: 0
         }),
         new Untargeted(),
-        2, 2,
+        2,
+        2,
         [new Discard(1)]
     );
 }
@@ -555,7 +607,8 @@ export function abomination() {
             Synthesis: 0
         }),
         new Untargeted(),
-        0, 1,
+        0,
+        1,
         [new AbominationConsume()]
     );
 }
@@ -573,7 +626,8 @@ export function assassin() {
             Synthesis: 0
         }),
         new PoisonableUnit().setOptional(true),
-        2, 2,
+        2,
+        2,
         [new PoisonTarget(), new Lethal()]
     );
 }
@@ -591,10 +645,12 @@ export function vampire() {
             Synthesis: 0
         }),
         new Untargeted(),
-        3, 3,
-        [new BuffTarget(1, 1)
-            .setTrigger(new LethalStrike())
-            .setTargeter(new SelfTarget())
+        3,
+        3,
+        [
+            new BuffTarget(1, 1)
+                .setTrigger(new LethalStrike())
+                .setTargeter(new SelfTarget())
         ]
     );
 }
@@ -612,7 +668,8 @@ export function bat() {
             Synthesis: 0
         }),
         new Untargeted(),
-        1, 2,
+        1,
+        2,
         [new Flying(), new Lifesteal()]
     );
 }
@@ -630,7 +687,8 @@ export function princeOfDecay() {
             Synthesis: 0
         }),
         new AllOtherUnits(),
-        4, 4,
+        4,
+        4,
         [new PoisonTarget()]
     );
 }
@@ -648,7 +706,8 @@ function statue() {
             Synthesis: 0
         }),
         new Untargeted(),
-        0, 1,
+        0,
+        1,
         [new CannotAttack()]
     );
 }
@@ -666,7 +725,8 @@ export function gorgon() {
             Synthesis: 0
         }),
         new Untargeted(),
-        3, 7,
+        3,
+        7,
         [new TransformDamaged(statue)]
     );
 }

@@ -4,13 +4,12 @@ import { Targeter } from '../../targeter';
 
 export class RenewalMCTargeter extends Targeter {
     public getValidTargets(card: Card, game: Game) {
-        let owner = game.getPlayer(card.getOwner());
-        let threshold = owner.getPool().getOfType('Renewal') / 2;
-        return game.getBoard()
+        const owner = game.getPlayer(card.getOwner());
+        const threshold = owner.getPool().getOfType('Renewal') / 2;
+        return game
+            .getBoard()
             .getPlayerUnits(game.getOtherPlayerNumber(card.getOwner()))
-            .filter(unit =>
-                unit.getCost().getNumeric() <= threshold
-            );
+            .filter(unit => unit.getCost().getNumeric() <= threshold);
     }
 
     public getText() {

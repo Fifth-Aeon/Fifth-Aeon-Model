@@ -1,9 +1,7 @@
-import { Mechanic, TriggeredMechanic } from '../../mechanic';
-import { Game } from '../../game';
-import { Targeter } from '../../targeter';
 import { Card, CardType } from '../../card';
 import { Enchantment } from '../../enchantment';
-
+import { Game } from '../../game';
+import { Mechanic, TriggeredMechanic } from '../../mechanic';
 import { ParameterType } from '../parameters';
 
 export class Recharge extends Mechanic {
@@ -18,10 +16,11 @@ export class Recharge extends Mechanic {
     }
 
     public enter(card: Card, game: Game) {
-        let enchantment = card as Enchantment;
-        game.getEvents().startOfTurn.addEvent(this, (params) => {
-            if (params.player === enchantment.getOwner())
+        const enchantment = card as Enchantment;
+        game.getEvents().startOfTurn.addEvent(this, params => {
+            if (params.player === enchantment.getOwner()) {
                 enchantment.changePower(this.amountPerTurn);
+            }
             return params;
         });
     }
@@ -43,12 +42,12 @@ export class Discharge extends Recharge {
     protected static id = 'Discharge';
     protected static validCardTypes = new Set([CardType.Enchantment]);
 
-
     public enter(card: Card, game: Game) {
-        let enchantment = card as Enchantment;
-        game.getEvents().startOfTurn.addEvent(this, (params) => {
-            if (params.player === enchantment.getOwner())
+        const enchantment = card as Enchantment;
+        game.getEvents().startOfTurn.addEvent(this, params => {
+            if (params.player === enchantment.getOwner()) {
                 enchantment.changePower(-this.amountPerTurn);
+            }
             return params;
         });
     }
@@ -81,7 +80,7 @@ export class ChangePower extends TriggeredMechanic {
     }
 
     public onTrigger(card: Card, game: Game) {
-        let enchantment = card as Enchantment;
+        const enchantment = card as Enchantment;
         enchantment.changePower(this.diff);
     }
 
@@ -119,7 +118,6 @@ export class CannotBeEmpowered extends Mechanic {
     }
 }
 
-
 export class CannotBeDiminished extends Mechanic {
     protected static id = 'CannotBeDiminished';
     protected static validCardTypes = new Set([CardType.Enchantment]);
@@ -140,4 +138,3 @@ export class CannotBeDiminished extends Mechanic {
         return 5;
     }
 }
-

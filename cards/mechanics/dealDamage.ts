@@ -5,7 +5,6 @@ import { ResourceType } from '../../resource';
 import { Unit } from '../../unit';
 import { ParameterType } from '../parameters';
 
-
 export class DamageOnBlock extends Mechanic {
     protected static id = 'DamageOnBlock';
     protected static validCardTypes = new Set([CardType.Unit, CardType.Item]);
@@ -18,12 +17,11 @@ export class DamageOnBlock extends Mechanic {
     }
 
     public enter(card: Card, game: Game) {
-        (card as Unit).getEvents().block.addEvent(this,  params => {
-                let attacker = params.attacker;
-                attacker.takeDamage(this.damage, card);
-                return params;
-            }
-        );
+        (card as Unit).getEvents().block.addEvent(this, params => {
+            const attacker = params.attacker;
+            attacker.takeDamage(this.damage, card);
+            return params;
+        });
     }
 
     public remove(card: Card, game: Game) {
@@ -35,7 +33,9 @@ export class DamageOnBlock extends Mechanic {
     }
 
     public getText(card: Card, game: Game) {
-        return `Whenever this blocks another unit deal ${this.damage} damage to that unit (before combat damage).`;
+        return `Whenever this blocks another unit deal ${
+            this.damage
+        } damage to that unit (before combat damage).`;
     }
 }
 
@@ -50,8 +50,8 @@ export class DealDamage extends TargetedMechanic {
     }
 
     public onTrigger(card: Card, game: Game) {
-        let dmg = this.getDamage(card, game);
-        for (let target of this.targeter.getTargets(card, game, this)) {
+        const dmg = this.getDamage(card, game);
+        for (const target of this.targeter.getTargets(card, game, this)) {
             card.dealDamageInstant(target, dmg);
             target.checkDeath();
         }
@@ -62,12 +62,16 @@ export class DealDamage extends TargetedMechanic {
     }
 
     public getText(card: Card, game: Game) {
-        return `Deal ${this.amount} damage to ${this.targeter.getTextOrPronoun()}.`;
+        return `Deal ${
+            this.amount
+        } damage to ${this.targeter.getTextOrPronoun()}.`;
     }
 
     public evaluateTarget(source: Card, target: Unit, game: Game) {
-        let isEnemy = target.getOwner() === source.getOwner() ? -1 : 1;
-        return target.getLife() < this.getDamage(source, game) ? target.evaluate(game, EvalContext.LethalRemoval) * isEnemy : 0;
+        const isEnemy = target.getOwner() === source.getOwner() ? -1 : 1;
+        return target.getLife() < this.getDamage(source, game)
+            ? target.evaluate(game, EvalContext.LethalRemoval) * isEnemy
+            : 0;
     }
 }
 
@@ -79,15 +83,26 @@ export class BiteDamage extends DealDamage {
     }
 
     public getDamage(card: Card, game: Game) {
-        return Math.max(Math.max(...game.getBoard().getPlayerUnits(card.getOwner()).map(unit => unit.getDamage())), 0);
+        return Math.max(
+            Math.max(
+                ...game
+                    .getBoard()
+                    .getPlayerUnits(card.getOwner())
+                    .map(unit => unit.getDamage())
+            ),
+            0
+        );
     }
 
     public getText(card: Card, game: Game) {
-        if (game)
-            return `Deal damage to target unit equal to your highest attack unit [dynamic](${this.getDamage(card, game)})[/dynamic].`;
-        else
+        if (game) {
+            return `Deal damage to target unit equal to your highest attack unit [dynamic](${this.getDamage(
+                card,
+                game
+            )})[/dynamic].`;
+        } else {
             return `Deal damage to target unit equal to your highest attack unit.`;
-
+        }
     }
 }
 
@@ -95,7 +110,7 @@ export class DamageSpawnOnKill extends DealDamage {
     protected static id = 'DamageSpawnOnKill';
     protected static ParameterTypes = [
         { name: 'damage', type: ParameterType.Integer },
-        { name: 'unit', type: ParameterType.Unit },
+        { name: 'unit', type: ParameterType.Unit }
     ];
 
     private name: string;
@@ -105,7 +120,7 @@ export class DamageSpawnOnKill extends DealDamage {
     }
 
     public onTrigger(card: Card, game: Game) {
-        for (let target of this.targeter.getTargets(card, game, this)) {
+        for (const target of this.targeter.getTargets(card, game, this)) {
             target.takeDamage(this.amount, card);
             target.checkDeath();
             if (target.getLocation() === GameZone.Crypt) {
@@ -115,7 +130,11 @@ export class DamageSpawnOnKill extends DealDamage {
     }
 
     public getText(card: Card) {
-        return `Deal ${this.amount} damage to ${this.targeter.getTextOrPronoun()}. If it dies summon a ${this.name}.`;
+        return `Deal ${
+            this.amount
+        } damage to ${this.targeter.getTextOrPronoun()}. If it dies summon a ${
+            this.name
+        }.`;
     }
 }
 
@@ -129,14 +148,21 @@ export class DealResourceDamage extends DealDamage {
         super(0);
     }
     public getDamage(card: Card, game: Game) {
-        return game.getPlayer(card.getOwner()).getPool().getOfType(this.resource);
+        return game
+            .getPlayer(card.getOwner())
+            .getPool()
+            .getOfType(this.resource);
     }
 
     public getText(card: Card, game: Game) {
-        if (game)
-            return `Deal damage to ${this.targeter.getTextOrPronoun()} equal to your ${this.resource} [dynamic](${
-                this.getDamage(card, game)})[/dynamic].`;
-        else
-            return `Deal damage to ${this.targeter.getTextOrPronoun()} equal to your ${this.resource}.`;
+        if (game) {
+            return `Deal damage to ${this.targeter.getTextOrPronoun()} equal to your ${
+                this.resource
+            } [dynamic](${this.getDamage(card, game)})[/dynamic].`;
+        } else {
+            return `Deal damage to ${this.targeter.getTextOrPronoun()} equal to your ${
+                this.resource
+            }.`;
+        }
     }
 }

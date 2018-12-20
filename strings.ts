@@ -17,7 +17,6 @@ export function a(nextWord: string) {
     return 'aeioAEIO'.includes(nextWord[0]) ? 'an' : 'a';
 }
 
-
 function symbol(number: number) {
     return number > 0 ? '+' : '';
 }

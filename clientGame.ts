@@ -2,11 +2,24 @@ import { Animator } from './animator';
 import { Card, CardPrototype, CardType } from './card';
 import { cardList } from './cards/cardList';
 import { Enchantment } from './enchantment';
-import { GameActionType, GameActionRunner } from './events/gameAction';
+import { GameActionRunner, GameActionType } from './events/gameAction';
 import {
-    GameSyncEvent, SyncAttackToggled, SyncBlock, SyncChoiceMade, SyncDamageDistributed,
-    SyncDraw, SyncEnchantmentModified, SyncEnded, SyncEventSystem, SyncEventType, SyncPhaseChange,
-    SyncPlayCard, SyncPlayResource, SyncQueryResult, SyncTurnStart, SyncFatigue
+    GameSyncEvent,
+    SyncAttackToggled,
+    SyncBlock,
+    SyncChoiceMade,
+    SyncDamageDistributed,
+    SyncDraw,
+    SyncEnchantmentModified,
+    SyncEnded,
+    SyncEventSystem,
+    SyncEventType,
+    SyncFatigue,
+    SyncPhaseChange,
+    SyncPlayCard,
+    SyncPlayResource,
+    SyncQueryResult,
+    SyncTurnStart
 } from './events/syncEvent';
 import { Game, GamePhase } from './game';
 import { GameFormat, standardFormat } from './gameFormat';
@@ -26,7 +39,6 @@ export class ClientGame extends Game {
 
     public onSync: () => void;
 
-
     constructor(
         name: string,
         protected runGameAction: GameActionRunner,
@@ -36,58 +48,76 @@ export class ClientGame extends Game {
     ) {
         super(name, format);
         this.log = log;
-        if (this.log)
+        if (this.log) {
             this.log.attachToGame(this);
+        }
         this.addSyncHandlers();
 
         this.players = [
-            new Player(this, [], 0, this.format.initialResource[0], this.format.initialLife[0]),
-            new Player(this, [], 1, this.format.initialResource[1], this.format.initialLife[1])
+            new Player(
+                this,
+                [],
+                0,
+                this.format.initialResource[0],
+                this.format.initialLife[0]
+            ),
+            new Player(
+                this,
+                [],
+                1,
+                this.format.initialResource[1],
+                this.format.initialLife[1]
+            )
         ];
 
         for (let i = 0; i < this.players.length; i++) {
             this.players[i].disableDraw();
-            for (let j = 0; j < this.format.initialDraw[i]; j++)
+            for (let j = 0; j < this.format.initialDraw[i]; j++) {
                 this.players[i].drawCard();
+            }
         }
         this.addDeathHandlers();
-
     }
 
     public getLog() {
         return this.log;
     }
 
-
     // Game Actions ----------------------------------------------------------
 
     /** Checks if the player controlling this game can play a given card with given targets */
     public canPlayCard(card: Card, targets: Unit[] = [], host: Unit = null) {
-        if (!this.isPlayerTurn(this.owningPlayer))
+        if (!this.isPlayerTurn(this.owningPlayer)) {
             return false;
-        if (!card.isPlayable(this))
+        }
+        if (!card.isPlayable(this)) {
             return false;
+        }
         card.getTargeter().setTargets(targets);
-        if (!card.getTargeter().targetsAreValid(card, this))
+        if (!card.getTargeter().targetsAreValid(card, this)) {
             return false;
+        }
         // Item Host
         if (card.getCardType() === CardType.Item) {
-            let item = card as Item;
+            const item = card as Item;
             item.getHostTargeter().setTargets([host]);
-            if (!item.getHostTargeter().targetsAreValid(card, this))
+            if (!item.getHostTargeter().targetsAreValid(card, this)) {
                 return false;
+            }
         }
         return true;
     }
 
     public playCardExtern(card: Card, targets: Unit[] = [], host: Unit = null) {
-        if (!this.canPlayCard(card, targets, host))
+        if (!this.canPlayCard(card, targets, host)) {
             return false;
-        let targetIds = targets.map(target => target.getId());
+        }
+        const targetIds = targets.map(target => target.getId());
         card.getTargeter().setTargets(targets);
         if (card.getCardType() === CardType.Item) {
-            if (!host)
+            if (!host) {
                 console.error('Item', card.getName(), 'requires a host.');
+            }
             (card as Item).getHostTargeter().setTargets([host]);
         }
         this.runGameAction(GameActionType.PlayCard, {
@@ -98,7 +128,6 @@ export class ClientGame extends Game {
             hostId: host ? host.getId() : null
         });
         this.playCard(this.players[card.getOwner()], card);
-
     }
 
     public setAttackOrder(attacker: Unit, order: Unit[]) {
@@ -112,12 +141,16 @@ export class ClientGame extends Game {
     }
 
     public canModifyEnchantment(enchantment: Enchantment) {
-        return enchantment.canChangePower(this.getPlayer[this.owningPlayer], this);
+        return enchantment.canChangePower(
+            this.getPlayer[this.owningPlayer],
+            this
+        );
     }
 
     public modifyEnchantment(player: Player, enchantment: Enchantment) {
-        if (!enchantment.canChangePower(player, this))
+        if (!enchantment.canChangePower(player, this)) {
             return false;
+        }
         enchantment.empowerOrDiminish(player, this);
         this.runGameAction(GameActionType.ModifyEnchantment, {
             type: GameActionType.ModifyEnchantment,
@@ -127,12 +160,17 @@ export class ClientGame extends Game {
     }
 
     public canAttackWith(unit: Unit) {
-        return this.isPlayerTurn(this.owningPlayer) && this.phase === GamePhase.Play1 && unit.canAttack();
+        return (
+            this.isPlayerTurn(this.owningPlayer) &&
+            this.phase === GamePhase.Play1 &&
+            unit.canAttack()
+        );
     }
 
     public declareAttacker(unit: Unit) {
-        if (!this.canAttackWith(unit))
+        if (!this.canAttackWith(unit)) {
             return false;
+        }
         unit.toggleAttacking();
         this.runGameAction(GameActionType.ToggleAttack, {
             type: GameActionType.ToggleAttack,
@@ -142,9 +180,10 @@ export class ClientGame extends Game {
     }
 
     public declareBlocker(blocker: Unit, attacker: Unit | null) {
-        if (!blocker.canBlockTarget(attacker))
+        if (!blocker.canBlockTarget(attacker)) {
             return false;
-        let attackerId = attacker ? attacker.getId() : null;
+        }
+        const attackerId = attacker ? attacker.getId() : null;
         blocker.setBlocking(attackerId);
         this.runGameAction(GameActionType.DeclareBlocker, {
             type: GameActionType.DeclareBlocker,
@@ -159,22 +198,38 @@ export class ClientGame extends Game {
             console.error('Reject choice from', player);
             return false;
         }
-        let min = Math.min(this.currentChoices[player].validCards.size, this.currentChoices[player].min);
-        let max = this.currentChoices[player].max;
+        const min = Math.min(
+            this.currentChoices[player].validCards.size,
+            this.currentChoices[player].min
+        );
+        const max = this.currentChoices[player].max;
         if (cards.length > max || cards.length < min) {
-            console.error(`Reject choice. Wanted between ${min} and ${max} cards but got ${cards.length}.`);
+            console.error(
+                `Reject choice. Wanted between ${min} and ${max} cards but got ${
+                    cards.length
+                }.`
+            );
             return false;
         }
-        if (!cards.every(card => this.currentChoices[player].validCards.has(card))) {
-            console.error(`Reject choice. Included invalid options.`, cards, this.currentChoices[player].validCards);
+        if (
+            !cards.every(card =>
+                this.currentChoices[player].validCards.has(card)
+            )
+        ) {
+            console.error(
+                `Reject choice. Included invalid options.`,
+                cards,
+                this.currentChoices[player].validCards
+            );
             return false;
         }
         return true;
     }
 
     public makeChoice(player: number, cards: Card[]) {
-        if (!this.canMakeChoice(player, cards))
+        if (!this.canMakeChoice(player, cards)) {
             return false;
+        }
         this.makeDeferredChoice(player, cards);
         this.runGameAction(GameActionType.CardChoice, {
             type: GameActionType.CardChoice,
@@ -184,13 +239,17 @@ export class ClientGame extends Game {
     }
 
     public canPlayResource(): boolean {
-        return this.isPlayerTurn(this.owningPlayer) && this.players[this.owningPlayer].canPlayResource();
+        return (
+            this.isPlayerTurn(this.owningPlayer) &&
+            this.players[this.owningPlayer].canPlayResource()
+        );
     }
 
     public playResource(type: string) {
-        if (!this.canPlayResource())
+        if (!this.canPlayResource()) {
             return false;
-        let res = this.format.basicResources.get(type);
+        }
+        const res = this.format.basicResources.get(type);
         this.players[this.owningPlayer].playResource(res);
         this.runGameAction(GameActionType.PlayResource, {
             type: GameActionType.PlayResource,
@@ -200,17 +259,23 @@ export class ClientGame extends Game {
     }
 
     private wouldEndTurn() {
-        return this.isPlayerTurn(this.owningPlayer) &&
-            (this.getPhase() === GamePhase.Play1 && !this.isAttacking()) ||
-            (this.getPhase() === GamePhase.Play2);
+        return (
+            (this.isPlayerTurn(this.owningPlayer) &&
+                (this.getPhase() === GamePhase.Play1 && !this.isAttacking())) ||
+            this.getPhase() === GamePhase.Play2
+        );
     }
 
     public pass() {
-        if (this.players[this.owningPlayer].canPlayResource() && this.wouldEndTurn())
+        if (
+            this.players[this.owningPlayer].canPlayResource() &&
+            this.wouldEndTurn()
+        ) {
             return false;
+        }
         this.runGameAction(GameActionType.Pass, {
             type: GameActionType.Pass,
-            player: this.owningPlayer,
+            player: this.owningPlayer
         });
     }
 
@@ -218,7 +283,10 @@ export class ClientGame extends Game {
         this.owningPlayer = player;
     }
 
-    public queryCards(getCards: (game: ServerGame) => Card[], callback: (cards: Card[]) => void) {
+    public queryCards(
+        getCards: (game: ServerGame) => Card[],
+        callback: (cards: Card[]) => void
+    ) {
         if (this.queryData) {
             callback(this.queryData);
             this.queryData = null;
@@ -227,16 +295,17 @@ export class ClientGame extends Game {
         }
     }
 
-
     // Animation logic
     private shouldAnimate(): boolean {
         return this.owningPlayer === 0;
     }
 
     protected async resolveCombat() {
-        let attackers = this.getAttackers();
-        let blockers = this.getBlockers();
-        let defendingPlayer = this.players[this.getOtherPlayerNumber(this.getCurrentPlayer().getPlayerNumber())];
+        const attackers = this.getAttackers();
+        const blockers = this.getBlockers();
+        const defendingPlayer = this.players[
+            this.getOtherPlayerNumber(this.getCurrentPlayer().getPlayerNumber())
+        ];
 
         if (this.attackDamageOrder === null) {
             this.generateDamageDistribution();
@@ -245,9 +314,9 @@ export class ClientGame extends Game {
         this.animator.startAnimation();
 
         // Apply blocks in order decided by attacker
-        for (let attackerID of Array.from(this.attackDamageOrder.keys())) {
-            let attacker = this.getUnitById(attackerID);
-            let damageOrder = this.attackDamageOrder.get(attackerID);
+        for (const attackerID of Array.from(this.attackDamageOrder.keys())) {
+            const attacker = this.getUnitById(attackerID);
+            const damageOrder = this.attackDamageOrder.get(attackerID);
             let remainingDamage = attacker.getDamage();
 
             this.animator.triggerBattleAnimation({
@@ -256,17 +325,30 @@ export class ClientGame extends Game {
                 defenders: damageOrder
             });
 
-            for (let blocker of damageOrder) {
+            for (const blocker of damageOrder) {
                 await this.animator.getAnimationDelay(damageOrder.length * 2);
-                let assignedDamage = Math.min(blocker.getLife(), remainingDamage);
+                const assignedDamage = Math.min(
+                    blocker.getLife(),
+                    remainingDamage
+                );
                 remainingDamage -= assignedDamage;
                 blocker.getEvents().block.trigger({ attacker });
-                blocker.getEvents().attack.trigger({ attacker: attacker, damage: assignedDamage, defender: blocker });
+                blocker.getEvents().attack.trigger({
+                    attacker: attacker,
+                    damage: assignedDamage,
+                    defender: blocker
+                });
                 attacker.fight(blocker, assignedDamage);
 
                 if (this.shouldAnimate()) {
-                    this.animator.triggerDamageIndicatorEvent({ amount: assignedDamage, targetCard: blocker.getId() });
-                    this.animator.triggerDamageIndicatorEvent({ amount: blocker.getDamage(), targetCard: attacker.getId() });
+                    this.animator.triggerDamageIndicatorEvent({
+                        amount: assignedDamage,
+                        targetCard: blocker.getId()
+                    });
+                    this.animator.triggerDamageIndicatorEvent({
+                        amount: blocker.getDamage(),
+                        targetCard: attacker.getId()
+                    });
                 }
 
                 blocker.setBlocking(null);
@@ -275,7 +357,7 @@ export class ClientGame extends Game {
         }
 
         // Unblocked attackers damage the defending player
-        for (let attacker of attackers) {
+        for (const attacker of attackers) {
             if (!this.attackDamageOrder.has(attacker.getId())) {
                 if (this.shouldAnimate()) {
                     this.animator.triggerBattleAnimation({
@@ -287,7 +369,10 @@ export class ClientGame extends Game {
                 const dmg = attacker.getDamage();
                 await this.animator.getAnimationDelay(2);
                 if (this.shouldAnimate()) {
-                    this.animator.triggerDamageIndicatorEvent({ amount: dmg, targetCard: defendingPlayer.getId() });
+                    this.animator.triggerDamageIndicatorEvent({
+                        amount: dmg,
+                        targetCard: defendingPlayer.getId()
+                    });
                 }
                 attacker.dealAndApplyDamage(defendingPlayer, dmg);
                 attacker.toggleAttacking();
@@ -296,7 +381,6 @@ export class ClientGame extends Game {
             } else {
                 attacker.toggleAttacking();
             }
-
         }
 
         this.animator.endAnimation();
@@ -304,13 +388,11 @@ export class ClientGame extends Game {
         this.changePhase(GamePhase.Play2);
     }
 
-
     // Synchronization Logic --------------------------------------------------------
 
     public isSyncronized() {
         return this.getExpectedCards() === 0;
     }
-
 
     /**
      * Syncs an event that happened on the server into the state of this game model
@@ -320,20 +402,28 @@ export class ClientGame extends Game {
      * @memberof Game
      */
     public syncServerEvent(localPlayerNumber: number, event: GameSyncEvent) {
-
         if (event.number !== this.nextExpectedEvent) {
-            console.error('Event arrived out of order', event.number, this.events.length);
+            console.error(
+                'Event arrived out of order',
+                event.number,
+                this.events.length
+            );
         }
         this.events.push(event);
         try {
             this.syncSystem.handleEvent(localPlayerNumber, event);
         } catch (e) {
-            console.error('Error while syncing event', SyncEventType[event.type], event, 'for', localPlayerNumber);
+            console.error(
+                'Error while syncing event',
+                SyncEventType[event.type],
+                event,
+                'for',
+                localPlayerNumber
+            );
             throw e;
         }
 
         this.nextExpectedEvent++;
-
     }
 
     private idsToCards(ids: Array<string>) {
@@ -341,9 +431,10 @@ export class ClientGame extends Game {
     }
 
     public unpackCard(proto: CardPrototype) {
-        if (this.cardPool.has(proto.id))
+        if (this.cardPool.has(proto.id)) {
             return this.cardPool.get(proto.id);
-        let card = cardList.getCard(proto.data);
+        }
+        const card = cardList.getCard(proto.data);
         card.setId(proto.id);
         card.setOwner(proto.owner);
         this.cardPool.set(proto.id, card);
@@ -351,63 +442,108 @@ export class ClientGame extends Game {
     }
 
     private addSyncHandlers() {
-        this.syncSystem.addHandler(SyncEventType.AttackToggled, this.syncAttackToggled);
+        this.syncSystem.addHandler(
+            SyncEventType.AttackToggled,
+            this.syncAttackToggled
+        );
         this.syncSystem.addHandler(SyncEventType.TurnStart, this.syncTurnStart);
-        this.syncSystem.addHandler(SyncEventType.PhaseChange, this.syncPhaseChange);
-        this.syncSystem.addHandler(SyncEventType.PlayResource, this.syncPlayResource);
+        this.syncSystem.addHandler(
+            SyncEventType.PhaseChange,
+            this.syncPhaseChange
+        );
+        this.syncSystem.addHandler(
+            SyncEventType.PlayResource,
+            this.syncPlayResource
+        );
         this.syncSystem.addHandler(SyncEventType.PlayCard, this.syncCardEvent);
         this.syncSystem.addHandler(SyncEventType.Block, this.syncBlock);
         this.syncSystem.addHandler(SyncEventType.Draw, this.syncDrawEvent);
-        this.syncSystem.addHandler(SyncEventType.ChoiceMade, this.syncChoiceMade);
-        this.syncSystem.addHandler(SyncEventType.QueryResult, this.syncQueryResult);
+        this.syncSystem.addHandler(
+            SyncEventType.ChoiceMade,
+            this.syncChoiceMade
+        );
+        this.syncSystem.addHandler(
+            SyncEventType.QueryResult,
+            this.syncQueryResult
+        );
         this.syncSystem.addHandler(SyncEventType.Ended, this.syncEnded);
-        this.syncSystem.addHandler(SyncEventType.EnchantmentModified, this.syncModifyEnchantment);
-        this.syncSystem.addHandler(SyncEventType.DamageDistributed, this.syncDamageDistribution);
+        this.syncSystem.addHandler(
+            SyncEventType.EnchantmentModified,
+            this.syncModifyEnchantment
+        );
+        this.syncSystem.addHandler(
+            SyncEventType.DamageDistributed,
+            this.syncDamageDistribution
+        );
     }
 
-    private syncDamageDistribution(localPlayerNumber: number, event: SyncDamageDistributed) {
-        if (localPlayerNumber === this.getCurrentPlayer().getPlayerNumber())
+    private syncDamageDistribution(
+        localPlayerNumber: number,
+        event: SyncDamageDistributed
+    ) {
+        if (localPlayerNumber === this.getCurrentPlayer().getPlayerNumber()) {
             return;
-        let attackerID = event.attackerID as string;
-        let order = event.order as string[];
-        this.attackDamageOrder.set(attackerID, order.map(id => this.getUnitById(id)));
+        }
+        const attackerID = event.attackerID as string;
+        const order = event.order as string[];
+        this.attackDamageOrder.set(
+            attackerID,
+            order.map(id => this.getUnitById(id))
+        );
     }
 
     private syncCardEvent(localPlayerNumber: number, event: SyncPlayCard) {
         if (event.playerNo !== localPlayerNumber) {
-            let player = this.players[event.playerNo];
-            let card = this.unpackCard(event.played);
+            const player = this.players[event.playerNo];
+            const card = this.unpackCard(event.played);
             if (event.targetIds) {
-                card.getTargeter().setTargets(event.targetIds
-                    .map((id: string) => this.getUnitById(id)));
+                card.getTargeter().setTargets(
+                    event.targetIds.map((id: string) => this.getUnitById(id))
+                );
             }
             if (card.getCardType() === CardType.Item) {
-                (card as Item).getHostTargeter().setTargets([this.getUnitById(event.hostId)]);
+                (card as Item)
+                    .getHostTargeter()
+                    .setTargets([this.getUnitById(event.hostId)]);
             }
             this.playCard(player, card);
         }
-        if (this.log)
+        if (this.log) {
             this.log.addCardPlayed(event);
+        }
     }
 
-    private syncModifyEnchantment(localPlayerNumber: number, event: SyncEnchantmentModified) {
-        if (localPlayerNumber === this.getCurrentPlayer().getPlayerNumber())
+    private syncModifyEnchantment(
+        localPlayerNumber: number,
+        event: SyncEnchantmentModified
+    ) {
+        if (localPlayerNumber === this.getCurrentPlayer().getPlayerNumber()) {
             return;
-        let enchantment = this.getCardById(event.enchantmentId) as Enchantment;
+        }
+        const enchantment = this.getCardById(
+            event.enchantmentId
+        ) as Enchantment;
         enchantment.empowerOrDiminish(this.getCurrentPlayer(), this);
     }
 
     public getExpectedCards() {
-        return Math.abs(this.players[0].getExpectedDraws()) + Math.abs(this.players[1].getExpectedDraws());
+        return (
+            Math.abs(this.players[0].getExpectedDraws()) +
+            Math.abs(this.players[1].getExpectedDraws())
+        );
     }
 
-    private syncDrawEvent(localPlayerNumber: number, event: SyncDraw | SyncFatigue) {
-        if (event.fatigue === true)
+    private syncDrawEvent(
+        localPlayerNumber: number,
+        event: SyncDraw | SyncFatigue
+    ) {
+        if (event.fatigue === true) {
             this.players[event.playerNo].fatigue();
-        else if (event.discarded)
+        } else if (event.discarded) {
             this.addToCrypt(this.unpackCard(event.card));
-        else
+        } else {
             this.players[event.playerNo].addToHand(this.unpackCard(event.card));
+        }
 
         this.players[event.playerNo].setCardSynced();
         if (this.isSyncronized() && this.onSync) {
@@ -425,14 +561,22 @@ export class ClientGame extends Game {
         }
     }
 
-    private syncPlayResource(localPlayerNumber: number, event: SyncPlayResource) {
-        if (event.playerNo !== localPlayerNumber)
+    private syncPlayResource(
+        localPlayerNumber: number,
+        event: SyncPlayResource
+    ) {
+        if (event.playerNo !== localPlayerNumber) {
             this.players[event.playerNo].playResource(event.resource);
+        }
     }
 
-    private syncAttackToggled(localPlayerNumber: number, event: SyncAttackToggled) {
-        if (event.player !== localPlayerNumber)
+    private syncAttackToggled(
+        localPlayerNumber: number,
+        event: SyncAttackToggled
+    ) {
+        if (event.player !== localPlayerNumber) {
             this.getUnitById(event.unitId).toggleAttacking();
+        }
     }
 
     private syncBlock(localPlayerNumber: number, event: SyncBlock) {
@@ -442,38 +586,44 @@ export class ClientGame extends Game {
     }
 
     private syncPhaseChange(localPlayerNumber: number, event: SyncPhaseChange) {
-        if (event.phase === GamePhase.Block)
-            this.gameEvents.playerAttacked.trigger(
-                { target: this.getOtherPlayerNumber(this.getActivePlayer()) }
-            );
+        if (event.phase === GamePhase.Block) {
+            this.gameEvents.playerAttacked.trigger({
+                target: this.getOtherPlayerNumber(this.getActivePlayer())
+            });
+        }
         if (event.phase === GamePhase.Play2) {
             this.resolveCombat();
         }
-        if (event.phase === GamePhase.DamageDistribution)
+        if (event.phase === GamePhase.DamageDistribution) {
             this.generateDamageDistribution();
+        }
 
-        if (event.phase === GamePhase.End)
+        if (event.phase === GamePhase.End) {
             this.startEndPhase();
-        else
+        } else {
             this.changePhase(event.phase);
+        }
     }
 
     private syncChoiceMade(localPlayerNumber: number, event: SyncChoiceMade) {
-        if (event.player !== localPlayerNumber)
-            this.makeDeferredChoice(event.player, this.idsToCards(event.choice));
+        if (event.player !== localPlayerNumber) {
+            this.makeDeferredChoice(
+                event.player,
+                this.idsToCards(event.choice)
+            );
+        }
     }
-
 
     private setQueryResult(cards: Card[]) {
-        if (this.onQueryResult)
+        if (this.onQueryResult) {
             this.onQueryResult(cards);
-        else
+        } else {
             this.queryData = cards;
+        }
     }
 
-
     private syncQueryResult(localPlayerNumber: number, event: SyncQueryResult) {
-        let cards = event.cards.map(proto => this.unpackCard(proto));
+        const cards = event.cards.map(proto => this.unpackCard(proto));
         this.setQueryResult(cards);
     }
 

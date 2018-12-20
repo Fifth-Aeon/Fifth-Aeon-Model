@@ -1,17 +1,15 @@
-import { Game, GamePhase } from '../../game';
-import { Targeter } from '../../targeter';
 import { Card } from '../../card';
-import { Unit, UnitType } from '../../unit';
-
-import { Trigger } from '../../trigger';
-import { Player } from '../../player';
+import { Game } from '../../game';
 import { removeFirstCapital } from '../../strings';
+import { Trigger } from '../../trigger';
 
 export class OwnerAttacked extends Trigger {
     protected static id = 'OwnerAttacked';
 
     public getText(mechanicText: string) {
-        return `When this unit’s owner is attacked ${removeFirstCapital(mechanicText)}`;
+        return `When this unit’s owner is attacked ${removeFirstCapital(
+            mechanicText
+        )}`;
     }
 
     public register(card: Card, game: Game) {

@@ -5,10 +5,10 @@ import { Unit } from '../../unit';
 
 export class MindControl extends TargetedMechanic {
     protected static id = 'MindControl';
-    
+
     public onTrigger(card: Card, game: Game) {
-        let targets = this.targeter.getTargets(card, game, this);
-        for (let target of targets) {
+        const targets = this.targeter.getTargets(card, game, this);
+        for (const target of targets) {
             game.changeUnitOwner(target);
         }
     }
@@ -18,6 +18,10 @@ export class MindControl extends TargetedMechanic {
     }
 
     public evaluateTarget(source: Card, unit: Unit, game: Game) {
-        return unit.evaluate(game, EvalContext.NonlethalRemoval) * 2 * (unit.getOwner() === source.getOwner() ? -1 : 1);
+        return (
+            unit.evaluate(game, EvalContext.NonlethalRemoval) *
+            2 *
+            (unit.getOwner() === source.getOwner() ? -1 : 1)
+        );
     }
 }

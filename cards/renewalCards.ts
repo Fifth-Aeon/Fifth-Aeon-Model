@@ -1,39 +1,50 @@
-// Game Types
-import { Mechanic } from '../mechanic';
 import { Card } from '../card';
-import { Unit, UnitType } from '../unit';
 import { Enchantment } from '../enchantment';
-
 import { Item } from '../item';
 import { Resource } from '../resource';
-
-// Targeters
-import { SingleUnit, FriendlyUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnits, TriggeringUnit } from './targeters/basicTargeter';
-
-
-// Triggers
-import { Serenity } from './triggers/serenity';
-
-// Mechanics
+import { Unit, UnitType } from '../unit';
+import { BuffTarget, BuffTargetAndGrant } from './mechanics/buff';
 import { CannotAttack, ImprisonTarget } from './mechanics/cantAttack';
-import { ShuffleIntoDeck } from './mechanics/shuffleIntoDeck';
-import { MindControl } from './mechanics/mindControl';
-import { Lordship, unitTypeLordshipExclusive, unitTypeLordshipInclusive } from './mechanics/lordship';
-import { SummonUnits, SummonUnitOnDamage } from './mechanics/summonUnits';
-import { BuffTargetAndGrant, BuffTarget } from './mechanics/buff';
-import { RefreshTarget } from './mechanics/heal';
-import { Flying, Aquatic, Rush, Relentless, Ranged, Immortal } from './mechanics/skills';
-import { CurePoison } from './mechanics/poison';
-import { Recharge, Discharge, CannotBeEmpowered, ChangePower } from './mechanics/enchantmentCounters';
-import { PreventAllDamage } from './mechanics/shieldEnchantments';
-import { GainLife } from './mechanics/playerAid';
 import { DrawCard } from './mechanics/draw';
-import { OwnerAttacked } from './triggers/owner';
+import {
+    CannotBeEmpowered,
+    ChangePower,
+    Discharge
+} from './mechanics/enchantmentCounters';
+import { RefreshTarget } from './mechanics/heal';
+import {
+    unitTypeLordshipExclusive,
+    unitTypeLordshipInclusive
+} from './mechanics/lordship';
+import { MindControl } from './mechanics/mindControl';
+import { GainLife } from './mechanics/playerAid';
+import { CurePoison } from './mechanics/poison';
+import { PreventAllDamage } from './mechanics/shieldEnchantments';
+import { ShuffleIntoDeck } from './mechanics/shuffleIntoDeck';
+import {
+    Aquatic,
+    Flying,
+    Immortal,
+    Ranged,
+    Relentless,
+    Rush
+} from './mechanics/skills';
+import { SummonUnits } from './mechanics/summonUnits';
+import { WinIfHighLife } from './mechanics/win';
+import {
+    AllUnits,
+    FriendlyUnit,
+    FriendlyUnits,
+    SingleUnit,
+    TriggeringUnit,
+    Untargeted
+} from './targeters/basicTargeter';
 import { RenewalMCTargeter } from './targeters/mindControlTargeter';
 import { CurePoisonTargeter } from './targeters/poisonTargeter';
-import { Dusk, Dawn } from './triggers/periodic';
-import { UnitEntersPlay, FriendlyUnitEntersPlay } from './triggers/basic';
-import { WinIfHighLife } from './mechanics/win';
+import { FriendlyUnitEntersPlay } from './triggers/basic';
+import { OwnerAttacked } from './triggers/owner';
+import { Dawn } from './triggers/periodic';
+import { Serenity } from './triggers/serenity';
 
 export function pegasus() {
     return new Unit(
@@ -48,7 +59,8 @@ export function pegasus() {
             Synthesis: 0
         }),
         new SingleUnit().setOptional(true),
-        2, 3,
+        2,
+        3,
         [new Flying(), new BuffTargetAndGrant(0, 1, [new Flying()])]
     );
 }
@@ -66,7 +78,8 @@ export function dove() {
             Synthesis: 0
         }),
         new Untargeted(),
-        1, 2,
+        1,
+        2,
         [new Flying(), new GainLife(2)]
     );
 }
@@ -83,12 +96,14 @@ export function valiantDefenses() {
             Synthesis: 0
         }),
         new Untargeted(),
-        3, 3,
-        [new SummonUnits(pikeman, 1).setTrigger(new OwnerAttacked()),
-        new ChangePower(-1).setTrigger(new OwnerAttacked())]
+        3,
+        3,
+        [
+            new SummonUnits(pikeman, 1).setTrigger(new OwnerAttacked()),
+            new ChangePower(-1).setTrigger(new OwnerAttacked())
+        ]
     );
 }
-
 
 export function supremeAgeis() {
     return new Enchantment(
@@ -102,7 +117,8 @@ export function supremeAgeis() {
             Synthesis: 0
         }),
         new Untargeted(),
-        10, 4,
+        10,
+        4,
         [new Discharge(1), new CannotBeEmpowered(), new PreventAllDamage()]
     );
 }
@@ -120,7 +136,8 @@ export function archer() {
             Synthesis: 0
         }),
         new Untargeted(),
-        1, 2,
+        1,
+        2,
         [new Ranged()]
     );
 }
@@ -138,11 +155,11 @@ export function general() {
             Synthesis: 0
         }),
         new Untargeted(),
-        2, 2,
+        2,
+        2,
         [unitTypeLordshipInclusive(UnitType.Soldier, 1, 1)]
     );
 }
-
 
 export function wingsOfLight() {
     return new Item(
@@ -157,7 +174,8 @@ export function wingsOfLight() {
         }),
         new Untargeted(),
         new FriendlyUnit(),
-        5, 5,
+        5,
+        5,
         [new Flying(), new Rush(), new Relentless()]
     );
 }
@@ -174,7 +192,8 @@ export function navalGalley() {
             Synthesis: 0
         }),
         new Untargeted(),
-        2, 3,
+        2,
+        3,
         [new Aquatic()]
     );
 }
@@ -192,7 +211,8 @@ export function breastplate() {
         }),
         new Untargeted(),
         new FriendlyUnit(),
-        0, 4,
+        0,
+        4,
         []
     );
 }
@@ -210,7 +230,8 @@ export function crossbow() {
         }),
         new Untargeted(),
         new FriendlyUnit(),
-        2, 2,
+        2,
+        2,
         [new Ranged()]
     );
 }
@@ -228,7 +249,8 @@ export function ancientSage() {
             Synthesis: 0
         }),
         new Untargeted(),
-        0, 4,
+        0,
+        4,
         [
             new Immortal(),
             new CannotAttack(),
@@ -251,12 +273,11 @@ export function ruralMonk() {
             Synthesis: 0
         }),
         new Untargeted(),
-        1, 2,
-        [new GainLife(1)
-            .setTrigger(new Serenity())]
+        1,
+        2,
+        [new GainLife(1).setTrigger(new Serenity())]
     );
 }
-
 
 export function blacksmith() {
     return new Unit(
@@ -271,7 +292,8 @@ export function blacksmith() {
             Synthesis: 0
         }),
         new Untargeted(),
-        1, 1,
+        1,
+        1,
         [
             new BuffTarget(1, 0)
                 .setTargeter(new TriggeringUnit())
@@ -279,7 +301,6 @@ export function blacksmith() {
         ]
     );
 }
-
 
 export function kingUnit() {
     return new Unit(
@@ -294,9 +315,11 @@ export function kingUnit() {
             Synthesis: 0
         }),
         new Untargeted(),
-        3, 5,
-        [unitTypeLordshipInclusive(UnitType.Soldier, 1, 1),
-        new SummonUnits(pikeman).setTrigger(new Dawn())
+        3,
+        5,
+        [
+            unitTypeLordshipInclusive(UnitType.Soldier, 1, 1),
+            new SummonUnits(pikeman).setTrigger(new Dawn())
         ]
     );
 }
@@ -348,7 +371,8 @@ export function gryphon() {
             Synthesis: 0
         }),
         new Untargeted(),
-        2, 4,
+        2,
+        4,
         [new Flying()]
     );
 }
@@ -383,7 +407,8 @@ export function pikeman() {
             Synthesis: 0
         }),
         new Untargeted(),
-        2, 1,
+        2,
+        1,
         []
     );
 }
@@ -401,7 +426,8 @@ export function unicorn() {
             Synthesis: 0
         }),
         new SingleUnit(true),
-        3, 2,
+        3,
+        2,
         [new RefreshTarget()]
     );
 }
@@ -419,8 +445,12 @@ export function monestary() {
             Synthesis: 0
         }),
         new Untargeted(),
-        0, 5,
-        [new CannotAttack(), new SummonUnits(ruralMonk, 1).setTrigger(new Serenity())]
+        0,
+        5,
+        [
+            new CannotAttack(),
+            new SummonUnits(ruralMonk, 1).setTrigger(new Serenity())
+        ]
     );
 }
 
@@ -437,7 +467,8 @@ export function castle() {
             Synthesis: 0
         }),
         new Untargeted(),
-        4, 7,
+        4,
+        7,
         [new CannotAttack()]
     );
 }
@@ -455,7 +486,8 @@ export function plaugeDoctor() {
             Synthesis: 0
         }),
         new CurePoisonTargeter(),
-        2, 3,
+        2,
+        3,
         [new CurePoison()]
     );
 }
@@ -473,7 +505,8 @@ export function knight() {
             Synthesis: 0
         }),
         new Untargeted(),
-        3, 3,
+        3,
+        3,
         []
     );
 }
@@ -539,7 +572,8 @@ export function angel() {
             Synthesis: 0
         }),
         new Untargeted(),
-        4, 7,
+        4,
+        7,
         [new Flying(), new Relentless()]
     );
 }
@@ -557,13 +591,13 @@ export function pontiff() {
             Synthesis: 0
         }),
         new Untargeted(),
-        3, 3,
+        3,
+        3,
         [unitTypeLordshipExclusive(UnitType.Cleric, 1, 1)]
     );
 }
 
-
-export function overwelmingRadiance () {
+export function overwelmingRadiance() {
     return new Card(
         'OverwhelmingRadiance',
         'Overwhelming Radiance',

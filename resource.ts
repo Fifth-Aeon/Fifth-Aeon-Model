@@ -2,10 +2,10 @@ import { properList } from './strings';
 import { toPairs } from 'lodash';
 
 export const ResourceType = {
-    'Synthesis': 'Synthesis',
-    'Growth': 'Growth',
-    'Decay': 'Decay',
-    'Renewal': 'Renewal'
+    Synthesis: 'Synthesis',
+    Growth: 'Growth',
+    Decay: 'Decay',
+    Renewal: 'Renewal'
 };
 export const ResourceTypeNames = ['Synthesis', 'Growth', 'Decay', 'Renewal'];
 export type ResourceType = 'Synthesis' | 'Growth' | 'Decay' | 'Renewal';
@@ -17,11 +17,23 @@ export interface ResourceTypeGroup {
     Renewal: number;
 }
 
-const colors = [new Set(['Synthesis']), new Set(['Growth']), new Set(['Decay']), new Set(['Renewal']),
-new Set(['Synthesis', 'Growth']), new Set(['Synthesis', 'Decay']), new Set(['Synthesis', 'Renewal']),
-new Set(['Growth', 'Decay']), new Set(['Growth', 'Renewal']), new Set(['Decay', 'Renewal']),
-new Set(['Synthesis', 'Growth', 'Decay']), new Set(['Synthesis', 'Growth', 'Renewal']),
-new Set(['Synthesis', 'Decay', 'Renewal']), new Set(['Growth', 'Decay', 'Renewal']), new Set(['Synthesis', 'Growth', 'Decay', 'Renewal'])];
+const colors = [
+    new Set(['Synthesis']),
+    new Set(['Growth']),
+    new Set(['Decay']),
+    new Set(['Renewal']),
+    new Set(['Synthesis', 'Growth']),
+    new Set(['Synthesis', 'Decay']),
+    new Set(['Synthesis', 'Renewal']),
+    new Set(['Growth', 'Decay']),
+    new Set(['Growth', 'Renewal']),
+    new Set(['Decay', 'Renewal']),
+    new Set(['Synthesis', 'Growth', 'Decay']),
+    new Set(['Synthesis', 'Growth', 'Renewal']),
+    new Set(['Synthesis', 'Decay', 'Renewal']),
+    new Set(['Growth', 'Decay', 'Renewal']),
+    new Set(['Synthesis', 'Growth', 'Decay', 'Renewal'])
+];
 
 export class Resource {
     private types: ResourceTypeGroup;
@@ -37,7 +49,11 @@ export class Resource {
         });
     }
 
-    constructor(numeric: number, maxNumeric: number = 0, types?: ResourceTypeGroup, ) {
+    constructor(
+        numeric: number,
+        maxNumeric: number = 0,
+        types?: ResourceTypeGroup
+    ) {
         this.numeric = numeric;
         this.maxNumeric = maxNumeric;
         this.types = types || {
@@ -51,7 +67,10 @@ export class Resource {
     public difference(res: Resource) {
         return [
             { name: 'Energy', diff: this.getNumeric() - res.getNumeric() },
-            { name: 'Synthesis', diff: this.types.Synthesis - res.types.Synthesis },
+            {
+                name: 'Synthesis',
+                diff: this.types.Synthesis - res.types.Synthesis
+            },
             { name: 'Growth', diff: this.types.Growth - res.types.Growth },
             { name: 'Decay', diff: this.types.Decay - res.types.Decay },
             { name: 'Renewal', diff: this.types.Renewal - res.types.Renewal }
@@ -60,42 +79,53 @@ export class Resource {
 
     public asSentence() {
         const base = this.numeric + ' energy';
-        const reqs: Array<[string, number]> = toPairs(this.types).filter(pair => pair[1] > 0);
-        if (reqs.length === 0)
+        const reqs: Array<[string, number]> = toPairs(this.types).filter(
+            pair => pair[1] > 0
+        );
+        if (reqs.length === 0) {
             return `costs ${this.numeric} energy.`;
-        else
-            return `costs ${this.numeric} energy. It also requires ${
-                properList(reqs.map(pair => `${pair[1]} ${pair[0].toLowerCase()}`))}`;
+        } else {
+            return `costs ${this.numeric} energy. It also requires ${properList(
+                reqs.map(pair => `${pair[1]} ${pair[0].toLowerCase()}`)
+            )}`;
+        }
     }
 
     public asListDesc() {
         const base = this.numeric + ' energy';
-        const reqs: Array<[string, number]> = toPairs(this.types).filter(pair => pair[1] > 0);
-        let items = [this.numeric + ' energy'].concat(reqs.map(pair => `${pair[1]} ${pair[0].toLowerCase()}`));
+        const reqs: Array<[string, number]> = toPairs(this.types).filter(
+            pair => pair[1] > 0
+        );
+        const items = [this.numeric + ' energy'].concat(
+            reqs.map(pair => `${pair[1]} ${pair[0].toLowerCase()}`)
+        );
         return properList(items);
     }
 
     public getColor() {
         for (let i = 0; i < colors.length; i++) {
-            if (this.isInColors(colors[i]))
+            if (this.isInColors(colors[i])) {
                 return i;
+            }
         }
     }
 
     public isInColors(colorsToCheck: Set<string>) {
-        let resColors = this.getColors();
+        const resColors = this.getColors();
         for (const value of Array.from(resColors.values())) {
-            if (!colorsToCheck.has(value))
+            if (!colorsToCheck.has(value)) {
                 return false;
+            }
         }
         return true;
     }
 
     public getColors(): Set<ResourceType> {
-        let set = new Set();
-        for (let prop in this.types) {
-            if (this.types[prop] > 0)
+        const set = new Set();
+        for (const prop in this.types) {
+            if (this.types[prop] > 0) {
                 set.add(prop);
+            }
         }
         return set;
     }
@@ -108,18 +138,24 @@ export class Resource {
         return this.maxNumeric;
     }
 
-
     public getTyped() {
-        return Object.keys(this.types).map(key => key[0].repeat(this.types[key])).join('').split('');
+        return Object.keys(this.types)
+            .map(key => key[0].repeat(this.types[key]))
+            .join('')
+            .split('');
     }
 
     public asCost(): string {
-        let types = Object.keys(this.types).map(key => key[0].repeat(this.types[key])).join('');
+        const types = Object.keys(this.types)
+            .map(key => key[0].repeat(this.types[key]))
+            .join('');
         return `${this.numeric.toString()} ${types}`;
     }
 
     public asPool(): string {
-        let types = Object.keys(this.types).map(key => key[0].repeat(this.types[key])).join('');
+        const types = Object.keys(this.types)
+            .map(key => key[0].repeat(this.types[key]))
+            .join('');
         return `(${this.numeric.toString()} / ${this.maxNumeric.toString()}) ${types}`;
     }
 
@@ -135,7 +171,7 @@ export class Resource {
     public add(other: Resource) {
         this.numeric += other.numeric;
         this.maxNumeric += other.maxNumeric;
-        Object.keys(other.types).forEach((reqType) => {
+        Object.keys(other.types).forEach(reqType => {
             this.types[reqType] = this.types[reqType] + other.types[reqType];
         });
     }
@@ -146,10 +182,11 @@ export class Resource {
 
     public meetsReq(req: Resource): boolean {
         let ok = true;
-        Object.keys(req.types).forEach((key) => {
-            let necReq = req.types[key];
-            if ((this.types[key] || 0) < necReq)
+        Object.keys(req.types).forEach(key => {
+            const necReq = req.types[key];
+            if ((this.types[key] || 0) < necReq) {
                 ok = false;
+            }
         });
         return ok && this.numeric >= req.numeric;
     }

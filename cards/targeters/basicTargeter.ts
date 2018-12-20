@@ -5,7 +5,6 @@ import { Mechanic } from '../../mechanic';
 import { Targeter } from '../../targeter';
 import { Unit } from '../../unit';
 
-
 export class TriggeringUnit extends Targeter {
     protected static id = 'TriggeringUnit';
 
@@ -14,9 +13,10 @@ export class TriggeringUnit extends Targeter {
     }
 
     public getTargets(card: Card, game: Game, mechanic: Mechanic) {
-        let triggering = mechanic.getTriggeringUnit();
-        if (triggering)
+        const triggering = mechanic.getTriggeringUnit();
+        if (triggering) {
             return [mechanic.getTriggeringUnit()];
+        }
         return [];
     }
 
@@ -70,9 +70,13 @@ export class SelfTarget extends Targeter {
     protected static id = 'SelfTarget';
 
     public getTargets(card: Card, game: Game): Array<Unit> {
-        let unit = card.getCardType() === CardType.Item ? (card as Item).getHost() : card as Unit;
-        if (unit && unit.getCardType() === CardType.Unit)
+        const unit =
+            card.getCardType() === CardType.Item
+                ? (card as Item).getHost()
+                : (card as Unit);
+        if (unit && unit.getCardType() === CardType.Unit) {
             return [unit];
+        }
         return [];
     }
 
@@ -82,7 +86,6 @@ export class SelfTarget extends Targeter {
     public needsInput() {
         return false;
     }
-
 }
 
 export class SingleUnit extends Targeter {
@@ -91,7 +94,6 @@ export class SingleUnit extends Targeter {
     constructor(optional: boolean = false) {
         super();
         this.optional = optional;
-
     }
     public getValidTargets(card: Card, game: Game) {
         return game.getBoard().getAllUnits();
@@ -108,25 +110,29 @@ export class FriendlyUnit extends SingleUnit {
     protected static id = 'FriendlyUnit';
 
     public getValidTargets(card: Card, game: Game) {
-        return game.getBoard().getAllUnits().filter(unit => unit.getOwner() === card.getOwner());
+        return game
+            .getBoard()
+            .getAllUnits()
+            .filter(unit => unit.getOwner() === card.getOwner());
     }
     public getText() {
         return 'target friendly unit';
     }
-
 }
 
 export class EnemyUnit extends SingleUnit {
     protected static id = 'EnemyUnit';
 
     public getValidTargets(card: Card, game: Game) {
-        return game.getBoard().getAllUnits().filter(unit => unit.getOwner() !== card.getOwner());
+        return game
+            .getBoard()
+            .getAllUnits()
+            .filter(unit => unit.getOwner() !== card.getOwner());
     }
     public getText() {
         return 'target enemy unit';
     }
 }
-
 
 export class AllUnits extends Targeter {
     protected static id = 'AllUnits';
@@ -155,11 +161,13 @@ export class AllOtherUnits extends AllUnits {
         return 'all other units';
     }
     public getTargets(card: Card, game: Game): Array<Unit> {
-        this.lastTargets = game.getBoard().getAllUnits().filter(unit => unit !== card);
+        this.lastTargets = game
+            .getBoard()
+            .getAllUnits()
+            .filter(unit => unit !== card);
         return this.lastTargets;
     }
 }
-
 
 export class FriendlyUnits extends AllUnits {
     protected static id = 'FriendlyUnits';
@@ -167,7 +175,9 @@ export class FriendlyUnits extends AllUnits {
         return 'friendly units';
     }
     public getTargets(card: Card, game: Game): Array<Unit> {
-        this.lastTargets = game.getBoard().getAllUnits()
+        this.lastTargets = game
+            .getBoard()
+            .getAllUnits()
             .filter(unit => unit.getOwner() === card.getOwner());
         return this.lastTargets;
     }
@@ -179,7 +189,9 @@ export class EnemyUnits extends AllUnits {
         return 'all enemy units';
     }
     public getTargets(card: Card, game: Game): Array<Unit> {
-        this.lastTargets = game.getBoard().getAllUnits()
+        this.lastTargets = game
+            .getBoard()
+            .getAllUnits()
             .filter(unit => unit.getOwner() !== card.getOwner());
         return this.lastTargets;
     }
@@ -205,7 +217,9 @@ export class Everyone extends AllUnits {
         return 'all units and players';
     }
     public getTargets(card: Card, game: Game): Array<Unit> {
-        this.lastTargets = game.getBoard().getAllUnits()
+        this.lastTargets = game
+            .getBoard()
+            .getAllUnits()
             .concat(game.getPlayer(card.getOwner()))
             .concat(game.getPlayer(game.getOtherPlayerNumber(card.getOwner())));
         return this.lastTargets;
@@ -218,7 +232,9 @@ export class Friends extends AllUnits {
         return 'all friendly units and players';
     }
     public getTargets(card: Card, game: Game): Array<Unit> {
-        this.lastTargets = game.getBoard().getAllUnits()
+        this.lastTargets = game
+            .getBoard()
+            .getAllUnits()
             .filter(unit => unit.getOwner() === card.getOwner())
             .concat(game.getPlayer(card.getOwner()));
         return this.lastTargets;
@@ -231,10 +247,11 @@ export class Enemies extends AllUnits {
         return 'all enemy units and players';
     }
     public getTargets(card: Card, game: Game): Array<Unit> {
-        this.lastTargets = game.getBoard().getAllUnits()
+        this.lastTargets = game
+            .getBoard()
+            .getAllUnits()
             .filter(unit => unit.getOwner() !== card.getOwner())
             .concat(game.getPlayer(game.getOtherPlayerNumber(card.getOwner())));
         return this.lastTargets;
     }
 }
-

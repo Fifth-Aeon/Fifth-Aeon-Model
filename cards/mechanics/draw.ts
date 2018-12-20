@@ -1,12 +1,10 @@
-import { Game } from '../../game';
+import { ChoiceHeuristic } from '../../ai/defaultAi';
 import { Card } from '../../card';
-
+import { Game } from '../../game';
 import { Mechanic, TriggeredMechanic } from '../../mechanic';
 import { Player } from '../../player';
 import { Unit, UnitType } from '../../unit';
 import { ParameterType } from '../parameters';
-import { ChoiceHeuristic } from '../../ai/defaultAi';
-
 
 export class DrawCard extends TriggeredMechanic {
     protected static id = 'DrawCard';
@@ -23,8 +21,9 @@ export class DrawCard extends TriggeredMechanic {
     }
 
     public getText(card: Card) {
-        if (this.count === 1)
+        if (this.count === 1) {
             return 'Draw a card.';
+        }
         return `Draw ${this.count} cards.`;
     }
 
@@ -38,10 +37,22 @@ export class Peek extends TriggeredMechanic {
 
     public onTrigger(card: Card, game: Game) {
         game.queryCards(
-            (queried: Game) => queried.getPlayer(queried.getOtherPlayerNumber(card.getOwner())).getHand(),
-            (hand) => {
-                game.promptCardChoice(card.getOwner(), hand, 0, 0, null, '', ChoiceHeuristic.DrawHeuristic);
-            });
+            (queried: Game) =>
+                queried
+                    .getPlayer(queried.getOtherPlayerNumber(card.getOwner()))
+                    .getHand(),
+            hand => {
+                game.promptCardChoice(
+                    card.getOwner(),
+                    hand,
+                    0,
+                    0,
+                    null,
+                    '',
+                    ChoiceHeuristic.DrawHeuristic
+                );
+            }
+        );
     }
 
     public getText(card: Card) {
@@ -63,12 +74,16 @@ export class Discard extends TriggeredMechanic {
         super();
     }
     public onTrigger(card: Card, game: Game) {
-        let target = game.getPlayer(game.getOtherPlayerNumber(card.getOwner()));
+        const target = game.getPlayer(
+            game.getOtherPlayerNumber(card.getOwner())
+        );
         target.discard(game, this.count);
     }
 
     public getText(card: Card) {
-        return `Your opponent discards ${this.count === 1 ? 'a card' : this.count + ' cards'}.`;
+        return `Your opponent discards ${
+            this.count === 1 ? 'a card' : this.count + ' cards'
+        }.`;
     }
 
     public evaluateEffect() {
@@ -80,13 +95,15 @@ export class DiscardOnDamage extends Mechanic {
     protected static id = 'DiscardOnDamage';
 
     public enter(card: Card, game: Game) {
-        (card as Unit).getEvents().dealDamage.addEvent(this,  params => {
-                let target = params.target;
-                if (target.getUnitType() === UnitType.Player)
-                    game.getPlayer((target as Player).getPlayerNumber()).discard(game);
-                return params;
+        (card as Unit).getEvents().dealDamage.addEvent(this, params => {
+            const target = params.target;
+            if (target.getUnitType() === UnitType.Player) {
+                game.getPlayer((target as Player).getPlayerNumber()).discard(
+                    game
+                );
             }
-        );
+            return params;
+        });
     }
 
     public remove(card: Card, game: Game) {
@@ -106,8 +123,8 @@ export class AugarCard extends TriggeredMechanic {
     protected static id = 'AugarCard';
 
     public onTrigger(card: Card, game: Game) {
-        let owner = game.getPlayer(card.getOwner());
-        let synth = owner.getPool().getOfType('Synthesis');
+        const owner = game.getPlayer(card.getOwner());
+        const synth = owner.getPool().getOfType('Synthesis');
 
         if (synth < 4) {
             owner.replace(game, 0, 1);
@@ -126,4 +143,3 @@ export class AugarCard extends TriggeredMechanic {
         return 2;
     }
 }
-

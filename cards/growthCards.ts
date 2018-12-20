@@ -1,37 +1,46 @@
-// Game Types
-import { Mechanic } from '../mechanic';
 import { Card } from '../card';
+import { Enchantment } from '../enchantment';
 import { Item } from '../item';
-import { Unit, UnitType } from '../unit';
 import { Resource } from '../resource';
-
-// Targeters
+import { Unit, UnitType } from '../unit';
+import { BuffTarget, BuffTargetAndGrant, GrantAbility } from './mechanics/buff';
+import { BiteDamage, DealDamage } from './mechanics/dealDamage';
+import { DrawCard } from './mechanics/draw';
+import { Discharge } from './mechanics/enchantmentCounters';
+import { DrawCardsFromUnit, WebTarget } from './mechanics/growthSpecials';
+import { GainLife, GainResource } from './mechanics/playerAid';
+import { PoisonTarget, Venomous } from './mechanics/poison';
+import { KillTarget } from './mechanics/removal';
 import {
-    SingleUnit, Untargeted, AllUnits, EnemyUnits, FriendlyUnit, AllOtherUnits, SelfTarget, EnemyUnit
+    Aquatic,
+    Deathless,
+    Flying,
+    Lethal,
+    Ranged,
+    Relentless,
+    Rush
+} from './mechanics/skills';
+import { SleepTarget } from './mechanics/sleep';
+import { SummonUnits } from './mechanics/summonUnits';
+import {
+    AllOtherUnits,
+    AllUnits,
+    EnemyUnit,
+    EnemyUnits,
+    FriendlyUnit,
+    SelfTarget,
+    SingleUnit,
+    Untargeted
 } from './targeters/basicTargeter';
-import { SleepableUnit } from './targeters/poisonTargeter';
 import { BiologicalUnit } from './targeters/biotargeter';
 import { UnitWithAbility } from './targeters/mechanicTargeter';
-
-// Mechanics
-import { DrawCardsFromUnit, WebTarget } from './mechanics/growthSpecials';
-import { DealDamage, BiteDamage } from './mechanics/dealDamage';
-import { SleepTarget } from './mechanics/sleep';
-import { BuffTargetAndGrant, BuffTarget, GrantAbility } from './mechanics/buff';
-import { SummonUnits } from './mechanics/summonUnits';
-import { Flying, Lethal, Rush, Aquatic, Relentless, Deathless, Ranged } from './mechanics/skills';
-import { Venomous, PoisonTarget } from './mechanics/poison';
-import { GainLife, GainResource } from './mechanics/playerAid';
-import { DeathTrigger } from './triggers/death';
-import { KillTarget } from './mechanics/removal';
-import { Affinity } from './triggers/affinity';
-import { UnitsOfType, UnitsOfTypeAsTarget } from './targeters/unitTypeTargeter';
-import { LethalStrike } from './triggers/lethalStrike';
-import { Enchantment } from '../enchantment';
-import { Discharge } from './mechanics/enchantmentCounters';
-import { DrawCard } from './mechanics/draw';
+import { SleepableUnit } from './targeters/poisonTargeter';
 import { LifeLessUnits } from './targeters/powerTargeter';
-import { Dawn, Cycle } from './triggers/periodic';
+import { UnitsOfType, UnitsOfTypeAsTarget } from './targeters/unitTypeTargeter';
+import { Affinity } from './triggers/affinity';
+import { DeathTrigger } from './triggers/death';
+import { LethalStrike } from './triggers/lethalStrike';
+import { Cycle, Dawn } from './triggers/periodic';
 
 export function flourishing() {
     return new Enchantment(
@@ -45,13 +54,19 @@ export function flourishing() {
             Synthesis: 0
         }),
         new Untargeted(),
-        5, 3,
-        [new GainResource(new Resource(1, 1, {
-            Growth: 1,
-            Decay: 0,
-            Renewal: 0,
-            Synthesis: 0
-        })).setTrigger(new Dawn()), new Discharge(1)]
+        5,
+        3,
+        [
+            new GainResource(
+                new Resource(1, 1, {
+                    Growth: 1,
+                    Decay: 0,
+                    Renewal: 0,
+                    Synthesis: 0
+                })
+            ).setTrigger(new Dawn()),
+            new Discharge(1)
+        ]
     );
 }
 
@@ -68,7 +83,8 @@ export function fairy() {
             Synthesis: 0
         }),
         new Untargeted(),
-        1, 1,
+        1,
+        1,
         [new Flying(), new DrawCard(1).setTrigger(new DeathTrigger())]
     );
 }
@@ -86,8 +102,13 @@ export function botanicElemental() {
             Synthesis: 0
         }),
         new Untargeted(),
-        3, 3,
-        [new BuffTarget(1, 1).setTargeter(new SelfTarget()).setTrigger(new Dawn())]
+        3,
+        3,
+        [
+            new BuffTarget(1, 1)
+                .setTargeter(new SelfTarget())
+                .setTrigger(new Dawn())
+        ]
     );
 }
 
@@ -104,11 +125,11 @@ export function elderDragon() {
             Synthesis: 0
         }),
         new EnemyUnit(),
-        8, 8,
+        8,
+        8,
         [new Flying(), new DealDamage(8)]
     );
 }
-
 
 export function mermaid() {
     return new Unit(
@@ -123,7 +144,8 @@ export function mermaid() {
             Synthesis: 0
         }),
         new Untargeted(),
-        2, 2,
+        2,
+        2,
         [new Aquatic()]
     );
 }
@@ -141,7 +163,8 @@ export function elvenBow() {
         }),
         new SingleUnit(),
         new FriendlyUnit(),
-        1, 0,
+        1,
+        0,
         [new Ranged(), new DealDamage(1)]
     );
 }
@@ -158,10 +181,14 @@ export function plauge() {
             Synthesis: 0
         }),
         new Untargeted(),
-        4, 1,
-        [new PoisonTarget()
-            .setTargeter(new AllUnits())
-            .setTrigger(new Cycle()), new Discharge(1)]
+        4,
+        1,
+        [
+            new PoisonTarget()
+                .setTargeter(new AllUnits())
+                .setTrigger(new Cycle()),
+            new Discharge(1)
+        ]
     );
 }
 
@@ -209,7 +236,12 @@ export function evolutionaryLeap() {
             Synthesis: 0
         }),
         new UnitsOfTypeAsTarget(),
-        [new BuffTarget(4, 4), new GrantAbility(Relentless), new GrantAbility(Flying), new GrantAbility(Venomous)],
+        [
+            new BuffTarget(4, 4),
+            new GrantAbility(Relentless),
+            new GrantAbility(Flying),
+            new GrantAbility(Venomous)
+        ],
         'Give target unit and all units of the same type +4/+4, Relentless, Flying and Venomous.'
     );
 }
@@ -227,7 +259,8 @@ export function fireElemental() {
             Synthesis: 0
         }),
         new AllOtherUnits(),
-        8, 4,
+        8,
+        4,
         [new DealDamage(3)]
     );
 }
@@ -245,7 +278,8 @@ export function giantClub() {
         }),
         new Untargeted(),
         new FriendlyUnit(),
-        5, 5,
+        5,
+        5,
         []
     );
 }
@@ -262,8 +296,9 @@ export function cobra() {
             Renewal: 0,
             Synthesis: 0
         }),
-        new Untargeted,
-        1, 2,
+        new Untargeted(),
+        1,
+        2,
         [new Lethal()]
     );
 }
@@ -281,7 +316,8 @@ export function greatWhale() {
             Synthesis: 0
         }),
         new UnitWithAbility('aquatic', 'Aquatic').setOptional(true),
-        2, 5,
+        2,
+        5,
         [new Aquatic(), new GainLife(2)]
     );
 }
@@ -299,7 +335,8 @@ export function kraken() {
             Synthesis: 0
         }),
         new UnitWithAbility('aquatic', 'Aquatic').setOptional(true),
-        5, 5,
+        5,
+        5,
         [new Aquatic(), new KillTarget()]
     );
 }
@@ -316,8 +353,9 @@ export function tiger() {
             Renewal: 0,
             Synthesis: 0
         }),
-        new Untargeted,
-        3, 2,
+        new Untargeted(),
+        3,
+        2,
         [new Rush()]
     );
 }
@@ -335,11 +373,15 @@ export function hydra() {
             Synthesis: 0
         }),
         new Untargeted(),
-        5, 5,
-        [new Flying(), new Deathless(2),
-        new BuffTarget(1, 1)
-            .setTrigger(new DeathTrigger())
-            .setTargeter(new SelfTarget())]
+        5,
+        5,
+        [
+            new Flying(),
+            new Deathless(2),
+            new BuffTarget(1, 1)
+                .setTrigger(new DeathTrigger())
+                .setTargeter(new SelfTarget())
+        ]
     );
 }
 
@@ -371,12 +413,17 @@ export function bounty() {
             Synthesis: 0
         }),
         new Untargeted(),
-        [new GainLife(2), new GainResource(new Resource(1, 1, {
-            Growth: 1,
-            Decay: 0,
-            Renewal: 0,
-            Synthesis: 0
-        }))],
+        [
+            new GainLife(2),
+            new GainResource(
+                new Resource(1, 1, {
+                    Growth: 1,
+                    Decay: 0,
+                    Renewal: 0,
+                    Synthesis: 0
+                })
+            )
+        ],
         'You gain 1 growth, 1 energy and 2 life.'
     );
 }
@@ -394,7 +441,6 @@ export function webspit() {
         }),
         new SingleUnit(),
         [new WebTarget()]
-
     );
 }
 
@@ -427,7 +473,6 @@ export function SweetFragrance() {
         }),
         new EnemyUnits(),
         [new SleepTarget(1)]
-
     );
 }
 
@@ -444,7 +489,8 @@ export function minotaur() {
             Synthesis: 0
         }),
         new Untargeted(),
-        4, 5,
+        4,
+        5,
         []
     );
 }
@@ -462,12 +508,11 @@ export function venomousSpiderling() {
             Synthesis: 0
         }),
         new Untargeted(),
-        1, 1,
+        1,
+        1,
         [new Venomous()]
     );
 }
-
-
 
 export function wolfPup() {
     return new Unit(
@@ -482,7 +527,8 @@ export function wolfPup() {
             Synthesis: 0
         }),
         new SelfTarget(),
-        2, 1,
+        2,
+        1,
         [new BuffTarget(0, 1).setTrigger(new Affinity())]
     );
 }
@@ -500,7 +546,8 @@ export function spiderHatchling() {
             Synthesis: 0
         }),
         new SelfTarget(),
-        2, 3,
+        2,
+        3,
         [new BuffTargetAndGrant(1, 0, []).setTrigger(new Affinity())]
     );
 }
@@ -518,7 +565,8 @@ export function wasp() {
             Synthesis: 0
         }),
         new Untargeted(),
-        1, 1,
+        1,
+        1,
         [new Flying(), new Venomous()]
     );
 }
@@ -536,10 +584,13 @@ export function werewolf() {
             Synthesis: 0
         }),
         new Untargeted(),
-        3, 3,
-        [new BuffTargetAndGrant(1, 0, [])
-            .setTrigger(new Affinity())
-            .setTargeter(new UnitsOfType(UnitType.Wolf))]
+        3,
+        3,
+        [
+            new BuffTargetAndGrant(1, 0, [])
+                .setTrigger(new Affinity())
+                .setTargeter(new UnitsOfType(UnitType.Wolf))
+        ]
     );
 }
 
@@ -556,7 +607,8 @@ export function bear() {
             Synthesis: 0
         }),
         new Untargeted(),
-        3, 4,
+        3,
+        4,
         []
     );
 }
@@ -606,7 +658,8 @@ export function spiderQueen() {
             Synthesis: 0
         }),
         new Untargeted(),
-        3, 6,
+        3,
+        6,
         [new SummonUnits(venomousSpiderling, 1).setTrigger(new LethalStrike())]
     );
 }
@@ -624,7 +677,8 @@ export function ancientBeast() {
             Synthesis: 0
         }),
         new Untargeted(),
-        5, 5,
+        5,
+        5,
         [new Relentless()]
     );
 }
@@ -642,7 +696,8 @@ export function dragon() {
             Synthesis: 0
         }),
         new Untargeted(),
-        6, 4,
+        6,
+        4,
         [new Flying()]
     );
 }

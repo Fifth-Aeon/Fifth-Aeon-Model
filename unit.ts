@@ -1,34 +1,61 @@
-import { Game } from './game';
-import { Player } from './player';
-import { Permanent } from './permanent';
-import { Card, CardType, GameZone } from './card';
-import { Item } from './item';
-
-import { Resource } from './resource';
-import { Targeter } from './targeter';
-import { Mechanic, EvalContext, TriggeredMechanic } from './mechanic';
-
 import { remove } from 'lodash';
+import { Card, CardType, GameZone } from './card';
 import { AttackEvent, DealDamageEvent } from './events/cardEventTypes';
 import { EventList } from './events/eventSystems';
+import { Game } from './game';
+import { Item } from './item';
+import { EvalContext, Mechanic } from './mechanic';
+import { Permanent } from './permanent';
+import { Resource } from './resource';
+import { Targeter } from './targeter';
 
 export enum UnitType {
-    Player, Human, Cleric, Wolf, Spider, Snake, Automaton, Monster, Mammal, Soldier,
-    Vampire, Cultist, Agent, Undead, Structure, Vehicle, Insect, Dragon,
-    Elemental, Demon, Bird
+    Player,
+    Human,
+    Cleric,
+    Wolf,
+    Spider,
+    Snake,
+    Automaton,
+    Monster,
+    Mammal,
+    Soldier,
+    Vampire,
+    Cultist,
+    Agent,
+    Undead,
+    Structure,
+    Vehicle,
+    Insect,
+    Dragon,
+    Elemental,
+    Demon,
+    Bird
 }
 
-export const mechanical = new Set([UnitType.Automaton, UnitType.Structure, UnitType.Vehicle]);
-export function isBiological(unit: Unit) { return !mechanical.has(unit.getUnitType()); }
-export function isMechanical(unit: Unit) { return mechanical.has(unit.getUnitType()); }
+export const mechanical = new Set([
+    UnitType.Automaton,
+    UnitType.Structure,
+    UnitType.Vehicle
+]);
+export function isBiological(unit: Unit) {
+    return !mechanical.has(unit.getUnitType());
+}
+export function isMechanical(unit: Unit) {
+    return mechanical.has(unit.getUnitType());
+}
 
 class Damager {
     private events: EventList<DealDamageEvent>;
-    constructor(private amount: number, private source: Unit, private target: Unit) {
+    constructor(
+        private amount: number,
+        private source: Unit,
+        private target: Unit
+    ) {
         this.events = source.getEvents().dealDamage.copy();
     }
     public run() {
-        let result = this.target.takeDamage(this.amount, this.source);
+        const result = this.target.takeDamage(this.amount, this.source);
         if (result > 0) {
             this.events.trigger({
                 source: this.source,
@@ -60,8 +87,17 @@ export class Unit extends Permanent {
     private unitType: UnitType;
     private immunities: Set<string>;
 
-    constructor(dataId: string, name: string, imageUrl: string, type: UnitType,
-        cost: Resource, targeter: Targeter, damage: number, maxLife: number, mechanics: Array<Mechanic>) {
+    constructor(
+        dataId: string,
+        name: string,
+        imageUrl: string,
+        type: UnitType,
+        cost: Resource,
+        targeter: Targeter,
+        damage: number,
+        maxLife: number,
+        mechanics: Array<Mechanic>
+    ) {
         super(dataId, name, imageUrl, cost, targeter, mechanics);
         this.unitType = type;
         this.exhausted = false;
@@ -87,8 +123,7 @@ export class Unit extends Permanent {
     }
 
     public isPlayable(game: Game): boolean {
-        return super.isPlayable(game) &&
-            game.getBoard().canPlayPermanent(this);
+        return super.isPlayable(game) && game.getBoard().canPlayPermanent(this);
     }
 
     public transform(unit: Unit, game: Game) {
@@ -108,17 +143,22 @@ export class Unit extends Permanent {
     }
 
     public removeMechanic(id: string, game: Game) {
-        let target = this.mechanics.find(mechanic => mechanic.getId() === id);
-        if (!target)
+        const target = this.mechanics.find(mechanic => mechanic.getId() === id);
+        if (!target) {
             return;
+        }
         target.remove(this, game);
         this.mechanics.splice(this.mechanics.indexOf(target), 1);
     }
 
     public addMechanic(mechanic: Mechanic, game: Game | null = null) {
-        if (this.immunities.has(mechanic.getId()))
+        if (this.immunities.has(mechanic.getId())) {
             return;
-        if (mechanic.getId() !== null && this.hasMechanicWithId(mechanic.getId())) {
+        }
+        if (
+            mechanic.getId() !== null &&
+            this.hasMechanicWithId(mechanic.getId())
+        ) {
             this.hasMechanicWithId(mechanic.getId()).stack();
             return;
         }
@@ -174,17 +214,24 @@ export class Unit extends Permanent {
     }
 
     public canBlock() {
-        return !this.blockDisabled &&
-            !this.exhausted;
+        return !this.blockDisabled && !this.exhausted;
     }
 
     public canBlockTarget(toBlock: Unit, hypothetical: boolean = false) {
-        return toBlock === null ||
-            !this.blockDisabled &&
-            !this.exhausted &&
-            (toBlock.isAttacking() || hypothetical) &&
-            this.getEvents().checkCanBlock.trigger({ attacker: toBlock, canBlock: true }).canBlock &&
-            toBlock.getEvents().checkBlockable.trigger({ blocker: this, canBlock: true }).canBlock;
+        return (
+            toBlock === null ||
+            (!this.blockDisabled &&
+                !this.exhausted &&
+                (toBlock.isAttacking() || hypothetical) &&
+                this.getEvents().checkCanBlock.trigger({
+                    attacker: toBlock,
+                    canBlock: true
+                }).canBlock &&
+                toBlock
+                    .getEvents()
+                    .checkBlockable.trigger({ blocker: this, canBlock: true })
+                    .canBlock)
+        );
     }
 
     public isReady() {
@@ -204,8 +251,9 @@ export class Unit extends Permanent {
     }
 
     public toggleAttacking() {
-        if (!this.attacking && !this.canAttack())
+        if (!this.attacking && !this.canAttack()) {
             return;
+        }
         this.attacking = !this.attacking;
     }
 
@@ -268,18 +316,19 @@ export class Unit extends Permanent {
 
     public fight(target: Unit, damage: number = null) {
         // Trigger an attack event
-        let eventParams = {
+        const eventParams = {
             damage: this.damage,
             attacker: this,
             defender: target
         } as AttackEvent;
 
-        if (damage === null)
+        if (damage === null) {
             damage = this.events.attack.trigger(eventParams).damage;
+        }
 
         // Remove actions and deal damage
-        let damage1 = this.dealDamageDelayed(target, damage);
-        let damage2 = target.dealDamageDelayed(this, target.damage);
+        const damage1 = this.dealDamageDelayed(target, damage);
+        const damage2 = target.dealDamageDelayed(this, target.damage);
         damage1.run();
         damage2.run();
         this.afterDamage(target);
@@ -307,10 +356,11 @@ export class Unit extends Permanent {
     }
 
     public kill(instant: boolean) {
-        if (instant)
+        if (instant) {
             this.die();
-        else
+        } else {
             this.died = true;
+        }
     }
 
     private dealDamageDelayed(target: Unit, amount: number): Damager {
@@ -328,7 +378,11 @@ export class Unit extends Permanent {
     }
 
     public getMultiplier(game: Game, context: EvalContext) {
-        return Mechanic.getMultiplier(this.mechanics.map(mechanic => mechanic.evaluate(this, game, context)));
+        return Mechanic.getMultiplier(
+            this.mechanics.map(mechanic =>
+                mechanic.evaluate(this, game, context)
+            )
+        );
     }
 
     public dealAndApplyDamage(target: Unit, amount: number) {
@@ -347,8 +401,9 @@ export class Unit extends Permanent {
     }
 
     public die() {
-        if (this.location !== GameZone.Board || this.dying)
+        if (this.location !== GameZone.Board || this.dying) {
             return;
+        }
         this.dying = true;
         this.events.death.trigger(new Map());
         this.location = GameZone.Crypt;
@@ -357,7 +412,7 @@ export class Unit extends Permanent {
     }
 
     public detachItems(game: Game) {
-        for (let item of this.items) {
+        for (const item of this.items) {
             item.detach(game);
             game.addToCrypt(item);
         }

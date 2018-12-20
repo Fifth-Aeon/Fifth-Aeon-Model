@@ -1,21 +1,23 @@
-import { Resource } from './resource';
+import { CardEventSystem } from './events/eventSystems';
 import { Game } from './game';
-import { Player } from './player';
-import { Mechanic, EvalContext, TriggeredMechanic } from './mechanic';
+import { EvalContext, Mechanic, TriggeredMechanic } from './mechanic';
+import { Resource } from './resource';
 import { Targeter } from './targeter';
 import { Unit } from './unit';
 
 
-
-import { remove, sumBy, groupBy } from 'lodash';
-import { CardEventSystem } from './events/eventSystems';
-
 export enum GameZone {
-    Deck, Hand, Board, Crypt
+    Deck,
+    Hand,
+    Board,
+    Crypt
 }
 
 export enum CardType {
-    Spell, Unit, Item, Enchantment
+    Spell,
+    Unit,
+    Item,
+    Enchantment
 }
 
 export interface CardPrototype {
@@ -42,8 +44,15 @@ export class Card {
 
     protected targeter: Targeter;
 
-    constructor(dataId: string, name: string, imageUrl: string, cost: Resource,
-        targeter: Targeter, mechanics: Array<Mechanic>, text?: string) {
+    constructor(
+        dataId: string,
+        name: string,
+        imageUrl: string,
+        cost: Resource,
+        targeter: Targeter,
+        mechanics: Array<Mechanic>,
+        text?: string
+    ) {
         this.dataId = dataId;
         this.name = name;
         this.imageUrl = imageUrl;
@@ -61,7 +70,9 @@ export class Card {
     }
 
     private generateId(): string {
-        return Math.random().toString(16).substring(2);
+        return Math.random()
+            .toString(16)
+            .substring(2);
     }
 
     public getCardType(): CardType {
@@ -85,7 +96,7 @@ export class Card {
     }
 
     public dealDamageInstant(target: Unit, amount: number) {
-        let result = target.takeDamage(amount, this);
+        const result = target.takeDamage(amount, this);
         if (result > 0) {
             this.events.dealDamage.trigger({
                 source: this,
@@ -104,13 +115,16 @@ export class Card {
     }
 
     public isPlayable(game: Game): boolean {
-        let owner = game.getPlayer(this.owner);
-        return game.isPlayerTurn(this.owner) &&
+        const owner = game.getPlayer(this.owner);
+        return (
+            game.isPlayerTurn(this.owner) &&
             game.canTakeAction() &&
             game.isPlayPhase() &&
             owner.getPool().meetsReq(this.cost) &&
-            (!this.targeter.needsInput() || this.targeter.isOptional() ||
-                this.targeter.getValidTargets(this, game).length > 0);
+            (!this.targeter.needsInput() ||
+                this.targeter.isOptional() ||
+                this.targeter.getValidTargets(this, game).length > 0)
+        );
     }
 
     public getPrototype(): CardPrototype {
@@ -139,8 +153,9 @@ export class Card {
 
     public enterTheBattlefield(game: Game) {
         this.mechanics.forEach(mechanic => {
-            if (mechanic instanceof TriggeredMechanic)
+            if (mechanic instanceof TriggeredMechanic) {
                 mechanic.getTrigger().register(this, game);
+            }
             mechanic.enter(this, game);
         });
     }
@@ -154,9 +169,12 @@ export class Card {
     }
 
     public getText(game: Game): string {
-        if (this.text)
+        if (this.text) {
             return this.text;
-        return this.mechanics.map(mechanic => mechanic.getText(this, game)).join(' ');
+        }
+        return this.mechanics
+            .map(mechanic => mechanic.getText(this, game))
+            .join(' ');
     }
 
     public getTargeter() {
@@ -168,8 +186,9 @@ export class Card {
     }
 
     public setOwner(owner: number) {
-        if (owner === undefined)
+        if (owner === undefined) {
             throw Error();
+        }
         this.owner = owner;
     }
 
@@ -194,10 +213,16 @@ export class Card {
     }
 
     public evaluate(game: Game, context: EvalContext) {
-        return Mechanic.sumValues(this.mechanics.map(mechanic => mechanic.evaluate(this, game, context)));
+        return Mechanic.sumValues(
+            this.mechanics.map(mechanic =>
+                mechanic.evaluate(this, game, context)
+            )
+        );
     }
 
     public evaluateTarget(target: Unit, game: Game) {
-        return this.mechanics.map(mechanic => mechanic.evaluateTarget(this, target, game)).reduce((a, b) => a + b);
+        return this.mechanics
+            .map(mechanic => mechanic.evaluateTarget(this, target, game))
+            .reduce((a, b) => a + b);
     }
 }

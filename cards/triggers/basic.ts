@@ -1,11 +1,9 @@
 import { Card, CardType } from '../../card';
 import { Game } from '../../game';
-
 import { EvalContext } from '../../mechanic';
 import { removeFirstCapital } from '../../strings';
 import { Trigger } from '../../trigger';
 import { Unit } from '../../unit';
-
 
 export class Play extends Trigger {
     protected static id = 'Play';
@@ -15,9 +13,10 @@ export class Play extends Trigger {
     }
 
     public register(card: Card, game: Game) {
-        card.getEvents().play.addEvent(this,  (params) => {
-            if (card.getCardType() === CardType.Unit)
+        card.getEvents().play.addEvent(this, params => {
+            if (card.getCardType() === CardType.Unit) {
                 this.mechanic.setTriggeringUnit(card as Unit);
+            }
             this.mechanic.onTrigger(card, game);
             return params;
         });
@@ -28,8 +27,9 @@ export class Play extends Trigger {
     }
 
     public evaluate(host: Card, game: Game, context: EvalContext) {
-        if (context === EvalContext.Play)
+        if (context === EvalContext.Play) {
             return 1;
+        }
         return 0;
     }
 }
@@ -42,7 +42,7 @@ export class UnitEntersPlay extends Trigger {
     }
 
     public register(card: Card, game: Game) {
-        game.getEvents().unitEntersPlay.addEvent(this,  (params) => {
+        game.getEvents().unitEntersPlay.addEvent(this, params => {
             this.mechanic.setTriggeringUnit(params.enteringUnit);
             this.mechanic.onTrigger(card, game);
             return params;
@@ -66,7 +66,7 @@ export class FriendlyUnitEntersPlay extends Trigger {
     }
 
     public register(card: Card, game: Game) {
-        game.getEvents().unitEntersPlay.addEvent(this,  (params) => {
+        game.getEvents().unitEntersPlay.addEvent(this, params => {
             const unit: Unit = params.enteringUnit;
             if (unit.getOwner() === card.getOwner()) {
                 this.mechanic.setTriggeringUnit(unit);
@@ -84,4 +84,3 @@ export class FriendlyUnitEntersPlay extends Trigger {
         return 2;
     }
 }
-

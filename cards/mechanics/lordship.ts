@@ -5,26 +5,27 @@ import { Permanent } from '../../permanent';
 import { formatBuff } from '../../strings';
 import { Unit, UnitType } from '../../unit';
 
-
 export class Lordship extends Mechanic {
     protected static id = 'Lordship';
     protected static validCardTypes = Permanent.cardTypes;
 
-    constructor(private text: string,
+    constructor(
+        private text: string,
         private valuePerUnit: number,
         private addEffect: (unit: Unit, game: Game) => void,
         private removeEffect: (target: Unit, game: Game) => void,
-        private filter: (source: Unit, target: Unit) => boolean) {
+        private filter: (source: Unit, target: Unit) => boolean
+    ) {
         super();
     }
 
     public enter(card: Card, game: Game) {
-        let source = card as Unit;
-        let targets = this.getTargets(source, game);
+        const source = card as Unit;
+        const targets = this.getTargets(source, game);
         targets.forEach(unit => this.applyToUnit(unit, game));
 
         game.getEvents().unitEntersPlay.addEvent(this, params => {
-            let enteringUnit = params.enteringUnit as Unit;
+            const enteringUnit = params.enteringUnit as Unit;
             if (this.filter(source, enteringUnit)) {
                 this.applyToUnit(enteringUnit, game);
             }
@@ -33,13 +34,15 @@ export class Lordship extends Mechanic {
     }
 
     private getTargets(source: Unit, game: Game) {
-        return game.getBoard().getAllUnits()
+        return game
+            .getBoard()
+            .getAllUnits()
             .filter(target => this.filter(source, target));
     }
 
     private applyToUnit(unit: Unit, game: Game) {
         this.addEffect(unit, game);
-        unit.getEvents().leavesPlay.addEvent(this, (params) => {
+        unit.getEvents().leavesPlay.addEvent(this, params => {
             this.removeFromUnit(unit, game);
         });
     }
@@ -50,8 +53,9 @@ export class Lordship extends Mechanic {
     }
 
     public remove(card: Card, game: Game) {
-        this.getTargets(card as Unit, game)
-            .forEach(unit => this.removeFromUnit(unit, game));
+        this.getTargets(card as Unit, game).forEach(unit =>
+            this.removeFromUnit(unit, game)
+        );
         game.gameEvents.removeEvents(this);
     }
 
@@ -70,30 +74,48 @@ export function friendlyLordship(attack: number, life: number) {
         attack + life,
         (unit: Unit) => unit.buff(attack, life),
         (unit: Unit) => unit.buff(-attack, -life),
-        (source: Unit, target: Unit) => source !== target && source.getOwner() === target.getOwner()
+        (source: Unit, target: Unit) =>
+            source !== target && source.getOwner() === target.getOwner()
     );
 }
 
-export function unitTypeLordshipExclusive(type: UnitType, attack: number, life: number) {
+export function unitTypeLordshipExclusive(
+    type: UnitType,
+    attack: number,
+    life: number
+) {
     return new Lordship(
         `Other friendly ${UnitType[type]} have ${formatBuff(attack, life)}.`,
         attack + life,
         (unit: Unit) => unit.buff(attack, life),
         (unit: Unit) => unit.buff(-attack, -life),
-        (source: Unit, target: Unit) => source.getOwner() === target.getOwner() && source !== target && type === target.getUnitType()
+        (source: Unit, target: Unit) =>
+            source.getOwner() === target.getOwner() &&
+            source !== target &&
+            type === target.getUnitType()
     );
 }
 
-export function unitTypeLordshipInclusive(type: UnitType, attack: number, life: number) {
+export function unitTypeLordshipInclusive(
+    type: UnitType,
+    attack: number,
+    life: number
+) {
     return new Lordship(
         `Friendly ${UnitType[type]} have ${formatBuff(attack, life)}.`,
         attack + life,
         (unit: Unit) => unit.buff(attack, life),
         (unit: Unit) => unit.buff(-attack, -life),
-        (source: Unit, target: Unit) => source.getOwner() === target.getOwner() && type === target.getUnitType()
+        (source: Unit, target: Unit) =>
+            source.getOwner() === target.getOwner() &&
+            type === target.getUnitType()
     );
 }
-export function unitTypeLordshipAll(type: UnitType, attack: number, life: number) {
+export function unitTypeLordshipAll(
+    type: UnitType,
+    attack: number,
+    life: number
+) {
     return new Lordship(
         `${UnitType[type]} have ${formatBuff(attack, life)}.`,
         attack + life,

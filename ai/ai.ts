@@ -25,8 +25,8 @@ export abstract class AI {
     constructor(
         protected playerNumber: number,
         protected game: ClientGame,
-        protected deck: DeckList,
-    ) { }
+        protected deck: DeckList
+    ) {}
 
     /** Triggers the A.I to plan out its next actions */
     protected abstract think(): void;
@@ -39,14 +39,16 @@ export abstract class AI {
         this.game.syncServerEvent(this.playerNumber, event);
     }
 
-
     /** Checks if we can take an action, if we can then takes the next one in the action sequence. */
     protected applyNextAction() {
-        if (!this.game.canTakeAction() || !this.game.isActivePlayer(this.playerNumber)) {
+        if (
+            !this.game.canTakeAction() ||
+            !this.game.isActivePlayer(this.playerNumber)
+        ) {
             return;
         }
 
-        let next = this.actionSequence.shift() || (() => this.game.pass());
+        const next = this.actionSequence.shift() || (() => this.game.pass());
         this.runAction(next);
     }
 
@@ -56,24 +58,33 @@ export abstract class AI {
      */
     private runAction(action: () => boolean) {
         if (action() === false) {
-            console.error(`A.I ${this.playerNumber} attempted to take illegal action`, action);
+            console.error(
+                `A.I ${this.playerNumber} attempted to take illegal action`,
+                action
+            );
         }
     }
 
     /**
-    * Tells the A.I to start taking actions, but to spread them out over time. It will also wait
-    * until the given animator has completed any animations.
-    * This is to keep the A.I from taking all its actions simultaneously when playing against a human.
-    */
+     * Tells the A.I to start taking actions, but to spread them out over time. It will also wait
+     * until the given animator has completed any animations.
+     * This is to keep the A.I from taking all its actions simultaneously when playing against a human.
+     */
     public startActingDelayMode(delayTimeMs: number, animator: Animator) {
         this.isImmediateMode = false;
         this.animator = animator;
 
-        if (this.timer !== undefined) clearInterval(this.timer);
+        if (this.timer !== undefined) {
+            clearInterval(this.timer);
+        }
         this.timer = setInterval(() => {
-            if (!this.thinking && !this.animator.isAnimating() && this.game.isSyncronized())
+            if (
+                !this.thinking &&
+                !this.animator.isAnimating() &&
+                this.game.isSyncronized()
+            ) {
                 this.applyNextAction();
-
+            }
         }, delayTimeMs);
     }
 
@@ -92,7 +103,9 @@ export abstract class AI {
     public stopActing() {
         this.actionSequence.length = 0;
         this.isImmediateMode = false;
-        if (this.timer !== undefined) clearInterval(this.timer);
+        if (this.timer !== undefined) {
+            clearInterval(this.timer);
+        }
     }
 
     /**
@@ -113,15 +126,19 @@ export abstract class AI {
      * @param action The action to be added to the sequence
      * @param front If true the action will be added to the beginning of the sequence, otherwise it will go at the end.
      */
-    protected addActionToSequence(action: () => boolean, front: boolean = false) {
+    protected addActionToSequence(
+        action: () => boolean,
+        front: boolean = false
+    ) {
         const boundAction = action.bind(this);
         if (this.isImmediateMode) {
             this.runAction(boundAction);
         } else {
-            if (front)
+            if (front) {
                 this.actionSequence.unshift(boundAction);
-            else
+            } else {
                 this.actionSequence.push(boundAction);
+            }
         }
     }
 
@@ -131,7 +148,7 @@ export abstract class AI {
      */
     protected sequenceActions(actions: Array<() => boolean>) {
         if (this.isImmediateMode) {
-            for (let action of actions) {
+            for (const action of actions) {
                 this.runAction(action);
             }
         } else {
@@ -139,4 +156,3 @@ export abstract class AI {
         }
     }
 }
-

@@ -1,11 +1,10 @@
 import { Card, CardType } from '../../card';
 import { Game } from '../../game';
-
 import { EvalContext } from '../../mechanic';
+import { Player } from '../../player';
 import { removeFirstCapital } from '../../strings';
 import { Trigger } from '../../trigger';
 import { Unit } from '../../unit';
-import { Player } from '../../player';
 
 export class OwnerDrawsUnit extends Trigger {
     protected static id = 'OwnerDrawsUnit';
@@ -18,8 +17,8 @@ export class OwnerDrawsUnit extends Trigger {
     public register(card: Card, game: Game) {
         this.owner = game.getPlayer(card.getOwner());
 
-        this.owner.getPlayerEvents().CardDrawn.addEvent(this,  (params) => {
-            let drawn = params.card;
+        this.owner.getPlayerEvents().CardDrawn.addEvent(this, params => {
+            const drawn = params.card;
             if (drawn.getCardType() === CardType.Unit) {
                 this.mechanic.setTriggeringUnit(drawn as Unit);
                 this.mechanic.onTrigger(card, game);

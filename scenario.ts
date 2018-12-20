@@ -16,22 +16,25 @@ export interface ScenarioData {
 }
 
 export class Scenario {
-    private  playerSetups: [ScenarioPlayer, ScenarioPlayer];
+    private playerSetups: [ScenarioPlayer, ScenarioPlayer];
     constructor(data: ScenarioData) {
         this.playerSetups = data.playerSetups;
     }
 
     public apply(game: Game) {
         for (let playerNumber = 0; playerNumber < 2; playerNumber++) {
-            let player = game.getPlayer(playerNumber);
-            player.addLife(this.playerSetups[playerNumber].lifeTotals - player.getLife());
+            const player = game.getPlayer(playerNumber);
+            player.addLife(
+                this.playerSetups[playerNumber].lifeTotals - player.getLife()
+            );
 
-            for (let permanent of this.playerSetups[playerNumber].initialPermanents) {
+            for (const permanent of this.playerSetups[playerNumber]
+                .initialPermanents) {
                 game.addCardToPool(permanent);
                 player.drawGeneratedCard(permanent);
                 game.playCard(player, permanent);
             }
-            for (let card of this.playerSetups[playerNumber].initialHands) {
+            for (const card of this.playerSetups[playerNumber].initialHands) {
                 game.addCardToPool(card);
                 player.drawGeneratedCard(card);
             }

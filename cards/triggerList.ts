@@ -1,5 +1,3 @@
-
-
 import * as affinity from './triggers/affinity';
 import * as basic from './triggers/basic';
 import * as death from './triggers/death';
@@ -10,8 +8,6 @@ import * as serenity from './triggers/serenity';
 import { Trigger } from '../trigger';
 import { values } from 'lodash';
 
-
-
 export interface TriggerData {
     id: string;
 }
@@ -21,7 +17,7 @@ class TriggerList {
     private constructorList: TriggerConstructor[] = [];
 
     public addConstructors(...constructors: TriggerConstructor[]) {
-        for (let constructor of constructors) {
+        for (const constructor of constructors) {
             this.constructorList.push(constructor);
             this.constructors.set(constructor.getId(), constructor);
         }
@@ -36,16 +32,23 @@ class TriggerList {
     public getIds() {
         return this.constructorList.map(constr => constr.getId());
     }
-
 }
 
 interface TriggerConstructor {
     getId(): string;
-    new(): Trigger;
+    new (): Trigger;
 }
 
 export const triggerList = new TriggerList();
-const sources = [basic, death, periodic, owner, lethalStrike, serenity, affinity];
-for (let source of sources) {
+const sources = [
+    basic,
+    death,
+    periodic,
+    owner,
+    lethalStrike,
+    serenity,
+    affinity
+];
+for (const source of sources) {
     triggerList.addConstructors(...(values(source) as TriggerConstructor[]));
 }

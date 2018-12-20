@@ -1,11 +1,15 @@
 import { Card } from '../../card';
 import { Game } from '../../game';
-import { EvalContext, EvalOperator, Mechanic, TargetedMechanic } from '../../mechanic';
+import {
+    EvalContext,
+    EvalOperator,
+    Mechanic,
+    TargetedMechanic
+} from '../../mechanic';
 import { properCase, properList } from '../../strings';
 import { Unit } from '../../unit';
-import { ParameterType } from '../parameters';
 import { MechanicConstructor } from '../MechanicConstructor';
-
+import { ParameterType } from '../parameters';
 
 export class BuffTarget extends TargetedMechanic {
     protected static id = 'BuffTarget';
@@ -19,7 +23,7 @@ export class BuffTarget extends TargetedMechanic {
     }
 
     public onTrigger(card: Card, game: Game) {
-        for (let target of this.targeter.getTargets(card, game, this)) {
+        for (const target of this.targeter.getTargets(card, game, this)) {
             target.buff(this.damage, this.life);
         }
     }
@@ -29,32 +33,44 @@ export class BuffTarget extends TargetedMechanic {
     }
 
     public getText(card: Card) {
-        let buffText = `${this.symbol(this.damage)}${this.damage}/${this.symbol(this.life)}${this.life}`;
+        const buffText = `${this.symbol(this.damage)}${
+            this.damage
+        }/${this.symbol(this.life)}${this.life}`;
         return `Give ${this.targeter.getTextOrPronoun()} ${buffText}.`;
     }
 
     public evaluateTarget(source: Card, target: Unit) {
-        return (this.life + this.damage) * 1.1 * (target.getOwner() === source.getOwner() ? 1 : -1);
+        return (
+            (this.life + this.damage) *
+            1.1 *
+            (target.getOwner() === source.getOwner() ? 1 : -1)
+        );
     }
 }
 
 export class BuffTargetAndGrant extends TargetedMechanic {
     protected static id = 'BuffTargetAndGrant';
-    constructor(private damage: number = 1, private life: number = 1, private abilities: Mechanic[] = []) {
+    constructor(
+        private damage: number = 1,
+        private life: number = 1,
+        private abilities: Mechanic[] = []
+    ) {
         super();
     }
 
     public onTrigger(card: Card, game: Game) {
-        for (let target of this.targeter.getTargets(card, game, this)) {
+        for (const target of this.targeter.getTargets(card, game, this)) {
             target.buff(this.damage, this.life);
-            for (let ability of this.abilities) {
+            for (const ability of this.abilities) {
                 target.addMechanic(ability, game);
             }
         }
     }
 
     private abilityString() {
-        return properList(this.abilities.map(ability => properCase(ability.getId())));
+        return properList(
+            this.abilities.map(ability => properCase(ability.getId()))
+        );
     }
 
     private symbol(number: number) {
@@ -62,17 +78,23 @@ export class BuffTargetAndGrant extends TargetedMechanic {
     }
 
     public getText(card: Card) {
-        let buffText = `${this.symbol(this.damage)}${this.damage}/${this.symbol(this.life)}${this.life}`;
-        if (this.abilities.length > 0)
+        const buffText = `${this.symbol(this.damage)}${
+            this.damage
+        }/${this.symbol(this.life)}${this.life}`;
+        if (this.abilities.length > 0) {
             return `Give ${this.targeter.getTextOrPronoun()} ${buffText} and ${this.abilityString()}.`;
+        }
         return `Give ${this.targeter.getTextOrPronoun()} ${buffText}.`;
     }
 
     public evaluateTarget(source: Card, target: Unit) {
-        return (this.life + this.damage) * 1.1 * (target.getOwner() === source.getOwner() ? 1 : -1);
+        return (
+            (this.life + this.damage) *
+            1.1 *
+            (target.getOwner() === source.getOwner() ? 1 : -1)
+        );
     }
 }
-
 
 export class GrantAbility extends TargetedMechanic {
     protected static id = 'GrantAbility';
@@ -83,30 +105,31 @@ export class GrantAbility extends TargetedMechanic {
     }
 
     public onTrigger(card: Card, game: Game) {
-        for (let target of this.targeter.getTargets(card, game, this)) {
+        for (const target of this.targeter.getTargets(card, game, this)) {
             target.addMechanic(new this.ability(), game);
         }
     }
 
-
     public getText(card: Card) {
-        return `Give ${this.targeter.getTextOrPronoun()} ${properCase(this.ability.getId())}.`;
+        return `Give ${this.targeter.getTextOrPronoun()} ${properCase(
+            this.ability.getId()
+        )}.`;
     }
 
     public evaluateTarget(source: Card, target: Unit, game: Game) {
         let val: EvalOperator | Number;
-        if (target.getOwner() === source.getOwner())
+        if (target.getOwner() === source.getOwner()) {
             val = this.instance.evaluate(target, game, EvalContext.Play);
-        else
+        } else {
             val = -this.instance.evaluate(target, game, EvalContext.Play);
-        if (typeof val !== 'number')
-            return (val as EvalOperator).addend + (val as EvalOperator).multiplier *
-                target.evaluate(game, EvalContext.Play);
+        }
+        if (typeof val !== 'number') {
+            return (
+                (val as EvalOperator).addend +
+                (val as EvalOperator).multiplier *
+                    target.evaluate(game, EvalContext.Play)
+            );
+        }
         return val;
     }
 }
-
-
-
-
-

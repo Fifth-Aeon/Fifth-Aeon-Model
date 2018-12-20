@@ -16,7 +16,11 @@ export class Annihilate extends TargetedMechanic {
     }
 
     public evaluateTarget(source: Card, target: Unit, game: Game) {
-        return target.evaluate(game, EvalContext.NonlethalRemoval) * 1.25 * (target.getOwner() === source.getOwner() ? -1 : 1);
+        return (
+            target.evaluate(game, EvalContext.NonlethalRemoval) *
+            1.25 *
+            (target.getOwner() === source.getOwner() ? -1 : 1)
+        );
     }
 }
 
@@ -33,7 +37,10 @@ export class KillTarget extends TargetedMechanic {
     }
 
     public evaluateTarget(source: Card, target: Unit, game: Game) {
-        return target.evaluate(game, EvalContext.LethalRemoval) * 1.0 * (target.getOwner() === source.getOwner() ? -1 : 1);
+        return (
+            target.evaluate(game, EvalContext.LethalRemoval) *
+            1.0 *
+            (target.getOwner() === source.getOwner() ? -1 : 1)
+        );
     }
 }
-

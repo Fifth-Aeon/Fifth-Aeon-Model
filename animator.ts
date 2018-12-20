@@ -2,15 +2,17 @@ import { Player } from './player';
 import { Unit } from './unit';
 
 export class Animator {
-    private battleAnimationSubscribers = new Array<(ev: BattleAnimationEvent) => void>();
-    private damageIndicatorSubscribers = new Array<(ev: DamageIndicatorEvent) => void>();
+    private battleAnimationSubscribers = new Array<
+        (ev: BattleAnimationEvent) => void
+    >();
+    private damageIndicatorSubscribers = new Array<
+        (ev: DamageIndicatorEvent) => void
+    >();
     private nextAnimationTime: number;
     private animating = false;
     private onAnimationEnd: () => any = () => null;
 
-    constructor(
-        private multiplier = 1
-    ) { }
+    constructor(private multiplier = 1) {}
 
     private getAnimationTime() {
         return this.nextAnimationTime * this.multiplier;
@@ -26,7 +28,7 @@ export class Animator {
     }
 
     public async awaitAnimationEnd() {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             if (this.animating) {
                 this.onAnimationEnd = () => {
                     resolve();
@@ -42,28 +44,32 @@ export class Animator {
     }
 
     public getAnimationDelay(slices = 1) {
-        return new Promise<boolean>((resolve) => {
+        return new Promise<boolean>(resolve => {
             setTimeout(() => resolve(true), this.getAnimationTime() / slices);
         });
     }
 
-    public addBattleAnimationHandler(handler: (event: BattleAnimationEvent) => void) {
+    public addBattleAnimationHandler(
+        handler: (event: BattleAnimationEvent) => void
+    ) {
         this.battleAnimationSubscribers.push(handler);
     }
 
     public triggerBattleAnimation(battleData: BattleAnimationEvent) {
         this.nextAnimationTime = 2000 + battleData.defenders.length * 750;
-        for (let handler of this.battleAnimationSubscribers) {
+        for (const handler of this.battleAnimationSubscribers) {
             handler(battleData);
         }
     }
 
-    public addDamageIndicatorEventHandler(handler: (event: DamageIndicatorEvent) => void) {
+    public addDamageIndicatorEventHandler(
+        handler: (event: DamageIndicatorEvent) => void
+    ) {
         this.damageIndicatorSubscribers.push(handler);
     }
 
     public triggerDamageIndicatorEvent(damageData: DamageIndicatorEvent) {
-        for (let handler of this.damageIndicatorSubscribers) {
+        for (const handler of this.damageIndicatorSubscribers) {
             handler(damageData);
         }
     }
@@ -79,4 +85,3 @@ export interface DamageIndicatorEvent {
     targetCard: string;
     amount: number;
 }
-

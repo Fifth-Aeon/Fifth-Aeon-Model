@@ -4,7 +4,6 @@ import { EvalContext, Mechanic, TargetedMechanic } from '../../mechanic';
 import { Permanent } from '../../permanent';
 import { Unit, UnitType } from '../../unit';
 
-
 export class CurePoison extends TargetedMechanic {
     protected static id = 'CurePoison';
     public onTrigger(card: Card, game: Game) {
@@ -28,10 +27,11 @@ export class Poisoned extends Mechanic {
 
     private level = 1;
     public enter(card: Card, game: Game) {
-        let unit = card as Unit;
+        const unit = card as Unit;
         game.getEvents().startOfTurn.addEvent(this, params => {
-            if (params.player === unit.getOwner())
+            if (params.player === unit.getOwner()) {
                 unit.buff(-this.level, -this.level);
+            }
         });
     }
 
@@ -48,10 +48,11 @@ export class Poisoned extends Mechanic {
     }
 
     public getText(card: Card) {
-        if (this.level === 1)
+        if (this.level === 1) {
             return 'Poisoned.';
-        else
+        } else {
             return `Poisoned (${this.level}).`;
+        }
     }
 
     public evaluate(card: Card) {
@@ -63,7 +64,7 @@ export class PoisonTarget extends TargetedMechanic {
     protected static id = 'PoisonTarget';
 
     public onTrigger(card: Card, game: Game) {
-        for (let target of this.targeter.getTargets(card, game, this)) {
+        for (const target of this.targeter.getTargets(card, game, this)) {
             target.addMechanic(new Poisoned(), game);
         }
     }
@@ -73,7 +74,11 @@ export class PoisonTarget extends TargetedMechanic {
     }
 
     public evaluateTarget(source: Card, target: Unit, game: Game) {
-        return target.evaluate(game, EvalContext.NonlethalRemoval) * 0.5 * (target.getOwner() === source.getOwner() ? -1 : 1);
+        return (
+            target.evaluate(game, EvalContext.NonlethalRemoval) *
+            0.5 *
+            (target.getOwner() === source.getOwner() ? -1 : 1)
+        );
     }
 }
 
@@ -82,11 +87,12 @@ export class Venomous extends Mechanic {
     protected static validCardTypes = Permanent.cardTypes;
 
     public enter(card: Card, game: Game) {
-        let unit = card as Unit;
-        unit.getEvents().dealDamage.addEvent(this,  (params) => {
-            let target = params.target;
-            if (target.getUnitType() !== UnitType.Player)
+        const unit = card as Unit;
+        unit.getEvents().dealDamage.addEvent(this, params => {
+            const target = params.target;
+            if (target.getUnitType() !== UnitType.Player) {
                 target.addMechanic(new Poisoned(), game);
+            }
             return params;
         });
     }

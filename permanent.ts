@@ -1,51 +1,62 @@
+import { groupBy, sortBy, values } from 'lodash';
+import { Card, CardType, GameZone } from './card';
 import { Game } from './game';
-import { Player } from './player';
-import { Card, GameZone, CardType } from './card';
-import { Item } from './item';
-
-import { Resource } from './resource';
-import { Targeter } from './targeter';
-import { Mechanic, TriggeredMechanic, TargetedMechanic } from './mechanic';
-
-import { groupBy, values, sortBy } from 'lodash';
+import { Mechanic, TargetedMechanic, TriggeredMechanic } from './mechanic';
 import { properList } from './strings';
 
 export class Permanent extends Card {
     static cardTypes = new Set([CardType.Unit, CardType.Item]);
 
     public getText(game: Game): string {
-        if (this.text)
+        if (this.text) {
             return this.text;
+        }
 
         const displayedMechanics = this.mechanics.filter(mech => {
             const triggered = <TriggeredMechanic>mech;
             return !triggered.getTrigger || !triggered.getTrigger().isHidden();
         });
 
-        let groups = values(groupBy(displayedMechanics, (mech) => {
-            const triggered = <TriggeredMechanic>mech;
-            if (triggered.getTrigger) {
-                return triggered.getTrigger().isHidden() ? 'hidden' : triggered.getTrigger().getId();
-            }
-            return '';
-        }));
+        const groups = values(
+            groupBy(displayedMechanics, mech => {
+                const triggered = <TriggeredMechanic>mech;
+                if (triggered.getTrigger) {
+                    return triggered.getTrigger().isHidden()
+                        ? 'hidden'
+                        : triggered.getTrigger().getId();
+                }
+                return '';
+            })
+        );
 
-        return groups.map(mechanics => this.getMechanicGroupText(mechanics, game)).join(' ');
+        return groups
+            .map(mechanics => this.getMechanicGroupText(mechanics, game))
+            .join(' ');
     }
 
     private getMechanicGroupText(mechanics: Mechanic[], game: Game) {
-        if (!(mechanics[0] instanceof TriggeredMechanic))
+        if (!(mechanics[0] instanceof TriggeredMechanic)) {
             return this.getSimpleMechanicGroupText(mechanics, game);
+        }
         const trigger = (mechanics[0] as TriggeredMechanic).getTrigger();
         mechanics = sortBy(mechanics, this.getTargeterId);
         let lastId: string = null;
-        const mechanicText = this.addSentenceMarkers(properList(mechanics.map(mechanic => {
-            let id = this.getTargeterId(mechanic);
-            if (id !== '')
-                (mechanic as TargetedMechanic).getTargeter().shouldUsePronoun(id === lastId);
-            lastId = id;
-            return this.removeSentenceMarkers(mechanic.getText(this, game));
-        })));
+        const mechanicText = this.addSentenceMarkers(
+            properList(
+                mechanics.map(mechanic => {
+                    const id = this.getTargeterId(mechanic);
+                    if (id !== '') {
+                        (mechanic as TargetedMechanic)
+                            .getTargeter()
+                            .shouldUsePronoun(id === lastId);
+                    }
+                    lastId = id;
+                    return this.removeSentenceMarkers(
+                        mechanic.getText(this, game)
+                    );
+                })
+            )
+        );
 
         return trigger.getText(mechanicText);
     }
@@ -64,8 +75,9 @@ export class Permanent extends Card {
     }
 
     private getTargeterId(mechanic: Mechanic) {
-        if (!(mechanic instanceof TargetedMechanic))
+        if (!(mechanic instanceof TargetedMechanic)) {
             return '';
+        }
         return (mechanic as TargetedMechanic).getTargeter().getId();
     }
 
@@ -76,15 +88,16 @@ export class Permanent extends Card {
     }
 
     public leaveBoard(game: Game) {
-        this.events.leavesPlay.trigger({leavingUnit: this});
+        this.events.leavesPlay.trigger({ leavingUnit: this });
         this.mechanics.forEach(mechanic => {
             mechanic.remove(this, game);
         });
     }
 
     public die() {
-        if (this.location !== GameZone.Board)
+        if (this.location !== GameZone.Board) {
             return;
+        }
         this.events.death.trigger({});
         this.location = GameZone.Crypt;
     }

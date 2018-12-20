@@ -1,9 +1,22 @@
 import { remove, sortBy } from 'lodash';
 import { Mechanic } from '../mechanic';
 import { Trigger } from '../trigger';
-import { AttackEvent, BlockEvent, DealDamageEvent, KillUnitEvent, TakeDamageEvent } from './cardEventTypes';
-import { CheckBlockableEvent, CheckCanBlockEvent, EndOfTurnEvent, PlayerAttackedEvent,
-    StartOfTurnEvent, UnitDiesEvent, UnitEntersPlayEvent } from './gameEventTypes';
+import {
+    AttackEvent,
+    BlockEvent,
+    DealDamageEvent,
+    KillUnitEvent,
+    TakeDamageEvent
+} from './cardEventTypes';
+import {
+    CheckBlockableEvent,
+    CheckCanBlockEvent,
+    EndOfTurnEvent,
+    PlayerAttackedEvent,
+    StartOfTurnEvent,
+    UnitDiesEvent,
+    UnitEntersPlayEvent
+} from './gameEventTypes';
 import { CardDrawnEvent } from './playerEventTypes';
 
 class GameEvent<T> {
@@ -11,14 +24,18 @@ class GameEvent<T> {
     constructor(
         public trigger: (params: T) => void,
         public priority: number = 5
-    ) { }
+    ) {}
 }
 
 export class EventList<T> {
     private events: GameEvent<T>[] = [];
 
-    public addEvent(source: Mechanic | Trigger |  null, callback: (params: T) => void, priority = 5) {
-        let event = new GameEvent<T>(callback);
+    public addEvent(
+        source: Mechanic | Trigger | null,
+        callback: (params: T) => void,
+        priority = 5
+    ) {
+        const event = new GameEvent<T>(callback);
         event.source = source;
         event.priority = priority;
         this.events.push(event);
@@ -27,7 +44,7 @@ export class EventList<T> {
     }
 
     public copy() {
-        let copy = new EventList<T>();
+        const copy = new EventList<T>();
         copy.events = [...this.events];
         return copy;
     }
@@ -35,10 +52,10 @@ export class EventList<T> {
     public trigger(params: T) {
         let len = this.events.length;
         for (let i = 0; i < this.events.length && i >= 0; i++) {
-            let event = this.events[i];
+            const event = this.events[i];
             event.trigger(params);
             if (this.events.length < len) {
-                i -= (len - this.events.length);
+                i -= len - this.events.length;
                 len = this.events.length;
             }
         }
@@ -55,8 +72,9 @@ export class EventList<T> {
 abstract class EventSystem {
     protected eventLists: Array<EventList<any>>;
     public removeEvents(source: Mechanic | Trigger | null) {
-        for (let eventList of this.eventLists)
+        for (const eventList of this.eventLists) {
             eventList.removeEvents(source);
+        }
     }
 }
 
@@ -67,10 +85,15 @@ export class GameEventSystem extends EventSystem {
     readonly playerAttacked = new EventList<PlayerAttackedEvent>();
     readonly unitDies = new EventList<UnitDiesEvent>();
 
-    readonly eventLists = [this.unitEntersPlay, this.startOfTurn, this.endOfTurn, this.playerAttacked];
+    readonly eventLists = [
+        this.unitEntersPlay,
+        this.startOfTurn,
+        this.endOfTurn,
+        this.playerAttacked
+    ];
 }
 
-export class CardEventSystem extends EventSystem  {
+export class CardEventSystem extends EventSystem {
     readonly play = new EventList();
     readonly death = new EventList();
     readonly unitDies = new EventList();
@@ -100,7 +123,7 @@ export class CardEventSystem extends EventSystem  {
     ];
 }
 
-export class PlayerEventSystem   {
+export class PlayerEventSystem {
     readonly CardDrawn = new EventList<CardDrawnEvent>();
 
     readonly eventLists = [this.CardDrawn];

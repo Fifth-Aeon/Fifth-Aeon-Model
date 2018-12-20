@@ -1,13 +1,10 @@
-import { Card, CardType, GameZone } from './card';
+import { CardType, GameZone } from './card';
+import { Game } from './game';
+import { EvalContext, Mechanic } from './mechanic';
 import { Permanent } from './permanent';
 import { Player } from './player';
-import { Unit } from './unit';
-import { Mechanic } from './mechanic';
 import { Resource } from './resource';
 import { Targeter } from './targeter';
-
-import { Game } from './game';
-import { EvalContext } from './mechanic';
 
 export class Enchantment extends Permanent {
     private power: number;
@@ -15,7 +12,12 @@ export class Enchantment extends Permanent {
     private canBeEmpowered = true;
     private canBeDiminished = true;
 
-    constructor(dataId: string, name: string, imageUrl: string, cost: Resource, targeter: Targeter,
+    constructor(
+        dataId: string,
+        name: string,
+        imageUrl: string,
+        cost: Resource,
+        targeter: Targeter,
         private changeCost: number,
         private basePower: number,
         mechanics: Mechanic[]
@@ -30,10 +32,13 @@ export class Enchantment extends Permanent {
     }
 
     public canChangePower(player: Player, game: Game) {
-        return game.getCurrentPlayer() === player &&
+        return (
+            game.getCurrentPlayer() === player &&
             player.getPool().meetsReq(this.costResource) &&
-            (player.getPlayerNumber() === this.owner ?
-                this.canBeEmpowered : this.canBeDiminished);
+            (player.getPlayerNumber() === this.owner
+                ? this.canBeEmpowered
+                : this.canBeDiminished)
+        );
     }
 
     public setEmpowerable(val: boolean) {
@@ -61,8 +66,9 @@ export class Enchantment extends Permanent {
     }
 
     public die() {
-        if (this.location !== GameZone.Board)
+        if (this.location !== GameZone.Board) {
             return;
+        }
         this.events.death.trigger({});
         this.location = GameZone.Crypt;
     }
@@ -72,8 +78,10 @@ export class Enchantment extends Permanent {
     }
 
     public isPlayable(game: Game): boolean {
-        return super.isPlayable(game) &&
-            game.getBoard().canPlayPermanent(this.getOwner());
+        return (
+            super.isPlayable(game) &&
+            game.getBoard().canPlayPermanent(this.getOwner())
+        );
     }
 
     public getCardType() {

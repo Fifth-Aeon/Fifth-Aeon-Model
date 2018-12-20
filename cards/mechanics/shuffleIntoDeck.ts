@@ -6,8 +6,8 @@ import { Unit } from '../../unit';
 export class ShuffleIntoDeck extends TargetedMechanic {
     protected static id = 'ShuffleIntoDeck';
     public onTrigger(card: Card, game: Game) {
-        let targets = this.targeter.getTargets(card, game, this);
-        for (let target of targets) {
+        const targets = this.targeter.getTargets(card, game, this);
+        for (const target of targets) {
             game.returnPermanentToDeck(target);
         }
     }
@@ -17,6 +17,9 @@ export class ShuffleIntoDeck extends TargetedMechanic {
     }
 
     public evaluateTarget(source: Card, target: Unit, game: Game) {
-        return target.evaluate(game, EvalContext.NonlethalRemoval) * (target.getOwner() === source.getOwner() ? -1 : 1);
+        return (
+            target.evaluate(game, EvalContext.NonlethalRemoval) *
+            (target.getOwner() === source.getOwner() ? -1 : 1)
+        );
     }
 }

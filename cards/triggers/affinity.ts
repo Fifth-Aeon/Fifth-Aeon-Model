@@ -1,6 +1,5 @@
 import { Card } from '../../card';
 import { Game } from '../../game';
-
 import { EvalContext } from '../../mechanic';
 import { Trigger } from '../../trigger';
 import { Unit } from '../../unit';
@@ -11,26 +10,29 @@ export class Affinity extends Trigger {
     private triggered = false;
 
     public getText(mechanicText: string) {
-        if (this.triggered)
+        if (this.triggered) {
             return `Affinity: [depleted]${mechanicText}[/depleted]`;
-        else
+        } else {
             return `Affinity: ${mechanicText}`;
+        }
     }
 
-
     public evaluate(host: Card, game: Game, context: EvalContext) {
-        if (!this.triggered)
+        if (!this.triggered) {
             return 0.75;
+        }
         return 0;
     }
 
     public register(card: Card, game: Game) {
-        let mutatingUnit = card as Unit;
-        game.getEvents().unitEntersPlay.addEvent(this, (params) => {
-            let enteringUnit = params.enteringUnit;
-            if (enteringUnit !== mutatingUnit &&
+        const mutatingUnit = card as Unit;
+        game.getEvents().unitEntersPlay.addEvent(this, params => {
+            const enteringUnit = params.enteringUnit;
+            if (
+                enteringUnit !== mutatingUnit &&
                 enteringUnit.getOwner() === mutatingUnit.getOwner() &&
-                enteringUnit.getUnitType() === mutatingUnit.getUnitType()) {
+                enteringUnit.getUnitType() === mutatingUnit.getUnitType()
+            ) {
                 this.mechanic.setTriggeringUnit(enteringUnit);
                 this.mechanic.onTrigger(card, game);
                 this.triggered = true;

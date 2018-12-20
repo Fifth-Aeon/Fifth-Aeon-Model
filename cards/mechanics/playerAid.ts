@@ -4,7 +4,6 @@ import { TriggeredMechanic } from '../../mechanic';
 import { Resource } from '../../resource';
 import { ParameterType } from '../parameters';
 
-
 export class GainLife extends TriggeredMechanic {
     protected static id = 'GainLife';
     protected static ParameterTypes = [
@@ -16,7 +15,7 @@ export class GainLife extends TriggeredMechanic {
     }
 
     public onTrigger(card: Card, game: Game) {
-        let player = game.getPlayer(card.getOwner());
+        const player = game.getPlayer(card.getOwner());
         player.addLife(this.amount);
     }
 
@@ -40,7 +39,7 @@ export class GainResource extends TriggeredMechanic {
     }
 
     public onTrigger(card: Card, game: Game) {
-        let player = game.getPlayer(card.getOwner());
+        const player = game.getPlayer(card.getOwner());
         player.getPool().add(this.resource);
     }
 

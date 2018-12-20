@@ -1,6 +1,13 @@
 export enum GameActionType {
-    PlayResource, PlayCard, Pass, ModifyEnchantment,
-    ToggleAttack, DeclareBlocker, DistributeDamage, CardChoice, Quit
+    PlayResource,
+    PlayCard,
+    Pass,
+    ModifyEnchantment,
+    ToggleAttack,
+    DeclareBlocker,
+    DistributeDamage,
+    CardChoice,
+    Quit
 }
 
 interface GameActionBase {
@@ -11,7 +18,7 @@ interface GameActionBase {
 export class GameActionSystem {
     private handlers = new Map<GameActionType, (act: GameAction) => boolean>();
 
-    constructor(private parent: Object) { }
+    constructor(private parent: Object) {}
 
     public addHandler<T extends GameActionType>(
         type: T,
@@ -21,31 +28,52 @@ export class GameActionSystem {
     }
 
     public handleAction(action: GameAction) {
-        let handler = this.handlers.get(action.type);
-        if (!handler) return false;
+        const handler = this.handlers.get(action.type);
+        if (!handler) { return false; }
         return handler(action);
     }
 }
 
-export type GameAction = PlayResourceAction | PlayCardAction | PassAction | ModifyEnchantmentAction |
-    ToggleAttackAction | DeclareBlockerAction | DistributeDamageAction | CardChoiceAction | QuitAction;
+export type GameAction =
+    | PlayResourceAction
+    | PlayCardAction
+    | PassAction
+    | ModifyEnchantmentAction
+    | ToggleAttackAction
+    | DeclareBlockerAction
+    | DistributeDamageAction
+    | CardChoiceAction
+    | QuitAction;
 
-type GameActionFromType<T extends GameActionType> =
-    T extends GameActionType.CardChoice ? CardChoiceAction :
-    T extends GameActionType.DeclareBlocker ? DeclareBlockerAction :
-    T extends GameActionType.DistributeDamage ? DistributeDamageAction :
-    T extends GameActionType.ModifyEnchantment ? ModifyEnchantmentAction :
-    T extends GameActionType.Pass ? PassAction :
-    T extends GameActionType.PlayCard ? PlayCardAction :
-    T extends GameActionType.PlayResource ? PlayResourceAction :
-    T extends GameActionType.Quit ? QuitAction : ToggleAttackAction;
+type GameActionFromType<
+    T extends GameActionType
+> = T extends GameActionType.CardChoice
+    ? CardChoiceAction
+    : T extends GameActionType.DeclareBlocker
+    ? DeclareBlockerAction
+    : T extends GameActionType.DistributeDamage
+    ? DistributeDamageAction
+    : T extends GameActionType.ModifyEnchantment
+    ? ModifyEnchantmentAction
+    : T extends GameActionType.Pass
+    ? PassAction
+    : T extends GameActionType.PlayCard
+    ? PlayCardAction
+    : T extends GameActionType.PlayResource
+    ? PlayResourceAction
+    : T extends GameActionType.Quit
+    ? QuitAction
+    : ToggleAttackAction;
 
 export interface PlayResourceAction extends GameActionBase {
     readonly type: GameActionType.PlayResource;
     readonly resourceType: string;
 }
 
-export type GameActionRunner = <T extends GameActionType>(type: T, action: GameActionFromType<T>) => void;
+export type GameActionRunner = <T extends GameActionType>(
+    type: T,
+    action: GameActionFromType<T>
+) => void;
 
 export interface PlayCardAction extends GameActionBase {
     readonly type: GameActionType.PlayCard;

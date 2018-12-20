@@ -5,26 +5,52 @@ import { Resource, ResourceType } from '../resource';
 import { Unit, UnitType } from '../unit';
 import { BuffTarget, BuffTargetAndGrant, GrantAbility } from './mechanics/buff';
 import { CannotAttack, CannotBlock } from './mechanics/cantAttack';
-import { DamageOnBlock, DealDamage, DealResourceDamage } from './mechanics/dealDamage';
+import {
+    DamageOnBlock,
+    DealDamage,
+    DealResourceDamage
+} from './mechanics/dealDamage';
 import { AugarCard, DrawCard, Peek } from './mechanics/draw';
 import { RefreshTarget } from './mechanics/heal';
 import { friendlyLordship } from './mechanics/lordship';
 import { Poisoned, PoisonImmune } from './mechanics/poison';
 import { Annihilate } from './mechanics/removal';
 import { ForceField } from './mechanics/shieldEnchantments';
-import { Aquatic, Flying, Lethal, Ranged, Relentless, Shielded, Unblockable } from './mechanics/skills';
+import {
+    Aquatic,
+    Flying,
+    Lethal,
+    Ranged,
+    Relentless,
+    Shielded,
+    Unblockable
+} from './mechanics/skills';
 import { EnchantmentSummon } from './mechanics/summonUnits';
 import { Robotic, SpyPower } from './mechanics/synthSpecials';
-// Mechanics
 import {
-    Enemies, EnemyPlayer, EnemyUnit, EnemyUnits, FriendlyUnit, FriendlyUnits, SelfTarget,
-    SingleUnit, TriggeringUnit, Untargeted
+    Enemies,
+    EnemyPlayer,
+    EnemyUnit,
+    EnemyUnits,
+    FriendlyUnit,
+    FriendlyUnits,
+    SelfTarget,
+    SingleUnit,
+    TriggeringUnit,
+    Untargeted
 } from './targeters/basicTargeter';
-import { BiologicalUnit, FriendlyBiologicalUnits, FriendlyVehicleOrStructure, MechanicalUnit } from './targeters/biotargeter';
-import { FriendlyBiologicalUnitEntersPlay, FriendlyMechanicalUnitEntersPlay } from './triggers/bio';
+import {
+    BiologicalUnit,
+    FriendlyBiologicalUnits,
+    FriendlyVehicleOrStructure,
+    MechanicalUnit
+} from './targeters/biotargeter';
+import {
+    FriendlyBiologicalUnitEntersPlay,
+    FriendlyMechanicalUnitEntersPlay
+} from './triggers/bio';
 import { OwnerDrawsUnit } from './triggers/draw';
 import { Dawn, Dusk } from './triggers/periodic';
-
 
 export function assemblyLine() {
     return new Enchantment(
@@ -38,7 +64,8 @@ export function assemblyLine() {
             Synthesis: 2
         }),
         new Untargeted(),
-        5, 1,
+        5,
+        1,
         [new EnchantmentSummon(automatedInfantry, 1).setTrigger(new Dusk())]
     );
 }
@@ -56,7 +83,8 @@ export function medicalConvoy() {
             Synthesis: 1
         }),
         new Untargeted(),
-        2, 2,
+        2,
+        2,
         [new RefreshTarget().setTargeter(new FriendlyBiologicalUnits())]
     );
 }
@@ -74,7 +102,8 @@ export function automatedInfantry() {
             Synthesis: 1
         }),
         new Untargeted(),
-        1, 2,
+        1,
+        2,
         [new Robotic()]
     );
 }
@@ -92,7 +121,8 @@ export function interceptor() {
             Synthesis: 3
         }),
         new Untargeted(),
-        1, 2,
+        1,
+        2,
         [new Flying(), new DamageOnBlock(3)]
     );
 }
@@ -109,7 +139,8 @@ export function forceField() {
             Synthesis: 3
         }),
         new Untargeted(),
-        1, 12,
+        1,
+        12,
         [new ForceField()]
     );
 }
@@ -127,7 +158,8 @@ export function gasMask() {
         }),
         new Untargeted(),
         new FriendlyUnit(),
-        1, 2,
+        1,
+        2,
         [new PoisonImmune()]
     );
 }
@@ -145,11 +177,11 @@ export function battleship() {
             Synthesis: 4
         }),
         new Untargeted(),
-        7, 7,
+        7,
+        7,
         [new Aquatic()]
     );
 }
-
 
 export function missileMech() {
     return new Unit(
@@ -164,7 +196,8 @@ export function missileMech() {
             Synthesis: 2
         }),
         new Untargeted(),
-        4, 4,
+        4,
+        4,
         [new Ranged()]
     );
 }
@@ -182,12 +215,13 @@ export function satellite() {
             Synthesis: 2
         }),
         new Untargeted(),
-        0, 2,
+        0,
+        2,
         [
             new CannotAttack(),
             new CannotBlock(),
             new DrawCard().setTrigger(new Dawn()),
-            new Peek().setTrigger(new Dawn()),
+            new Peek().setTrigger(new Dawn())
         ]
     );
 }
@@ -205,7 +239,8 @@ export function shieldGenerator() {
             Synthesis: 4
         }),
         new Untargeted(),
-        0, 6,
+        0,
+        6,
         [
             new CannotAttack(),
             new GrantAbility(Shielded)
@@ -227,13 +262,13 @@ export function researchAI() {
             Synthesis: 4
         }),
         new Untargeted(),
-        5, 3,
+        5,
+        3,
         [
             new BuffTarget(1, 1)
                 .setTargeter(new TriggeringUnit())
                 .setTrigger(new OwnerDrawsUnit()),
-            new DrawCard()
-                .setTrigger(new Dawn()),
+            new DrawCard().setTrigger(new Dawn())
         ]
     );
 }
@@ -251,7 +286,8 @@ export function submarine() {
             Synthesis: 3
         }),
         new Untargeted(),
-        3, 4,
+        3,
+        4,
         [new Aquatic(), new Unblockable()]
     );
 }
@@ -269,7 +305,8 @@ export function automataCrew() {
         }),
         new Untargeted(),
         new FriendlyVehicleOrStructure(),
-        3, 3,
+        3,
+        3,
         [new Robotic(), new Relentless()]
     );
 }
@@ -287,7 +324,8 @@ export function occularImplant() {
         }),
         new Untargeted(),
         new FriendlyUnit(),
-        3, 3,
+        3,
+        3,
         [new SpyPower()]
     );
 }
@@ -305,7 +343,8 @@ export function rifle() {
         }),
         new EnemyUnit(),
         new FriendlyUnit(),
-        3, 2,
+        3,
+        2,
         [new Ranged(), new DealDamage(2)]
     );
 }
@@ -339,7 +378,8 @@ export function titanmk2() {
             Synthesis: 5
         }),
         new Untargeted(),
-        7, 7,
+        7,
+        7,
         [new Robotic(), new Shielded()]
     );
 }
@@ -357,7 +397,8 @@ export function spy() {
             Synthesis: 1
         }),
         new Untargeted(),
-        1, 1,
+        1,
+        1,
         [new SpyPower()]
     );
 }
@@ -443,7 +484,6 @@ export function dangerousInjection() {
     );
 }
 
-
 export function workbot() {
     return new Unit(
         'Workbot',
@@ -457,7 +497,8 @@ export function workbot() {
             Synthesis: 1
         }),
         new Untargeted(),
-        1, 1,
+        1,
+        1,
         [
             new Robotic(),
             new BuffTarget(0, 1)
@@ -466,7 +507,6 @@ export function workbot() {
         ]
     );
 }
-
 
 export function comsTower() {
     return new Unit(
@@ -481,11 +521,11 @@ export function comsTower() {
             Synthesis: 3
         }),
         new Untargeted(),
-        0, 5,
+        0,
+        5,
         [new CannotAttack(), friendlyLordship(1, 1)]
     );
 }
-
 
 export function enhancementChamber() {
     return new Unit(
@@ -500,15 +540,16 @@ export function enhancementChamber() {
             Synthesis: 2
         }),
         new Untargeted(),
-        0, 5,
-        [new CannotAttack(),
-        new BuffTarget(3, 3)
-            .setTargeter(new TriggeringUnit())
-            .setTrigger(new FriendlyBiologicalUnitEntersPlay())
+        0,
+        5,
+        [
+            new CannotAttack(),
+            new BuffTarget(3, 3)
+                .setTargeter(new TriggeringUnit())
+                .setTrigger(new FriendlyBiologicalUnitEntersPlay())
         ]
     );
 }
-
 
 export function observationBallon() {
     return new Unit(
@@ -523,7 +564,8 @@ export function observationBallon() {
             Synthesis: 2
         }),
         new Untargeted(),
-        0, 3,
+        0,
+        3,
         [new Flying(), new Peek()]
     );
 }
@@ -541,8 +583,13 @@ export function siegeArtillery() {
             Synthesis: 2
         }),
         new Untargeted(),
-        1, 1,
-        [new DealDamage(1).setTargeter(new EnemyPlayer()).setTrigger(new Dusk())]
+        1,
+        1,
+        [
+            new DealDamage(1)
+                .setTargeter(new EnemyPlayer())
+                .setTrigger(new Dusk())
+        ]
     );
 }
 
@@ -559,7 +606,8 @@ export function golem() {
             Synthesis: 2
         }),
         new Untargeted(),
-        3, 3,
+        3,
+        3,
         [new Robotic()]
     );
 }
@@ -577,7 +625,8 @@ export function paragon() {
             Synthesis: 4
         }),
         new Untargeted(),
-        4, 5,
+        4,
+        5,
         [new Robotic(), new Lethal(), new Shielded(), new Relentless()]
     );
 }
@@ -595,7 +644,8 @@ export function hanglider() {
             Synthesis: 2
         }),
         new Untargeted(),
-        3, 1,
+        3,
+        1,
         [new Flying(), new CannotBlock()]
     );
 }
@@ -613,7 +663,8 @@ export function airship() {
             Synthesis: 3
         }),
         new Untargeted(),
-        3, 3,
+        3,
+        3,
         [new Flying()]
     );
 }
@@ -663,12 +714,14 @@ export function mine() {
             Synthesis: 3
         }),
         new Untargeted(),
-        0, 3,
+        0,
+        3,
         [
             new CannotAttack(),
             new DrawCard(1).setTrigger(new Dusk()),
-            new BuffTarget(0, -1).setTargeter(new SelfTarget()).setTrigger(new Dusk())
+            new BuffTarget(0, -1)
+                .setTargeter(new SelfTarget())
+                .setTrigger(new Dusk())
         ]
     );
 }
-

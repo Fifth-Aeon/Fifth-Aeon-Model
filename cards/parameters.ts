@@ -3,48 +3,73 @@ import { CardList } from './cardList';
 import { CardType, Card } from '../card';
 
 export enum ParameterType {
-    Integer, NaturalNumber,
-    Resource, ResourceType,
-    Card, Spell, Unit, Item, Enchantment, CardType
+    Integer,
+    NaturalNumber,
+    Resource,
+    ResourceType,
+    Card,
+    Spell,
+    Unit,
+    Item,
+    Enchantment,
+    CardType
 }
 
 export type ParameterData = number | string | ResourcePrototype;
 
 const parseInteger = (data: ParameterData, min: number, max: number) => {
-    if (typeof data === 'string')
+    if (typeof data === 'string') {
         data = parseInt(data, 10);
-    if (typeof data !== 'number' || isNaN(data))
+    }
+    if (typeof data !== 'number' || isNaN(data)) {
         return 1;
+    }
     return Math.min(max, Math.max(min, Math.round(data)));
 };
 
 const getDefaultCard = (cards: CardList, expectedType: CardType) =>
-    cards.getCards().find((card: Card) => !expectedType || card.getCardType() === expectedType);
+    cards
+        .getCards()
+        .find(
+            (card: Card) => !expectedType || card.getCardType() === expectedType
+        );
 
-const loadCard = (data: ParameterData, cards: CardList, expectedType: CardType) => {
+const loadCard = (
+    data: ParameterData,
+    cards: CardList,
+    expectedType: CardType
+) => {
     let result: Card;
-    if (typeof data !== 'string')
+    if (typeof data !== 'string') {
         return () => getDefaultCard(cards, expectedType);
+    }
     result = cards.getCard(data);
-    if (result.getCardType() !== expectedType)
+    if (result.getCardType() !== expectedType) {
         return () => getDefaultCard(cards, expectedType);
+    }
     const id = result.getDataId();
     return () => cards.getCard(id);
 };
 
 const parseResourceType = (data: ParameterData): string => {
-    if (typeof data !== 'string')
+    if (typeof data !== 'string') {
         return ResourceType.Synthesis;
+    }
     return ResourceType[data];
 };
 
 const loadResource = (data: ParameterData) => {
-    if (typeof data !== 'object')
+    if (typeof data !== 'object') {
         return new Resource(1, 1);
+    }
     return Resource.loadResource(data as ResourcePrototype);
 };
 
-const buildParameter = (type: ParameterType, data: ParameterData, cards: CardList) => {
+const buildParameter = (
+    type: ParameterType,
+    data: ParameterData,
+    cards: CardList
+) => {
     switch (type) {
         case ParameterType.Integer:
             return parseInteger(data, -99, 99);
@@ -69,7 +94,11 @@ const buildParameter = (type: ParameterType, data: ParameterData, cards: CardLis
     }
 };
 
-export const buildParameters = (types: ParameterType[], data: ParameterData[], cards: CardList) => {
+export const buildParameters = (
+    types: ParameterType[],
+    data: ParameterData[],
+    cards: CardList
+) => {
     const results = new Array(types.length);
     for (let i = 0; i < types.length; i++) {
         results[i] = buildParameter(types[i], data[i], cards);

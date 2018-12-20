@@ -1,10 +1,9 @@
-import { GameFormat, standardFormat } from './gameFormat';
-import { cardList, CardFactory } from './cards/cardList';
+import { remove, sample, sampleSize, sum } from 'lodash';
 import { Card } from './card';
-
-import { ResourceTypeNames, ResourceType } from './resource';
-import { sample, sampleSize, remove, sum } from 'lodash';
+import { CardFactory, cardList } from './cards/cardList';
 import { Collection } from './collection';
+import { GameFormat, standardFormat } from './gameFormat';
+import { ResourceType, ResourceTypeNames } from './resource';
 
 export interface SavedDeck {
     records: [string, number][];
@@ -22,7 +21,6 @@ export class DeckList {
     private records = new Map<string, number>();
     private cardCount = 0;
 
-
     constructor(private format: GameFormat = standardFormat, data?: SavedDeck) {
         if (data) {
             this.fromSavable(data);
@@ -31,30 +29,38 @@ export class DeckList {
 
     public randomDeckWithColors(colors: Set<string>, collection: Collection) {
         this.clear();
-        let validCards = collection.getCards().filter(card => {
+        const validCards = collection.getCards().filter(card => {
             return card.getCost().isInColors(colors);
         });
         for (let i = 0; i < this.format.minDeckSize; i++) {
-            let card = sample(validCards);
+            const card = sample(validCards);
             this.addCard(card);
-            if (this.records.get(card.getDataId()) === this.format.cardsOfRarity[0])
+            if (
+                this.records.get(card.getDataId()) ===
+                this.format.cardsOfRarity[0]
+            ) {
                 remove(validCards, fact => fact === card);
+            }
         }
         this.genMetadata();
     }
 
     public genMetadata() {
-        if (this.customMetadata)
+        if (this.customMetadata) {
             return;
-        let list = this.getRecordList();
+        }
+        const list = this.getRecordList();
         this.avatar = list[list.length - 1].card.getImage();
         this.name = Array.from(this.getColors().values()).join('-') + ' Deck';
     }
 
     public getColors() {
-        let colors = new Set<ResourceType>();
-        for (let record of this.getRecordList()) {
-            record.card.getCost().getColors().forEach(color => colors.add(color));
+        const colors = new Set<ResourceType>();
+        for (const record of this.getRecordList()) {
+            record.card
+                .getCost()
+                .getColors()
+                .forEach(color => colors.add(color));
         }
         return colors;
     }
@@ -81,7 +87,7 @@ export class DeckList {
     }
 
     public clone() {
-        let clone = new DeckList(this.format);
+        const clone = new DeckList(this.format);
         clone.fromJson(this.toJson());
         return clone;
     }
@@ -97,21 +103,28 @@ export class DeckList {
     }
 
     public fromSavable(saveData: SavedDeck) {
-        this.records = new Map(Array.from(saveData.records)) as Map<string, number>;
+        this.records = new Map(Array.from(saveData.records)) as Map<
+            string,
+            number
+        >;
         this.id = saveData.id;
         this.name = saveData.name;
         this.avatar = saveData.avatar;
         this.cardCount = sum(Array.from(this.records.values()));
         this.customMetadata = saveData.customMetadata;
-        for (let key of Array.from(this.records.keys())) {
+        for (const key of Array.from(this.records.keys())) {
             if (!cardList.exists(key)) {
-                throw Error(`Deck ${this.name} tried to load non-existent card with id ${key}.`);
+                throw Error(
+                    `Deck ${
+                        this.name
+                    } tried to load non-existent card with id ${key}.`
+                );
             }
         }
     }
 
     public fromJson(jsonStr: string) {
-        let data = JSON.parse(jsonStr) as SavedDeck;
+        const data = JSON.parse(jsonStr) as SavedDeck;
         this.fromSavable(data);
     }
 
@@ -124,37 +137,43 @@ export class DeckList {
     }
 
     public canAddCard(card: Card) {
-        let currValue = this.records.get(card.getDataId()) || 0;
-        let limit = this.format.cardsOfRarity[0];
+        const currValue = this.records.get(card.getDataId()) || 0;
+        const limit = this.format.cardsOfRarity[0];
         return currValue < limit;
     }
 
-
     public addCard(card: Card) {
-        if (!this.canAddCard(card)) return;
-        let currValue = this.records.get(card.getDataId()) || 0;
+        if (!this.canAddCard(card)) {
+            return;
+        }
+        const currValue = this.records.get(card.getDataId()) || 0;
         this.records.set(card.getDataId(), currValue + 1);
         this.cardCount++;
     }
 
     public isValid() {
-        return this.cardCount >= this.format.minDeckSize && this.cardCount <= this.format.maxDeckSize;
+        return (
+            this.cardCount >= this.format.minDeckSize &&
+            this.cardCount <= this.format.maxDeckSize
+        );
     }
 
     public removeCard(card: Card) {
-        if (!this.records.has(card.getDataId()))
+        if (!this.records.has(card.getDataId())) {
             return;
-        let currValue = this.records.get(card.getDataId());
-        if (currValue === 1)
+        }
+        const currValue = this.records.get(card.getDataId());
+        if (currValue === 1) {
             this.records.delete(card.getDataId());
-        else
+        } else {
             this.records.set(card.getDataId(), currValue - 1);
+        }
         this.cardCount--;
     }
 
     public toDeck(): CardFactory[] {
-        let deck = [];
-        for (let entry of Array.from(this.records.entries())) {
+        const deck = [];
+        for (const entry of Array.from(this.records.entries())) {
             for (let i = 0; i < entry[1]; i++) {
                 deck.push(cardList.getCardFactory(entry[0]));
             }
@@ -167,11 +186,17 @@ export class DeckList {
     }
 
     public getRecordList() {
-        return Array.from(this.records.entries()).map(entry => {
-            return {
-                card: cardList.getCard(entry[0]),
-                number: entry[1]
-            };
-        }).sort((rec1, rec2) => rec1.card.getCost().getNumeric() - rec2.card.getCost().getNumeric());
+        return Array.from(this.records.entries())
+            .map(entry => {
+                return {
+                    card: cardList.getCard(entry[0]),
+                    number: entry[1]
+                };
+            })
+            .sort(
+                (rec1, rec2) =>
+                    rec1.card.getCost().getNumeric() -
+                    rec2.card.getCost().getNumeric()
+            );
     }
 }

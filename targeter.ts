@@ -1,9 +1,8 @@
-import { Game } from './game';
-import { Card } from './card';
-import { Unit } from './unit';
-
 import { every } from 'lodash';
+import { Card } from './card';
+import { Game } from './game';
 import { Mechanic } from './mechanic';
+import { Unit } from './unit';
 
 export abstract class Targeter {
     protected static id: string;
@@ -54,8 +53,11 @@ export abstract class Targeter {
     }
 
     public isTargetable(card: Card, game: Game): boolean {
-        return !this.needsInput() || this.isOptional() ||
-            this.getValidTargets(card, game).length > 0;
+        return (
+            !this.needsInput() ||
+            this.isOptional() ||
+            this.getValidTargets(card, game).length > 0
+        );
     }
 
     public isOptional(): boolean {
@@ -68,9 +70,13 @@ export abstract class Targeter {
     }
 
     public targetsAreValid(card: Card, game: Game) {
-        if (!this.needsInput() || this.isOptional())
+        if (!this.needsInput() || this.isOptional()) {
             return true;
-        let valid = new Set(this.getValidTargets(card, game));
-        return this.targets.length > 0 && every(this.targets, target => valid.has(target));
+        }
+        const valid = new Set(this.getValidTargets(card, game));
+        return (
+            this.targets.length > 0 &&
+            every(this.targets, target => valid.has(target))
+        );
     }
 }

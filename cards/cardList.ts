@@ -1,4 +1,3 @@
-
 import { values } from 'lodash';
 import { Card, CardType } from '../card';
 import { Enchantment } from '../enchantment';
@@ -12,7 +11,6 @@ import * as renewal from './renewalCards';
 import * as synthesis from './synthCards';
 import { TargeterData, targeterList } from './targeterList';
 import { Untargeted } from './targeters/basicTargeter';
-
 
 interface CardDataBase {
     id: string;
@@ -52,7 +50,14 @@ export type CardData = SpellData | UnitData | ItemData | EnchantmentData;
 
 export type CardFactory = () => Card;
 
-let defaultCard = new Card('default', 'default', '', new Resource(1), new Untargeted(), []);
+const defaultCard = new Card(
+    'default',
+    'default',
+    '',
+    new Resource(1),
+    new Untargeted(),
+    []
+);
 
 export class CardList {
     private factories = new Map<string, CardFactory>();
@@ -68,20 +73,24 @@ export class CardList {
     }
 
     public addFactory(...factories: CardFactory[]) {
-        for (let factory of factories) {
-            let card = factory();
+        for (const factory of factories) {
+            const card = factory();
             this.factories.set(card.getDataId(), factory);
-            let existing = this.instances.findIndex(curr => curr.getDataId() === card.getDataId());
-            if (existing !== -1)
+            const existing = this.instances.findIndex(
+                curr => curr.getDataId() === card.getDataId()
+            );
+            if (existing !== -1) {
                 this.instances.splice(existing, 1);
+            }
             this.instances.push(card);
         }
     }
 
     public getCard(id: string): Card {
         const factory = this.factories.get(id);
-        if (factory)
+        if (factory) {
             return factory();
+        }
         return defaultCard;
     }
 
@@ -122,7 +131,9 @@ export class CardList {
                 data.imageUrl,
                 Resource.loadResource(data.cost),
                 targeterList.buildInstance(data.targeter),
-                data.mechanics.map(mechanic => mechanicList.buildInstance(mechanic, this))
+                data.mechanics.map(mechanic =>
+                    mechanicList.buildInstance(mechanic, this)
+                )
             );
         };
     }
@@ -138,7 +149,9 @@ export class CardList {
                 targeterList.buildInstance(data.targeter),
                 data.damage,
                 data.life,
-                data.mechanics.map(mechanic => mechanicList.buildInstance(mechanic, this))
+                data.mechanics.map(mechanic =>
+                    mechanicList.buildInstance(mechanic, this)
+                )
             );
         };
     }
@@ -154,7 +167,9 @@ export class CardList {
                 targeterList.buildInstance(data.hostTargeter),
                 data.damage,
                 data.life,
-                data.mechanics.map(mechanic => mechanicList.buildInstance(mechanic, this))
+                data.mechanics.map(mechanic =>
+                    mechanicList.buildInstance(mechanic, this)
+                )
             );
         };
     }
@@ -169,11 +184,12 @@ export class CardList {
                 targeterList.buildInstance(data.targeter),
                 data.empowerCost,
                 data.power,
-                data.mechanics.map(mechanic => mechanicList.buildInstance(mechanic, this))
+                data.mechanics.map(mechanic =>
+                    mechanicList.buildInstance(mechanic, this)
+                )
             );
         };
     }
-
 }
 
 export const cardList = new CardList();

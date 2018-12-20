@@ -1,5 +1,3 @@
-
-
 import { values } from 'lodash';
 import { Targeter } from '../targeter';
 import * as basicTargeters from './targeters/basicTargeter';
@@ -9,9 +7,14 @@ import * as poisonTargeter from './targeters/poisonTargeter';
 import * as powerTargeter from './targeters/powerTargeter';
 import * as weakenedUnits from './targeters/weakenedUnits';
 
-
-
-const targeterGroups = [biotargeters, basicTargeters, mechanicTargeters, poisonTargeter, powerTargeter, weakenedUnits];
+const targeterGroups = [
+    biotargeters,
+    basicTargeters,
+    mechanicTargeters,
+    poisonTargeter,
+    powerTargeter,
+    weakenedUnits
+];
 
 export interface TargeterData {
     id: string;
@@ -23,11 +26,11 @@ class TargeterList {
     private constructorList: TargeterConstructor[] = [];
 
     public addConstructors(...constructors: TargeterConstructor[]) {
-        for (let constructor of constructors) {
-            const instance = new constructor();
+        for (const constructor of constructors) {
             const id = constructor.getId();
-            if (this.constructors.has(id))
+            if (this.constructors.has(id)) {
                 console.warn('Warning, overwriting targeter ID', id);
+            }
             this.constructors.set(id, constructor);
             this.constructorList.push(constructor);
         }
@@ -45,23 +48,23 @@ class TargeterList {
     }
 
     public getIds(passiveOnly = false) {
-        if (passiveOnly)
+        if (passiveOnly) {
             return this.constructorList
-            .filter(constructor => !new constructor().needsInput())
-            .map(constr => constr.getId());
+                .filter(constructor => !new constructor().needsInput())
+                .map(constr => constr.getId());
+        }
         return this.constructorList.map(constr => constr.getId());
     }
-
 }
 
 interface TargeterConstructor {
     getId(): string;
-    new(): Targeter;
+    new (): Targeter;
 }
-
 
 export const targeterList = new TargeterList();
-for (let targeterGroup of targeterGroups) {
-    targeterList.addConstructors(...(values(targeterGroup) as TargeterConstructor[]));
+for (const targeterGroup of targeterGroups) {
+    targeterList.addConstructors(
+        ...(values(targeterGroup) as TargeterConstructor[])
+    );
 }
-

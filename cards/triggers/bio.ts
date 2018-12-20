@@ -1,21 +1,25 @@
-import { isBiological, Unit, isMechanical } from '../../unit';
-import { Trigger } from '../../trigger';
-import { removeFirstCapital } from '../../strings';
 import { Card } from '../../card';
 import { Game } from '../../game';
-
 import { EvalContext } from '../../mechanic';
+import { removeFirstCapital } from '../../strings';
+import { Trigger } from '../../trigger';
+import { isBiological, isMechanical, Unit } from '../../unit';
 
 export class FriendlyBiologicalUnitEntersPlay extends Trigger {
     protected static id = 'FriendlyBioUnitEntersPlay';
 
     public getText(mechanicText: string) {
-        return `When you summon a biological unit ${removeFirstCapital(mechanicText)}`;
+        return `When you summon a biological unit ${removeFirstCapital(
+            mechanicText
+        )}`;
     }
 
     public register(card: Card, game: Game) {
-        game.getEvents().unitEntersPlay.addEvent(this,  (params) => {
-            if (params.enteringUnit.getOwner() === card.getOwner() && isBiological(params.enteringUnit)) {
+        game.getEvents().unitEntersPlay.addEvent(this, params => {
+            if (
+                params.enteringUnit.getOwner() === card.getOwner() &&
+                isBiological(params.enteringUnit)
+            ) {
                 this.mechanic.setTriggeringUnit(params.enteringUnit);
                 this.mechanic.onTrigger(card, game);
             }
@@ -35,11 +39,13 @@ export class FriendlyMechanicalUnitEntersPlay extends Trigger {
     protected static id = 'FriendlyMechUnitEntersPlay';
 
     public getText(mechanicText: string) {
-        return `When you summon a mechanical unit ${removeFirstCapital(mechanicText)}`;
+        return `When you summon a mechanical unit ${removeFirstCapital(
+            mechanicText
+        )}`;
     }
 
     public register(card: Card, game: Game) {
-        game.getEvents().unitEntersPlay.addEvent(this,  (params) => {
+        game.getEvents().unitEntersPlay.addEvent(this, params => {
             const unit: Unit = params.enteringUnit;
             if (unit.getOwner() === card.getOwner() && isMechanical(unit)) {
                 this.mechanic.setTriggeringUnit(unit);
@@ -56,4 +62,3 @@ export class FriendlyMechanicalUnitEntersPlay extends Trigger {
         return 2;
     }
 }
-

@@ -1,14 +1,17 @@
-import { Targeter } from '../../targeter';
-import { AllUnits } from './basicTargeter';
 import { Card } from '../../card';
-import { Unit } from '../../unit';
 import { Game } from '../../game';
+import { Targeter } from '../../targeter';
+import { Unit } from '../../unit';
 import { Poisoned } from '../mechanics/poison';
+import { AllUnits } from './basicTargeter';
 
 export class PoisonableUnit extends Targeter {
     protected static id = 'PoisonableUnit';
     public getValidTargets(card: Card, game: Game) {
-        return game.getBoard().getAllUnits().filter(unit => !unit.isImmune('poisoned'));
+        return game
+            .getBoard()
+            .getAllUnits()
+            .filter(unit => !unit.isImmune('poisoned'));
     }
     public getText() {
         return 'target unit';
@@ -18,7 +21,10 @@ export class PoisonableUnit extends Targeter {
 export class SleepableUnit extends Targeter {
     protected static id = 'SleepableUnit';
     public getValidTargets(card: Card, game: Game) {
-        return game.getBoard().getAllUnits().filter(unit => !unit.isImmune('sleeping'));
+        return game
+            .getBoard()
+            .getAllUnits()
+            .filter(unit => !unit.isImmune('sleeping'));
     }
     public getText() {
         return 'target unit';
@@ -28,7 +34,9 @@ export class SleepableUnit extends Targeter {
 export class PoisonableUnits extends AllUnits {
     protected static id = 'PoisonableUnits';
     public getTargets(card: Card, game: Game): Array<Unit> {
-        this.lastTargets = game.getBoard().getAllUnits()
+        this.lastTargets = game
+            .getBoard()
+            .getAllUnits()
             .filter(unit => !unit.isImmune('poisoned'));
         return this.lastTargets;
     }
@@ -41,8 +49,9 @@ export class CurePoisonTargeter extends Targeter {
     protected static id = 'CurePoisonTargeter';
 
     public getValidTargets(card: Card, game: Game) {
-        let owner = game.getPlayer(card.getOwner());
-        return game.getBoard()
+        const owner = game.getPlayer(card.getOwner());
+        return game
+            .getBoard()
             .getPlayerUnits(card.getOwner())
             .filter(unit => unit.hasMechanicWithId(Poisoned.getId()));
     }

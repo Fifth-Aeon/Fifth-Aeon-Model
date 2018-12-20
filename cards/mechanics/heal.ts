@@ -1,16 +1,12 @@
-import { Mechanic, TargetedMechanic } from '../../mechanic';
-import { Game } from '../../game';
-import { Targeter } from '../../targeter';
 import { Card } from '../../card';
-import { Unit, UnitType } from '../../unit';
-
-import { properCase, properList } from '../../strings';
-
+import { Game } from '../../game';
+import { TargetedMechanic } from '../../mechanic';
+import { Unit } from '../../unit';
 
 export class RefreshTarget extends TargetedMechanic {
     protected static id = 'RefreshTarget';
     public onTrigger(card: Card, game: Game) {
-        for (let target of this.targeter.getTargets(card, game, this)) {
+        for (const target of this.targeter.getTargets(card, game, this)) {
             target.refresh();
         }
     }
@@ -20,6 +16,10 @@ export class RefreshTarget extends TargetedMechanic {
     }
 
     public evaluateTarget(source: Card, target: Unit) {
-        return 0.1 * (target.isExhausted() ? 1 : 0) * (target.getOwner() === source.getOwner() ? 1 : -1);
+        return (
+            0.1 *
+            (target.isExhausted() ? 1 : 0) *
+            (target.getOwner() === source.getOwner() ? 1 : -1)
+        );
     }
 }

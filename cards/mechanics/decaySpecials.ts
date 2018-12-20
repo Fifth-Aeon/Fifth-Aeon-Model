@@ -1,33 +1,31 @@
-import { Mechanic, TargetedMechanic, TriggeredMechanic } from '../../mechanic';
-import { Game } from '../../game';
-import { Targeter } from '../../targeter';
-import { Card, GameZone, CardType } from '../../card';
-import { Unit, UnitType } from '../../unit';
-
-
-import { remove, take, sumBy } from 'lodash';
-import { ParameterType } from '../parameters';
+import { remove, sumBy, take } from 'lodash';
 import { ChoiceHeuristic } from '../../ai/defaultAi';
+import { Card, CardType, GameZone } from '../../card';
+import { Game } from '../../game';
+import { Mechanic, TriggeredMechanic } from '../../mechanic';
+import { Unit, UnitType } from '../../unit';
+import { ParameterType } from '../parameters';
 
 export class TransformDamaged extends Mechanic {
     protected static id = 'TransformDamaged';
     protected static ParameterTypes = [
-        { name: 'Transform Unit', type: ParameterType.Unit },
+        { name: 'Transform Unit', type: ParameterType.Unit }
     ];
 
     private unitDesc: string;
     constructor(private transformation: () => Unit) {
         super();
-        let unit = transformation();
+        const unit = transformation();
         this.unitDesc = unit.getName();
     }
 
     public enter(card: Card, game: Game) {
-        let unit = card as Unit;
-        unit.getEvents().dealDamage.addEvent(this,  (params) => {
-            let target = params.target;
-            if (target.getUnitType() === UnitType.Player)
+        const unit = card as Unit;
+        unit.getEvents().dealDamage.addEvent(this, params => {
+            const target = params.target;
+            if (target.getUnitType() === UnitType.Player) {
                 return params;
+            }
             target.transform(this.transformation(), game);
             return params;
         });
@@ -44,7 +42,6 @@ export class TransformDamaged extends Mechanic {
     public evaluate() {
         return 6;
     }
-
 }
 
 export class AbominationConsume extends TriggeredMechanic {
@@ -52,21 +49,29 @@ export class AbominationConsume extends TriggeredMechanic {
     protected static validCardTypes = new Set([CardType.Unit, CardType.Item]);
 
     public onTrigger(card: Card, game: Game) {
-        let crypt = game.getCrypt(card.getOwner());
-        let valid = crypt.filter(cryptCard => cryptCard.isUnit());
-        let unit = card as Unit;
-        game.promptCardChoice(card.getOwner(), valid, 0, 2, (raised: Card[]) => {
-            raised.forEach(toRaise => {
-                let eaten = toRaise as Unit;
-                unit.buff(eaten.getDamage(), eaten.getMaxLife());
-                remove(crypt, eaten);
-            });
-        }, 'to combine',
-        ChoiceHeuristic.HighestStatsHeuristic);
+        const crypt = game.getCrypt(card.getOwner());
+        const valid = crypt.filter(cryptCard => cryptCard.isUnit());
+        const unit = card as Unit;
+        game.promptCardChoice(
+            card.getOwner(),
+            valid,
+            0,
+            2,
+            (raised: Card[]) => {
+                raised.forEach(toRaise => {
+                    const eaten = toRaise as Unit;
+                    unit.buff(eaten.getDamage(), eaten.getMaxLife());
+                    remove(crypt, eaten);
+                });
+            },
+            'to combine',
+            ChoiceHeuristic.HighestStatsHeuristic
+        );
     }
 
     private getValidPool(card: Card, game: Game): Unit[] {
-        return game.getCrypt(card.getOwner())
+        return game
+            .getCrypt(card.getOwner())
             .filter(cryptCard => cryptCard.isUnit()) as Unit[];
     }
 
@@ -75,9 +80,12 @@ export class AbominationConsume extends TriggeredMechanic {
     }
 
     public evaluateEffect(card: Card, game: Game) {
-        if (card.getLocation() === GameZone.Board)
+        if (card.getLocation() === GameZone.Board) {
             return 0;
-        let valid = this.getValidPool(card, game).sort((unitA, unitB) => unitB.getStats() - unitA.getStats());
-        return sumBy(take(valid, 2), (unit) => unit.getStats());
+        }
+        const valid = this.getValidPool(card, game).sort(
+            (unitA, unitB) => unitB.getStats() - unitA.getStats()
+        );
+        return sumBy(take(valid, 2), unit => unit.getStats());
     }
 }

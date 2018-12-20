@@ -1,12 +1,7 @@
-import { Mechanic, TargetedMechanic } from '../../mechanic';
+import { Card } from '../../card';
 import { Game } from '../../game';
-import { Targeter } from '../../targeter';
-import { Card, GameZone } from '../../card';
-import { Unit, UnitType } from '../../unit';
-import { Resource } from '../../resource';
-
-
-import { remove } from 'lodash';
+import { TargetedMechanic } from '../../mechanic';
+import { Unit } from '../../unit';
 import { ParameterType } from '../parameters';
 
 export class DrawCardsFromUnit extends TargetedMechanic {
@@ -19,11 +14,11 @@ export class DrawCardsFromUnit extends TargetedMechanic {
     }
 
     private getCards(target: Unit) {
-        return Math.floor((target.getStats()) / this.factor);
+        return Math.floor(target.getStats() / this.factor);
     }
 
     public enter(card: Card, game: Game) {
-        for (let target of this.targeter.getTargets(card, game, this)) {
+        for (const target of this.targeter.getTargets(card, game, this)) {
             game.getPlayer(card.getOwner()).drawCards(this.getCards(target));
         }
     }
@@ -33,15 +28,16 @@ export class DrawCardsFromUnit extends TargetedMechanic {
     }
 
     public getText(card: Card) {
-        return `Choose a friendly unit. Draw cards equal to its stats divided by ${this.factor}.`;
+        return `Choose a friendly unit. Draw cards equal to its stats divided by ${
+            this.factor
+        }.`;
     }
 }
-
 
 export class WebTarget extends TargetedMechanic {
     protected static id = 'WebTarget';
     public enter(card: Card, game: Game) {
-        for (let target of this.targeter.getTargets(card, game, this)) {
+        for (const target of this.targeter.getTargets(card, game, this)) {
             target.removeMechanic('flying', game);
             target.setExhausted(true);
         }
@@ -51,5 +47,3 @@ export class WebTarget extends TargetedMechanic {
         return `Exhaust ${this.targeter.getTextOrPronoun()}. It loses flying.`;
     }
 }
-
-

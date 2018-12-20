@@ -1,11 +1,9 @@
-import { Game } from '../../game';
-import { Targeter } from '../../targeter';
 import { Card } from '../../card';
-import { Unit, UnitType } from '../../unit';
-
-import { Trigger } from '../../trigger';
+import { Game } from '../../game';
 import { EvalContext } from '../../mechanic';
 import { removeFirstCapital } from '../../strings';
+import { Trigger } from '../../trigger';
+import { Unit } from '../../unit';
 
 export class DeathTrigger extends Trigger {
     protected static id = 'Death';
@@ -15,8 +13,8 @@ export class DeathTrigger extends Trigger {
     }
 
     public register(card: Card, game: Game) {
-        let unit = card as Unit;
-        unit.getEvents().death.addEvent(this,  (params) => {
+        const unit = card as Unit;
+        unit.getEvents().death.addEvent(this, params => {
             this.mechanic.setTriggeringUnit(unit);
             this.mechanic.onTrigger(card, game);
         });
@@ -27,8 +25,9 @@ export class DeathTrigger extends Trigger {
     }
 
     public evaluate(host: Card, game: Game, context: EvalContext) {
-        if (context === EvalContext.LethalRemoval)
+        if (context === EvalContext.LethalRemoval) {
             return 0.25;
+        }
         return 0.9;
     }
 }
@@ -41,7 +40,7 @@ export class SoulReap extends Trigger {
     }
 
     public register(card: Card, game: Game) {
-        game.getEvents().unitDies.addEvent(this, (params) => {
+        game.getEvents().unitDies.addEvent(this, params => {
             this.mechanic.setTriggeringUnit(params.deadUnit);
             this.mechanic.onTrigger(card, game);
             return params;
@@ -56,4 +55,3 @@ export class SoulReap extends Trigger {
         return 2;
     }
 }
-

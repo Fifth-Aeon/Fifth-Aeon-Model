@@ -8,16 +8,27 @@ import { Unit } from '../../unit';
 
 abstract class ShieldEnchantment extends Mechanic {
     protected static validCardTypes = new Set([CardType.Enchantment]);
-    protected abstract effect(enchantment: Enchantment, owner: Player, amount: number, source: Card): number;
+    protected abstract effect(
+        enchantment: Enchantment,
+        owner: Player,
+        amount: number,
+        source: Card
+    ): number;
 
     public enter(card: Card, game: Game) {
-        let enchantment = card as Enchantment;
-        game.getPlayer(enchantment.getOwner()).getEvents()
-            .takeDamage.addEvent(this,  (params) => {
-                let player = params.target as Player;
-                let amount = params.amount as number;
-                let source = params.source as Card;
-                params.amount = this.effect(enchantment, player, amount, source);
+        const enchantment = card as Enchantment;
+        game.getPlayer(enchantment.getOwner())
+            .getEvents()
+            .takeDamage.addEvent(this, params => {
+                const player = params.target as Player;
+                const amount = params.amount as number;
+                const source = params.source as Card;
+                params.amount = this.effect(
+                    enchantment,
+                    player,
+                    amount,
+                    source
+                );
                 return params;
             });
     }
@@ -49,8 +60,8 @@ export class ForceField extends ShieldEnchantment {
     protected static id = 'ForceField';
 
     protected effect(enchantment: Enchantment, owner: Player, amount: number) {
-        let power = enchantment.getPower();
-        let reduced = Math.max(0, amount - power);
+        const power = enchantment.getPower();
+        const reduced = Math.max(0, amount - power);
         enchantment.changePower(-amount);
         return reduced;
     }
@@ -67,7 +78,12 @@ export class ForceField extends ShieldEnchantment {
 export class DeathCounter extends ShieldEnchantment {
     protected static id = 'DeathCounter';
 
-    protected effect(enchantment: Enchantment, owner: Player, amount: number, source: Card) {
+    protected effect(
+        enchantment: Enchantment,
+        owner: Player,
+        amount: number,
+        source: Card
+    ) {
         if (source.getCardType() === CardType.Unit) {
             (source as Unit).kill(true);
             enchantment.changePower(-1);

@@ -3,7 +3,6 @@ import { Game } from '../../game';
 import { TriggeredMechanic } from '../../mechanic';
 import { ParameterType } from '../parameters';
 
-
 export class WinIfHighLife extends TriggeredMechanic {
     protected static id = 'WinIfHighLife';
     protected static ParameterTypes = [
@@ -15,8 +14,10 @@ export class WinIfHighLife extends TriggeredMechanic {
     }
 
     public onTrigger(card: Card, game: Game) {
-        let friendlyPlayer = game.getPlayer(card.getOwner());
-        let enemyPlayer = game.getPlayer(game.getOtherPlayerNumber(card.getOwner()));
+        const friendlyPlayer = game.getPlayer(card.getOwner());
+        const enemyPlayer = game.getPlayer(
+            game.getOtherPlayerNumber(card.getOwner())
+        );
 
         if (friendlyPlayer.getLife() >= this.threshold) {
             enemyPlayer.die();
@@ -28,12 +29,10 @@ export class WinIfHighLife extends TriggeredMechanic {
     }
 
     public evaluateEffect(card, game) {
-        let friendlyPlayer = game.getPlayer(card.getOwner());
+        const friendlyPlayer = game.getPlayer(card.getOwner());
         if (friendlyPlayer.getLife() >= this.threshold) {
             return Infinity;
         }
         return 0;
     }
 }
-
-

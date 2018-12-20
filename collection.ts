@@ -1,10 +1,7 @@
-import { GameFormat, standardFormat } from './gameFormat';
-import { cardList } from './cards/cardList';
+import { random, sample } from 'lodash';
 import { Card } from './card';
+import { cardList } from './cards/cardList';
 import { DeckList } from './deckList';
-
-import { ResourceTypeNames } from './resource';
-import { sample, sampleSize, remove, sum, random } from 'lodash';
 
 export interface SavedCollection {
     gold: number;
@@ -32,7 +29,7 @@ export class Collection {
     }
 
     public addWinReward(won: boolean) {
-        let reward: Rewards = {
+        const reward: Rewards = {
             packs: won ? 1 : 0,
             gold: random(0, 100)
         };
@@ -44,11 +41,11 @@ export class Collection {
         this.packs += reward.packs;
         this.gold += reward.gold;
         if (reward.cards) {
-            let cardsAwarded  = [];
+            const cardsAwarded = [];
             for (let i = 0; i < reward.cards; i++) {
-                let awarded = this.getRandomCardId();
-                cardsAwarded.push(awarded );
-                this.addCard(awarded , 1);
+                const awarded = this.getRandomCardId();
+                cardsAwarded.push(awarded);
+                this.addCard(awarded, 1);
             }
             return cardsAwarded;
         }
@@ -60,8 +57,8 @@ export class Collection {
     }
 
     private addBooster(pack: Booster) {
-        let cards = pack.open();
-        for (let cardId of cards) {
+        const cards = pack.open();
+        for (const cardId of cards) {
             this.addCard(cardId);
         }
         return cards;
@@ -80,8 +77,10 @@ export class Collection {
     }
 
     public openBooster() {
-        if (!this.canOpenBooster()) return;
-        let pack = new Booster();
+        if (!this.canOpenBooster()) {
+            return;
+        }
+        const pack = new Booster();
         this.packs--;
         return this.addBooster(pack);
     }
@@ -91,7 +90,9 @@ export class Collection {
     }
 
     public buyPack() {
-        if (!this.canBuyPack()) return;
+        if (!this.canBuyPack()) {
+            return;
+        }
         this.gold -= 100;
         this.packs += 1;
     }
@@ -105,7 +106,7 @@ export class Collection {
     }
 
     public clone() {
-        let clone = new DeckList();
+        const clone = new DeckList();
         clone.fromJson(this.toJson());
         return clone;
     }
@@ -125,36 +126,38 @@ export class Collection {
     }
 
     public fromJson(jsonStr: string) {
-        let data = JSON.parse(jsonStr) as SavedCollection;
+        const data = JSON.parse(jsonStr) as SavedCollection;
         this.fromSavable(data);
     }
 
     public addDeck(deck: DeckList) {
-        for (let record of deck.getRecordList()) {
+        for (const record of deck.getRecordList()) {
             this.addCard(record.card, record.number);
         }
     }
 
     public addCard(card: Card | string, number = 1) {
-        let id = typeof card === 'string' ? card : card.getDataId();
-        let currValue = this.records.get(id) || 0;
+        const id = typeof card === 'string' ? card : card.getDataId();
+        const currValue = this.records.get(id) || 0;
         this.records.set(id, currValue + number);
     }
 
     public addCardPlayset(card: Card | string) {
-        let id = typeof card === 'string' ? card : card.getDataId();
-        let currValue = this.records.get(id) || 0;
+        const id = typeof card === 'string' ? card : card.getDataId();
+        const currValue = this.records.get(id) || 0;
         this.records.set(id, Math.max(currValue, 4));
     }
 
     public removeCard(card: Card) {
-        if (!this.records.has(card.getDataId()))
+        if (!this.records.has(card.getDataId())) {
             return;
-        let currValue = this.records.get(card.getDataId());
-        if (currValue === 1)
+        }
+        const currValue = this.records.get(card.getDataId());
+        if (currValue === 1) {
             this.records.delete(card.getDataId());
-        else
+        } else {
             this.records.set(card.getDataId(), currValue - 1);
+        }
     }
 
     public removeGold(amount: number) {
@@ -166,41 +169,47 @@ export class Collection {
     }
 
     public getCards() {
-        let cards: Card[] = [];
-        for (let id of Array.from(this.records.keys())) {
-            let card = cardList.getCard(id);
-            if (card.getDataId() !== 'default')
+        const cards: Card[] = [];
+        for (const id of Array.from(this.records.keys())) {
+            const card = cardList.getCard(id);
+            if (card.getDataId() !== 'default') {
                 cards.push(card);
+            }
         }
         return cards;
     }
 
     public getRecordList() {
-        return Array.from(this.records.entries()).map(entry => {
-            return {
-                card: cardList.getCard(entry[0]),
-                number: entry[1]
-            };
-        }).sort((rec1, rec2) => rec1.card.getCost().getNumeric() - rec2.card.getCost().getNumeric());
+        return Array.from(this.records.entries())
+            .map(entry => {
+                return {
+                    card: cardList.getCard(entry[0]),
+                    number: entry[1]
+                };
+            })
+            .sort(
+                (rec1, rec2) =>
+                    rec1.card.getCost().getNumeric() -
+                    rec2.card.getCost().getNumeric()
+            );
     }
 
     private getRandomCardId() {
         const cardIds = cardList.getIds();
 
         return sample(cardIds);
-
     }
 }
 
 export class Booster {
-    constructor(private cardCount: number = 6) { }
+    constructor(private cardCount: number = 6) {}
 
     public open() {
         const openedCards = Array<string>(this.cardCount);
         const cardIds = cardList.getIds();
 
         for (let i = 0; i < this.cardCount; i++) {
-            let drawn = sample(cardIds);
+            const drawn = sample(cardIds);
             openedCards[i] = drawn;
         }
         return openedCards;

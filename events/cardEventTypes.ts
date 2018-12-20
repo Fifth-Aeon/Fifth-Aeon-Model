@@ -27,4 +27,3 @@ export interface KillUnitEvent {
     source: Card;
     target: Unit;
 }
-

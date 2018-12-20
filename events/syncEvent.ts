@@ -1,10 +1,19 @@
 import { CardPrototype } from '../card';
-import { Choice, GamePhase } from '../game';
+import { GamePhase } from '../game';
 import { Resource } from '../resource';
 
 export enum SyncEventType {
-    AttackToggled, TurnStart, PhaseChange, PlayResource,
-    PlayCard, Block, Draw, ChoiceMade, QueryResult, Ended, EnchantmentModified,
+    AttackToggled,
+    TurnStart,
+    PhaseChange,
+    PlayResource,
+    PlayCard,
+    Block,
+    Draw,
+    ChoiceMade,
+    QueryResult,
+    Ended,
+    EnchantmentModified,
     DamageDistributed
 }
 
@@ -13,38 +22,67 @@ interface GameSyncEventBase {
     readonly type: SyncEventType;
 }
 
-export type GameSyncEvent = SyncAttackToggled | SyncTurnStart | SyncPhaseChange |
-    SyncPlayResource | SyncPlayCard | SyncBlock | SyncDraw | SyncFatigue | SyncChoiceMade | SyncQueryResult |
-    SyncEnded | SyncEnchantmentModified | SyncDamageDistributed;
+export type GameSyncEvent =
+    | SyncAttackToggled
+    | SyncTurnStart
+    | SyncPhaseChange
+    | SyncPlayResource
+    | SyncPlayCard
+    | SyncBlock
+    | SyncDraw
+    | SyncFatigue
+    | SyncChoiceMade
+    | SyncQueryResult
+    | SyncEnded
+    | SyncEnchantmentModified
+    | SyncDamageDistributed;
 
-type SyncEventFromType<T extends SyncEventType> =
-    T extends SyncEventType.AttackToggled ? SyncAttackToggled :
-    T extends SyncEventType.Block ? SyncBlock :
-    T extends SyncEventType.ChoiceMade ? SyncChoiceMade :
-    T extends SyncEventType.DamageDistributed ? SyncDamageDistributed :
-    T extends SyncEventType.Draw ? SyncDraw | SyncFatigue :
-    T extends SyncEventType.EnchantmentModified ? SyncEnchantmentModified :
-    T extends SyncEventType.Ended ? SyncEnded :
-    T extends SyncEventType.PhaseChange ? SyncPhaseChange :
-    T extends SyncEventType.PlayCard ? SyncPlayCard :
-    T extends SyncEventType.PlayResource ? SyncPlayResource :
-    T extends SyncEventType.QueryResult ? SyncQueryResult :
-    SyncTurnStart;
+type SyncEventFromType<
+    T extends SyncEventType
+> = T extends SyncEventType.AttackToggled
+    ? SyncAttackToggled
+    : T extends SyncEventType.Block
+    ? SyncBlock
+    : T extends SyncEventType.ChoiceMade
+    ? SyncChoiceMade
+    : T extends SyncEventType.DamageDistributed
+    ? SyncDamageDistributed
+    : T extends SyncEventType.Draw
+    ? SyncDraw | SyncFatigue
+    : T extends SyncEventType.EnchantmentModified
+    ? SyncEnchantmentModified
+    : T extends SyncEventType.Ended
+    ? SyncEnded
+    : T extends SyncEventType.PhaseChange
+    ? SyncPhaseChange
+    : T extends SyncEventType.PlayCard
+    ? SyncPlayCard
+    : T extends SyncEventType.PlayResource
+    ? SyncPlayResource
+    : T extends SyncEventType.QueryResult
+    ? SyncQueryResult
+    : SyncTurnStart;
 
 export class SyncEventSystem {
-    private handlers = new Map<SyncEventType, (localPlayerNumber: number, event: GameSyncEvent) => void>();
+    private handlers = new Map<
+        SyncEventType,
+        (localPlayerNumber: number, event: GameSyncEvent) => void
+    >();
 
-    constructor(private parent: Object) { }
+    constructor(private parent: Object) {}
 
     public addHandler<T extends SyncEventType>(
         type: T,
-        handler: (localPlayerNumber: number, event: SyncEventFromType<T>) => void
+        handler: (
+            localPlayerNumber: number,
+            event: SyncEventFromType<T>
+        ) => void
     ) {
         this.handlers.set(type, handler.bind(this.parent));
     }
 
     public handleEvent(localPlayerNumber: number, event: GameSyncEvent) {
-        let handler = this.handlers.get(event.type);
+        const handler = this.handlers.get(event.type);
         return handler ? handler(localPlayerNumber, event) : false;
     }
 }
@@ -129,4 +167,3 @@ export interface SyncDamageDistributed extends GameSyncEventBase {
     readonly attackerID: string;
     readonly order: string[];
 }
-

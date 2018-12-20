@@ -1,8 +1,8 @@
-import { Targeter } from '../../targeter';
-import { AllUnits } from './basicTargeter';
 import { Card } from '../../card';
-import { Unit } from '../../unit';
 import { Game } from '../../game';
+import { Targeter } from '../../targeter';
+import { Unit } from '../../unit';
+import { AllUnits } from './basicTargeter';
 
 export class LifeLessUnit extends Targeter {
     protected static id = 'LifeLessUnit';
@@ -10,7 +10,10 @@ export class LifeLessUnit extends Targeter {
         super();
     }
     public getValidTargets(card: Card, game: Game) {
-        return game.getBoard().getAllUnits().filter(unit => unit.getLife() <= this.life);
+        return game
+            .getBoard()
+            .getAllUnits()
+            .filter(unit => unit.getLife() <= this.life);
     }
     public getText() {
         return 'target unit';
@@ -23,7 +26,9 @@ export class LifeLessUnits extends AllUnits {
         super();
     }
     public getTargets(card: Card, game: Game): Array<Unit> {
-        this.lastTargets = game.getBoard().getAllUnits()
+        this.lastTargets = game
+            .getBoard()
+            .getAllUnits()
             .filter(unit => unit.getLife() <= this.life);
         return this.lastTargets;
     }

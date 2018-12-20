@@ -5,8 +5,11 @@ import { Rewards } from './collection';
 import { DeckList, SavedDeck } from './deckList';
 import { standardFormat } from './gameFormat';
 
-
-enum DraftState { Drafting, Playing, Ended }
+enum DraftState {
+    Drafting,
+    Playing,
+    Ended
+}
 
 export interface SavedDraft {
     state: DraftState;
@@ -47,13 +50,17 @@ export class Draft {
      * @memberof Draft
      */
     public constructor(saved?: SavedDraft) {
-        if (!saved) return;
+        if (!saved) {
+            return;
+        }
         this.deck = new DeckList(Draft.format, saved.deck);
         this.wins = saved.wins;
         this.losses = saved.losses;
         this.state = saved.state;
         this.pickNumber = saved.pickNumber;
-        this.choices = new Set(Array.from(saved.choices, (id => cardList.getCard(id))));
+        this.choices = new Set(
+            Array.from(saved.choices, id => cardList.getCard(id))
+        );
     }
 
     /**
@@ -90,8 +97,11 @@ export class Draft {
      * @memberof Draft
      */
     getChoices(): Set<Card> {
-        if (!this.choices || this.choices.size === 0)
-            this.choices = new Set(sampleSize(cardList.getCards(), Draft.CardsPerPick));
+        if (!this.choices || this.choices.size === 0) {
+            this.choices = new Set(
+                sampleSize(cardList.getCards(), Draft.CardsPerPick)
+            );
+        }
         return this.choices;
     }
 
@@ -102,8 +112,9 @@ export class Draft {
      * @memberof Draft
      */
     pickCard(picked: Card) {
-        if (!this.choices.has(picked))
+        if (!this.choices.has(picked)) {
             return;
+        }
         this.deck.addCard(picked);
         this.pickNumber++;
         this.choices = new Set();
@@ -158,7 +169,7 @@ export class Draft {
             packs = 4;
             gold *= this.wins;
         }
-        let rewards: Rewards = {
+        const rewards: Rewards = {
             packs: packs,
             gold: gold
         };

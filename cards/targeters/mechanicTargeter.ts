@@ -8,7 +8,10 @@ export class UnitWithAbility extends Targeter {
         super();
     }
     public getValidTargets(card: Card, game: Game) {
-        return game.getBoard().getAllUnits().filter(unit => unit.hasMechanicWithId(this.abilityId));
+        return game
+            .getBoard()
+            .getAllUnits()
+            .filter(unit => unit.hasMechanicWithId(this.abilityId));
     }
     public getText() {
         return `target ${this.desc} unit`;

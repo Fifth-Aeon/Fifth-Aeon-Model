@@ -11,8 +11,8 @@ export class LethalStrike extends Trigger {
     }
 
     public register(card: Card, game: Game) {
-        let unit = card as Unit;
-        unit.getEvents().killUnit.addEvent(this,  (params) => {
+        const unit = card as Unit;
+        unit.getEvents().killUnit.addEvent(this, params => {
             this.mechanic.setTriggeringUnit(params.target);
             this.mechanic.onTrigger(card, game);
         });

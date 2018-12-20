@@ -3,7 +3,6 @@ import { Game } from '../../game';
 import { EvalContext, Mechanic, TargetedMechanic } from '../../mechanic';
 import { Unit } from '../../unit';
 
-
 export class CannotAttack extends Mechanic {
     protected static id = 'CannotAttack';
     protected static validCardTypes = new Set([CardType.Unit, CardType.Item]);
@@ -58,6 +57,10 @@ export class ImprisonTarget extends TargetedMechanic {
     }
 
     public evaluateTarget(source: Card, unit: Unit, game: Game) {
-        return unit.evaluate(game, EvalContext.NonlethalRemoval) * 0.9 * (unit.getOwner() === source.getOwner() ? -1 : 1);
+        return (
+            unit.evaluate(game, EvalContext.NonlethalRemoval) *
+            0.9 *
+            (unit.getOwner() === source.getOwner() ? -1 : 1)
+        );
     }
 }

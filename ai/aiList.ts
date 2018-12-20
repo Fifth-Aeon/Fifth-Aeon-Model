@@ -3,7 +3,7 @@ import { DeckList } from '../deckList';
 import { AI } from './ai';
 
 export interface AIConstructor {
-    new(playerNumber: number, game: ClientGame, deck: DeckList): AI;
+    new (playerNumber: number, game: ClientGame, deck: DeckList): AI;
 }
 
 class AIList {
@@ -22,7 +22,9 @@ class AIList {
     }
 
     public getConstructorsByName(names: string[]): AIConstructor[] {
-        return names.map(name => this.constructors.find(cstr => cstr.name === name));
+        return names.map(name =>
+            this.constructors.find(cstr => cstr.name === name)
+        );
     }
 }
 

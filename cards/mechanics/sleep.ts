@@ -1,11 +1,7 @@
-import { Mechanic, TargetedMechanic, EvalContext } from '../../mechanic';
-import { Game } from '../../game';
-import { Targeter } from '../../targeter';
 import { Card, CardType } from '../../card';
-import { Unit, UnitType } from '../../unit';
-
-
-
+import { Game } from '../../game';
+import { EvalContext, Mechanic, TargetedMechanic } from '../../mechanic';
+import { Unit } from '../../unit';
 
 export class Sleeping extends Mechanic {
     protected static id = 'Sleeping';
@@ -15,7 +11,7 @@ export class Sleeping extends Mechanic {
         super();
     }
     public enter(card: Card, game: Game) {
-        let unit = card as Unit;
+        const unit = card as Unit;
         unit.setExhausted(true);
         game.getEvents().startOfTurn.addEvent(this, params => {
             if (params.player === unit.getOwner()) {
@@ -42,10 +38,11 @@ export class Sleeping extends Mechanic {
     }
 
     public getText(card: Card) {
-        if (this.turns === 1)
+        if (this.turns === 1) {
             return 'Sleeping.';
-        else
+        } else {
             return `Sleeping (${this.turns}).`;
+        }
     }
 
     public evaluate() {
@@ -60,16 +57,22 @@ export class SleepTarget extends TargetedMechanic {
     }
 
     public onTrigger(card: Card, game: Game) {
-        for (let target of this.targeter.getTargets(card, game, this)) {
+        for (const target of this.targeter.getTargets(card, game, this)) {
             target.addMechanic(new Sleeping(this.turns), game);
         }
     }
 
     public getText(card: Card) {
-        return `Put ${this.targeter.getTextOrPronoun()} to sleep for ${this.turns === 1 ? 'a turn' : this.turns + ' turns'}.`;
+        return `Put ${this.targeter.getTextOrPronoun()} to sleep for ${
+            this.turns === 1 ? 'a turn' : this.turns + ' turns'
+        }.`;
     }
 
     public evaluateTarget(source: Card, target: Unit, game: Game) {
-        return target.evaluate(game, EvalContext.NonlethalRemoval) * 0.5 * (target.getOwner() === source.getOwner() ? -1 : 1);
+        return (
+            target.evaluate(game, EvalContext.NonlethalRemoval) *
+            0.5 *
+            (target.getOwner() === source.getOwner() ? -1 : 1)
+        );
     }
 }

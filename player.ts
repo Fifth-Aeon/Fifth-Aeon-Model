@@ -1,13 +1,12 @@
 import { remove } from 'lodash';
 import { ChoiceHeuristic } from './ai/defaultAi';
 import { Card, GameZone } from './card';
-import { ClientGame } from './clientGame';
 import { PlayerEventSystem } from './events/eventSystems';
+import { SyncEventType } from './events/syncEvent';
 import { Game } from './game';
 import { Resource } from './resource';
-import { Unit, UnitType } from './unit';
 import { ServerGame } from './serverGame';
-import { SyncEventType, SyncFatigue } from './events/syncEvent';
+import { Unit, UnitType } from './unit';
 
 export class Player extends Unit {
     private hand: Array<Card>;
@@ -25,8 +24,24 @@ export class Player extends Unit {
 
     private expectedDraws = 0;
 
-    constructor(private parent: Game, cards: Array<Card>, private playerNumber: number, initResource: Resource, life: number) {
-        super('Player', 'Player', 'hearts.png', UnitType.Player, new Resource(0), null, 0, life, []);
+    constructor(
+        private parent: Game,
+        cards: Array<Card>,
+        private playerNumber: number,
+        initResource: Resource,
+        life: number
+    ) {
+        super(
+            'Player',
+            'Player',
+            'hearts.png',
+            UnitType.Player,
+            new Resource(0),
+            null,
+            0,
+            life,
+            []
+        );
         this.deck = cards;
         this.deck.forEach(card => card.setOwner(playerNumber));
         this.hand = [];
@@ -104,20 +119,24 @@ export class Player extends Unit {
     }
 
     public queryCards(query: string, cards: Card[]): Card | null {
-        let index = parseInt(query, 10);
+        const index = parseInt(query, 10);
         if (!isNaN(index)) {
-            if (cards[index])
+            if (cards[index]) {
                 return cards[index];
+            }
         }
-        return cards.find(card => {
-            return card.getName().includes(query);
-        }) || null;
+        return (
+            cards.find(card => {
+                return card.getName().includes(query);
+            }) || null
+        );
     }
 
     public playCard(game: Game, card: Card, free: boolean = false) {
         this.removeCardFromHand(card);
-        if (!free)
+        if (!free) {
             this.reduceResource(card.getCost());
+        }
         card.play(game);
     }
 
@@ -125,13 +144,12 @@ export class Player extends Unit {
         this.events.death.trigger({});
     }
 
-
     public getDeck() {
         return this.deck;
     }
 
     public discardExtra(game: Game) {
-        let num = this.hand.length - this.softHandLimit;
+        const num = this.hand.length - this.softHandLimit;
         if (num > 0) {
             this.discard(game, num, () => game.nextTurn());
         } else {
@@ -140,59 +158,92 @@ export class Player extends Unit {
     }
 
     public replace(game: Game, min: number, max: number) {
-        game.promptCardChoice(this.getPlayerNumber(), this.hand, min, max, (cards: Card[]) => {
-            cards.forEach(card => {
-                this.removeCardFromHand(card);
-                this.addToDeck(card);
-                this.drawCard();
-            });
-        }, 'to replace', ChoiceHeuristic.ReplaceHeuristic);
+        game.promptCardChoice(
+            this.getPlayerNumber(),
+            this.hand,
+            min,
+            max,
+            (cards: Card[]) => {
+                cards.forEach(card => {
+                    this.removeCardFromHand(card);
+                    this.addToDeck(card);
+                    this.drawCard();
+                });
+            },
+            'to replace',
+            ChoiceHeuristic.ReplaceHeuristic
+        );
     }
 
-    public discard(game: Game, count: number = 1, cb?: (cards: Card[]) => void) {
+    public discard(
+        game: Game,
+        count: number = 1,
+        cb?: (cards: Card[]) => void
+    ) {
         if (count >= this.hand.length) {
             this.hand = [];
             return;
         }
-        game.promptCardChoice(this.getPlayerNumber(), this.hand, count, count, (cards: Card[]) => {
-            cards.forEach(card => {
-                this.removeCardFromHand(card);
-                game.addToCrypt(card);
-            });
-            if (cb) cb(cards);
-        }, 'to discard', ChoiceHeuristic.DiscardHeuristic);
+        game.promptCardChoice(
+            this.getPlayerNumber(),
+            this.hand,
+            count,
+            count,
+            (cards: Card[]) => {
+                cards.forEach(card => {
+                    this.removeCardFromHand(card);
+                    game.addToCrypt(card);
+                });
+                if (cb) {
+                    cb(cards);
+                }
+            },
+            'to discard',
+            ChoiceHeuristic.DiscardHeuristic
+        );
     }
 
     public searchForCard(game: Game, count: number) {
         game.queryCards(
             (queried: ServerGame) => {
-                return queried.shuffle(queried.getPlayer(this.playerNumber).getDeck());
+                return queried.shuffle(
+                    queried.getPlayer(this.playerNumber).getDeck()
+                );
             },
             (deck: Card[]) => {
-                game.promptCardChoice(this.playerNumber, deck, 0, count, (cards: Card[]) => {
-                    cards.forEach(card => {
-                        this.drawGeneratedCard(card);
-                        deck.splice(deck.indexOf(card), 1);
-                    });
-                }, 'to draw', ChoiceHeuristic.DrawHeuristic);
-            });
+                game.promptCardChoice(
+                    this.playerNumber,
+                    deck,
+                    0,
+                    count,
+                    (cards: Card[]) => {
+                        cards.forEach(card => {
+                            this.drawGeneratedCard(card);
+                            deck.splice(deck.indexOf(card), 1);
+                        });
+                    },
+                    'to draw',
+                    ChoiceHeuristic.DrawHeuristic
+                );
+            }
+        );
     }
 
     public fatigue() {
         this.takeDamage(Math.pow(2, this.fatigueLevel), this);
         this.fatigueLevel += 1;
 
-        let parent = this.parent;
-        if (!(parent instanceof ServerGame))
+        const parent = this.parent;
+        if (!(parent instanceof ServerGame)) {
             return;
+        }
 
-        parent.addGameEvent( {
+        parent.addGameEvent({
             type: SyncEventType.Draw,
             fatigue: true,
-            playerNo: this.playerNumber,
+            playerNo: this.playerNumber
         });
     }
-
 
     public getExpectedDraws() {
         return this.expectedDraws;
@@ -211,7 +262,7 @@ export class Player extends Unit {
             this.expectedDraws++;
             return;
         }
-        let drawn = this.deck[0];
+        const drawn = this.deck[0];
         remove(this.deck, drawn);
         if (!drawn) {
             this.fatigue();
@@ -230,7 +281,7 @@ export class Player extends Unit {
             fatigue: false,
             playerNo: this.playerNumber,
             card: drawn.getPrototype(),
-            discarded: shouldDiscard,
+            discarded: shouldDiscard
         });
     }
 
