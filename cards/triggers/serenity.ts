@@ -11,6 +11,9 @@ export class Serenity extends Trigger {
 
     public register(card: Card, game: Game) {
         game.getEvents().endOfTurn.addEvent(this, params => {
+            if (!this.mechanic) {
+                throw new Error('Attempting to activate an unattached trigger.');
+            }
             if (
                 game.getCurrentPlayer().getPlayerNumber() === card.getOwner() &&
                 game.getPhase() === GamePhase.Play1

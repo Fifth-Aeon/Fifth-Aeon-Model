@@ -4,7 +4,7 @@ import { EvalContext, TriggeredMechanic } from './mechanic';
 
 export abstract class Trigger {
     protected static id: string;
-    protected mechanic: TriggeredMechanic;
+    protected mechanic?: TriggeredMechanic;
     static getId() {
         return this.id;
     }

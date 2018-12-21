@@ -77,7 +77,7 @@ export class Unit extends Permanent {
     // Actions
     protected exhausted: boolean;
     protected ready: boolean;
-    protected attacking: boolean;
+    protected attacking = false;
     protected blockedUnitId: string | null;
     protected attackDisabled: boolean;
     protected blockDisabled: boolean;
@@ -155,12 +155,12 @@ export class Unit extends Permanent {
         if (this.immunities.has(mechanic.getId())) {
             return;
         }
-        if (
-            mechanic.getId() !== null &&
-            this.hasMechanicWithId(mechanic.getId())
-        ) {
-            this.hasMechanicWithId(mechanic.getId()).stack();
-            return;
+        if (mechanic.getId() !== null) {
+            const existingCopy = this.hasMechanicWithId(mechanic.getId());
+            if (existingCopy) {
+                existingCopy.stack();
+                return;
+            }
         }
         this.mechanics.push(mechanic);
         mechanic.attach(this);
@@ -209,7 +209,7 @@ export class Unit extends Permanent {
         this.exhausted = exhausted;
     }
 
-    public setBlocking(blockedId: string) {
+    public setBlocking(blockedId: string | null) {
         this.blockedUnitId = blockedId;
     }
 
@@ -292,7 +292,7 @@ export class Unit extends Permanent {
         this.exhausted = false;
         this.location = GameZone.Board;
         this.life = this.maxLife;
-        game.playPermanent(this, this.owner);
+        game.playPermanent(this);
     }
 
     public refresh() {
@@ -314,7 +314,7 @@ export class Unit extends Permanent {
         return `${this.name} (${this.cost}) - (${this.damage}/${this.life})`;
     }
 
-    public fight(target: Unit, damage: number = null) {
+    public fight(target: Unit, damage: number | null = null) {
         // Trigger an attack event
         const eventParams = {
             damage: this.damage,

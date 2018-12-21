@@ -7,7 +7,6 @@ import { Unit } from './unit';
  * A simple board where each side can place up to a fixed number of units without any positioning.
  *
  * @export
- * @class Board
  */
 export class Board {
     private spaces: Permanent[][];

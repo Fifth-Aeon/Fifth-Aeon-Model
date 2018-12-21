@@ -29,17 +29,15 @@ export interface CardPrototype {
 export class Card {
     public name: string;
     protected id: string;
-    protected set: string;
-    protected rarity: number;
     protected mechanics: Mechanic[] = [];
 
     protected cost: Resource;
     protected unit = false;
-    protected owner: number;
+    protected owner?: number;
     protected dataId: string;
     protected imageUrl: string;
     protected location: GameZone;
-    protected text: string = null;
+    protected text?: string ;
     protected events = new CardEventSystem();
 
     protected targeter: Targeter;
@@ -115,6 +113,9 @@ export class Card {
     }
 
     public isPlayable(game: Game): boolean {
+        if (!this.owner) {
+            throw new Error('Card owner unassinged');
+        }
         const owner = game.getPlayer(this.owner);
         return (
             game.isPlayerTurn(this.owner) &&
@@ -128,6 +129,9 @@ export class Card {
     }
 
     public getPrototype(): CardPrototype {
+        if (!this.owner) {
+            throw new Error('Card owner unassinged');
+        }
         return {
             id: this.getId(),
             data: this.getDataId(),
@@ -196,7 +200,10 @@ export class Card {
         this.id = id;
     }
 
-    public getOwner() {
+    public getOwner(): number {
+        if (!this.owner) {
+            throw new Error('Card has no owner');
+        }
         return this.owner;
     }
 

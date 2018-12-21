@@ -27,6 +27,9 @@ export class Affinity extends Trigger {
     public register(card: Card, game: Game) {
         const mutatingUnit = card as Unit;
         game.getEvents().unitEntersPlay.addEvent(this, params => {
+            if (!this.mechanic) {
+                throw new Error('Attempting to activate an unattached trigger.');
+            }
             const enteringUnit = params.enteringUnit;
             if (
                 enteringUnit !== mutatingUnit &&

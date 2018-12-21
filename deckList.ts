@@ -34,6 +34,9 @@ export class DeckList {
         });
         for (let i = 0; i < this.format.minDeckSize; i++) {
             const card = sample(validCards);
+            if (!card) {
+                throw new Error('Not enough cards to form random deck');
+            }
             this.addCard(card);
             if (
                 this.records.get(card.getDataId()) ===
@@ -82,7 +85,7 @@ export class DeckList {
         );
     }
 
-    public toJson(spacing: number = null) {
+    public toJson(spacing?: number) {
         return JSON.stringify(this.getSavable(), null, spacing);
     }
 
@@ -162,7 +165,7 @@ export class DeckList {
         if (!this.records.has(card.getDataId())) {
             return;
         }
-        const currValue = this.records.get(card.getDataId());
+        const currValue = this.records.get(card.getDataId()) || 0;
         if (currValue === 1) {
             this.records.delete(card.getDataId());
         } else {
@@ -172,10 +175,14 @@ export class DeckList {
     }
 
     public toDeck(): CardFactory[] {
-        const deck = [];
+        const deck: CardFactory[]  = [];
         for (const entry of Array.from(this.records.entries())) {
             for (let i = 0; i < entry[1]; i++) {
-                deck.push(cardList.getCardFactory(entry[0]));
+                const factory = cardList.getCardFactory(entry[0]);
+                if (!factory) {
+                    throw new Error(`No card factory found for ${entry}`);
+                }
+                deck.push(factory);
             }
         }
         return deck;

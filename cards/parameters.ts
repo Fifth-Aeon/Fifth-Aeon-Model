@@ -27,7 +27,7 @@ const parseInteger = (data: ParameterData, min: number, max: number) => {
     return Math.min(max, Math.max(min, Math.round(data)));
 };
 
-const getDefaultCard = (cards: CardList, expectedType: CardType) =>
+const getDefaultCard = (cards: CardList, expectedType?: CardType) =>
     cards
         .getCards()
         .find(
@@ -37,7 +37,7 @@ const getDefaultCard = (cards: CardList, expectedType: CardType) =>
 const loadCard = (
     data: ParameterData,
     cards: CardList,
-    expectedType: CardType
+    expectedType?: CardType
 ) => {
     let result: Card;
     if (typeof data !== 'string') {
@@ -55,7 +55,17 @@ const parseResourceType = (data: ParameterData): string => {
     if (typeof data !== 'string') {
         return ResourceType.Synthesis;
     }
-    return ResourceType[data];
+    switch (data) {
+        case ResourceType.Decay:
+            return ResourceType.Decay;
+        case ResourceType.Growth:
+            return ResourceType.Growth;
+        case ResourceType.Renewal:
+            return ResourceType.Renewal;
+        case ResourceType.Synthesis:
+            return ResourceType.Synthesis;
+    }
+    throw new Error();
 };
 
 const loadResource = (data: ParameterData) => {
@@ -80,7 +90,7 @@ const buildParameter = (
         case ParameterType.ResourceType:
             return parseResourceType(data);
         case ParameterType.Card:
-            return loadCard(data, cards, null);
+            return loadCard(data, cards);
         case ParameterType.Spell:
             return loadCard(data, cards, CardType.Spell);
         case ParameterType.Unit:

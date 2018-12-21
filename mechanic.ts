@@ -7,6 +7,7 @@ import { Game } from './game';
 import { Targeter } from './targeter';
 import { Trigger } from './trigger';
 import { Unit } from './unit';
+import { Untargeted } from './cards/targeters/basicTargeter';
 
 export enum EvalContext {
     LethalRemoval,
@@ -31,7 +32,7 @@ export abstract class Mechanic {
         type: ParameterType;
     }[] = [];
     protected static id: string;
-    private triggeringUnit: Unit;
+    private triggeringUnit?: Unit;
 
     static getMultiplier(vals: Array<number | EvalOperator>) {
         const multipliers = (vals.filter(
@@ -73,7 +74,7 @@ export abstract class Mechanic {
         return this.validCardTypes;
     }
 
-    abstract getText(parent: Card, game: Game): string;
+    abstract getText(parent: Card, game?: Game): string;
     abstract evaluate(
         card: Card,
         game: Game,
@@ -154,7 +155,7 @@ export abstract class TriggeredMechanic extends Mechanic {
 }
 
 export abstract class TargetedMechanic extends TriggeredMechanic {
-    protected targeter: Targeter;
+    protected targeter: Targeter = new Untargeted();
 
     public attach(parent: Card) {
         super.attach(parent);

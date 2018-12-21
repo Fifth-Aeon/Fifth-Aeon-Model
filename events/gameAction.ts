@@ -24,12 +24,16 @@ export class GameActionSystem {
         type: T,
         handler: ((action: GameActionFromType<T>) => boolean)
     ) {
-        this.handlers.set(type, handler.bind(this.parent));
+        this.handlers.set(type, handler.bind(this.parent) as (
+            act: GameAction
+        ) => boolean);
     }
 
     public handleAction(action: GameAction) {
         const handler = this.handlers.get(action.type);
-        if (!handler) { return false; }
+        if (!handler) {
+            return false;
+        }
         return handler(action);
     }
 }
@@ -99,7 +103,7 @@ export interface ToggleAttackAction extends GameActionBase {
 export interface DeclareBlockerAction extends GameActionBase {
     readonly type: GameActionType.DeclareBlocker;
     readonly blockerId: string;
-    readonly blockedId: string;
+    readonly blockedId: string | null;
 }
 
 export interface DistributeDamageAction extends GameActionBase {

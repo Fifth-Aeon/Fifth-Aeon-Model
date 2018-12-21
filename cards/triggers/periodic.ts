@@ -11,6 +11,9 @@ export class Dusk extends Trigger {
 
     public register(card: Card, game: Game) {
         game.getEvents().endOfTurn.addEvent(this, params => {
+            if (!this.mechanic) {
+                throw new Error('Attempting to activate an unattached trigger.');
+            }
             if (game.getCurrentPlayer().getPlayerNumber() === card.getOwner()) {
                 this.mechanic.onTrigger(card, game);
             }
@@ -34,7 +37,13 @@ export class Dawn extends Trigger {
     }
 
     public register(card: Card, game: Game) {
+        if (!this.mechanic) {
+            throw new Error('Attempting to activate an unattached trigger.');
+        }
         game.getEvents().startOfTurn.addEvent(this, params => {
+            if (!this.mechanic) {
+                throw new Error('Attempting to activate an unattached trigger.');
+            }
             if (game.getCurrentPlayer().getPlayerNumber() === card.getOwner()) {
                 this.mechanic.onTrigger(card, game);
             }
@@ -59,6 +68,9 @@ export class Cycle extends Trigger {
 
     public register(card: Card, game: Game) {
         game.getEvents().startOfTurn.addEvent(this, params => {
+            if (!this.mechanic) {
+                throw new Error('Attempting to activate an unattached trigger.');
+            }
             this.mechanic.onTrigger(card, game);
         });
     }

@@ -32,18 +32,18 @@ import { Unit } from './unit';
 export class ClientGame extends Game {
     private syncSystem = new SyncEventSystem(this);
     // The player number of the player contorting this game
-    private owningPlayer: number;
+    private owningPlayer = 0;
     private nextExpectedEvent = 0;
-    protected onQueryResult: (cards: Card[]) => void;
-    protected queryData: Card[] = null;
+    protected queryData: Card[] | null = null;
 
-    public onSync: () => void;
+    protected onQueryResult: (cards: Card[]) => void = () => null;
+    public onSync: () => void = () => null;
 
     constructor(
         name: string,
         protected runGameAction: GameActionRunner,
         private animator: Animator,
-        log: Log = null,
+        log?: Log,
         format: GameFormat = standardFormat
     ) {
         super(name, format);
@@ -86,7 +86,11 @@ export class ClientGame extends Game {
     // Game Actions ----------------------------------------------------------
 
     /** Checks if the player controlling this game can play a given card with given targets */
-    public canPlayCard(card: Card, targets: Unit[] = [], host: Unit = null) {
+    public canPlayCard(
+        card: Card,
+        targets: Unit[] = [],
+        host: Unit | null = null
+    ): boolean {
         if (!this.isPlayerTurn(this.owningPlayer)) {
             return false;
         }
@@ -99,6 +103,9 @@ export class ClientGame extends Game {
         }
         // Item Host
         if (card.getCardType() === CardType.Item) {
+            if (!host) {
+                throw new Error('No host supplied for item');
+            }
             const item = card as Item;
             item.getHostTargeter().setTargets([host]);
             if (!item.getHostTargeter().targetsAreValid(card, this)) {
@@ -108,7 +115,11 @@ export class ClientGame extends Game {
         return true;
     }
 
-    public playCardExtern(card: Card, targets: Unit[] = [], host: Unit = null) {
+    public playCardExtern(
+        card: Card,
+        targets: Unit[] = [],
+        host: Unit | null = null
+    ): boolean {
         if (!this.canPlayCard(card, targets, host)) {
             return false;
         }
@@ -118,6 +129,9 @@ export class ClientGame extends Game {
             if (!host) {
                 console.error('Item', card.getName(), 'requires a host.');
             }
+            if (!host) {
+                throw new Error('No host supplied for item');
+            }
             (card as Item).getHostTargeter().setTargets([host]);
         }
         this.runGameAction(GameActionType.PlayCard, {
@@ -125,12 +139,16 @@ export class ClientGame extends Game {
             player: this.owningPlayer,
             id: card.getId(),
             targetIds: targetIds,
-            hostId: host ? host.getId() : null
+            hostId: host ? host.getId() : undefined
         });
         this.playCard(this.players[card.getOwner()], card);
+        return true;
     }
 
     public setAttackOrder(attacker: Unit, order: Unit[]) {
+        if (!this.attackDamageOrder) {
+            return;
+        }
         this.attackDamageOrder.set(attacker.getId(), order);
         this.runGameAction(GameActionType.DistributeDamage, {
             type: GameActionType.DistributeDamage,
@@ -140,14 +158,14 @@ export class ClientGame extends Game {
         });
     }
 
-    public canModifyEnchantment(enchantment: Enchantment) {
+    public canModifyEnchantment(enchantment: Enchantment): boolean {
         return enchantment.canChangePower(
-            this.getPlayer[this.owningPlayer],
+            this.getPlayer(this.owningPlayer),
             this
         );
     }
 
-    public modifyEnchantment(player: Player, enchantment: Enchantment) {
+    public modifyEnchantment(player: Player, enchantment: Enchantment): boolean {
         if (!enchantment.canChangePower(player, this)) {
             return false;
         }
@@ -157,9 +175,10 @@ export class ClientGame extends Game {
             player: this.owningPlayer,
             enchantmentId: enchantment.getId()
         });
+        return true;
     }
 
-    public canAttackWith(unit: Unit) {
+    public canAttackWith(unit: Unit): boolean {
         return (
             this.isPlayerTurn(this.owningPlayer) &&
             this.phase === GamePhase.Play1 &&
@@ -167,7 +186,7 @@ export class ClientGame extends Game {
         );
     }
 
-    public declareAttacker(unit: Unit) {
+    public declareAttacker(unit: Unit): boolean {
         if (!this.canAttackWith(unit)) {
             return false;
         }
@@ -177,10 +196,11 @@ export class ClientGame extends Game {
             player: this.owningPlayer,
             unitId: unit.getId()
         });
+        return true;
     }
 
-    public declareBlocker(blocker: Unit, attacker: Unit | null) {
-        if (!blocker.canBlockTarget(attacker)) {
+    public declareBlocker(blocker: Unit, attacker: Unit | null): boolean {
+        if (attacker && !blocker.canBlockTarget(attacker)) {
             return false;
         }
         const attackerId = attacker ? attacker.getId() : null;
@@ -191,18 +211,17 @@ export class ClientGame extends Game {
             blockerId: blocker.getId(),
             blockedId: attackerId
         });
+        return true;
     }
 
-    public canMakeChoice(player: number, cards: Card[]) {
-        if (this.currentChoices[player] === null) {
+    public canMakeChoice(player: number, cards: Card[]): boolean {
+        const choices = this.currentChoices[player];
+        if (choices === null) {
             console.error('Reject choice from', player);
             return false;
         }
-        const min = Math.min(
-            this.currentChoices[player].validCards.size,
-            this.currentChoices[player].min
-        );
-        const max = this.currentChoices[player].max;
+        const min = Math.min(choices.validCards.size, choices.min);
+        const max = choices.max;
         if (cards.length > max || cards.length < min) {
             console.error(
                 `Reject choice. Wanted between ${min} and ${max} cards but got ${
@@ -211,22 +230,18 @@ export class ClientGame extends Game {
             );
             return false;
         }
-        if (
-            !cards.every(card =>
-                this.currentChoices[player].validCards.has(card)
-            )
-        ) {
+        if (!cards.every(card => choices.validCards.has(card))) {
             console.error(
                 `Reject choice. Included invalid options.`,
                 cards,
-                this.currentChoices[player].validCards
+                choices.validCards
             );
             return false;
         }
         return true;
     }
 
-    public makeChoice(player: number, cards: Card[]) {
+    public makeChoice(player: number, cards: Card[]): boolean {
         if (!this.canMakeChoice(player, cards)) {
             return false;
         }
@@ -236,6 +251,7 @@ export class ClientGame extends Game {
             player: this.owningPlayer,
             choice: cards.map(card => card.getId())
         });
+        return true;
     }
 
     public canPlayResource(): boolean {
@@ -245,17 +261,18 @@ export class ClientGame extends Game {
         );
     }
 
-    public playResource(type: string) {
-        if (!this.canPlayResource()) {
+    public playResource(type: string): boolean {
+        const res = this.format.basicResources.get(type);
+        if (!this.canPlayResource() || !res) {
             return false;
         }
-        const res = this.format.basicResources.get(type);
         this.players[this.owningPlayer].playResource(res);
         this.runGameAction(GameActionType.PlayResource, {
             type: GameActionType.PlayResource,
             player: this.owningPlayer,
             resourceType: type
         });
+        return true;
     }
 
     private wouldEndTurn() {
@@ -266,7 +283,7 @@ export class ClientGame extends Game {
         );
     }
 
-    public pass() {
+    public pass(): boolean {
         if (
             this.players[this.owningPlayer].canPlayResource() &&
             this.wouldEndTurn()
@@ -277,6 +294,7 @@ export class ClientGame extends Game {
             type: GameActionType.Pass,
             player: this.owningPlayer
         });
+        return true;
     }
 
     public setOwningPlayer(player: number) {
@@ -312,11 +330,17 @@ export class ClientGame extends Game {
         }
 
         this.animator.startAnimation();
+        if (!this.attackDamageOrder) {
+            throw new Error();
+        }
 
         // Apply blocks in order decided by attacker
         for (const attackerID of Array.from(this.attackDamageOrder.keys())) {
             const attacker = this.getUnitById(attackerID);
             const damageOrder = this.attackDamageOrder.get(attackerID);
+            if (!damageOrder) {
+                throw new Error();
+            }
             let remainingDamage = attacker.getDamage();
 
             this.animator.triggerBattleAnimation({
@@ -396,10 +420,6 @@ export class ClientGame extends Game {
 
     /**
      * Syncs an event that happened on the server into the state of this game model
-     *
-     * @param {number} localPlayerNumber
-     * @param {GameSyncEvent} event
-     * @memberof Game
      */
     public syncServerEvent(localPlayerNumber: number, event: GameSyncEvent) {
         if (event.number !== this.nextExpectedEvent) {
@@ -430,9 +450,10 @@ export class ClientGame extends Game {
         return ids.map(id => this.getCardById(id));
     }
 
-    public unpackCard(proto: CardPrototype) {
-        if (this.cardPool.has(proto.id)) {
-            return this.cardPool.get(proto.id);
+    public unpackCard(proto: CardPrototype): Card {
+        const existingCard = this.cardPool.get(proto.id);
+        if (existingCard) {
+            return existingCard;
         }
         const card = cardList.getCard(proto.data);
         card.setId(proto.id);
@@ -484,6 +505,9 @@ export class ClientGame extends Game {
         if (localPlayerNumber === this.getCurrentPlayer().getPlayerNumber()) {
             return;
         }
+        if (!this.attackDamageOrder) {
+            throw new Error();
+        }
         const attackerID = event.attackerID as string;
         const order = event.order as string[];
         this.attackDamageOrder.set(
@@ -502,6 +526,9 @@ export class ClientGame extends Game {
                 );
             }
             if (card.getCardType() === CardType.Item) {
+                if (!event.hostId) {
+                    throw new Error('Play card event for an item lacks hostid');
+                }
                 (card as Item)
                     .getHostTargeter()
                     .setTargets([this.getUnitById(event.hostId)]);
@@ -548,7 +575,7 @@ export class ClientGame extends Game {
         this.players[event.playerNo].setCardSynced();
         if (this.isSyncronized() && this.onSync) {
             this.onSync();
-            this.onSync = undefined;
+            this.onSync = () => null;
         }
     }
 

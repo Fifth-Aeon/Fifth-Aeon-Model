@@ -20,7 +20,7 @@ import {
 import { CardDrawnEvent } from './playerEventTypes';
 
 class GameEvent<T> {
-    public source: Mechanic | Trigger | null;
+    public source: Mechanic | Trigger | undefined;
     constructor(
         public trigger: (params: T) => void,
         public priority: number = 5
@@ -31,7 +31,7 @@ export class EventList<T> {
     private events: GameEvent<T>[] = [];
 
     public addEvent(
-        source: Mechanic | Trigger | null,
+        source: Mechanic | Trigger | undefined,
         callback: (params: T) => void,
         priority = 5
     ) {
@@ -70,7 +70,7 @@ export class EventList<T> {
 }
 
 abstract class EventSystem {
-    protected eventLists: Array<EventList<any>>;
+    protected eventLists: Array<EventList<any>> = [];
     public removeEvents(source: Mechanic | Trigger | null) {
         for (const eventList of this.eventLists) {
             eventList.removeEvents(source);

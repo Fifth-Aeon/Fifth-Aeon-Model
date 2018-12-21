@@ -20,7 +20,7 @@ export class Collection {
     private gold: number;
     private packs: number;
 
-    constructor(saved: SavedCollection = null) {
+    constructor(saved: SavedCollection | null = null) {
         this.gold = 0;
         this.packs = 3;
         if (saved) {
@@ -101,7 +101,7 @@ export class Collection {
         this.records = new Map<string, number>();
     }
 
-    public toJson(spacing: number = null) {
+    public toJson(spacing?: number) {
         return JSON.stringify(this.getSavable(), null, spacing);
     }
 
@@ -155,7 +155,7 @@ export class Collection {
         const currValue = this.records.get(card.getDataId());
         if (currValue === 1) {
             this.records.delete(card.getDataId());
-        } else {
+        } else if (currValue !== undefined) {
             this.records.set(card.getDataId(), currValue - 1);
         }
     }
@@ -197,7 +197,7 @@ export class Collection {
     private getRandomCardId() {
         const cardIds = cardList.getIds();
 
-        return sample(cardIds);
+        return sample(cardIds) || '';
     }
 }
 
@@ -209,7 +209,7 @@ export class Booster {
         const cardIds = cardList.getIds();
 
         for (let i = 0; i < this.cardCount; i++) {
-            const drawn = sample(cardIds);
+            const drawn = sample(cardIds) || '';
             openedCards[i] = drawn;
         }
         return openedCards;

@@ -1,6 +1,5 @@
 import { maxBy, meanBy, minBy, remove, sortBy, sumBy, take } from 'lodash';
 import { knapsack, KnapsackItem } from '../algorithms';
-import { Animator } from '../animator';
 import { Card, CardType } from '../card';
 import { TransformDamaged } from '../cards/mechanics/decaySpecials';
 import { Flying, Lethal, Shielded } from '../cards/mechanics/skills';
@@ -72,11 +71,10 @@ export class DefaultAI extends AI {
     /**
      * Creates an instance of DefaultAI.
      *
-     * @param {number} playerNumber - The number of the player the A.I will control
-     * @param {ClientGame} game - The interface by which the A.I will take actions and observe state
-     * @param {DeckList} deck - The DeckList of the deck the A.I will play
-     * @param {Animator} animator - An animator to avoid acting during animations
-     * @memberof DefaultAI
+     * @param playerNumber - The number of the player the A.I will control
+     * @param game - The interface by which the A.I will take actions and observe state
+     * @param deck - The DeckList of the deck the A.I will play
+     * @param animator - An animator to avoid acting during animations
      */
     constructor(playerNumber: number, game: ClientGame, deck: DeckList) {
         super(playerNumber, game, deck);
@@ -198,7 +196,7 @@ export class DefaultAI extends AI {
         options: Array<Card>,
         min: number = 1,
         max: number = 1,
-        callback: (cards: Card[]) => void = null,
+        callback: ((cards: Card[]) => void) | null = null,
         message: string,
         heuristicType: ChoiceHeuristic
     ) {
@@ -225,12 +223,12 @@ export class DefaultAI extends AI {
      */
     protected getBestTarget(card: Card): EvaluatedAction {
         const targets = card.getTargeter().getValidTargets(card, this.game);
-        if (targets.length === 0) {
-            return { score: 0, cost: card.getCost().getNumeric(), card: card };
-        }
         const best = maxBy(targets, target =>
             card.evaluateTarget(target, this.game)
         );
+        if (!best) {
+            return { score: 0, cost: card.getCost().getNumeric(), card: card };
+        }
         return {
             target: best,
             score: card.evaluateTarget(best, this.game),
@@ -242,9 +240,8 @@ export class DefaultAI extends AI {
     /**
      * Evaluates a card based on its value and the value of its target.
      *
-     * @param {Card} card - The card to be evaluated
-     * @returns {EvaluatedAction} - The EvaluatedAction with the score and any targets
-     * @memberof DefaultAI
+     * @param  card - The card to be evaluated
+     * @returns - The EvaluatedAction with the score and any targets
      */
     protected evaluateCard(card: Card): EvaluatedAction {
         let result: EvaluatedAction = {
@@ -323,15 +320,10 @@ export class DefaultAI extends AI {
             ).set
         ).map(item => item.data);
 
-        if (actionsToRun.length > 0) {
+        const best = maxBy(actionsToRun, evaluated => evaluated.score);
+        if (best) {
             this.addActionToSequence(this.selectActions, true);
-            this.addActionToSequence(
-                () =>
-                    this.runEvaluatedAction(
-                        maxBy(actionsToRun, evaluated => evaluated.score)
-                    ),
-                true
-            );
+            this.addActionToSequence(() => this.runEvaluatedAction(best), true);
         }
 
         return true;
@@ -342,6 +334,9 @@ export class DefaultAI extends AI {
         const targets: Unit[] = [];
         const host = action.host;
         const toPlay = action.card;
+        if (!toPlay) {
+            throw new Error('A.I card play lacks card');
+        }
         if (action.target) {
             targets.push(action.target);
         }
@@ -349,7 +344,7 @@ export class DefaultAI extends AI {
     }
 
     /** Runs an action (either playing a card or modifying an enchantment) */
-    private runEvaluatedAction(action: EvaluatedAction) {
+    private runEvaluatedAction(action: EvaluatedAction): boolean {
         if (action.card) {
             return this.runCardPlayAction(action);
         } else if (action.enchantmentTarget) {
@@ -358,6 +353,7 @@ export class DefaultAI extends AI {
                 action.enchantmentTarget
             );
         }
+        return false;
     }
 
     /** Returns the enchantments we have enough energy to empower or diminish */
@@ -377,9 +373,13 @@ export class DefaultAI extends AI {
      */
     private getBestHost(item: Item): Unit {
         const units = this.game.getBoard().getPlayerUnits(this.playerNumber);
-        return maxBy(units, unit =>
+        const best = maxBy(units, unit =>
             unit.getMultiplier(this.game, EvalContext.NonlethalRemoval)
         );
+        if (best === undefined) {
+            throw new Error('A.I could not find host for item');
+        }
+        return best;
     }
 
     /** Gets the difference in resources (not energy) between two values */
@@ -397,7 +397,10 @@ export class DefaultAI extends AI {
                     0
                 )
             );
-            diffs.total += diffs.resources.get(resourceType);
+            const val = diffs.resources.get(resourceType);
+            if (val) {
+                diffs.total += val;
+            }
         }
         return diffs;
     }
@@ -416,12 +419,12 @@ export class DefaultAI extends AI {
     }
 
     /** Computes the most common resource among a set of cards (such as a deck or hand) */
-    private getMostCommonResource(cards: Card[]) {
+    private getMostCommonResource(cards: Card[]): string {
         const total = new Resource(0);
         for (const card of cards) {
             total.add(card.getCost());
         }
-        return maxBy(ResourceTypeNames, type => total.getOfType(type));
+        return maxBy(ResourceTypeNames, type => total.getOfType(type)) as string;
     }
 
     /**
@@ -436,11 +439,9 @@ export class DefaultAI extends AI {
      * Finally, if it can play every card in its hand and deck, it simply plays the most common resource
      * in its deck (based on average card cost).
      *
-     * @private
      * @returns - The name of the resource to play
-     * @memberof DefaultAI
      */
-    private getResourceToPlay() {
+    private getResourceToPlay(): string {
         const deckCards = this.deck.getUniqueCards();
         const closestCardInHand = this.getClosestUnmetRequirement(
             this.aiPlayer.getHand()
@@ -453,7 +454,7 @@ export class DefaultAI extends AI {
                 this.aiPlayer.getPool(),
                 closestCard.getCost()
             );
-            return maxBy(ResourceTypeNames, type => diff.resources.get(type));
+            return maxBy(ResourceTypeNames, type => diff.resources.get(type)) as string;
         } else {
             return this.getMostCommonResource(deckCards);
         }
@@ -476,8 +477,6 @@ export class DefaultAI extends AI {
      *  - The A.I should consider whether it is best to leave a unit on defense, even if its a good attacker
      *    e.g if the enemy has much more life than us and attacking with that unit will give them good attacks.
      *
-     * @private
-     * @memberof DefaultAI
      */
     protected attack() {
         const potentialAttackers = this.game
@@ -514,11 +513,8 @@ export class DefaultAI extends AI {
      *
      * Notably, this function cannot handle blocking with multiple units (even though that is legal).
      *
-     * @private
-     * @param {Unit} attacker - The attacking unit to consider blocking
-     * @param {Unit} blocker - The blocker to consider
-     * @returns
-     * @memberof DefaultAI
+     * @param attacker - The attacking unit to consider blocking
+     * @param blocker - The blocker to consider
      */
     private canFavorablyBlock(attacker: Unit, blocker: Unit) {
         if (!blocker.canBlockTarget(attacker, true)) {
@@ -585,8 +581,6 @@ export class DefaultAI extends AI {
      *  - The A.I should consider chump blocking if its health is more valuable than the unit it would sacrifice.
      *  - The A.I should consider multi-blocks, but it dose not.
      *
-     * @protected
-     * @memberof DefaultAI
      */
     protected block() {
         const attackers = sortBy(

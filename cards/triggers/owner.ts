@@ -14,6 +14,9 @@ export class OwnerAttacked extends Trigger {
 
     public register(card: Card, game: Game) {
         game.getEvents().playerAttacked.addEvent(this, params => {
+            if (!this.mechanic) {
+                throw new Error('Attempting to activate an unattached trigger.');
+            }
             if (params.target === card.getOwner()) {
                 this.mechanic.onTrigger(card, game);
             }

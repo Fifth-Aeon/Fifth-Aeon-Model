@@ -78,7 +78,10 @@ export class SyncEventSystem {
             event: SyncEventFromType<T>
         ) => void
     ) {
-        this.handlers.set(type, handler.bind(this.parent));
+        this.handlers.set(type, handler.bind(this.parent) as (
+            localPlayerNumber: number,
+            event: GameSyncEvent
+        ) => void);
     }
 
     public handleEvent(localPlayerNumber: number, event: GameSyncEvent) {
@@ -115,14 +118,14 @@ export interface SyncPlayCard extends GameSyncEventBase {
     readonly playerNo: number;
     readonly played: CardPrototype;
     readonly targetIds: string[];
-    readonly hostId: string;
+    readonly hostId?: string;
 }
 
 export interface SyncBlock extends GameSyncEventBase {
     readonly type: SyncEventType.Block;
     readonly player: number;
     readonly blockerId: string;
-    readonly blockedId: string;
+    readonly blockedId: string | null;
 }
 
 export interface SyncDraw extends GameSyncEventBase {

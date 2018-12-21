@@ -215,6 +215,11 @@ export class ServerGame extends Game {
     }
 
     protected distributeDamageAction(act: DistributeDamageAction): boolean {
+        if (!this.attackDamageOrder) {
+            throw new Error(
+                'Cannot distributed damage when damage order is undefined'
+            );
+        }
         if (
             !this.isPlayerTurn(act.player) ||
             this.phase !== GamePhase.DamageDistribution
@@ -227,9 +232,11 @@ export class ServerGame extends Game {
         if (!this.attackDamageOrder.has(act.attackerID)) {
             return false;
         }
-        const defenders = new Set(
-            this.attackDamageOrder.get(act.attackerID).map(u => u.getId())
-        );
+        const attackerBlockers = this.attackDamageOrder.get(act.attackerID);
+        if (!attackerBlockers) {
+            throw new Error('No blockers for ' + act.attackerID);
+        }
+        const defenders = new Set(attackerBlockers.map(u => u.getId()));
         const order = act.order as string[];
         if (defenders.size !== order.length) {
             return false;
@@ -272,17 +279,15 @@ export class ServerGame extends Game {
     }
 
     protected cardChoiceAction(act: CardChoiceAction): boolean {
-        if (this.currentChoices[act.player] === null) {
+        const choices = this.currentChoices[act.player];
+        if (choices === null) {
             console.error('Reject choice from', act.player);
             return false;
         }
         const cardIds = act.choice as string[];
         const cards = cardIds.map(id => this.getCardById(id));
-        const min = Math.min(
-            this.currentChoices[act.player].validCards.size,
-            this.currentChoices[act.player].min
-        );
-        const max = this.currentChoices[act.player].max;
+        const min = Math.min(choices.validCards.size, choices.min);
+        const max = choices.max;
         if (cards.length > max || cards.length < min) {
             console.error(
                 `Reject choice. Wanted between ${min} and ${max} cards but got ${
@@ -291,15 +296,11 @@ export class ServerGame extends Game {
             );
             return false;
         }
-        if (
-            !cards.every(card =>
-                this.currentChoices[act.player].validCards.has(card)
-            )
-        ) {
+        if (!cards.every(card => choices.validCards.has(card))) {
             console.error(
                 `Reject choice. Included invalid options.`,
                 cards,
-                this.currentChoices[act.player].validCards
+                choices.validCards
             );
             return false;
         }
@@ -339,6 +340,9 @@ export class ServerGame extends Game {
 
         // Item Host
         if (card.getCardType() === CardType.Item) {
+            if (!act.hostId) {
+                return false;
+            }
             const item = card as Item;
             item.getHostTargeter().setTargets([this.getUnitById(act.hostId)]);
             if (!item.getHostTargeter().targetsAreValid(card, this)) {
@@ -387,12 +391,7 @@ export class ServerGame extends Game {
        - Unit can attack
     */
     protected declareBlockerAction(act: DeclareBlockerAction) {
-        const player = this.players[act.player];
-        const isCanceling = act.blockedId === null;
         const blocker = this.getUnitById(act.blockerId);
-        const blocked = isCanceling
-            ? null
-            : this.getPlayerUnitById(this.turn, act.blockedId);
         if (
             this.isPlayerTurn(act.player) ||
             this.phase !== GamePhase.Block ||
@@ -400,10 +399,17 @@ export class ServerGame extends Game {
         ) {
             return false;
         }
-        if (!isCanceling && (!blocked || !blocker.canBlockTarget(blocked))) {
-            return false;
+
+        if (act.blockedId === null) {
+            blocker.setBlocking(null);
+        } else {
+            const blocked = this.getPlayerUnitById(this.turn, act.blockedId);
+            blocker.setBlocking(blocked.getId());
+            if (!blocked || !blocker.canBlockTarget(blocked)) {
+                return false;
+            }
         }
-        blocker.setBlocking(isCanceling ? null : blocked.getId());
+
         this.addGameEvent({
             type: SyncEventType.Block,
             player: act.player,

@@ -12,7 +12,7 @@ export abstract class AI {
     private timer: any;
     protected isImmediateMode = false;
     protected actionSequence: Array<() => boolean> = [];
-    protected animator: Animator;
+    protected animator?: Animator;
     protected thinking = false;
 
     /**
@@ -80,7 +80,7 @@ export abstract class AI {
         this.timer = setInterval(() => {
             if (
                 !this.thinking &&
-                !this.animator.isAnimating() &&
+                (!this.animator || !this.animator.isAnimating()) &&
                 this.game.isSyncronized()
             ) {
                 this.applyNextAction();

@@ -6,7 +6,7 @@ import { Game } from './game';
 
 export class Log {
     private items: LogItem[] = [];
-    private game: Game;
+    private game?: Game;
 
     constructor(private playerNo: number = 0, private size: number = 20) {}
 
@@ -15,11 +15,15 @@ export class Log {
         blockers: Unit[],
         defender: number
     ) {
+        const game = this.game;
+        if (!game) {
+            throw new Error('Logger is not attached to a game');
+        }
         const attackersList = properList(attackers.map(unit => unit.getName()));
         const blockerList = properList(
             blockers.map(blocker => {
-                const blocked = this.game.getUnitById(
-                    blocker.getBlockedUnitId()
+                const blocked = game.getUnitById(
+                    blocker.getBlockedUnitId() || ''
                 );
                 return `${blocked.getName()} with ${blocker.getName()}`;
             })
@@ -70,6 +74,9 @@ export class Log {
     }
 
     public getCard(event: SyncPlayCard): Card {
+        if (!this.game) {
+            throw new Error('Logger is not attached to a game');
+        }
         return this.game.getCardById(event.played.id);
     }
 
@@ -80,13 +87,17 @@ export class Log {
     private makeCardPlayTooltip(event: SyncPlayCard): string {
         const name = this.isEnemy(event.playerNo) ? 'Your opponent' : 'You';
         const card = this.getCard(event);
+        const game = this.game;
+        if (!game) {
+            throw new Error('Logger is not attached to a game');
+        }
         let targetString = '';
         if (!card) {
             return '';
         }
         if (event.targetIds !== null && event.targetIds.length > 0) {
             const targets: Card[] = event.targetIds.map((id: string) =>
-                this.game.getCardById(id)
+                game.getCardById(id)
             );
             targetString =
                 ' targeting ' +
@@ -96,7 +107,7 @@ export class Log {
         }
         const effectString = card.isUnit()
             ? ''
-            : ` It has the effect "${card.getText(this.game)}"`;
+            : ` It has the effect "${card.getText(game)}"`;
         return (
             `${name} played ${card.getName()}${targetString}.` + effectString
         );

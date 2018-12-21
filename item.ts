@@ -7,7 +7,7 @@ import { Targeter } from './targeter';
 import { Unit } from './unit';
 
 export class Item extends Permanent {
-    private host: Unit;
+    private host: Unit | null = null;
     private lifeBonus: number;
     private damageBonus: number;
     private hostTargeter: Targeter;
@@ -69,7 +69,7 @@ export class Item extends Permanent {
     }
 
     public play(game: Game) {
-        const host = this.hostTargeter.getTargets(this, game, null)[0];
+        const host = this.hostTargeter.getTargets(this, game)[0];
         this.attach(host, game);
     }
 
@@ -101,6 +101,9 @@ export class Item extends Permanent {
     }
 
     public detach(game: Game) {
+        if (!this.host) {
+            throw new Error('Cannot detach unattached item');
+        }
         this.host.buff(-this.damageBonus, -this.lifeBonus);
         this.host.removeItem(this);
         for (const mechanic of this.mechanics) {

@@ -20,6 +20,11 @@ export class FriendlyBiologicalUnitEntersPlay extends Trigger {
                 params.enteringUnit.getOwner() === card.getOwner() &&
                 isBiological(params.enteringUnit)
             ) {
+                if (!this.mechanic) {
+                    throw new Error(
+                        'Attempting to activate an unattached trigger.'
+                    );
+                }
                 this.mechanic.setTriggeringUnit(params.enteringUnit);
                 this.mechanic.onTrigger(card, game);
             }
@@ -48,6 +53,11 @@ export class FriendlyMechanicalUnitEntersPlay extends Trigger {
         game.getEvents().unitEntersPlay.addEvent(this, params => {
             const unit: Unit = params.enteringUnit;
             if (unit.getOwner() === card.getOwner() && isMechanical(unit)) {
+                if (!this.mechanic) {
+                    throw new Error(
+                        'Attempting to activate an unattached trigger.'
+                    );
+                }
                 this.mechanic.setTriggeringUnit(unit);
                 this.mechanic.onTrigger(card, game);
             }

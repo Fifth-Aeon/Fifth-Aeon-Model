@@ -8,16 +8,17 @@ import { Unit } from '../../unit';
 
 export class OwnerDrawsUnit extends Trigger {
     protected static id = 'OwnerDrawsUnit';
-    protected owner: Player;
 
     public getText(mechanicText: string) {
         return `When you draw a unit ${removeFirstCapital(mechanicText)}`;
     }
 
     public register(card: Card, game: Game) {
-        this.owner = game.getPlayer(card.getOwner());
-
-        this.owner.getPlayerEvents().CardDrawn.addEvent(this, params => {
+        const owner = game.getPlayer(card.getOwner());
+        owner.getPlayerEvents().CardDrawn.addEvent(this, params => {
+            if (!this.mechanic) {
+                throw new Error('Attempting to activate an unattached trigger.');
+            }
             const drawn = params.card;
             if (drawn.getCardType() === CardType.Unit) {
                 this.mechanic.setTriggeringUnit(drawn as Unit);

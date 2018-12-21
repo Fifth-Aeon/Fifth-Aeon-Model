@@ -26,7 +26,7 @@ export abstract class Targeter {
         this.targets = target;
     }
 
-    public getTargets(card: Card, game: Game, mechanic: Mechanic): Array<Unit> {
+    public getTargets(card: Card, game: Game, mechanic?: Mechanic): Array<Unit> {
         return this.targets;
     }
 

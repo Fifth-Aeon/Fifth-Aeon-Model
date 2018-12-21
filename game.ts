@@ -33,23 +33,23 @@ export interface Choice {
 
 export abstract class Game {
     // Id of the game on the server
-    public id: string;
+    public id = '';
     // A board containing units in play
     protected board: Board;
     // Where dead cards go
     protected crypt: [Card[], Card[]];
     // The number of player whose turn it currently is
-    protected turn: number;
+    protected turn = 0;
     // The number of turns that have passed from the games start
     protected turnNum: number;
     // The players playing the game
-    protected players: Player[];
+    protected players: Player[] = [];
     // The format of the game
     protected format: GameFormat;
     // The phase of the current players turn (eg main phase, attack phase)
-    protected phase: GamePhase;
+    protected phase: GamePhase = GamePhase.Play1;
     // The previous phase (used to return from response phases)
-    protected lastPhase: GamePhase;
+    protected lastPhase: GamePhase = GamePhase.Play1;
     // A list of all events that have taken place this game and need to be sent to clients
     protected events: GameSyncEvent[];
     // A list of  units currently attacking
@@ -57,26 +57,26 @@ export abstract class Game {
     // A list of blocks by the defending player
     protected blockers: [Unit, Unit][];
     // A map of the order to apply damage in combat
-    protected attackDamageOrder: Map<string, Unit[]> = null;
+    protected attackDamageOrder: Map<string, Unit[]> | null = null;
     // A list attack orders that can be rearranged
-    protected orderableAttacks: Map<string, Unit[]> = null;
+    protected orderableAttacks: Map<string, Unit[]> | null = null;
     // A map of cards loaded from the server so far
     protected cardPool: Map<string, Card>;
     // A group of game logic events that are not connected to any individual unit
     public gameEvents: GameEventSystem;
     // Flag to tell us which player's choice we are waiting for (null if not waiting)
-    protected currentChoices: Choice[] = [null, null];
-    protected log: Log;
+    protected currentChoices: (Choice | null)[] = [null, null];
+    protected log: Log | undefined;
     protected winner = -1;
     protected generatedCardId = 1;
-    protected lastPlayedCardName: string;
+    protected lastPlayedCardName = 'None';
     public lastCardsPlayed: string[] = [];
     public promptCardChoice: (
         player: number,
         choices: Card[],
         min: number,
         max: number,
-        callback: (cards: Card[]) => void,
+        callback: ((cards: Card[]) => void) | null,
         message: string,
         evaluator: ChoiceHeuristic
     ) => void;
@@ -103,7 +103,7 @@ export abstract class Game {
 
     protected addDeathHandlers() {
         this.players.forEach((player, number) => {
-            player.getEvents().death.addEvent(null, params => {
+            player.getEvents().death.addEvent(undefined, params => {
                 this.endGame(this.getOtherPlayerNumber(number));
                 return params;
             });
@@ -159,7 +159,7 @@ export abstract class Game {
         choices: Card[],
         min: number,
         max: number,
-        callback: (cards: Card[]) => void
+        callback: ((cards: Card[]) => void) | null
     ) {
         if (!callback) {
             return;
@@ -174,8 +174,9 @@ export abstract class Game {
     }
 
     protected makeDeferredChoice(player: number, cards: Card[]) {
-        if (this.currentChoices[player] !== null) {
-            this.currentChoices[player].callback(cards);
+        const currentChoice = this.currentChoices[player];
+        if (currentChoice !== null) {
+            currentChoice.callback(cards);
         } else {
             console.error(
                 `${this.getName()} - Error in game ${
@@ -204,7 +205,7 @@ export abstract class Game {
     public abstract queryCards(
         getCards: (game: ServerGame) => Card[],
         callback: (cards: Card[]) => void
-    );
+    ): void;
 
     // Card Play Logic ---------------------------------------------------
     public playCard(player: Player, card: Card) {
@@ -284,23 +285,19 @@ export abstract class Game {
     }
 
     protected generateDamageDistribution() {
-        const attackers = this.getAttackers();
         const blockers = this.getBlockers();
-        const defendingPlayer = this.players[
-            this.getOtherPlayerNumber(this.getCurrentPlayer().getPlayerNumber())
-        ];
-
         this.attackDamageOrder = new Map<string, Unit[]>();
 
         // Create a list of blockers for each attacker
         for (const blocker of blockers) {
             const blocked = this.getPlayerUnitById(
                 this.getCurrentPlayer().getPlayerNumber(),
-                blocker.getBlockedUnitId()
+                blocker.getBlockedUnitId() || ''
             );
             const id = blocked.getId();
-            if (this.attackDamageOrder.has(id)) {
-                this.attackDamageOrder.get(id).push(blocker);
+            const order = this.attackDamageOrder.get(id);
+            if (order) {
+                order.push(blocker);
             } else {
                 this.attackDamageOrder.set(id, [blocker]);
             }
@@ -308,11 +305,15 @@ export abstract class Game {
 
         // Set damage order according to basic A.I
         for (const attackerID of Array.from(this.attackDamageOrder.keys())) {
+            const attackerBlockers = this.attackDamageOrder.get(attackerID);
+            if (!attackerBlockers) {
+                throw new Error('Missing blockers for attacker');
+            }
             this.attackDamageOrder.set(
                 attackerID,
                 this.getBasicDamageDistribution(
                     this.getUnitById(attackerID),
-                    this.attackDamageOrder.get(attackerID)
+                    attackerBlockers
                 )
             );
         }
@@ -322,9 +323,16 @@ export abstract class Game {
 
     public getModableDamageDistributions() {
         const orderableAttacks = new Map<string, Unit[]>();
-        for (const attackerID of Array.from(this.attackDamageOrder.keys())) {
-            const defenders = this.attackDamageOrder.get(attackerID);
+        const attackDamageOrder = this.attackDamageOrder;
+        if (attackDamageOrder === null) {
+            throw new Error('attackDamageOrder is undefined');
+        }
+        for (const attackerID of Array.from(attackDamageOrder.keys())) {
+            const defenders = attackDamageOrder.get(attackerID);
             const dmg = this.getUnitById(attackerID).getDamage();
+            if (defenders === undefined) {
+                throw new Error(`No defenders for ${attackerID}`);
+            }
             if (
                 defenders.length > 1 &&
                 defenders.map(unit => unit.getLife()).reduce((a, b) => a + b) >
@@ -339,7 +347,6 @@ export abstract class Game {
 
     protected resolveCombat() {
         const attackers = this.getAttackers();
-        const blockers = this.getBlockers();
         const defendingPlayer = this.players[
             this.getOtherPlayerNumber(this.getCurrentPlayer().getPlayerNumber())
         ];
@@ -347,11 +354,15 @@ export abstract class Game {
         if (this.attackDamageOrder === null) {
             this.generateDamageDistribution();
         }
+        const attackDamageOrder = this.attackDamageOrder;
+        if (attackDamageOrder === null) {
+            throw new Error();
+        }
 
         // Apply blocks in order decided by attacker
-        for (const attackerID of Array.from(this.attackDamageOrder.keys())) {
+        for (const attackerID of Array.from(attackDamageOrder.keys())) {
             const attacker = this.getUnitById(attackerID);
-            const damageOrder = this.attackDamageOrder.get(attackerID);
+            const damageOrder = attackDamageOrder.get(attackerID) || [];
             let remainingDamage = attacker.getDamage();
 
             for (const blocker of damageOrder) {
@@ -361,13 +372,11 @@ export abstract class Game {
                 );
                 remainingDamage -= assignedDamage;
                 blocker.getEvents().block.trigger({ attacker });
-                blocker
-                    .getEvents()
-                    .attack.trigger({
-                        attacker: attacker,
-                        damage: assignedDamage,
-                        defender: blocker
-                    });
+                blocker.getEvents().attack.trigger({
+                    attacker: attacker,
+                    damage: assignedDamage,
+                    defender: blocker
+                });
                 attacker.fight(blocker, assignedDamage);
                 blocker.setBlocking(null);
             }
@@ -375,7 +384,7 @@ export abstract class Game {
 
         // Unblocked attackers damage the defending player
         for (const attacker of attackers) {
-            if (!this.attackDamageOrder.has(attacker.getId())) {
+            if (!attackDamageOrder.has(attacker.getId())) {
                 attacker.dealAndApplyDamage(
                     defendingPlayer,
                     attacker.getDamage()
@@ -451,7 +460,7 @@ export abstract class Game {
     }
 
     // Unit Zone Changes ------------------------------------------------------
-    public playPermanent(permanent: Permanent, owner: number) {
+    public playPermanent(permanent: Permanent) {
         const diesUponEntering = !this.board.canPlayPermanent(permanent);
         switch (permanent.getCardType()) {
             case CardType.Unit:
@@ -503,7 +512,7 @@ export abstract class Game {
         enchantment
             .getEvents()
             .death.addEvent(
-                null,
+                undefined,
                 params => this.enchantmentDeathEffects(enchantment),
                 Infinity
             );
@@ -523,11 +532,11 @@ export abstract class Game {
             return;
         }
         unit.getEvents().death.addEvent(
-            null,
+            undefined,
             () => this.unitDeathEffects(unit),
             Infinity
         );
-        unit.getEvents().annihilate.addEvent(null, () =>
+        unit.getEvents().annihilate.addEvent(undefined, () =>
             this.removePermanent(unit)
         );
         this.board.addPermanent(unit);
@@ -584,24 +593,32 @@ export abstract class Game {
         return player.getHand().find(card => card.getId() === id);
     }
 
-    public getCardById(id: string): Card | undefined {
-        if (!this.cardPool.has(id)) {
-            console.error(`No Card with id "${id}" in pool`, this.cardPool);
+    public getCardById(id: string): Card {
+        const found = this.cardPool.get(id);
+        if (!found) {
+            throw new Error(`No Card with id "${id}" in pool ${this.cardPool}`);
         }
-        return this.cardPool.get(id);
+        return found;
     }
 
-    public getUnitById(id: string): Unit | undefined {
-        return this.board.getAllUnits().find(unit => unit.getId() === id);
+    public getUnitById(id: string): Unit {
+        const unit = this.board
+            .getAllUnits()
+            .find(toCheck => toCheck.getId() === id);
+        if (unit === undefined) {
+            throw new Error(`No unit with id ${id}`);
+        }
+        return unit;
     }
 
-    protected getPlayerUnitById(
-        playerNo: number,
-        id: string
-    ): Unit | undefined {
-        return this.board
+    protected getPlayerUnitById(playerNo: number, id: string): Unit {
+        const found = this.board
             .getPlayerUnits(playerNo)
             .find(unit => unit.getId() === id);
+        if (!found) {
+            throw new Error(`No unit with id ${id}`);
+        }
+        return found;
     }
 
     public getPhase() {

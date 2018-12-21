@@ -1,14 +1,12 @@
-import { Mechanic, TargetedMechanic } from '../../mechanic';
-import { Game, GamePhase } from '../../game';
-import { Targeter } from '../../targeter';
-import { Card, CardType } from '../../card';
-import { Unit, UnitType } from '../../unit';
-
-import { Sleeping } from './sleep';
-import { Poisoned } from './poison';
+import { Card } from '../../card';
+import { Game } from '../../game';
+import { Mechanic } from '../../mechanic';
 import { Permanent } from '../../permanent';
+import { Unit, UnitType } from '../../unit';
+import { Poisoned } from './poison';
+import { Sleeping } from './sleep';
 
-const robotImmunities = [new Sleeping().getId(), new Poisoned().getId()];
+const robotImmunities = [Sleeping.getId(), Poisoned.getId()];
 export class Robotic extends Mechanic {
     protected static id = 'Robotic';
     protected static validCardTypes = Permanent.cardTypes;

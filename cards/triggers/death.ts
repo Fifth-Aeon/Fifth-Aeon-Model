@@ -15,6 +15,11 @@ export class DeathTrigger extends Trigger {
     public register(card: Card, game: Game) {
         const unit = card as Unit;
         unit.getEvents().death.addEvent(this, params => {
+            if (!this.mechanic) {
+                throw new Error(
+                    'Attempting to activate an unattached trigger.'
+                );
+            }
             this.mechanic.setTriggeringUnit(unit);
             this.mechanic.onTrigger(card, game);
         });
@@ -41,9 +46,13 @@ export class SoulReap extends Trigger {
 
     public register(card: Card, game: Game) {
         game.getEvents().unitDies.addEvent(this, params => {
+            if (!this.mechanic) {
+                throw new Error(
+                    'Attempting to activate an unattached trigger.'
+                );
+            }
             this.mechanic.setTriggeringUnit(params.deadUnit);
             this.mechanic.onTrigger(card, game);
-            return params;
         });
     }
 

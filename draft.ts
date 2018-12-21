@@ -46,8 +46,7 @@ export class Draft {
 
     /**
      * Creates an instance of Draft. Optionally takes an existing saved draft to load.
-     * @param {SavedDraft} [saved] - Saved data from a previous draft to load
-     * @memberof Draft
+     * @param [saved] - Saved data from a previous draft to load
      */
     public constructor(saved?: SavedDraft) {
         if (!saved) {
@@ -65,9 +64,6 @@ export class Draft {
 
     /**
      * Transforms the object into a simple interface that can be serialized as JSON
-     *
-     * @returns {SavedDraft}
-     * @memberof Draft
      */
     public toSavable(): SavedDraft {
         return {
@@ -82,9 +78,6 @@ export class Draft {
 
     /**
      * Determines if the player may pick another card to pick;
-     *
-     * @returns {boolean}
-     * @memberof Draft
      */
     canPickCard(): boolean {
         return this.state === DraftState.Drafting;
@@ -93,8 +86,7 @@ export class Draft {
     /**
      * Gets the players next choice of card
      *
-     * @returns {Array<Card>} The cards a player may choose form
-     * @memberof Draft
+     * @returns The cards a player may choose form
      */
     getChoices(): Set<Card> {
         if (!this.choices || this.choices.size === 0) {
@@ -108,8 +100,7 @@ export class Draft {
     /**
      * Adds the players choice to their deck and starts next selection round or the game
      *
-     * @param {Card} picked The card the player selected
-     * @memberof Draft
+     * @param picked The card the player selected
      */
     pickCard(picked: Card) {
         if (!this.choices.has(picked)) {
@@ -126,8 +117,7 @@ export class Draft {
     /**
      * Determines if the player can play a game
      *
-     * @returns {boolean} True if the player can start a game
-     * @memberof Draft
+     * @returns True if the player can start a game
      */
     canPlayGame(): boolean {
         return this.state === DraftState.Playing;
@@ -136,8 +126,7 @@ export class Draft {
     /**
      * Updates the draft record after a game
      *
-     * @param {boolean} won
-     * @memberof Draft
+     * @param won Should be true if the player won the game
      */
     updateRecord(won: boolean) {
         if (won) {
@@ -156,8 +145,7 @@ export class Draft {
     /**
      * Gets the amount of rewards a player gets based on their results
      *
-     * @returns {Rewards} The players rewards for drafting
-     * @memberof Draft
+     * @returns The players rewards for drafting
      */
     getRewards(): Rewards {
         let packs = 1;
@@ -182,7 +170,6 @@ export class Draft {
 
     /**
      * Prematurely ends the draft
-     * @memberof Draft
      */
     retire() {
         this.state = DraftState.Ended;

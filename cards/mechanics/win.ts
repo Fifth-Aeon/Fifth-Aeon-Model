@@ -28,7 +28,7 @@ export class WinIfHighLife extends TriggeredMechanic {
         return `If you have ${this.threshold} or more life you win the game.`;
     }
 
-    public evaluateEffect(card, game) {
+    public evaluateEffect(card: Card, game: Game) {
         const friendlyPlayer = game.getPlayer(card.getOwner());
         if (friendlyPlayer.getLife() >= this.threshold) {
             return Infinity;

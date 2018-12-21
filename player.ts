@@ -7,6 +7,7 @@ import { Game } from './game';
 import { Resource } from './resource';
 import { ServerGame } from './serverGame';
 import { Unit, UnitType } from './unit';
+import { Untargeted } from './cards/targeters/basicTargeter';
 
 export class Player extends Unit {
     private hand: Array<Card>;
@@ -37,7 +38,7 @@ export class Player extends Unit {
             'hearts.png',
             UnitType.Player,
             new Resource(0),
-            null,
+            new Untargeted(),
             0,
             life,
             []

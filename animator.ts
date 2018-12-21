@@ -8,7 +8,7 @@ export class Animator {
     private damageIndicatorSubscribers = new Array<
         (ev: DamageIndicatorEvent) => void
     >();
-    private nextAnimationTime: number;
+    private nextAnimationTime = 0;
     private animating = false;
     private onAnimationEnd: () => any = () => null;
 

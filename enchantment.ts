@@ -93,6 +93,6 @@ export class Enchantment extends Permanent {
         this.power = this.basePower;
         this.location = GameZone.Board;
 
-        game.playPermanent(this, this.owner);
+        game.playPermanent(this);
     }
 }

@@ -7,7 +7,7 @@ import { properList } from './strings';
 export class Permanent extends Card {
     static cardTypes = new Set([CardType.Unit, CardType.Item]);
 
-    public getText(game: Game): string {
+    public getText(game?: Game): string {
         if (this.text) {
             return this.text;
         }
@@ -34,13 +34,13 @@ export class Permanent extends Card {
             .join(' ');
     }
 
-    private getMechanicGroupText(mechanics: Mechanic[], game: Game) {
+    private getMechanicGroupText(mechanics: Mechanic[], game?: Game) {
         if (!(mechanics[0] instanceof TriggeredMechanic)) {
             return this.getSimpleMechanicGroupText(mechanics, game);
         }
         const trigger = (mechanics[0] as TriggeredMechanic).getTrigger();
         mechanics = sortBy(mechanics, this.getTargeterId);
-        let lastId: string = null;
+        let lastId: string;
         const mechanicText = this.addSentenceMarkers(
             properList(
                 mechanics.map(mechanic => {
@@ -81,7 +81,7 @@ export class Permanent extends Card {
         return (mechanic as TargetedMechanic).getTargeter().getId();
     }
 
-    private getSimpleMechanicGroupText(mechanics: Mechanic[], game: Game) {
+    private getSimpleMechanicGroupText(mechanics: Mechanic[], game?: Game) {
         return mechanics
             .map(mechanic => mechanic.getText(this, game))
             .join(' ');

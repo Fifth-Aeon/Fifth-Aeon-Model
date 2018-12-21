@@ -46,6 +46,9 @@ class MechanicList {
 
     public buildInstance(data: MechanicData, cards: CardList) {
         const constructor = this.constructors.get(data.id);
+        if (!constructor) {
+            throw new Error(`No mechanic type with id ${data.id}`);
+        }
         const paramTypes = constructor
             .getParameterTypes()
             .map(param => param.type);

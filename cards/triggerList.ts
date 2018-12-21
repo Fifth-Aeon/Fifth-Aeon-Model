@@ -25,6 +25,9 @@ class TriggerList {
 
     public buildInstance(data: TriggerData) {
         const constructor = this.constructors.get(data.id);
+        if (!constructor) {
+            throw new Error(`No trigger type with id ${data.id}`);
+        }
         const instance = new constructor();
         return instance;
     }

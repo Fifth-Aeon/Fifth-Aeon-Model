@@ -22,9 +22,15 @@ class AIList {
     }
 
     public getConstructorsByName(names: string[]): AIConstructor[] {
-        return names.map(name =>
-            this.constructors.find(cstr => cstr.name === name)
-        );
+        return names.map(name => {
+            const constructor = this.constructors.find(
+                cstr => cstr.name === name
+            );
+            if (!constructor) {
+                throw new Error(`No A.I constructor found named ${name}`);
+            }
+            return constructor;
+        });
     }
 }
 

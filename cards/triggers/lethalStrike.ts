@@ -13,6 +13,9 @@ export class LethalStrike extends Trigger {
     public register(card: Card, game: Game) {
         const unit = card as Unit;
         unit.getEvents().killUnit.addEvent(this, params => {
+            if (!this.mechanic) {
+                throw new Error('Attempting to activate an unattached trigger.');
+            }
             this.mechanic.setTriggeringUnit(params.target);
             this.mechanic.onTrigger(card, game);
         });

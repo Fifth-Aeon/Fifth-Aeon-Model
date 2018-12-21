@@ -2,7 +2,7 @@ import { Resource, ResourceType, ResourceTypeGroup } from './resource';
 
 export class GameFormat {
     public name = 'Standard';
-    public zoneNames: ['Board', 'Hand', 'Crypt'];
+    public zoneNames = ['Board', 'Hand', 'Crypt'];
 
     // General Gameplay
     public boardSize = 7;

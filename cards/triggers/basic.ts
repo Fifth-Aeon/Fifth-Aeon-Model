@@ -14,6 +14,11 @@ export class Play extends Trigger {
 
     public register(card: Card, game: Game) {
         card.getEvents().play.addEvent(this, params => {
+            if (!this.mechanic) {
+                throw new Error(
+                    'Attempting to activate an unattached trigger.'
+                );
+            }
             if (card.getCardType() === CardType.Unit) {
                 this.mechanic.setTriggeringUnit(card as Unit);
             }
@@ -43,6 +48,11 @@ export class UnitEntersPlay extends Trigger {
 
     public register(card: Card, game: Game) {
         game.getEvents().unitEntersPlay.addEvent(this, params => {
+            if (!this.mechanic) {
+                throw new Error(
+                    'Attempting to activate an unattached trigger.'
+                );
+            }
             this.mechanic.setTriggeringUnit(params.enteringUnit);
             this.mechanic.onTrigger(card, game);
             return params;
@@ -69,6 +79,11 @@ export class FriendlyUnitEntersPlay extends Trigger {
         game.getEvents().unitEntersPlay.addEvent(this, params => {
             const unit: Unit = params.enteringUnit;
             if (unit.getOwner() === card.getOwner()) {
+                if (!this.mechanic) {
+                    throw new Error(
+                        'Attempting to activate an unattached trigger.'
+                    );
+                }
                 this.mechanic.setTriggeringUnit(unit);
                 this.mechanic.onTrigger(card, game);
             }
