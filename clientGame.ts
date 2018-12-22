@@ -127,9 +127,6 @@ export class ClientGame extends Game {
         card.getTargeter().setTargets(targets);
         if (card.getCardType() === CardType.Item) {
             if (!host) {
-                console.error('Item', card.getName(), 'requires a host.');
-            }
-            if (!host) {
                 throw new Error('No host supplied for item');
             }
             (card as Item).getHostTargeter().setTargets([host]);

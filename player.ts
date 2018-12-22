@@ -43,6 +43,7 @@ export class Player extends Unit {
             life,
             []
         );
+        this.setOwner(playerNumber);
         this.deck = cards;
         this.deck.forEach(card => card.setOwner(playerNumber));
         this.hand = [];

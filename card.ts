@@ -33,7 +33,7 @@ export class Card {
 
     protected cost: Resource;
     protected unit = false;
-    protected owner?: number;
+    protected owner = -1;
     protected dataId: string;
     protected imageUrl: string;
     protected location: GameZone;
@@ -113,7 +113,7 @@ export class Card {
     }
 
     public isPlayable(game: Game): boolean {
-        if (!this.owner) {
+        if (this.owner === -1) {
             throw new Error('Card owner unassinged');
         }
         const owner = game.getPlayer(this.owner);
@@ -129,9 +129,6 @@ export class Card {
     }
 
     public getPrototype(): CardPrototype {
-        if (!this.owner) {
-            throw new Error('Card owner unassinged');
-        }
         return {
             id: this.getId(),
             data: this.getDataId(),
@@ -190,9 +187,6 @@ export class Card {
     }
 
     public setOwner(owner: number) {
-        if (owner === undefined) {
-            throw Error();
-        }
         this.owner = owner;
     }
 
@@ -201,7 +195,7 @@ export class Card {
     }
 
     public getOwner(): number {
-        if (!this.owner) {
+        if (this.owner === -1) {
             throw new Error('Card has no owner');
         }
         return this.owner;

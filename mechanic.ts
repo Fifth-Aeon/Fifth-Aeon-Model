@@ -156,14 +156,18 @@ export abstract class TriggeredMechanic extends Mechanic {
 
 export abstract class TargetedMechanic extends TriggeredMechanic {
     protected targeter: Targeter = new Untargeted();
+    private targeterSet = false;
 
     public attach(parent: Card) {
         super.attach(parent);
-        this.targeter = this.targeter || parent.getTargeter();
+        if (!this.targeterSet) {
+            this.setTargeter(parent.getTargeter());
+         }
     }
 
     public setTargeter(targeter: Targeter) {
         this.targeter = targeter;
+        this.targeterSet = true;
         return this;
     }
 
