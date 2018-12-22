@@ -22,6 +22,16 @@ interface CardDataBase {
     cost: ResourcePrototype;
 }
 
+export const defaultDataObj: SpellData = {
+    id: '',
+    cardType: CardType.Spell,
+    name: '',
+    imageUrl: '',
+    targeter: {id: 'Untargeted', optional: false},
+    mechanics: [],
+    cost: {energy: 0},
+};
+
 export interface SpellData extends CardDataBase {
     cardType: CardType.Spell;
 }
