@@ -33,7 +33,7 @@ export function getStarterDecks() {
             ? deckMap.get('skysAndSeas')
             : deckMap.get('mechanicalArmy')
     );
-    return decks;
+    return decks as DeckList[];
 }
 
 addDeck({
