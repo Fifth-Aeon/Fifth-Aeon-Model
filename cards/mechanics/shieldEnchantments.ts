@@ -1,10 +1,10 @@
-import { Card, CardType } from '../../card';
-import { Enchantment } from '../../enchantment';
+import { Card, CardType } from '../../card-types/card';
+import { Enchantment } from '../../card-types/enchantment';
 import { Game } from '../../game';
 
 import { Mechanic } from '../../mechanic';
 import { Player } from '../../player';
-import { Unit } from '../../unit';
+import { Unit } from '../../card-types/unit';
 
 abstract class ShieldEnchantment extends Mechanic {
     protected static validCardTypes = new Set([CardType.Enchantment]);

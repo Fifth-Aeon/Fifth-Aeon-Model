@@ -1,9 +1,9 @@
-import { Card } from '../../card';
+import { Card } from '../../card-types/card';
 import { Game } from '../../game';
 import { EvalContext } from '../../mechanic';
 import { removeFirstCapital } from '../../strings';
 import { Trigger } from '../../trigger';
-import { isBiological, isMechanical, Unit } from '../../unit';
+import { isBiological, isMechanical, Unit } from '../../card-types/unit';
 
 export class FriendlyBiologicalUnitEntersPlay extends Trigger {
     protected static id = 'FriendlyBioUnitEntersPlay';

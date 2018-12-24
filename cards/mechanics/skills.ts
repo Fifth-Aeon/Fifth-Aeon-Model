@@ -1,7 +1,7 @@
-import { Card, CardType } from '../../card';
+import { Card, CardType } from '../../card-types/card';
 import { Game } from '../../game';
 import { EvalContext, Mechanic } from '../../mechanic';
-import { Unit, UnitType } from '../../unit';
+import { Unit, UnitType } from '../../card-types/unit';
 
 abstract class Skill extends Mechanic {
     protected static validCardTypes = new Set([CardType.Unit, CardType.Item]);

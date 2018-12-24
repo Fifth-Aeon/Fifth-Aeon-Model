@@ -1,7 +1,7 @@
 import { Animator } from './animator';
-import { Card, CardPrototype, CardType } from './card';
+import { Card, CardPrototype, CardType } from './card-types/card';
 import { cardList } from './cards/cardList';
-import { Enchantment } from './enchantment';
+import { Enchantment } from './card-types/enchantment';
 import { GameActionRunner, GameActionType } from './events/gameAction';
 import {
     GameSyncEvent,
@@ -23,11 +23,11 @@ import {
 } from './events/syncEvent';
 import { Game, GamePhase } from './game';
 import { GameFormat, standardFormat } from './gameFormat';
-import { Item } from './item';
+import { Item } from './card-types/item';
 import { Log } from './log';
 import { Player } from './player';
 import { ServerGame } from './serverGame';
-import { Unit } from './unit';
+import { Unit } from './card-types/unit';
 
 export class ClientGame extends Game {
     private syncSystem = new SyncEventSystem(this);

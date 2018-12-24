@@ -1,6 +1,6 @@
 import { ResourcePrototype, Resource, ResourceType } from '../resource';
 import { CardList } from './cardList';
-import { CardType, Card } from '../card';
+import { CardType, Card } from '../card-types/card';
 
 export enum ParameterType {
     Integer,

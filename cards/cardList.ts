@@ -1,9 +1,9 @@
 import { values } from 'lodash';
-import { Card, CardType } from '../card';
-import { Enchantment } from '../enchantment';
-import { Item } from '../item';
+import { Card, CardType } from '../card-types/card';
+import { Enchantment } from '../card-types/enchantment';
+import { Item } from '../card-types/item';
 import { Resource, ResourcePrototype } from '../resource';
-import { Unit, UnitType } from '../unit';
+import { Unit, UnitType } from '../card-types/unit';
 import * as decay from './decayCards';
 import * as growth from './growthCards';
 import { MechanicData, mechanicList } from './mechanicList';
@@ -21,6 +21,16 @@ interface CardDataBase {
     mechanics: MechanicData[];
     cost: ResourcePrototype;
 }
+
+export const defaultDataObj: SpellData = {
+    id: '',
+    cardType: CardType.Spell,
+    name: '',
+    imageUrl: '',
+    targeter: {id: 'Untargeted', optional: false},
+    mechanics: [],
+    cost: {energy: 0},
+};
 
 export interface SpellData extends CardDataBase {
     cardType: CardType.Spell;

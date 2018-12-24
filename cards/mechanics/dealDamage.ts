@@ -1,8 +1,8 @@
-import { Card, CardType, GameZone } from '../../card';
+import { Card, CardType, GameZone } from '../../card-types/card';
 import { Game } from '../../game';
 import { EvalContext, Mechanic, TargetedMechanic } from '../../mechanic';
 import { ResourceType } from '../../resource';
-import { Unit } from '../../unit';
+import { Unit } from '../../card-types/unit';
 import { ParameterType } from '../parameters';
 
 export class DamageOnBlock extends Mechanic {

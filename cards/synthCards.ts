@@ -1,8 +1,8 @@
-import { Card } from '../card';
-import { Enchantment } from '../enchantment';
-import { Item } from '../item';
+import { Card } from '../card-types/card';
+import { Enchantment } from '../card-types/enchantment';
+import { Item } from '../card-types/item';
 import { Resource, ResourceType } from '../resource';
-import { Unit, UnitType } from '../unit';
+import { Unit, UnitType } from '../card-types/unit';
 import { BuffTarget, BuffTargetAndGrant, GrantAbility } from './mechanics/buff';
 import { CannotAttack, CannotBlock } from './mechanics/cantAttack';
 import {

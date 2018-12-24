@@ -1,5 +1,5 @@
-import { Card, CardType } from '../../card';
-import { Enchantment } from '../../enchantment';
+import { Card, CardType } from '../../card-types/card';
+import { Enchantment } from '../../card-types/enchantment';
 import { Game } from '../../game';
 import { Mechanic, TriggeredMechanic } from '../../mechanic';
 import { ParameterType } from '../parameters';

@@ -1,7 +1,7 @@
-import { Card } from '../../card';
+import { Card } from '../../card-types/card';
 import { Game } from '../../game';
 import { Targeter } from '../../targeter';
-import { isBiological, isMechanical, Unit, UnitType } from '../../unit';
+import { isBiological, isMechanical, Unit, UnitType } from '../../card-types/unit';
 import { AllUnits } from './basicTargeter';
 
 export class BiologicalUnit extends Targeter {

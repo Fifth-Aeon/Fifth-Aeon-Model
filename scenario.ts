@@ -1,6 +1,6 @@
-import { Card } from './card';
+import { Card } from './card-types/card';
 import { Game } from './game';
-import { Permanent } from './permanent';
+import { Permanent } from './card-types/permanent';
 import { DeckList } from './deckList';
 
 interface ScenarioPlayer {

@@ -1,12 +1,12 @@
 import { multiply, reduce, sumBy } from 'lodash';
-import { Card } from './card';
+import { Card } from './card-types/card';
 import { ParameterType } from './cards/parameters';
 import { Play } from './cards/triggers/basic';
 import { CardType } from './cardType';
 import { Game } from './game';
 import { Targeter } from './targeter';
 import { Trigger } from './trigger';
-import { Unit } from './unit';
+import { Unit } from './card-types/unit';
 import { Untargeted } from './cards/targeters/basicTargeter';
 
 export enum EvalContext {

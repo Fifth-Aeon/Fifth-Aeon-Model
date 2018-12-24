@@ -1,13 +1,13 @@
 import { remove } from 'lodash';
 import { Card, CardType, GameZone } from './card';
-import { AttackEvent, DealDamageEvent } from './events/cardEventTypes';
-import { EventList } from './events/eventSystems';
-import { Game } from './game';
+import { AttackEvent, DealDamageEvent } from '../events/cardEventTypes';
+import { EventList } from '../events/eventSystems';
+import { Game } from '../game';
 import { Item } from './item';
-import { EvalContext, Mechanic } from './mechanic';
+import { EvalContext, Mechanic } from '../mechanic';
 import { Permanent } from './permanent';
-import { Resource } from './resource';
-import { Targeter } from './targeter';
+import { Resource } from '../resource';
+import { Targeter } from '../targeter';
 
 export enum UnitType {
     Player,

@@ -1,8 +1,8 @@
-import { CardEventSystem } from './events/eventSystems';
-import { Game } from './game';
-import { EvalContext, Mechanic, TriggeredMechanic } from './mechanic';
-import { Resource } from './resource';
-import { Targeter } from './targeter';
+import { CardEventSystem } from '../events/eventSystems';
+import { Game } from '../game';
+import { EvalContext, Mechanic, TriggeredMechanic } from '../mechanic';
+import { Resource } from '../resource';
+import { Targeter } from '../targeter';
 import { Unit } from './unit';
 
 
@@ -169,7 +169,7 @@ export class Card {
         }
     }
 
-    public getText(game: Game): string {
+    public getText(game?: Game): string {
         if (this.text) {
             return this.text;
         }

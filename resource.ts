@@ -102,12 +102,13 @@ export class Resource {
         return properList(items);
     }
 
-    public getColor() {
+    public getColor(): number {
         for (let i = 0; i < colors.length; i++) {
             if (this.isInColors(colors[i])) {
                 return i;
             }
         }
+        throw new Error('Deck does not match any color combo');
     }
 
     public isInColors(colorsToCheck: Set<string>) {

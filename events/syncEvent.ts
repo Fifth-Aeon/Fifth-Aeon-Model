@@ -1,4 +1,4 @@
-import { CardPrototype } from '../card';
+import { CardPrototype } from '../card-types/card';
 import { GamePhase } from '../game';
 import { Resource } from '../resource';
 

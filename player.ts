@@ -1,12 +1,12 @@
 import { remove } from 'lodash';
 import { ChoiceHeuristic } from './ai/defaultAi';
-import { Card, GameZone } from './card';
+import { Card, GameZone } from './card-types/card';
 import { PlayerEventSystem } from './events/eventSystems';
 import { SyncEventType } from './events/syncEvent';
 import { Game } from './game';
 import { Resource } from './resource';
 import { ServerGame } from './serverGame';
-import { Unit, UnitType } from './unit';
+import { Unit, UnitType } from './card-types/unit';
 import { Untargeted } from './cards/targeters/basicTargeter';
 
 export class Player extends Unit {

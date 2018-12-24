@@ -1,8 +1,8 @@
-import { Card } from '../../card';
+import { Card } from '../../card-types/card';
 import { Game } from '../../game';
 import { Mechanic } from '../../mechanic';
-import { Permanent } from '../../permanent';
-import { Unit, UnitType } from '../../unit';
+import { Permanent } from '../../card-types/permanent';
+import { Unit, UnitType } from '../../card-types/unit';
 import { Poisoned } from './poison';
 import { Sleeping } from './sleep';
 

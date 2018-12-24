@@ -1,7 +1,7 @@
-import { Card } from '../../card';
+import { Card } from '../../card-types/card';
 import { Game } from '../../game';
 import { EvalContext, TargetedMechanic } from '../../mechanic';
-import { Unit } from '../../unit';
+import { Unit } from '../../card-types/unit';
 
 export class Annihilate extends TargetedMechanic {
     protected static id = 'Annihilate';

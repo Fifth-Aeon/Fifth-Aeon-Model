@@ -1,8 +1,8 @@
-import { Card } from '../../card';
+import { Card } from '../../card-types/card';
 import { Game } from '../../game';
 import { EvalContext, Mechanic, TargetedMechanic } from '../../mechanic';
-import { Permanent } from '../../permanent';
-import { Unit, UnitType } from '../../unit';
+import { Permanent } from '../../card-types/permanent';
+import { Unit, UnitType } from '../../card-types/unit';
 
 export class CurePoison extends TargetedMechanic {
     protected static id = 'CurePoison';

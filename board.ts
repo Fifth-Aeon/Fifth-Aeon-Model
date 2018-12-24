@@ -1,7 +1,7 @@
-import { CardType } from './card';
-import { Enchantment } from './enchantment';
-import { Permanent } from './permanent';
-import { Unit } from './unit';
+import { CardType } from './card-types/card';
+import { Enchantment } from './card-types/enchantment';
+import { Permanent } from './card-types/permanent';
+import { Unit } from './card-types/unit';
 
 /**
  * A simple board where each side can place up to a fixed number of units without any positioning.

@@ -1,8 +1,8 @@
-import { Card } from '../../card';
+import { Card } from '../../card-types/card';
 import { Game } from '../../game';
 import { EvalContext } from '../../mechanic';
 import { Trigger } from '../../trigger';
-import { Unit } from '../../unit';
+import { Unit } from '../../card-types/unit';
 
 export class Affinity extends Trigger {
     protected static id = 'Affinity';

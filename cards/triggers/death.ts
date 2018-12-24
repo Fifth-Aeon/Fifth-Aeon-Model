@@ -1,9 +1,9 @@
-import { Card } from '../../card';
+import { Card } from '../../card-types/card';
 import { Game } from '../../game';
 import { EvalContext } from '../../mechanic';
 import { removeFirstCapital } from '../../strings';
 import { Trigger } from '../../trigger';
-import { Unit } from '../../unit';
+import { Unit } from '../../card-types/unit';
 
 export class DeathTrigger extends Trigger {
     protected static id = 'Death';

@@ -1,4 +1,4 @@
-import { Card } from '../../card';
+import { Card } from '../../card-types/card';
 import { Game, GamePhase } from '../../game';
 import { Trigger } from '../../trigger';
 

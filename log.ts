@@ -1,6 +1,6 @@
-import { Card } from '../game_model/card';
+import { Card } from './card-types/card';
 import { properList } from '../game_model/strings';
-import { Unit } from '../game_model/unit';
+import { Unit } from './card-types/unit';
 import { SyncPlayCard } from './events/syncEvent';
 import { Game } from './game';
 

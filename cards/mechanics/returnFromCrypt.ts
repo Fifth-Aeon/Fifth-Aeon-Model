@@ -1,5 +1,5 @@
 import { ChoiceHeuristic } from '../../ai/defaultAi';
-import { Card } from '../../card';
+import { Card } from '../../card-types/card';
 import { CardType } from '../../cardType';
 import { Game } from '../../game';
 import { TriggeredMechanic } from '../../mechanic';
