@@ -1,7 +1,7 @@
-import { Card, CardType } from '../../card';
+import { Card, CardType } from '../../card-types/card';
 import { Game } from '../../game';
 import { EvalContext, Mechanic, TargetedMechanic } from '../../mechanic';
-import { Unit } from '../../unit';
+import { Unit } from '../../card-types/unit';
 
 export class Sleeping extends Mechanic {
     protected static id = 'Sleeping';

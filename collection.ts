@@ -1,5 +1,5 @@
 import { random, sample } from 'lodash';
-import { Card } from './card';
+import { Card } from './card-types/card';
 import { cardList } from './cards/cardList';
 import { DeckList } from './deckList';
 

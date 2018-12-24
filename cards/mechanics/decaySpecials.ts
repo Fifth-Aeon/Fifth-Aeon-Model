@@ -1,9 +1,9 @@
 import { remove, sumBy, take } from 'lodash';
 import { ChoiceHeuristic } from '../../ai/defaultAi';
-import { Card, CardType, GameZone } from '../../card';
+import { Card, CardType, GameZone } from '../../card-types/card';
 import { Game } from '../../game';
 import { Mechanic, TriggeredMechanic } from '../../mechanic';
-import { Unit, UnitType } from '../../unit';
+import { Unit, UnitType } from '../../card-types/unit';
 import { ParameterType } from '../parameters';
 
 export class TransformDamaged extends Mechanic {

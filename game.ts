@@ -1,18 +1,18 @@
 import { ChoiceHeuristic } from './ai/defaultAi';
 import { knapsack } from './algorithms';
 import { Board } from './board';
-import { Card, CardType, GameZone } from './card';
-import { Enchantment } from './enchantment';
+import { Card, CardType, GameZone } from './card-types/card';
+import { Enchantment } from './card-types/enchantment';
 import { GameEventSystem } from './events/eventSystems';
 import { QuitAction } from './events/gameAction';
 import { GameSyncEvent, SyncEventType } from './events/syncEvent';
 import { GameFormat, standardFormat } from './gameFormat';
 import { Log } from './log';
 import { EvalContext } from './mechanic';
-import { Permanent } from './permanent';
+import { Permanent } from './card-types/permanent';
 import { Player } from './player';
 import { ServerGame } from './serverGame';
-import { Unit } from './unit';
+import { Unit } from './card-types/unit';
 
 export enum GamePhase {
     Play1,

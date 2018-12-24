@@ -1,4 +1,4 @@
-import { Unit } from '../unit';
+import { Unit } from '../card-types/unit';
 
 export interface UnitEntersPlayEvent {
     enteringUnit: Unit;

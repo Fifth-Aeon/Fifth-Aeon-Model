@@ -1,9 +1,9 @@
 import { values } from 'lodash';
-import { Card, CardType } from '../card';
-import { Enchantment } from '../enchantment';
-import { Item } from '../item';
+import { Card, CardType } from '../card-types/card';
+import { Enchantment } from '../card-types/enchantment';
+import { Item } from '../card-types/item';
 import { Resource, ResourcePrototype } from '../resource';
-import { Unit, UnitType } from '../unit';
+import { Unit, UnitType } from '../card-types/unit';
 import * as decay from './decayCards';
 import * as growth from './growthCards';
 import { MechanicData, mechanicList } from './mechanicList';

@@ -1,10 +1,10 @@
 import { CardType, GameZone } from './card';
-import { Game } from './game';
-import { EvalContext, Mechanic } from './mechanic';
+import { Game } from '../game';
+import { EvalContext, Mechanic } from '../mechanic';
 import { Permanent } from './permanent';
-import { Player } from './player';
-import { Resource } from './resource';
-import { Targeter } from './targeter';
+import { Player } from '../player';
+import { Resource } from '../resource';
+import { Targeter } from '../targeter';
 
 export class Enchantment extends Permanent {
     private power: number;

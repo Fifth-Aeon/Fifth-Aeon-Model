@@ -1,5 +1,5 @@
-import { Unit } from '../unit';
-import { Card } from '../card';
+import { Unit } from '../card-types/unit';
+import { Card } from '../card-types/card';
 
 export interface DealDamageEvent {
     source: Card;

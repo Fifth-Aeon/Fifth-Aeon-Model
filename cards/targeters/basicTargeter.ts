@@ -1,9 +1,9 @@
-import { Card, CardType } from '../../card';
+import { Card, CardType } from '../../card-types/card';
 import { Game } from '../../game';
-import { Item } from '../../item';
+import { Item } from '../../card-types/item';
 import { Mechanic } from '../../mechanic';
 import { Targeter } from '../../targeter';
-import { Unit } from '../../unit';
+import { Unit } from '../../card-types/unit';
 
 export class TriggeringUnit extends Targeter {
     protected static id = 'TriggeringUnit';

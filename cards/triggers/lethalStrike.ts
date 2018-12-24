@@ -1,7 +1,7 @@
-import { Card } from '../../card';
+import { Card } from '../../card-types/card';
 import { Game } from '../../game';
 import { Trigger } from '../../trigger';
-import { Unit } from '../../unit';
+import { Unit } from '../../card-types/unit';
 
 export class LethalStrike extends Trigger {
     protected static id = 'LethalStrike';

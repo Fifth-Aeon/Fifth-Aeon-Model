@@ -1,9 +1,9 @@
 import { ChoiceHeuristic } from '../../ai/defaultAi';
-import { Card } from '../../card';
+import { Card } from '../../card-types/card';
 import { Game } from '../../game';
 import { Mechanic, TriggeredMechanic } from '../../mechanic';
 import { Player } from '../../player';
-import { Unit, UnitType } from '../../unit';
+import { Unit, UnitType } from '../../card-types/unit';
 import { ParameterType } from '../parameters';
 
 export class DrawCard extends TriggeredMechanic {

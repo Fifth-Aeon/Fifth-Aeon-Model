@@ -1,5 +1,5 @@
 import { Player } from './player';
-import { Unit } from './unit';
+import { Unit } from './card-types/unit';
 
 export class Animator {
     private battleAnimationSubscribers = new Array<

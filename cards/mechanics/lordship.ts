@@ -1,9 +1,9 @@
-import { Card } from '../../card';
+import { Card } from '../../card-types/card';
 import { Game } from '../../game';
 import { Mechanic } from '../../mechanic';
-import { Permanent } from '../../permanent';
+import { Permanent } from '../../card-types/permanent';
 import { formatBuff } from '../../strings';
-import { Unit, UnitType } from '../../unit';
+import { Unit, UnitType } from '../../card-types/unit';
 
 export class Lordship extends Mechanic {
     protected static id = 'Lordship';

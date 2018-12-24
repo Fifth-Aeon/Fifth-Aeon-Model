@@ -1,5 +1,5 @@
 import { values } from 'lodash';
-import { CardType } from '../card';
+import { CardType } from '../card-types/card';
 import { TargetedMechanic, TriggeredMechanic } from '../mechanic';
 import { CardData, CardList } from './cardList';
 import { MechanicConstructor } from './mechanicConstructor';

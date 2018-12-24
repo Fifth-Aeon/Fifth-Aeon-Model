@@ -1,4 +1,4 @@
-import { Card } from '../../card';
+import { Card } from '../../card-types/card';
 import { Game } from '../../game';
 import { Targeter } from '../../targeter';
 

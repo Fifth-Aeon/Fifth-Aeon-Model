@@ -1,4 +1,4 @@
-import { Card } from '../../card';
+import { Card } from '../../card-types/card';
 import { Game } from '../../game';
 import {
     EvalContext,
@@ -7,7 +7,7 @@ import {
     TargetedMechanic
 } from '../../mechanic';
 import { properCase, properList } from '../../strings';
-import { Unit } from '../../unit';
+import { Unit } from '../../card-types/unit';
 import { MechanicConstructor } from '../MechanicConstructor';
 import { ParameterType } from '../parameters';
 

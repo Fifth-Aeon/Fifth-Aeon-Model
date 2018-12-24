@@ -1,5 +1,5 @@
 import { sampleSize } from 'lodash';
-import { Card } from './card';
+import { Card } from './card-types/card';
 import { cardList } from './cards/cardList';
 import { Rewards } from './collection';
 import { DeckList, SavedDeck } from './deckList';

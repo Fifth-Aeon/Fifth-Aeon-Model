@@ -1,4 +1,4 @@
-import { CardType } from '../card';
+import { CardType } from '../card-types/card';
 import { ParameterType } from './parameters';
 import { Mechanic } from '../mechanic';
 

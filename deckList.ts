@@ -1,5 +1,5 @@
 import { remove, sample, sampleSize, sum } from 'lodash';
-import { Card } from './card';
+import { Card } from './card-types/card';
 import { CardFactory, cardList } from './cards/cardList';
 import { Collection } from './collection';
 import { GameFormat, standardFormat } from './gameFormat';

@@ -1,9 +1,9 @@
-import { Card, CardType } from '../../card';
-import { Enchantment } from '../../enchantment';
+import { Card, CardType } from '../../card-types/card';
+import { Enchantment } from '../../card-types/enchantment';
 import { Game } from '../../game';
 import { EvalContext, Mechanic, TriggeredMechanic } from '../../mechanic';
 import { a } from '../../strings';
-import { Unit, UnitType } from '../../unit';
+import { Unit, UnitType } from '../../card-types/unit';
 import { ParameterType } from '../parameters';
 
 export class SummonUnits extends TriggeredMechanic {

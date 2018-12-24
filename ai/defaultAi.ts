@@ -1,18 +1,18 @@
 import { maxBy, meanBy, minBy, remove, sortBy, sumBy, take } from 'lodash';
 import { knapsack, KnapsackItem } from '../algorithms';
-import { Card, CardType } from '../card';
+import { Card, CardType } from '../card-types/card';
 import { TransformDamaged } from '../cards/mechanics/decaySpecials';
 import { Flying, Lethal, Shielded } from '../cards/mechanics/skills';
 import { ClientGame } from '../clientGame';
 import { DeckList } from '../deckList';
-import { Enchantment } from '../enchantment';
+import { Enchantment } from '../card-types/enchantment';
 import { GameSyncEvent } from '../events/syncEvent';
 import { GamePhase } from '../game';
-import { Item } from '../item';
+import { Item } from '../card-types/item';
 import { EvalContext } from '../mechanic';
 import { Player } from '../player';
 import { Resource, ResourceTypeNames } from '../resource';
-import { Unit } from '../unit';
+import { Unit } from '../card-types/unit';
 import { AI } from './ai';
 import { aiList } from './aiList';
 

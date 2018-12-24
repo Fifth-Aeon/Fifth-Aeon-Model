@@ -1,8 +1,8 @@
-import { Card } from '../../card';
+import { Card } from '../../card-types/card';
 import { Game } from '../../game';
 import { removeFirstCapital } from '../../strings';
 import { Targeter } from '../../targeter';
-import { Unit, UnitType } from '../../unit';
+import { Unit, UnitType } from '../../card-types/unit';
 import { AllUnits } from './basicTargeter';
 
 export class UnitsOfTypeAsTarget extends AllUnits {

@@ -1,9 +1,9 @@
 import { CardType, GameZone } from './card';
-import { Game } from './game';
-import { EvalContext, Mechanic, TriggeredMechanic } from './mechanic';
+import { Game } from '../game';
+import { EvalContext, Mechanic, TriggeredMechanic } from '../mechanic';
 import { Permanent } from './permanent';
-import { Resource } from './resource';
-import { Targeter } from './targeter';
+import { Resource } from '../resource';
+import { Targeter } from '../targeter';
 import { Unit } from './unit';
 
 export class Item extends Permanent {

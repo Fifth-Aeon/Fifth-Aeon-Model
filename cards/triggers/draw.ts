@@ -1,10 +1,10 @@
-import { Card, CardType } from '../../card';
+import { Card, CardType } from '../../card-types/card';
 import { Game } from '../../game';
 import { EvalContext } from '../../mechanic';
 import { Player } from '../../player';
 import { removeFirstCapital } from '../../strings';
 import { Trigger } from '../../trigger';
-import { Unit } from '../../unit';
+import { Unit } from '../../card-types/unit';
 
 export class OwnerDrawsUnit extends Trigger {
     protected static id = 'OwnerDrawsUnit';

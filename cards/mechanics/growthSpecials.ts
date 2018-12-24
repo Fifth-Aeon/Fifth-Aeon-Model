@@ -1,7 +1,7 @@
-import { Card } from '../../card';
+import { Card } from '../../card-types/card';
 import { Game } from '../../game';
 import { TargetedMechanic } from '../../mechanic';
-import { Unit } from '../../unit';
+import { Unit } from '../../card-types/unit';
 import { ParameterType } from '../parameters';
 
 export class DrawCardsFromUnit extends TargetedMechanic {

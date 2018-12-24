@@ -1,12 +1,12 @@
 import { isArray } from 'util';
-import { CardType, Card } from './card';
+import { CardType, Card } from './card-types/card';
 import { DeckList } from './deckList';
-import { Enchantment } from './enchantment';
+import { Enchantment } from './card-types/enchantment';
 import { Game, GamePhase } from './game';
 import { GameFormat, standardFormat } from './gameFormat';
-import { Item } from './item';
+import { Item } from './card-types/item';
 import { Player } from './player';
-import { Unit } from './unit';
+import { Unit } from './card-types/unit';
 import Prando from 'prando';
 import { GameSyncEvent, SyncEventType } from './events/syncEvent';
 import {
