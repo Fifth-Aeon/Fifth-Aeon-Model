@@ -33,10 +33,6 @@ export class Sleeping extends Mechanic {
         game.gameEvents.removeEvents(this);
     }
 
-    public getId() {
-        return 'sleeping';
-    }
-
     public getText(card: Card) {
         if (this.turns === 1) {
             return 'Sleeping.';

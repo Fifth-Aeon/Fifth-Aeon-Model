@@ -43,10 +43,6 @@ export class Poisoned extends Mechanic {
         game.gameEvents.removeEvents(this);
     }
 
-    public getId() {
-        return 'poisoned';
-    }
-
     public getText(card: Card) {
         if (this.level === 1) {
             return 'Poisoned.';
