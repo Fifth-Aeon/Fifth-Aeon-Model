@@ -8,7 +8,7 @@ import {
 } from '../../mechanic';
 import { properCase, properList } from '../../strings';
 import { Unit } from '../../card-types/unit';
-import { MechanicConstructor } from '../MechanicConstructor';
+import { MechanicConstructor } from '../mechanicConstructor';
 import { ParameterType } from '../parameters';
 
 export class BuffTarget extends TargetedMechanic {
