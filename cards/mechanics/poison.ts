@@ -73,7 +73,8 @@ export class PoisonTarget extends TargetedMechanic {
         return (
             target.evaluate(game, EvalContext.NonlethalRemoval) *
             0.5 *
-            (target.getOwner() === source.getOwner() ? -1 : 1)
+            (target.getOwner() === source.getOwner() ? -1 : 1) *
+            (target.isImmune(PoisonTarget.id) ? 0 : 1)
         );
     }
 }
