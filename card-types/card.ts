@@ -196,7 +196,7 @@ export class Card {
 
     public getOwner(): number {
         if (this.owner === -1) {
-            throw new Error('Card has no owner');
+            // throw new Error('Card has no owner');
         }
         return this.owner;
     }
