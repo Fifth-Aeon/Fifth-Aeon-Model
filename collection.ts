@@ -86,7 +86,7 @@ export class Collection {
     }
 
     public canBuyPack() {
-        return this.gold > 100;
+        return this.gold >= 100;
     }
 
     public buyPack() {
