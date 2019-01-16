@@ -98,7 +98,7 @@ addDeck({
 });
 
 addDeck({
-    name: 'Skys and Seas',
+    name: 'Skies and Seas',
     avatar: 'battleship.png',
     customMetadata: true,
     id: -1,
