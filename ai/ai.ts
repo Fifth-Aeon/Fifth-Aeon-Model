@@ -2,6 +2,8 @@ import { Animator } from '../animator';
 import { ClientGame } from '../clientGame';
 import { DeckList } from '../deckList';
 import { GameSyncEvent } from '../events/syncEvent';
+import { GameAction, GameActionType, PassAction } from 'game_model/events/gameAction';
+import { ClientInterface } from 'game_model/clientInterface';
 
 /**
  * An Artificial Intelligence that can play the game.
@@ -11,9 +13,11 @@ import { GameSyncEvent } from '../events/syncEvent';
 export abstract class AI {
     private timer: any;
     protected isImmediateMode = false;
-    protected actionSequence: Array<() => boolean> = [];
+    protected actionSequence: Array<GameAction> = [];
     protected animator?: Animator;
     protected thinking = false;
+    protected gameInterface: ClientInterface;
+
 
     /**
      * Construct an Artificial Intelligence that can play the game
@@ -26,7 +30,9 @@ export abstract class AI {
         protected playerNumber: number,
         protected game: ClientGame,
         protected deck: DeckList
-    ) {}
+    ) {
+        this.gameInterface = new ClientInterface(game, playerNumber);
+    }
 
     /** Triggers the A.I to plan out its next actions */
     protected abstract think(): void;
@@ -48,7 +54,7 @@ export abstract class AI {
             return;
         }
 
-        const next = this.actionSequence.shift() || (() => this.game.pass());
+        const next = this.actionSequence.shift() || { type: GameActionType.Pass } as PassAction;
         this.runAction(next);
     }
 
@@ -56,8 +62,8 @@ export abstract class AI {
      * Executes an action checking if it returns an error status code.
      * If it does then prints out a message.
      */
-    private runAction(action: () => boolean) {
-        if (action() === false) {
+    private runAction(action: GameAction) {
+        if (this.gameInterface.takeAction(action) === false) {
             console.error(
                 `A.I ${this.playerNumber} attempted to take illegal action`,
                 action
@@ -127,17 +133,16 @@ export abstract class AI {
      * @param front If true the action will be added to the beginning of the sequence, otherwise it will go at the end.
      */
     protected addActionToSequence(
-        action: () => boolean,
+        action: GameAction,
         front: boolean = false
     ) {
-        const boundAction = action.bind(this);
         if (this.isImmediateMode) {
-            this.runAction(boundAction);
+            this.runAction(action);
         } else {
             if (front) {
-                this.actionSequence.unshift(boundAction);
+                this.actionSequence.unshift(action);
             } else {
-                this.actionSequence.push(boundAction);
+                this.actionSequence.push(action);
             }
         }
     }
@@ -146,13 +151,13 @@ export abstract class AI {
      * Adds a list of actions to be run to end of the sequence.
      * @param actions - The actions to add
      */
-    protected sequenceActions(actions: Array<() => boolean>) {
+    protected sequenceActions(actions: GameAction[]) {
         if (this.isImmediateMode) {
             for (const action of actions) {
                 this.runAction(action);
             }
         } else {
-            this.actionSequence = actions.map(action => action.bind(this));
+            this.actionSequence = actions;
         }
     }
 }

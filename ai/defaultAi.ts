@@ -15,6 +15,8 @@ import { Resource, ResourceTypeNames } from '../resource';
 import { Unit } from '../card-types/unit';
 import { AI } from './ai';
 import { aiList } from './aiList';
+import { ClientInterface } from 'game_model/clientInterface';
+import { GameAction } from 'game_model/events/gameAction';
 
 /**
  * Determines which heuristic to be used when the A.I makes a choice.
@@ -34,11 +36,7 @@ export enum ChoiceHeuristic {
  */
 interface EvaluatedAction {
     score: number;
-    cost: number;
-    card?: Card;
-    enchantmentTarget?: Enchantment;
-    target?: Unit;
-    host?: Unit;
+    action: GameAction;
 }
 
 /** Represents the outcome of a 1v1 fight based on which of the two units die */
@@ -83,6 +81,7 @@ export class DefaultAI extends AI {
         this.game.setOwningPlayer(this.playerNumber);
 
         this.game.promptCardChoice = this.makeChoice.bind(this);
+        this.gameInterface = new ClientInterface(game, playerNumber);
     }
 
     /** Triggers the A.I to consider what its next action should be */
