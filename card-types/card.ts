@@ -27,7 +27,7 @@ export interface CardPrototype {
 }
 
 export class Card {
-    public name: string;
+    protected name: string;
     protected id: string;
     protected mechanics: Mechanic[] = [];
 
@@ -63,6 +63,10 @@ export class Card {
         this.text = text;
     }
 
+    /** 
+     * Returns the cards event system.
+     * This is used to add or remove events
+     */
     public getEvents() {
         return this.events;
     }

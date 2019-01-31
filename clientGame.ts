@@ -115,6 +115,17 @@ export class ClientGame extends Game {
         return true;
     }
 
+    /**
+     * Invoked by the player or A.I to play a card.
+     *
+     * It will return false if it is not currently legal to play the card.
+     * Otherwise it will play the card then send the action to the server.
+     *
+     * @param card - The card to play
+     * @param targets - The card's targets (empty array if it has none)
+     * @param host - The card's host if it is an item or null if it is not an item
+     *
+     */
     public playCardExtern(
         card: Card,
         targets: Unit[] = [],
@@ -142,9 +153,16 @@ export class ClientGame extends Game {
         return true;
     }
 
+    /**
+     * When an attacking unit is blocked by multiple defenders, the attacker's owner may set the order damage is delt in.
+     * This function does that for a given attacker and an ordered list of blockers.
+     *
+     * @param attacker - The unit that has been blocked
+     * @param order - The blockers in the order that damage should be applied to them
+     */
     public setAttackOrder(attacker: Unit, order: Unit[]) {
         if (!this.attackDamageOrder) {
-            return;
+            return false;
         }
         this.attackDamageOrder.set(attacker.getId(), order);
         this.runGameAction(GameActionType.DistributeDamage, {
@@ -153,6 +171,7 @@ export class ClientGame extends Game {
             attackerID: attacker.getId(),
             order: order.map(unit => unit.getId())
         });
+        return true;
     }
 
     public canModifyEnchantment(enchantment: Enchantment): boolean {
