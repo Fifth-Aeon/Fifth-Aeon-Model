@@ -114,6 +114,10 @@ export abstract class TriggeredMechanic extends Mechanic {
         game: Game,
         context: EvalContext
     ): number | EvalOperator {
+        const triggerValue = this.triggerType.evaluate(card, game, context);
+        if (triggerValue  === 0) {
+            return 0;
+        }
         let base = this.evaluateEffect(card, game, context);
         if (typeof base !== 'object') {
             base = {
@@ -121,7 +125,7 @@ export abstract class TriggeredMechanic extends Mechanic {
                 multiplier: 1
             } as EvalOperator;
         }
-        base.multiplier *= this.triggerType.evaluate(card, game, context);
+        base.multiplier *= triggerValue;
         return base;
     }
 

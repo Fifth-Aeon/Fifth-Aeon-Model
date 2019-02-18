@@ -63,7 +63,7 @@ export class Card {
         this.text = text;
     }
 
-    /** 
+    /**
      * Returns the cards event system.
      * This is used to add or remove events
      */
