@@ -98,10 +98,7 @@ export function valiantDefenses() {
         new Untargeted(),
         3,
         3,
-        [
-            new SummonUnits(pikeman, 1).setTrigger(new OwnerAttacked()),
-            new ChangePower(-1).setTrigger(new OwnerAttacked())
-        ]
+        []
     );
 }
 
