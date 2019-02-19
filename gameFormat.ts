@@ -18,7 +18,8 @@ export class GameFormat {
     // Deckbuilding rules
     public minDeckSize = 40;
     public maxDeckSize = 50;
-    public cardsOfRarity = [4, 4, 4, 4];
+    public maxCardsOfType = 4;
+    public cardsOfRarity = [Infinity, Infinity, Infinity, Infinity];
 
     constructor() {
         this.basicResources.set('basic', new Resource(1));
@@ -36,3 +37,6 @@ export class GameFormat {
 }
 
 export const standardFormat = new GameFormat();
+
+export const limitedFormat = new GameFormat();
+limitedFormat.maxCardsOfType = Infinity;

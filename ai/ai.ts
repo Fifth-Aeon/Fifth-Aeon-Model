@@ -2,6 +2,7 @@ import { Animator } from '../animator';
 import { ClientGame } from '../clientGame';
 import { DeckList } from '../deckList';
 import { GameSyncEvent } from '../events/syncEvent';
+import { DeckBuilder } from './deckBuilder';
 
 /**
  * An Artificial Intelligence that can play the game.

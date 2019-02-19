@@ -141,7 +141,7 @@ export class DeckList {
 
     public canAddCard(card: Card) {
         const currValue = this.records.get(card.getDataId()) || 0;
-        const limit = this.format.cardsOfRarity[0];
+        const limit = this.format.maxCardsOfType;
         return currValue < limit;
     }
 

@@ -15,6 +15,8 @@ import { Resource, ResourceTypeNames } from '../resource';
 import { Unit } from '../card-types/unit';
 import { AI } from './ai';
 import { aiList } from './aiList';
+import { RandomBuilder } from './randomBuilder';
+import { DeckBuilder } from './deckBuilder';
 
 /**
  * Determines which heuristic to be used when the A.I makes a choice.
@@ -68,6 +70,10 @@ export class DefaultAI extends AI {
     private enemyNumber: number;
     private aiPlayer: Player;
 
+    public static getDeckbuilder(): DeckBuilder {
+        return new RandomBuilder();
+    }
+
     /**
      * Creates an instance of DefaultAI.
      *
@@ -100,6 +106,11 @@ export class DefaultAI extends AI {
                 this.sequenceActions([this.selectActions, this.attack]);
             }
         }
+    }
+
+    /** Returns a deckbuilder to be used for limited tournaments */
+    public getDeckbuilder(): DeckBuilder {
+        throw new RandomBuilder();
     }
 
     /** A simple heuristic to determine which card is best to draw
@@ -424,7 +435,9 @@ export class DefaultAI extends AI {
         for (const card of cards) {
             total.add(card.getCost());
         }
-        return maxBy(ResourceTypeNames, type => total.getOfType(type)) as string;
+        return maxBy(ResourceTypeNames, type =>
+            total.getOfType(type)
+        ) as string;
     }
 
     /**
@@ -454,7 +467,9 @@ export class DefaultAI extends AI {
                 this.aiPlayer.getPool(),
                 closestCard.getCost()
             );
-            return maxBy(ResourceTypeNames, type => diff.resources.get(type)) as string;
+            return maxBy(ResourceTypeNames, type =>
+                diff.resources.get(type)
+            ) as string;
         } else {
             return this.getMostCommonResource(deckCards);
         }
