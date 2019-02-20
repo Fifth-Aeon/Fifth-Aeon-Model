@@ -1,6 +1,6 @@
 import { Card } from '../../card-types/card';
 import { Game } from '../../game';
-import { EvalContext, TargetedMechanic } from '../../mechanic';
+import { EvalContext, TargetedMechanic, EvalMap, maybeEvaluate } from '../../mechanic';
 import { Unit } from '../../card-types/unit';
 
 export class Annihilate extends TargetedMechanic {
@@ -15,9 +15,9 @@ export class Annihilate extends TargetedMechanic {
         return `Annihilate ${this.targeter.getTextOrPronoun()}.`;
     }
 
-    public evaluateTarget(source: Card, target: Unit, game: Game) {
+    public evaluateTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
         return (
-            target.evaluate(game, EvalContext.NonlethalRemoval) *
+            maybeEvaluate(game, EvalContext.NonlethalRemoval, target, evaluated) *
             1.25 *
             (target.getOwner() === source.getOwner() ? -1 : 1)
         );
@@ -36,9 +36,9 @@ export class KillTarget extends TargetedMechanic {
         return `Kill ${this.targeter.getTextOrPronoun()}.`;
     }
 
-    public evaluateTarget(source: Card, target: Unit, game: Game) {
+    public evaluateTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
         return (
-            target.evaluate(game, EvalContext.LethalRemoval) *
+            maybeEvaluate(game, EvalContext.LethalRemoval, target, evaluated) *
             1.0 *
             (target.getOwner() === source.getOwner() ? -1 : 1)
         );

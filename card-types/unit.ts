@@ -4,7 +4,7 @@ import { AttackEvent, DealDamageEvent } from '../events/cardEventTypes';
 import { EventList } from '../events/eventSystems';
 import { Game } from '../game';
 import { Item } from './item';
-import { EvalContext, Mechanic } from '../mechanic';
+import { EvalContext, Mechanic, EvalMap } from '../mechanic';
 import { Permanent } from './permanent';
 import { Resource } from '../resource';
 import { Targeter } from '../targeter';
@@ -373,14 +373,14 @@ export class Unit extends Permanent {
         }
     }
 
-    public evaluate(game: Game, context: EvalContext) {
-        return this.maxLife + this.damage + super.evaluate(game, context);
+    public evaluate(game: Game, context: EvalContext, evaluated: EvalMap) {
+        return this.maxLife + this.damage + super.evaluate(game, context, evaluated);
     }
 
-    public getMultiplier(game: Game, context: EvalContext) {
+    public getMultiplier(game: Game, context: EvalContext, evaluated: EvalMap) {
         return Mechanic.getMultiplier(
             this.mechanics.map(mechanic =>
-                mechanic.evaluate(this, game, context)
+                mechanic.evaluate(this, game, context, evaluated)
             )
         );
     }

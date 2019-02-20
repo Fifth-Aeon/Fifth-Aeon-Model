@@ -1,6 +1,6 @@
 import { Card } from '../../card-types/card';
 import { Game } from '../../game';
-import { EvalContext, Mechanic, TargetedMechanic } from '../../mechanic';
+import { EvalContext, Mechanic, TargetedMechanic, EvalMap, maybeEvaluate } from '../../mechanic';
 import { Permanent } from '../../card-types/permanent';
 import { Unit, UnitType } from '../../card-types/unit';
 
@@ -69,9 +69,9 @@ export class PoisonTarget extends TargetedMechanic {
         return `Poison ${this.targeter.getTextOrPronoun()}.`;
     }
 
-    public evaluateTarget(source: Card, target: Unit, game: Game) {
+    public evaluateTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
         return (
-            target.evaluate(game, EvalContext.NonlethalRemoval) *
+            maybeEvaluate(game, EvalContext.NonlethalRemoval, target, evaluated) *
             0.5 *
             (target.getOwner() === source.getOwner() ? -1 : 1) *
             (target.isImmune(PoisonTarget.id) ? 0 : 1)

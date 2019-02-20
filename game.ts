@@ -274,7 +274,7 @@ export abstract class Game {
                 blockers.map(blocker => {
                     return {
                         w: blocker.getLife(),
-                        b: blocker.evaluate(this, EvalContext.LethalRemoval),
+                        b: blocker.evaluate(this, EvalContext.LethalRemoval, new Map()),
                         data: blocker
                     };
                 })

@@ -1,6 +1,6 @@
 import { Card, CardType } from '../../card-types/card';
 import { Game } from '../../game';
-import { EvalContext, Mechanic, TargetedMechanic } from '../../mechanic';
+import { EvalContext, Mechanic, TargetedMechanic, maybeEvaluate, EvalMap } from '../../mechanic';
 import { Unit } from '../../card-types/unit';
 
 export class CannotAttack extends Mechanic {
@@ -56,9 +56,9 @@ export class ImprisonTarget extends TargetedMechanic {
         return `Cause ${this.targeter.getTextOrPronoun()} to become unable to attack or block.`;
     }
 
-    public evaluateTarget(source: Card, unit: Unit, game: Game) {
+    public evaluateTarget(source: Card, unit: Unit, game: Game, evaluated: EvalMap) {
         return (
-            unit.evaluate(game, EvalContext.NonlethalRemoval) *
+            maybeEvaluate(game, EvalContext.NonlethalRemoval, unit, evaluated) *
             0.9 *
             (unit.getOwner() === source.getOwner() ? -1 : 1)
         );

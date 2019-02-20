@@ -1,6 +1,6 @@
 import { Card } from '../../card-types/card';
 import { Game } from '../../game';
-import { EvalContext, TargetedMechanic } from '../../mechanic';
+import { EvalContext, TargetedMechanic, maybeEvaluate, EvalMap } from '../../mechanic';
 import { Unit } from '../../card-types/unit';
 
 export class ShuffleIntoDeck extends TargetedMechanic {
@@ -16,9 +16,9 @@ export class ShuffleIntoDeck extends TargetedMechanic {
         return `Shuffle ${this.targeter.getTextOrPronoun()} into their owner's deck.`;
     }
 
-    public evaluateTarget(source: Card, target: Unit, game: Game) {
+    public evaluateTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
         return (
-            target.evaluate(game, EvalContext.NonlethalRemoval) *
+            maybeEvaluate(game, EvalContext.NonlethalRemoval, target, evaluated) *
             (target.getOwner() === source.getOwner() ? -1 : 1)
         );
     }

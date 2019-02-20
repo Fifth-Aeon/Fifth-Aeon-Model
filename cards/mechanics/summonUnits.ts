@@ -1,7 +1,13 @@
 import { Card, CardType } from '../../card-types/card';
 import { Enchantment } from '../../card-types/enchantment';
 import { Game } from '../../game';
-import { EvalContext, Mechanic, TriggeredMechanic } from '../../mechanic';
+import {
+    EvalContext,
+    Mechanic,
+    TriggeredMechanic,
+    EvalMap,
+    maybeEvaluate
+} from '../../mechanic';
 import { a } from '../../strings';
 import { Unit, UnitType } from '../../card-types/unit';
 import { ParameterType } from '../parameters';
@@ -38,9 +44,14 @@ export class SummonUnits extends TriggeredMechanic {
         }.`;
     }
 
-    public evaluateEffect(card: Card, game: Game) {
+    public evaluateEffect(
+        card: Card,
+        game: Game,
+        _: EvalContext,
+        evaluated: EvalMap
+    ) {
         return (
-            this.unit.evaluate(game, EvalContext.Play) *
+            this.unit.evaluate(game, EvalContext.Play, evaluated) *
             Math.min(
                 this.getUnitCount(card, game),
                 game.getBoard().getRemainingSpace(card.getOwner())
@@ -104,9 +115,14 @@ export class EnchantmentSummon extends SummonUnits {
         }. It becomes an X/X where X is this enchantment’s power.`;
     }
 
-    public evaluate(card: Card, game: Game) {
+    public evaluate(
+        card: Card,
+        game: Game,
+        _: EvalContext,
+        evaluated: EvalMap
+    ) {
         return (
-            this.unit.evaluate(game, EvalContext.Play) *
+            this.unit.evaluate(game, EvalContext.Play, evaluated) *
             Math.min(
                 this.getUnitCount(card, game),
                 game.getBoard().getRemainingSpace(card.getOwner())
@@ -151,9 +167,14 @@ export class SummonUnitOnDamage extends Mechanic {
         }.`;
     }
 
-    public evaluate(card: Card, game: Game) {
+    public evaluate(
+        card: Card,
+        game: Game,
+        ctx: EvalContext,
+        evaluated: EvalMap
+    ) {
         // TODO something cleverer
         // Look at whether opponent can Block?
-        return this.unit.evaluate(game, EvalContext.Play);
+        return maybeEvaluate(game, EvalContext.Play, this.unit, evaluated);
     }
 }

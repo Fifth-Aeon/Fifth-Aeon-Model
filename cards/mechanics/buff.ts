@@ -4,7 +4,9 @@ import {
     EvalContext,
     EvalOperator,
     Mechanic,
-    TargetedMechanic
+    TargetedMechanic,
+    EvalMap,
+    maybeEvaluate
 } from '../../mechanic';
 import { properCase, properList } from '../../strings';
 import { Unit } from '../../card-types/unit';
@@ -116,18 +118,18 @@ export class GrantAbility extends TargetedMechanic {
         )}.`;
     }
 
-    public evaluateTarget(source: Card, target: Unit, game: Game) {
+    public evaluateTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
         let val: EvalOperator | Number;
         if (target.getOwner() === source.getOwner()) {
-            val = this.instance.evaluate(target, game, EvalContext.Play);
+            val = this.instance.evaluate(target, game, EvalContext.Play, evaluated);
         } else {
-            val = -this.instance.evaluate(target, game, EvalContext.Play);
+            val = -this.instance.evaluate(target, game, EvalContext.Play, evaluated);
         }
         if (typeof val !== 'number') {
             return (
                 (val as EvalOperator).addend +
                 (val as EvalOperator).multiplier *
-                    target.evaluate(game, EvalContext.Play)
+                    maybeEvaluate(game, EvalContext.Play, target, evaluated)
             );
         }
         return val;

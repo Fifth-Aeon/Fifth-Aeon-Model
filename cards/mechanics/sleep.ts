@@ -1,6 +1,6 @@
 import { Card, CardType } from '../../card-types/card';
 import { Game } from '../../game';
-import { EvalContext, Mechanic, TargetedMechanic } from '../../mechanic';
+import { EvalContext, Mechanic, TargetedMechanic, maybeEvaluate, EvalMap } from '../../mechanic';
 import { Unit } from '../../card-types/unit';
 
 export class Sleeping extends Mechanic {
@@ -64,9 +64,9 @@ export class SleepTarget extends TargetedMechanic {
         }.`;
     }
 
-    public evaluateTarget(source: Card, target: Unit, game: Game) {
+    public evaluateTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
         return (
-            target.evaluate(game, EvalContext.NonlethalRemoval) *
+            maybeEvaluate(game, EvalContext.NonlethalRemoval, target, evaluated) *
             0.5 *
             (target.getOwner() === source.getOwner() ? -1 : 1)
         );

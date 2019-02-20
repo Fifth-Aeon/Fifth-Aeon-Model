@@ -1,6 +1,6 @@
 import { Card, CardType, GameZone } from '../../card-types/card';
 import { Game } from '../../game';
-import { EvalContext, Mechanic, TargetedMechanic } from '../../mechanic';
+import { EvalContext, Mechanic, TargetedMechanic, EvalMap, maybeEvaluate } from '../../mechanic';
 import { ResourceType } from '../../resource';
 import { Unit } from '../../card-types/unit';
 import { ParameterType } from '../parameters';
@@ -67,10 +67,10 @@ export class DealDamage extends TargetedMechanic {
         } damage to ${this.targeter.getTextOrPronoun()}.`;
     }
 
-    public evaluateTarget(source: Card, target: Unit, game: Game) {
+    public evaluateTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
         const isEnemy = target.getOwner() === source.getOwner() ? -1 : 1;
         return target.getLife() < this.getDamage(source, game)
-            ? target.evaluate(game, EvalContext.LethalRemoval) * isEnemy
+            ? maybeEvaluate(game, EvalContext.LethalRemoval, target, evaluated) * isEnemy
             : 0;
     }
 }

@@ -1,6 +1,6 @@
 import { CardType, GameZone } from './card';
 import { Game } from '../game';
-import { EvalContext, Mechanic, TriggeredMechanic } from '../mechanic';
+import { EvalContext, Mechanic, TriggeredMechanic, EvalMap } from '../mechanic';
 import { Permanent } from './permanent';
 import { Resource } from '../resource';
 import { Targeter } from '../targeter';
@@ -29,11 +29,11 @@ export class Item extends Permanent {
         this.hostTargeter = hostTargeter;
     }
 
-    public evaluate(game: Game) {
+    public evaluate(game: Game, context: EvalContext, evaluated: EvalMap) {
         return (
             this.lifeBonus +
             this.damageBonus +
-            super.evaluate(game, EvalContext.Play)
+            super.evaluate(game, EvalContext.Play, evaluated)
         );
     }
 

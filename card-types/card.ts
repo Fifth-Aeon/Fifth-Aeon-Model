@@ -1,6 +1,6 @@
 import { CardEventSystem } from '../events/eventSystems';
 import { Game } from '../game';
-import { EvalContext, Mechanic, TriggeredMechanic } from '../mechanic';
+import { EvalContext, Mechanic, TriggeredMechanic, EvalMap } from '../mechanic';
 import { Resource } from '../resource';
 import { Targeter } from '../targeter';
 import { Unit } from './unit';
@@ -217,17 +217,17 @@ export class Card {
         return `${this.name}: (${this.cost})`;
     }
 
-    public evaluate(game: Game, context: EvalContext) {
+    public evaluate(game: Game, context: EvalContext, evaluated: EvalMap) {
         return Mechanic.sumValues(
             this.mechanics.map(mechanic =>
-                mechanic.evaluate(this, game, context)
+                mechanic.evaluate(this, game, context, evaluated)
             )
         );
     }
 
-    public evaluateTarget(target: Unit, game: Game) {
+    public evaluateTarget(target: Unit, game: Game, evaluated: EvalMap) {
         return this.mechanics
-            .map(mechanic => mechanic.evaluateTarget(this, target, game))
+            .map(mechanic => mechanic.evaluateTarget(this, target, game, evaluated))
             .reduce((a, b) => a + b);
     }
 }

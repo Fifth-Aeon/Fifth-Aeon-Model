@@ -1,6 +1,6 @@
 import { CardType, GameZone } from './card';
 import { Game } from '../game';
-import { EvalContext, Mechanic } from '../mechanic';
+import { EvalContext, Mechanic, EvalMap } from '../mechanic';
 import { Permanent } from './permanent';
 import { Player } from '../player';
 import { Resource } from '../resource';
@@ -73,8 +73,8 @@ export class Enchantment extends Permanent {
         this.location = GameZone.Crypt;
     }
 
-    public evaluate(game: Game) {
-        return super.evaluate(game, EvalContext.Play);
+    public evaluate(game: Game, context: EvalContext, evaluated: EvalMap) {
+        return super.evaluate(game, EvalContext.Play, evaluated);
     }
 
     public isPlayable(game: Game): boolean {

@@ -235,14 +235,14 @@ export class DefaultAI extends AI {
     protected getBestTarget(card: Card): EvaluatedAction {
         const targets = card.getTargeter().getValidTargets(card, this.game);
         const best = maxBy(targets, target =>
-            card.evaluateTarget(target, this.game)
+            card.evaluateTarget(target, this.game, new Map())
         );
         if (!best) {
             return { score: 0, cost: card.getCost().getNumeric(), card: card };
         }
         return {
             target: best,
-            score: card.evaluateTarget(best, this.game),
+            score: card.evaluateTarget(best, this.game, new Map()),
             cost: card.getCost().getNumeric(),
             card: card
         };
@@ -269,7 +269,7 @@ export class DefaultAI extends AI {
         if (card.getCardType() === CardType.Item) {
             result.host = this.getBestHost(card as Item);
         }
-        result.score += card.evaluate(this.game, EvalContext.Play);
+        result.score += card.evaluate(this.game, EvalContext.Play, new Map());
         return result;
     }
 
@@ -385,7 +385,11 @@ export class DefaultAI extends AI {
     private getBestHost(item: Item): Unit {
         const units = this.game.getBoard().getPlayerUnits(this.playerNumber);
         const best = maxBy(units, unit =>
-            unit.getMultiplier(this.game, EvalContext.NonlethalRemoval)
+            unit.getMultiplier(
+                this.game,
+                EvalContext.NonlethalRemoval,
+                new Map()
+            )
         );
         if (best === undefined) {
             throw new Error('A.I could not find host for item');
@@ -540,8 +544,16 @@ export class DefaultAI extends AI {
             type === BlockOutcome.AttackerDies ||
             type === BlockOutcome.NeitherDies ||
             (type === BlockOutcome.BothDie &&
-                attacker.evaluate(this.game, EvalContext.LethalRemoval) >
-                    blocker.evaluate(this.game, EvalContext.LethalRemoval))
+                attacker.evaluate(
+                    this.game,
+                    EvalContext.LethalRemoval,
+                    new Map()
+                ) >
+                    blocker.evaluate(
+                        this.game,
+                        EvalContext.LethalRemoval,
+                        new Map()
+                    ))
         );
     }
 
@@ -632,11 +644,13 @@ export class DefaultAI extends AI {
                         tradeScore:
                             blocker.evaluate(
                                 this.game,
-                                EvalContext.LethalRemoval
+                                EvalContext.LethalRemoval,
+                                new Map()
                             ) -
                             attacker.evaluate(
                                 this.game,
-                                EvalContext.LethalRemoval
+                                EvalContext.LethalRemoval,
+                                new Map()
                             )
                     });
                 }

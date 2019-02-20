@@ -15,6 +15,23 @@ export enum EvalContext {
     Play
 }
 
+export type EvalMap = Map<Unit, number | null>;
+
+export function maybeEvaluate (game: Game, context: EvalContext, unit: Unit, evaluated: EvalMap) {
+    const currentValue = evaluated.get(unit);
+    if (currentValue === undefined) {
+        evaluated.set(unit, null);
+        const value = unit.evaluate(game, context, evaluated);
+        evaluated.set(unit, value);
+        return value;
+    } else if (currentValue === null) {
+        return unit.getStats();
+    } else {
+        return currentValue;
+    }
+}
+
+
 export interface EvalOperator {
     addend: number;
     multiplier: number;
@@ -78,11 +95,12 @@ export abstract class Mechanic {
     abstract evaluate(
         card: Card,
         game: Game,
-        context: EvalContext
+        context: EvalContext,
+        evaluated: EvalMap
     ): number | EvalOperator;
 
     public remove(card: Card, game: Game) {}
-    public evaluateTarget(source: Card, target: Unit, game: Game) {
+    public evaluateTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
         return 0;
     }
     public stack() {}
@@ -112,13 +130,14 @@ export abstract class TriggeredMechanic extends Mechanic {
     public evaluate(
         card: Card,
         game: Game,
-        context: EvalContext
+        context: EvalContext,
+        evaluated: EvalMap
     ): number | EvalOperator {
         const triggerValue = this.triggerType.evaluate(card, game, context);
         if (triggerValue  === 0) {
             return 0;
         }
-        let base = this.evaluateEffect(card, game, context);
+        let base = this.evaluateEffect(card, game, context, evaluated);
         if (typeof base !== 'object') {
             base = {
                 addend: base,
@@ -132,7 +151,8 @@ export abstract class TriggeredMechanic extends Mechanic {
     abstract evaluateEffect(
         card: Card,
         game: Game,
-        context: EvalContext
+        context: EvalContext,
+        evaluated: EvalMap
     ): EvalOperator | number;
 
     public setTrigger(trigger: Trigger) {
@@ -181,7 +201,7 @@ export abstract class TargetedMechanic extends TriggeredMechanic {
 
     public evaluateEffect(card: Card, game: Game) {
         return sumBy(this.targeter.getTargets(card, game, this), target =>
-            this.evaluateTarget(card, target, game)
+            this.evaluateTarget(card, target, game, new Map())
         );
     }
 }
