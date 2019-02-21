@@ -4,7 +4,7 @@ import { Enchantment } from '../card-types/enchantment';
 import { Item } from '../card-types/item';
 import { Resource } from '../resource';
 import { Unit, UnitType } from '../card-types/unit';
-import { BuffTarget, BuffTargetAndGrant, GrantAbility } from './mechanics/buff';
+import { BuffTarget, GrantAbility } from './mechanics/buff';
 import { CannotAttack } from './mechanics/cantAttack';
 import { DamageSpawnOnKill, DealDamage } from './mechanics/dealDamage';
 import {
@@ -252,7 +252,7 @@ export function whip() {
         new FriendlyUnit(),
         3,
         0,
-        [new BuffTargetAndGrant(-1, -1, [])]
+        [new BuffTarget(-1, -1)]
     );
 }
 

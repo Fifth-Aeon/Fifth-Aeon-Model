@@ -3,7 +3,7 @@ import { Enchantment } from '../card-types/enchantment';
 import { Item } from '../card-types/item';
 import { Resource, ResourceType } from '../resource';
 import { Unit, UnitType } from '../card-types/unit';
-import { BuffTarget, BuffTargetAndGrant, GrantAbility } from './mechanics/buff';
+import { BuffTarget, GrantAbility } from './mechanics/buff';
 import { CannotAttack, CannotBlock } from './mechanics/cantAttack';
 import {
     DamageOnBlock,
@@ -13,7 +13,7 @@ import {
 import { AugarCard, DrawCard, Peek } from './mechanics/draw';
 import { RefreshTarget } from './mechanics/heal';
 import { friendlyLordship } from './mechanics/lordship';
-import { Poisoned, PoisonImmune } from './mechanics/poison';
+import { Poisoned, PoisonImmune, PoisonTarget } from './mechanics/poison';
 import { Annihilate } from './mechanics/removal';
 import { ForceField } from './mechanics/shieldEnchantments';
 import {
@@ -333,7 +333,7 @@ export function occularImplant() {
 export function rifle() {
     return new Item(
         'Rifle',
-        'Marksman\'s Rifle',
+        'Marksman’s Rifle',
         'winchester-rifle.png',
         new Resource(4, 0, {
             Growth: 0,
@@ -463,7 +463,7 @@ export function alloyTransmute() {
             Synthesis: 3
         }),
         new MechanicalUnit(),
-        [new BuffTargetAndGrant(3, 6, [new Shielded()])]
+        [new BuffTarget(3, 6), new GrantAbility(Shielded)]
     );
 }
 
@@ -479,8 +479,7 @@ export function dangerousInjection() {
             Synthesis: 1
         }),
         new BiologicalUnit(),
-        [new BuffTargetAndGrant(3, 2, [new Poisoned()])],
-        'Poison target biological unit and give it +3/+2.'
+        [new PoisonTarget(), new BuffTarget(3, 2)]
     );
 }
 

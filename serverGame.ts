@@ -290,6 +290,7 @@ export class ServerGame extends Game {
         const max = choices.max;
         if (cards.length > max || cards.length < min) {
             console.error(
+                this.name,
                 `Reject choice. Wanted between ${min} and ${max} cards but got ${
                     cards.length
                 }.`
@@ -298,6 +299,7 @@ export class ServerGame extends Game {
         }
         if (!cards.every(card => choices.validCards.has(card))) {
             console.error(
+                this.name,
                 `Reject choice. Included invalid options.`,
                 cards,
                 choices.validCards

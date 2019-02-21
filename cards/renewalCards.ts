@@ -3,7 +3,7 @@ import { Enchantment } from '../card-types/enchantment';
 import { Item } from '../card-types/item';
 import { Resource } from '../resource';
 import { Unit, UnitType } from '../card-types/unit';
-import { BuffTarget, BuffTargetAndGrant } from './mechanics/buff';
+import { BuffTarget, GrantAbility } from './mechanics/buff';
 import { CannotAttack, ImprisonTarget } from './mechanics/cantAttack';
 import { DrawCard } from './mechanics/draw';
 import {
@@ -61,7 +61,7 @@ export function pegasus() {
         new SingleUnit().setOptional(true),
         2,
         3,
-        [new Flying(), new BuffTargetAndGrant(0, 1, [new Flying()])]
+        [new Flying(), new BuffTarget(0, 1), new GrantAbility(Flying)]
     );
 }
 

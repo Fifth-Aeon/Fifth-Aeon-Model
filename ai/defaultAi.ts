@@ -393,9 +393,9 @@ export class DefaultAI extends AI {
      * @param item The item to find a host for
      */
     private getBestHost(item: Item): Unit {
-        const units = this.game.getBoard().getPlayerUnits(this.playerNumber);
-        const best = maxBy(units, unit =>
-            unit.getMultiplier(
+        const validHosts = item.getHostTargeter().getValidTargets(item, this.game);
+        const best = maxBy(validHosts, host =>
+            host.getMultiplier(
                 this.game,
                 EvalContext.NonlethalRemoval,
                 new Map()

@@ -16,10 +16,13 @@ export class UnitsOfTypeAsTarget extends AllUnits {
     }
     public getTargets(card: Card, game: Game): Array<Unit> {
         const target = this.targets[0];
+        if (!target) {
+            return [];
+        }
         this.lastTargets = game
             .getBoard()
             .getAllUnits()
-            .filter(unit => unit.getUnitType() === target.getUnitType());
+            .filter(unit => unit.getUnitType() === target.getUnitType() );
         return this.lastTargets;
     }
     public getText() {

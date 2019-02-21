@@ -132,6 +132,8 @@ export class ClientGame extends Game {
         host: Unit | null = null
     ): boolean {
         if (!this.canPlayCard(card, targets, host)) {
+            console.error('Failed to play card', card);
+
             return false;
         }
         const targetIds = targets.map(target => target.getId());
@@ -181,8 +183,12 @@ export class ClientGame extends Game {
         );
     }
 
-    public modifyEnchantment(player: Player, enchantment: Enchantment): boolean {
+    public modifyEnchantment(
+        player: Player,
+        enchantment: Enchantment
+    ): boolean {
         if (!enchantment.canChangePower(player, this)) {
+            console.log('illegal attempt to midify enchantment');
             return false;
         }
         enchantment.empowerOrDiminish(player, this);
@@ -233,13 +239,14 @@ export class ClientGame extends Game {
     public canMakeChoice(player: number, cards: Card[]): boolean {
         const choices = this.currentChoices[player];
         if (choices === null) {
-            console.error('Reject choice from', player);
+            console.error(this.name, 'Reject choice from', player);
             return false;
         }
         const min = Math.min(choices.validCards.size, choices.min);
         const max = choices.max;
         if (cards.length > max || cards.length < min) {
             console.error(
+                this.name,
                 `Reject choice. Wanted between ${min} and ${max} cards but got ${
                     cards.length
                 }.`

@@ -70,11 +70,13 @@ export class PoisonTarget extends TargetedMechanic {
     }
 
     public evaluateTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
+        if (target.isImmune(Poisoned.getId())) {
+            return 0;
+        }
         return (
             maybeEvaluate(game, EvalContext.NonlethalRemoval, target, evaluated) *
             0.5 *
-            (target.getOwner() === source.getOwner() ? -1 : 1) *
-            (target.isImmune(PoisonTarget.id) ? 0 : 1)
+            (target.getOwner() === source.getOwner() ? -1 : 1)
         );
     }
 }

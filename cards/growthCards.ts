@@ -3,7 +3,7 @@ import { Enchantment } from '../card-types/enchantment';
 import { Item } from '../card-types/item';
 import { Resource } from '../resource';
 import { Unit, UnitType } from '../card-types/unit';
-import { BuffTarget, BuffTargetAndGrant, GrantAbility } from './mechanics/buff';
+import { BuffTarget, GrantAbility } from './mechanics/buff';
 import { BiteDamage, DealDamage } from './mechanics/dealDamage';
 import { DrawCard } from './mechanics/draw';
 import { Discharge } from './mechanics/enchantmentCounters';
@@ -548,7 +548,7 @@ export function spiderHatchling() {
         new SelfTarget(),
         2,
         3,
-        [new BuffTargetAndGrant(1, 0, []).setTrigger(new Affinity())]
+        [new BuffTarget(1, 0).setTrigger(new Affinity())]
     );
 }
 
@@ -587,7 +587,7 @@ export function werewolf() {
         3,
         3,
         [
-            new BuffTargetAndGrant(1, 0, [])
+            new BuffTarget(1, 0)
                 .setTrigger(new Affinity())
                 .setTargeter(new UnitsOfType(UnitType.Wolf))
         ]
@@ -641,7 +641,7 @@ export function mutation() {
             Synthesis: 0
         }),
         new BiologicalUnit(),
-        [new BuffTargetAndGrant(2, 2, [new Relentless()])]
+        [new BuffTarget(2, 2), new GrantAbility(Relentless)]
     );
 }
 

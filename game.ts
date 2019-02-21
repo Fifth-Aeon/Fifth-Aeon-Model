@@ -360,7 +360,7 @@ export abstract class Game {
         }
 
         // Apply blocks in order decided by attacker
-        for (const attackerID of Array.from(attackDamageOrder.keys())) {
+        for (const attackerID of attackDamageOrder.keys()) {
             const attacker = this.getUnitById(attackerID);
             const damageOrder = attackDamageOrder.get(attackerID) || [];
             let remainingDamage = attacker.getDamage();

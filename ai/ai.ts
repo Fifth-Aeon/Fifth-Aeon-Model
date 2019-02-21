@@ -61,7 +61,7 @@ export abstract class AI {
         if (action() === false) {
             console.error(
                 `A.I ${this.playerNumber} attempted to take illegal action`,
-                action
+                action, this.actionSequence
             );
         }
     }

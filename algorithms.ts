@@ -13,6 +13,7 @@ export interface KnapsackItem<T> {
 // find the maximum value possible while keeping the weight below
 // or equal to the capacity
 export function knapsack<T>(capacity: number, items: KnapsackItem<T>[]) {
+    capacity = Math.max(capacity, 0);
     let idxItem = 0,
         idxWeight = 0,
         oldMax = 0,
