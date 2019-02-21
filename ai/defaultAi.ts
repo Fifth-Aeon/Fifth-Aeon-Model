@@ -158,8 +158,9 @@ export class DefaultAI extends AI {
             optional = optional.filter(
                 card => this.cardDrawHeuristic(card) > average
             );
+            optional = sortBy(optional, this.cardDrawHeuristic.bind(this));
         }
-        return mandatory.concat(optional);
+        return mandatory.concat(take(optional, max - mandatory.length));
     }
 
     /** A heuristic that chooses the unit with the highest total stats (all choices must be Units) */
@@ -190,14 +191,18 @@ export class DefaultAI extends AI {
     /** Returns the cards that should be chosen for a given choice based on its heuristic */
     private getCardToChoose(
         options: Array<Card>,
-        min: number = 1,
-        max: number = 1,
+        min: number,
+        max: number,
         heuristicType: ChoiceHeuristic
     ) {
         if (options.length < min) {
             return options;
         }
         const evaluator = this.getHeuristic(heuristicType);
+        const choices = evaluator(options, min, max);
+        if (choices.length > max || choices.length < min) {
+            console.log('bug in evaluator', ChoiceHeuristic[heuristicType]);
+        }
         return evaluator(options, min, max);
     }
 
@@ -218,10 +223,14 @@ export class DefaultAI extends AI {
         if (player !== this.playerNumber) {
             return;
         }
-        this.game.makeChoice(
-            this.playerNumber,
-            this.getCardToChoose(options, min, max, heuristicType)
+
+        const choicecards = this.getCardToChoose(
+            options,
+            min,
+            max,
+            heuristicType
         );
+        this.game.makeChoice(this.playerNumber, choicecards);
     }
 
     /** Handles a game event using a registered handler (or ignores it if there is no registered handler) */
@@ -364,6 +373,7 @@ export class DefaultAI extends AI {
                 action.enchantmentTarget
             );
         }
+        console.error('Failed to run evaluated action', action);
         return false;
     }
 
