@@ -14,7 +14,8 @@ import {
 import { RefreshTarget } from './mechanics/heal';
 import {
     unitTypeLordshipExclusive,
-    unitTypeLordshipInclusive
+    unitTypeLordshipInclusive,
+    friendlyLordship
 } from './mechanics/lordship';
 import { MindControl } from './mechanics/mindControl';
 import { GainLife } from './mechanics/playerAid';
@@ -98,7 +99,7 @@ export function valiantDefenses() {
         new Untargeted(),
         3,
         3,
-        []
+        [friendlyLordship(0, 2)]
     );
 }
 
