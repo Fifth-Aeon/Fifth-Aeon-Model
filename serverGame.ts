@@ -369,22 +369,25 @@ export class ServerGame extends Game {
         - Unit can attack
     */
     protected toggleAttackAction(act: ToggleAttackAction): boolean {
-        const unit = this.getPlayerUnitById(act.player, act.unitId);
-        if (
-            !this.isPlayerTurn(act.player) ||
-            this.phase !== GamePhase.Play1 ||
-            !unit ||
-            !unit.canAttack()
-        ) {
+        try {
+            const unit = this.getPlayerUnitById(act.player, act.unitId);
+            if (
+                !this.isPlayerTurn(act.player) ||
+                this.phase !== GamePhase.Play1 ||
+                !unit.canAttack()
+            ) {
+                return false;
+            }
+            unit.toggleAttacking();
+            this.addGameEvent({
+                type: SyncEventType.AttackToggled,
+                player: act.player,
+                unitId: act.unitId
+            });
+            return true;
+        } catch {
             return false;
         }
-        unit.toggleAttacking();
-        this.addGameEvent({
-            type: SyncEventType.AttackToggled,
-            player: act.player,
-            unitId: act.unitId
-        });
-        return true;
     }
 
     /* Preconditions
