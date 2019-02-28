@@ -35,6 +35,16 @@ class AIList {
             return constructor;
         });
     }
+
+    public getConstructorByName(name: string): AIConstructor {
+        const constructor = this.constructors.find(
+            cstr => cstr.name === name
+        );
+        if (!constructor) {
+            throw new Error(`No A.I constructor found named ${name}`);
+        }
+        return constructor;
+    }
 }
 
 export const aiList = new AIList();
