@@ -12,27 +12,12 @@ function addDeck(deck: SavedDeck) {
 }
 
 export function getStarterDecks() {
-    const decks = [];
-    decks.push(
-        Math.random() > 0.5
-            ? deckMap.get('marchOfUndeath')
-            : deckMap.get('agentsOfDecay')
-    );
-    decks.push(
-        Math.random() > 0.5
-            ? deckMap.get('theKingsLegions')
-            : deckMap.get('clericalOrder')
-    );
-    decks.push(
-        Math.random() > 0.5
-            ? deckMap.get('ancientGiants')
-            : deckMap.get('primalSwarm')
-    );
-    decks.push(
-        Math.random() > 0.5
-            ? deckMap.get('skysAndSeas')
-            : deckMap.get('mechanicalArmy')
-    );
+    const decks = [
+        deckMap.get('marchOfUndeath'),
+        deckMap.get('theKingsLegions'),
+        deckMap.get('ancientGiants'),
+        deckMap.get('skiesAndSeas')
+    ];
     return decks as DeckList[];
 }
 
