@@ -14,7 +14,8 @@ export enum SyncEventType {
     QueryResult,
     Ended,
     EnchantmentModified,
-    DamageDistributed
+    DamageDistributed,
+    PriortyGained
 }
 
 interface GameSyncEventBase {
@@ -25,6 +26,7 @@ interface GameSyncEventBase {
 export type GameSyncEvent =
     | SyncAttackToggled
     | SyncTurnStart
+    | SyncPriorityGained
     | SyncPhaseChange
     | SyncPlayResource
     | SyncPlayCard
@@ -44,7 +46,9 @@ type SyncEventFromType<
     : T extends SyncEventType.Block
     ? SyncBlock
     : T extends SyncEventType.ChoiceMade
-    ? SyncChoiceMade
+    ? SyncBlock
+    : T extends SyncEventType.PriortyGained
+    ? SyncPriorityGained
     : T extends SyncEventType.DamageDistributed
     ? SyncDamageDistributed
     : T extends SyncEventType.Draw
@@ -88,6 +92,11 @@ export class SyncEventSystem {
         const handler = this.handlers.get(event.type);
         return handler ? handler(localPlayerNumber, event) : false;
     }
+}
+
+export interface SyncPriorityGained extends GameSyncEventBase {
+    readonly type: SyncEventType.PriortyGained;
+    readonly player: number;
 }
 
 export interface SyncAttackToggled extends GameSyncEventBase {
