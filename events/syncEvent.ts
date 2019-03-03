@@ -46,7 +46,7 @@ type SyncEventFromType<
     : T extends SyncEventType.Block
     ? SyncBlock
     : T extends SyncEventType.ChoiceMade
-    ? SyncBlock
+    ? SyncChoiceMade
     : T extends SyncEventType.PriortyGained
     ? SyncPriorityGained
     : T extends SyncEventType.DamageDistributed

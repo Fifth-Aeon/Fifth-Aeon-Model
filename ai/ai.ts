@@ -40,6 +40,11 @@ export abstract class AI {
         this.game.syncServerEvent(this.playerNumber, event);
     }
 
+    /** Gets the number of the player this A.I controlls */
+    getPlayerNumber(): number {
+        return this.playerNumber;
+    }
+
     /** Checks if we can take an action, if we can then takes the next one in the action sequence. */
     protected applyNextAction() {
         if (
@@ -61,7 +66,8 @@ export abstract class AI {
         if (action() === false) {
             console.error(
                 `A.I ${this.playerNumber} attempted to take illegal action`,
-                action, this.actionSequence
+                action,
+                this.actionSequence
             );
         }
     }

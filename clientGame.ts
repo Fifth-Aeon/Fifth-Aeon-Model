@@ -449,7 +449,8 @@ export class ClientGame extends Game {
             console.error(
                 'Event arrived out of order',
                 event.number,
-                this.events.length
+                this.events.length,
+                event
             );
         }
         this.events.push(event);

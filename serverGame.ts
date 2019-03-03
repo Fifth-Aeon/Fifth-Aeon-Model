@@ -68,6 +68,24 @@ export class ServerGame extends Game {
         this.addDeathHandlers();
     }
 
+    public getResponsiblePlayer() {
+        if (
+            this.currentChoices[0] === null &&
+            this.currentChoices[1] === null
+        ) {
+            return this.getActivePlayer();
+        } else if (
+            this.currentChoices[0] !== null &&
+            this.currentChoices[0] !== null
+        ) {
+            return ServerGame.rng.nextInt(0, 1);
+        } else if (this.currentChoices[0] !== null) {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+
     public shuffle<T>(items: T[]): T[] {
         const copies = [...items];
         const end = copies.length - 1;
@@ -452,8 +470,7 @@ export class ServerGame extends Game {
             console.error(
                 `Player ${
                     act.player
-                } Can't pass, they are not thee active player (
-                ${this.getActivePlayer()} is)`,
+                } Can't pass, they are not the active player ${this.getActivePlayer()} is`,
                 GamePhase[this.phase],
                 this.turn
             );
