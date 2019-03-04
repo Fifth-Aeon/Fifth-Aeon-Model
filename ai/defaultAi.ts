@@ -233,10 +233,6 @@ export class DefaultAI extends AI {
         this.game.makeChoice(this.playerNumber, choicecards);
     }
 
-    /** Handles a game event using a registered handler (or ignores it if there is no registered handler) */
-    public handleGameEvent(event: GameSyncEvent) {
-        this.game.syncServerEvent(this.playerNumber, event);
-    }
 
     /** Gets the best target for a card with a targeter.
      * The best target is considered to be the one with the highest evaluateTarget value.
