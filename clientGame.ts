@@ -450,6 +450,7 @@ export class ClientGame extends Game {
                 'Event arrived out of order',
                 event.number,
                 this.events.length,
+                this.nextExpectedEvent,
                 event
             );
         }

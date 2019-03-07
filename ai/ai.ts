@@ -1,8 +1,7 @@
 import { Animator } from '../animator';
 import { ClientGame } from '../clientGame';
 import { DeckList } from '../deckList';
-import { GameSyncEvent } from '../events/syncEvent';
-import { DeckBuilder } from './deckBuilder';
+import { GameSyncEvent, SyncEventType } from '../events/syncEvent';
 
 /**
  * An Artificial Intelligence that can play the game.
@@ -11,6 +10,9 @@ import { DeckBuilder } from './deckBuilder';
  */
 export abstract class AI {
     private timer: any;
+    private eventQueue: GameSyncEvent[] = [];
+    private processingEvent = false;
+
     protected isImmediateMode = false;
     protected actionSequence: Array<() => boolean> = [];
     protected animator?: Animator;
@@ -37,7 +39,23 @@ export abstract class AI {
      * @param event - A Game Synchronization Event sent by the server
      */
     public handleGameEvent(event: GameSyncEvent): void {
-        this.game.syncServerEvent(this.playerNumber, event);
+        if (event.type === SyncEventType.Ended) {
+            this.stopActing();
+        }
+
+        if (!this.processingEvent) {
+            this.processingEvent = true;
+            this.game.syncServerEvent(this.playerNumber, event);
+            while (this.eventQueue.length > 0) {
+                const ev = this.eventQueue.shift() as GameSyncEvent;
+                this.game.syncServerEvent(this.playerNumber, ev);
+            }
+            this.processingEvent = false;
+
+        } else {
+
+            this.eventQueue.push(event);
+        }
     }
 
     /** Gets the number of the player this A.I controlls */

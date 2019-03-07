@@ -178,14 +178,11 @@ export abstract class Game {
         if (currentChoice !== null) {
             currentChoice.callback(cards);
         } else {
-            console.error(
-                `${this.getName()} - Error in game ${
-                    this.name
-                } no deferred choice handler for ${cards.map(card =>
-                    card.getName()
-                )} from ${player}`
-            );
-            throw new Error();
+            throw new Error(`${this.getName()} - Error in game ${
+                this.name
+            } no deferred choice handler for ${cards.map(card =>
+                card.getName()
+            )} from ${player}`);
         }
         this.currentChoices[player] = null;
     }

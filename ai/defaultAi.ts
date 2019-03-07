@@ -230,7 +230,8 @@ export class DefaultAI extends AI {
             max,
             heuristicType
         );
-        this.game.makeChoice(this.playerNumber, choicecards);
+        setTimeout(() => this.game.makeChoice(this.playerNumber, choicecards), 0);
+
     }
 
 

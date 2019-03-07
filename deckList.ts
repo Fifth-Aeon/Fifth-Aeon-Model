@@ -83,6 +83,7 @@ export class DeckList {
             new Set(sampleSize(ResourceTypeNames, n) as Array<string>),
             collection
         );
+        return this;
     }
 
     public toJson(spacing?: number) {
