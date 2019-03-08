@@ -334,7 +334,7 @@ export function kraken() {
             Renewal: 0,
             Synthesis: 0
         }),
-        new UnitWithAbility('aquatic', 'Aquatic').setOptional(true),
+        new UnitWithAbility(Aquatic.getId(), 'Aquatic').setOptional(true),
         5,
         5,
         [new Aquatic(), new KillTarget()]
