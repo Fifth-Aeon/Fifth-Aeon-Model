@@ -35,6 +35,7 @@ export class ClientGame extends Game {
     private owningPlayer = 0;
     private nextExpectedEvent = 0;
     protected queryData: Card[] | null = null;
+    private shouldAnimate = false;
 
     protected onQueryResult: (cards: Card[]) => void = () => null;
     public onSync: () => void = () => null;
@@ -337,8 +338,8 @@ export class ClientGame extends Game {
     }
 
     // Animation logic
-    private shouldAnimate(): boolean {
-        return this.owningPlayer === 0;
+    public enableAnimations() {
+        this.shouldAnimate = true;
     }
 
     protected async resolveCombat() {
@@ -387,7 +388,7 @@ export class ClientGame extends Game {
                 });
                 attacker.fight(blocker, assignedDamage);
 
-                if (this.shouldAnimate()) {
+                if (this.shouldAnimate) {
                     this.animator.triggerDamageIndicatorEvent({
                         amount: assignedDamage,
                         targetCard: blocker.getId()
@@ -406,7 +407,7 @@ export class ClientGame extends Game {
         // Unblocked attackers damage the defending player
         for (const attacker of attackers) {
             if (!this.attackDamageOrder.has(attacker.getId())) {
-                if (this.shouldAnimate()) {
+                if (this.shouldAnimate) {
                     this.animator.triggerBattleAnimation({
                         defendingPlayer: defendingPlayer,
                         attacker: attacker,
@@ -415,7 +416,7 @@ export class ClientGame extends Game {
                 }
                 const dmg = attacker.getDamage();
                 await this.animator.getAnimationDelay(2);
-                if (this.shouldAnimate()) {
+                if (this.shouldAnimate) {
                     this.animator.triggerDamageIndicatorEvent({
                         amount: dmg,
                         targetCard: defendingPlayer.getId()
