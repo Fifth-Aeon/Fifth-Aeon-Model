@@ -1,22 +1,21 @@
 import { maxBy, meanBy, minBy, remove, sortBy, sumBy, take } from 'lodash';
 import { knapsack, KnapsackItem } from '../algorithms';
 import { Card, CardType } from '../card-types/card';
+import { Enchantment } from '../card-types/enchantment';
+import { Item } from '../card-types/item';
+import { Unit } from '../card-types/unit';
 import { TransformDamaged } from '../cards/mechanics/decaySpecials';
 import { Flying, Lethal, Shielded } from '../cards/mechanics/skills';
 import { ClientGame } from '../clientGame';
 import { DeckList } from '../deckList';
-import { Enchantment } from '../card-types/enchantment';
-import { GameSyncEvent } from '../events/syncEvent';
 import { GamePhase } from '../game';
-import { Item } from '../card-types/item';
 import { EvalContext } from '../mechanic';
 import { Player } from '../player';
 import { Resource, ResourceTypeNames } from '../resource';
-import { Unit } from '../card-types/unit';
 import { AI } from './ai';
 import { aiList } from './aiList';
-import { RandomBuilder } from './randomBuilder';
 import { DeckBuilder } from './deckBuilder';
+import { RandomBuilder } from './randomBuilder';
 
 /**
  * Determines which heuristic to be used when the A.I makes a choice.
@@ -67,8 +66,8 @@ enum BlockOutcome {
  *
  */
 export class DefaultAI extends AI {
-    private enemyNumber: number;
-    private aiPlayer: Player;
+    protected enemyNumber: number;
+    protected aiPlayer: Player;
 
     public static getDeckbuilder(): DeckBuilder {
         return new RandomBuilder();
@@ -116,20 +115,20 @@ export class DefaultAI extends AI {
     /** A simple heuristic to determine which card is best to draw
        This heuristic assumes it is best to draw cards whose cost
        is close to the amount of resources we have.*/
-    private cardDrawHeuristic(card: Card): number {
+    protected cardDrawHeuristic(card: Card): number {
         return Math.abs(
             this.aiPlayer.getPool().getNumeric() - card.getCost().getNumeric()
         );
     }
 
     /** Decides which cards of a set of choices to choose to draw. */
-    private evaluateToDraw(choices: Card[], min: number, max: number): Card[] {
+    protected evaluateToDraw(choices: Card[], min: number, max: number): Card[] {
         return take(sortBy(choices, card => this.cardDrawHeuristic(card)), max);
     }
 
     /** Decides which cards of a set of choices to discard
      * The heuristic is the inverse of the to draw heuristic. */
-    private evaluateToDiscard(
+    protected evaluateToDiscard(
         choices: Card[],
         min: number,
         max: number
@@ -142,7 +141,7 @@ export class DefaultAI extends AI {
 
     /** Decides which cards of a set to replace.
      * We replace a card if we think it is worse than the average card in our deck based on the card draw heuristic. */
-    private evaluateToReplace(
+    protected evaluateToReplace(
         choices: Card[],
         min: number,
         max: number
@@ -164,7 +163,7 @@ export class DefaultAI extends AI {
     }
 
     /** A heuristic that chooses the unit with the highest total stats (all choices must be Units) */
-    private highestStatHeuristic(
+    protected highestStatHeuristic(
         choices: Card[],
         min: number,
         max: number
@@ -173,7 +172,7 @@ export class DefaultAI extends AI {
     }
 
     /** Get the appropriate heuristic for making a choice */
-    private getHeuristic(
+    protected getHeuristic(
         heuristicType: ChoiceHeuristic
     ): (choices: Card[], min: number, max: number) => Card[] {
         switch (heuristicType) {
@@ -189,7 +188,7 @@ export class DefaultAI extends AI {
     }
 
     /** Returns the cards that should be chosen for a given choice based on its heuristic */
-    private getCardToChoose(
+    protected getCardToChoose(
         options: Array<Card>,
         min: number,
         max: number,
@@ -207,7 +206,7 @@ export class DefaultAI extends AI {
     }
 
     /** Makes a choice when requested to by the game engine (such as what cards to mulligan) */
-    private makeChoice(
+    protected makeChoice(
         player: number,
         options: Array<Card>,
         min: number = 1,
@@ -285,7 +284,7 @@ export class DefaultAI extends AI {
      * Currently the score is based on the ratio between the enchantments cost and its power.
      * @param enchantment - The enchantment to evaluate
      */
-    private evaluateEnchantment(enchantment: Enchantment): EvaluatedAction {
+    protected evaluateEnchantment(enchantment: Enchantment): EvaluatedAction {
         const modifyCost = enchantment.getModifyCost().getNumeric();
         const playCost = enchantment.getCost().getNumeric();
         return {
@@ -347,7 +346,7 @@ export class DefaultAI extends AI {
     }
 
     /** Plays a card based on an action */
-    private runCardPlayAction(action: EvaluatedAction) {
+    protected runCardPlayAction(action: EvaluatedAction) {
         const targets: Unit[] = [];
         const host = action.host;
         const toPlay = action.card;
@@ -361,7 +360,7 @@ export class DefaultAI extends AI {
     }
 
     /** Runs an action (either playing a card or modifying an enchantment) */
-    private runEvaluatedAction(action: EvaluatedAction): boolean {
+    protected runEvaluatedAction(action: EvaluatedAction): boolean {
         if (action.card) {
             return this.runCardPlayAction(action);
         } else if (action.enchantmentTarget) {
@@ -375,9 +374,7 @@ export class DefaultAI extends AI {
     }
 
     /** Returns the enchantments we have enough energy to empower or diminish */
-    private getModifiableEnchantments() {
-        const player = this.game.getPlayer(this.playerNumber);
-        const res = player.getPool();
+    protected getModifiableEnchantments() {
         return this.game
             .getBoard()
             .getAllEnchantments()
@@ -389,7 +386,7 @@ export class DefaultAI extends AI {
      * Currently it simply returns the unit with the highest value multiplier (ignoring the properties of the item).
      * @param item The item to find a host for
      */
-    private getBestHost(item: Item): Unit {
+    protected getBestHost(item: Item): Unit {
         const validHosts = item.getHostTargeter().getValidTargets(item, this.game);
         const best = maxBy(validHosts, host =>
             host.getMultiplier(
@@ -405,7 +402,7 @@ export class DefaultAI extends AI {
     }
 
     /** Gets the difference in resources (not energy) between two values */
-    private getReqDiff(current: Resource, needed: Resource) {
+    protected getReqDiff(current: Resource, needed: Resource) {
         const diffs = {
             total: 0,
             resources: new Map<string, number>()
@@ -428,7 +425,7 @@ export class DefaultAI extends AI {
     }
 
     /** Returns the card whose resource pre reqs are not met, but are the closest to being met */
-    private getClosestUnmetRequirement(cards: Card[]) {
+    protected getClosestUnmetRequirement(cards: Card[]) {
         return minBy(
             cards.filter(
                 card =>
@@ -441,7 +438,7 @@ export class DefaultAI extends AI {
     }
 
     /** Computes the most common resource among a set of cards (such as a deck or hand) */
-    private getMostCommonResource(cards: Card[]): string {
+    protected getMostCommonResource(cards: Card[]): string {
         const total = new Resource(0);
         for (const card of cards) {
             total.add(card.getCost());
@@ -465,7 +462,7 @@ export class DefaultAI extends AI {
      *
      * @returns - The name of the resource to play
      */
-    private getResourceToPlay(): string {
+    protected getResourceToPlay(): string {
         const deckCards = this.deck.getUniqueCards();
         const closestCardInHand = this.getClosestUnmetRequirement(
             this.aiPlayer.getHand()
@@ -486,7 +483,7 @@ export class DefaultAI extends AI {
         }
     }
 
-    private playResource() {
+    protected playResource() {
         return this.game.playResource(this.getResourceToPlay());
     }
 
@@ -542,7 +539,7 @@ export class DefaultAI extends AI {
      * @param attacker - The attacking unit to consider blocking
      * @param blocker - The blocker to consider
      */
-    private canFavorablyBlock(attacker: Unit, blocker: Unit) {
+    protected canFavorablyBlock(attacker: Unit, blocker: Unit) {
         if (!blocker.canBlockTarget(attacker, true)) {
             return false;
         }
@@ -565,7 +562,7 @@ export class DefaultAI extends AI {
     }
 
     /** Categorizes a block by what its outcome will be (if the attacker, blocker or both will die) */
-    private categorizeBlock(attacker: Unit, blocker: Unit): BlockOutcome {
+    protected categorizeBlock(attacker: Unit, blocker: Unit): BlockOutcome {
         const isAttackerLethal =
             attacker.hasMechanicWithId(Lethal.getId()) ||
             attacker.hasMechanicWithId(TransformDamaged.getId());
@@ -597,7 +594,7 @@ export class DefaultAI extends AI {
     }
 
     /** Declares a blocker as blocking a particular attacker */
-    private makeBlockAction(params: { blocker: Unit; attacker: Unit }) {
+    protected makeBlockAction(params: { blocker: Unit; attacker: Unit }) {
         return () => {
             return this.game.declareBlocker(params.blocker, params.attacker);
         };
