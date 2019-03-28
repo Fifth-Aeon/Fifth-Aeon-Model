@@ -228,6 +228,6 @@ export class Card {
     public evaluateTarget(target: Unit, game: Game, evaluated: EvalMap) {
         return this.mechanics
             .map(mechanic => mechanic.evaluateTarget(this, target, game, evaluated))
-            .reduce((a, b) => a + b);
+            .reduce((a, b) => a + b, 0);
     }
 }
