@@ -1,6 +1,6 @@
 import { isArray } from 'util';
 import { CardType, Card } from './card-types/card';
-import { DeckList } from './deckList';
+import { DeckList, SavedDeck } from './deckList';
 import { Enchantment } from './card-types/enchantment';
 import { Game, GamePhase } from './game';
 import { GameFormat, standardFormat } from './gameFormat';
@@ -23,9 +23,22 @@ import {
     DistributeDamageAction
 } from './events/gameAction';
 
+export interface GameReplay {
+    seed: string | number;
+    actions: GameAction[];
+    deckLists: [SavedDeck, SavedDeck];
+    winner: number;
+}
+
 export class ServerGame extends Game {
     private static rng: Prando;
+    private static seed: string | number;
     protected actionSystem = new GameActionSystem(this);
+
+    // Replay information
+    protected seed: string | number = 0;
+    protected actionLog: GameAction[] = [];
+    protected deckLists: [DeckList, DeckList];
 
     public static setSeed(seed: string | number) {
         this.rng = new Prando(seed);
@@ -38,6 +51,9 @@ export class ServerGame extends Game {
     ) {
         super(name, format);
         this.addActionHandlers();
+
+        this.seed = ServerGame.seed;
+        this.deckLists = deckLists;
 
         const decks = deckLists.map(deckList => {
             const deck = deckList.toDeck().map(fact => {
@@ -66,6 +82,15 @@ export class ServerGame extends Game {
         ];
 
         this.addDeathHandlers();
+    }
+
+    public getReplay(): GameReplay {
+        return {
+            seed: this.seed,
+            actions: [...this.actionLog],
+            deckLists: [...this.deckLists.map(deck => deck.getSavable())] as [SavedDeck, SavedDeck],
+            winner: this.getWinner()
+        };
     }
 
     public getResponsiblePlayer() {
@@ -192,7 +217,7 @@ export class ServerGame extends Game {
             return null;
         }
         const sig = this.actionSystem.handleAction(action);
-
+        this.actionLog.push(action);
         if (sig !== true) {
             return null;
         }
