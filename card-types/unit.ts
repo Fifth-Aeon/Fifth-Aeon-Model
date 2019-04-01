@@ -261,8 +261,16 @@ export class Unit extends Permanent {
         this.attackDisabled = val;
     }
 
+    public isAttackDisabled() {
+        return this.attackDisabled;
+    }
+
     public setBlockDisabled(val: boolean) {
         this.blockDisabled = val;
+    }
+
+    public isBlockDisabled() {
+        return this.blockDisabled;
     }
 
     public canAttack() {
