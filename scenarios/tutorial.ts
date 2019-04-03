@@ -1,17 +1,16 @@
 import { Scenario } from '../scenario';
-import { pikeman } from '../cards/renewalCards';
 
 const mission1 = new Scenario({
     name: 'Introduction',
     description: 'Test',
     playerSetups: [
         {
-            lifeTotals: 25,
-            initialHands: [pikeman()],
-            initialPermanents: [pikeman()]
+            lifeTotal: 25,
+            initialHands: ['Pikeman'],
+            initialPermanents: ['Pikeman']
         },
         {
-            lifeTotals: 5,
+            lifeTotal: 5,
             initialHands: [],
             initialPermanents: []
         }
