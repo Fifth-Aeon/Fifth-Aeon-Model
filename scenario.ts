@@ -29,6 +29,7 @@ export class Scenario {
     private playerSetups: ScenarioPlayer[];
     private name: string;
     private description: string;
+    private nextIdNumber = 1;
 
     constructor(data: ScenarioData) {
         this.playerSetups = data.playerSetups.map(this.unpackPlayerData);
@@ -45,11 +46,10 @@ export class Scenario {
     }
 
     private unpackPlayerData(data: ScenarioPlayerData): ScenarioPlayer {
-        let idNumber = 1;
         const unloadCard = (id: string) => {
             const card = cardList.getCard(id);
-            card.setId('ScenarioCard' + idNumber);
-            idNumber++;
+            card.setId('ScenarioCard' + this.nextIdNumber);
+            this.nextIdNumber++;
             return card;
         };
         return {
