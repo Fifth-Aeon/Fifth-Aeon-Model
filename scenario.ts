@@ -32,7 +32,7 @@ export class Scenario {
     private nextIdNumber = 1;
 
     constructor(data: ScenarioData) {
-        this.playerSetups = data.playerSetups.map(this.unpackPlayerData);
+        this.playerSetups = data.playerSetups.map(setupData => this.unpackPlayerData(setupData));
         this.name = data.name;
         this.description = data.description;
     }
