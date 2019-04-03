@@ -7,14 +7,14 @@ import { standardFormat } from './gameFormat';
 
 interface ScenarioPlayer {
     initialPermanents: Permanent[];
-    lifeTotals: number;
+    lifeTotal: number;
     initialHands: Card[];
     deck?: DeckList;
 }
 
 interface ScenarioPlayerData {
     initialPermanents: string[];
-    lifeTotals: number;
+    lifeTotal: number;
     initialHands: string[];
     deck?: SavedDeck;
 }
@@ -45,14 +45,19 @@ export class Scenario {
     }
 
     private unpackPlayerData(data: ScenarioPlayerData): ScenarioPlayer {
+        let idNumber = 1;
+        const unloadCard = (id: string) => {
+            const card = cardList.getCard(id);
+            card.setId('ScenarioCard' + idNumber);
+            idNumber++;
+            return card;
+        };
         return {
             initialPermanents: data.initialPermanents
-                .map(id => cardList.getCard(id))
+                .map(id => unloadCard(id))
                 .filter(card => card instanceof Permanent) as Permanent[],
-            lifeTotals: data.lifeTotals,
-            initialHands: data.initialPermanents.map(id =>
-                cardList.getCard(id)
-            ),
+            lifeTotal: data.lifeTotal,
+            initialHands: data.initialPermanents.map(id => unloadCard(id)),
             deck: new DeckList(standardFormat, data.deck)
         };
     }
@@ -61,7 +66,7 @@ export class Scenario {
         for (let playerNumber = 0; playerNumber < 2; playerNumber++) {
             const player = game.getPlayer(playerNumber);
             player.addLife(
-                this.playerSetups[playerNumber].lifeTotals - player.getLife()
+                this.playerSetups[playerNumber].lifeTotal - player.getLife()
             );
 
             for (const permanent of this.playerSetups[playerNumber]
