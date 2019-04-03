@@ -1,7 +1,9 @@
 import { Card } from './card-types/card';
 import { Game } from './game';
 import { Permanent } from './card-types/permanent';
-import { DeckList } from './deckList';
+import { DeckList, SavedDeck } from './deckList';
+import { cardList } from './cards/cardList';
+import { standardFormat } from './gameFormat';
 
 interface ScenarioPlayer {
     initialPermanents: Permanent[];
@@ -9,16 +11,50 @@ interface ScenarioPlayer {
     initialHands: Card[];
     deck?: DeckList;
 }
+
+interface ScenarioPlayerData {
+    initialPermanents: string[];
+    lifeTotals: number;
+    initialHands: string[];
+    deck?: SavedDeck;
+}
+
 export interface ScenarioData {
     name: string;
     description: string;
-    playerSetups: [ScenarioPlayer, ScenarioPlayer];
+    playerSetups: [ScenarioPlayerData, ScenarioPlayerData];
 }
 
 export class Scenario {
-    private playerSetups: [ScenarioPlayer, ScenarioPlayer];
+    private playerSetups: ScenarioPlayer[];
+    private name: string;
+    private description: string;
+
     constructor(data: ScenarioData) {
-        this.playerSetups = data.playerSetups;
+        this.playerSetups = data.playerSetups.map(this.unpackPlayerData);
+        this.name = data.name;
+        this.description = data.description;
+    }
+
+    public getName() {
+        return this.name;
+    }
+
+    public getDescription() {
+        return this.description;
+    }
+
+    private unpackPlayerData(data: ScenarioPlayerData): ScenarioPlayer {
+        return {
+            initialPermanents: data.initialPermanents
+                .map(id => cardList.getCard(id))
+                .filter(card => card instanceof Permanent) as Permanent[],
+            lifeTotals: data.lifeTotals,
+            initialHands: data.initialPermanents.map(id =>
+                cardList.getCard(id)
+            ),
+            deck: new DeckList(standardFormat, data.deck)
+        };
     }
 
     public apply(game: Game) {
