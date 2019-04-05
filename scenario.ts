@@ -57,7 +57,7 @@ export class Scenario {
                 .map(id => unloadCard(id))
                 .filter(card => card instanceof Permanent) as Permanent[],
             lifeTotal: data.lifeTotal,
-            initialHands: data.initialPermanents.map(id => unloadCard(id)),
+            initialHands: data.initialHands.map(id => unloadCard(id)),
             deck: new DeckList(standardFormat, data.deck)
         };
     }
