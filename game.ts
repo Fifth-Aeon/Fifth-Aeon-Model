@@ -178,11 +178,13 @@ export abstract class Game {
         if (currentChoice !== null) {
             currentChoice.callback(cards);
         } else {
-            throw new Error(`${this.getName()} - Error in game ${
-                this.name
-            } no deferred choice handler for ${cards.map(card =>
-                card.getName()
-            )} from ${player}`);
+            throw new Error(
+                `${this.getName()} - Error in game ${
+                    this.name
+                } no deferred choice handler for ${cards.map(card =>
+                    card.getName()
+                )} from ${player}`
+            );
         }
         this.currentChoices[player] = null;
     }
@@ -254,6 +256,17 @@ export abstract class Game {
 
     public getAttackers() {
         const units = this.board.getPlayerUnits(this.turn);
+        console.log(
+            this.name, 'potential attackers',
+            units.map(
+                unit =>
+                    unit.getName() +
+                    '-' +
+                    unit.getId() +
+                    '-' +
+                    unit.isAttacking()
+            )
+        );
         return units.filter(unit => unit.isAttacking());
     }
 
@@ -271,7 +284,11 @@ export abstract class Game {
                 blockers.map(blocker => {
                     return {
                         w: blocker.getLife(),
-                        b: blocker.evaluate(this, EvalContext.LethalRemoval, new Map()),
+                        b: blocker.evaluate(
+                            this,
+                            EvalContext.LethalRemoval,
+                            new Map()
+                        ),
                         data: blocker
                     };
                 })
@@ -438,6 +455,7 @@ export abstract class Game {
     }
 
     public nextTurn() {
+        console.log('Next turn');
         this.turn = this.getOtherPlayerNumber(this.turn);
         this.turnNum++;
         this.addGameEvent({

@@ -88,7 +88,10 @@ export class ServerGame extends Game {
         return {
             seed: this.seed,
             actions: [...this.actionLog],
-            deckLists: [...this.deckLists.map(deck => deck.getSavable())] as [SavedDeck, SavedDeck],
+            deckLists: [...this.deckLists.map(deck => deck.getSavable())] as [
+                SavedDeck,
+                SavedDeck
+            ],
             winner: this.getWinner()
         };
     }
@@ -124,6 +127,7 @@ export class ServerGame extends Game {
     }
 
     public startGame() {
+        console.log('Start game');
         this.turn = 0;
         for (let i = 0; i < this.players.length; i++) {
             this.players[i].drawCards(this.format.initialDraw[i]);
@@ -144,6 +148,13 @@ export class ServerGame extends Game {
 
     // Server side phase logic
     protected endPhaseOne() {
+        console.log(
+            'End phase 1',
+            'Its player',
+            this.turn,
+            'turn',
+            this.isAttacking()
+        );
         if (this.isAttacking()) {
             this.gameEvents.playerAttacked.trigger({
                 target: this.getOtherPlayerNumber(this.getActivePlayer())
@@ -427,6 +438,16 @@ export class ServerGame extends Game {
                 player: act.player,
                 unitId: act.unitId
             });
+            console.log(
+                'Toggle attack sucesful',
+                unit.getName(),
+                unit.getId(),
+                'is now',
+                unit.isAttacking() ? 'Attacking' : 'Not attacking',
+                'Its player',
+                this.turn,
+                'turn'
+            );
             return true;
         } catch {
             return false;
