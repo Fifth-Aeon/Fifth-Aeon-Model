@@ -155,11 +155,21 @@ export class DeckList {
         this.cardCount++;
     }
 
-    public isValid() {
-        return (
-            this.cardCount >= this.format.minDeckSize &&
-            this.cardCount <= this.format.maxDeckSize
-        );
+    public isValid(cardPool?: DeckList) {
+        if (
+            this.cardCount < this.format.minDeckSize &&
+            this.cardCount > this.format.maxDeckSize
+        ) {
+            return false;
+        }
+        if (cardPool) {
+            for (const record of this.getRecordList()) {
+                if (cardPool.getCardCount(record.card) < record.number) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public removeCard(card: Card) {
@@ -176,7 +186,7 @@ export class DeckList {
     }
 
     public toDeck(): CardFactory[] {
-        const deck: CardFactory[]  = [];
+        const deck: CardFactory[] = [];
         for (const entry of Array.from(this.records.entries())) {
             for (let i = 0; i < entry[1]; i++) {
                 const factory = cardList.getCardFactory(entry[0]);
