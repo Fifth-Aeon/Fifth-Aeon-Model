@@ -9,7 +9,6 @@ export class RandomBuilder extends DeckBuilder {
     /** Forms a deck of the minimum allowed length by randomly selecting cards from the pool */
     public formDeckFromPool(pool: DeckList, format: GameFormat): DeckList {
         const deck = new DeckList(format);
-
         while (deck.size() < format.minDeckSize) {
             const pick = sample(pool.getUniqueCards());
             if (!pick) {

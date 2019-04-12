@@ -157,7 +157,7 @@ export class DeckList {
 
     public isValid(cardPool?: DeckList) {
         if (
-            this.cardCount < this.format.minDeckSize &&
+            this.cardCount < this.format.minDeckSize ||
             this.cardCount > this.format.maxDeckSize
         ) {
             return false;

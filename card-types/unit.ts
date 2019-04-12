@@ -256,8 +256,6 @@ export class Unit extends Permanent {
             return;
         }
         this.attacking = !this.attacking;
-        console.log('Attack toggled', this.attacking);
-        console.trace();
     }
 
     public setAttackDisabled(val: boolean) {

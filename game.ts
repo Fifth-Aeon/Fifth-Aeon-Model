@@ -256,17 +256,6 @@ export abstract class Game {
 
     public getAttackers() {
         const units = this.board.getPlayerUnits(this.turn);
-        console.log(
-            this.name, 'potential attackers',
-            units.map(
-                unit =>
-                    unit.getName() +
-                    '-' +
-                    unit.getId() +
-                    '-' +
-                    unit.isAttacking()
-            )
-        );
         return units.filter(unit => unit.isAttacking());
     }
 
@@ -455,7 +444,6 @@ export abstract class Game {
     }
 
     public nextTurn() {
-        console.log('Next turn');
         this.turn = this.getOtherPlayerNumber(this.turn);
         this.turnNum++;
         this.addGameEvent({
