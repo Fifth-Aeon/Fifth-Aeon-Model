@@ -162,13 +162,18 @@ export class DeckList {
         ) {
             return false;
         }
-        if (cardPool) {
-            for (const record of this.getRecordList()) {
-                if (cardPool.getCardCount(record.card) < record.number) {
-                    return false;
-                }
+        for (const record of this.getRecordList()) {
+            const max = cardPool
+                ? Math.min(
+                      this.format.maxCardsOfType,
+                      cardPool.getCardCount(record.card)
+                  )
+                : this.format.maxCardsOfType;
+            if (record.number > max) {
+                return false;
             }
         }
+
         return true;
     }
 
