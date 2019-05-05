@@ -6,12 +6,12 @@ const mission1 = new Scenario({
     playerSetups: [
         {
             lifeTotal: 25,
-            initialHands: ['Pikeman'],
+            initialHand: ['Pikeman'],
             initialPermanents: ['Pikeman']
         },
         {
             lifeTotal: 5,
-            initialHands: [],
+            initialHand: [],
             initialPermanents: []
         }
     ]

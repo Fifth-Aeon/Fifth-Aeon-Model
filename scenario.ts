@@ -8,14 +8,14 @@ import { standardFormat } from './gameFormat';
 interface ScenarioPlayer {
     initialPermanents: Permanent[];
     lifeTotal: number;
-    initialHands: Card[];
+    initialHand: Card[];
     deck?: DeckList;
 }
 
 interface ScenarioPlayerData {
     initialPermanents: string[];
     lifeTotal: number;
-    initialHands: string[];
+    initialHand: string[];
     deck?: SavedDeck;
 }
 
@@ -57,7 +57,7 @@ export class Scenario {
                 .map(id => unloadCard(id))
                 .filter(card => card instanceof Permanent) as Permanent[],
             lifeTotal: data.lifeTotal,
-            initialHands: data.initialHands.map(id => unloadCard(id)),
+            initialHand: data.initialHand.map(id => unloadCard(id)),
             deck: new DeckList(standardFormat, data.deck)
         };
     }
@@ -75,7 +75,7 @@ export class Scenario {
                 player.drawGeneratedCard(permanent);
                 game.playCard(player, permanent);
             }
-            for (const card of this.playerSetups[playerNumber].initialHands) {
+            for (const card of this.playerSetups[playerNumber].initialHand) {
                 game.addCardToPool(card);
                 player.drawGeneratedCard(card);
             }
