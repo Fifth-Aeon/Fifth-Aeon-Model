@@ -5,6 +5,7 @@ import { Mechanic, TriggeredMechanic } from '../../mechanic';
 import { Player } from '../../player';
 import { Unit, UnitType } from '../../card-types/unit';
 import { ParameterType } from '../parameters';
+import { ResourceType } from 'app/game_model/resource';
 
 export class DrawCard extends TriggeredMechanic {
     protected static id = 'DrawCard';
@@ -124,7 +125,7 @@ export class AugarCard extends TriggeredMechanic {
 
     public onTrigger(card: Card, game: Game) {
         const owner = game.getPlayer(card.getOwner());
-        const synth = owner.getPool().getOfType('Synthesis');
+        const synth = owner.getPool().getOfType(ResourceType.Synthesis);
 
         if (synth < 4) {
             owner.replace(game, 0, 1);

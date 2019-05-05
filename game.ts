@@ -81,6 +81,10 @@ export abstract class Game {
         evaluator: ChoiceHeuristic
     ) => void;
     protected client = false;
+    protected recivedChoice?: {
+        player: number;
+        cards: Array<Card>;
+    };
 
     /**
      * Constructs a game given a format. The format
@@ -164,6 +168,11 @@ export abstract class Game {
         if (!callback) {
             return;
         }
+        if (this.recivedChoice && this.recivedChoice.player === player) {
+            callback(this.recivedChoice.cards);
+            this.recivedChoice = undefined;
+            return;
+        }
         this.currentChoices[player] = {
             player: player,
             validCards: new Set(choices),
@@ -178,13 +187,10 @@ export abstract class Game {
         if (currentChoice !== null) {
             currentChoice.callback(cards);
         } else {
-            throw new Error(
-                `${this.getName()} - Error in game ${
-                    this.name
-                } no deferred choice handler for ${cards.map(card =>
-                    card.getName()
-                )} from ${player}`
-            );
+            this.recivedChoice = {
+                player: player,
+                cards: cards
+            };
         }
         this.currentChoices[player] = null;
     }
