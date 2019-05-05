@@ -5,7 +5,7 @@ import { Mechanic, TriggeredMechanic } from '../../mechanic';
 import { Player } from '../../player';
 import { Unit, UnitType } from '../../card-types/unit';
 import { ParameterType } from '../parameters';
-import { ResourceType } from 'app/game_model/resource';
+import { ResourceType } from '../../resource';
 
 export class DrawCard extends TriggeredMechanic {
     protected static id = 'DrawCard';
