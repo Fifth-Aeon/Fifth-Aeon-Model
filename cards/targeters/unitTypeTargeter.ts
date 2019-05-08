@@ -79,7 +79,7 @@ export class UnitsNotOfType extends AllUnits {
         this.lastTargets = game
             .getBoard()
             .getAllUnits()
-            .filter(unit => unit.getUnitType() === this.type);
+            .filter(unit => unit.getUnitType() !== this.type);
         return this.lastTargets;
     }
     public getText() {
