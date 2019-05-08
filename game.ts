@@ -81,7 +81,7 @@ export abstract class Game {
         evaluator: ChoiceHeuristic
     ) => void;
     protected client = false;
-    protected recivedChoice?: {
+    protected receivedChoice?: {
         player: number;
         cards: Array<Card>;
     };
@@ -168,9 +168,9 @@ export abstract class Game {
         if (!callback) {
             return;
         }
-        if (this.recivedChoice && this.recivedChoice.player === player) {
-            callback(this.recivedChoice.cards);
-            this.recivedChoice = undefined;
+        if (this.receivedChoice && this.receivedChoice.player === player) {
+            callback(this.receivedChoice.cards);
+            this.receivedChoice = undefined;
             return;
         }
         this.currentChoices[player] = {
@@ -187,7 +187,7 @@ export abstract class Game {
         if (currentChoice !== null) {
             currentChoice.callback(cards);
         } else {
-            this.recivedChoice = {
+            this.receivedChoice = {
                 player: player,
                 cards: cards
             };
