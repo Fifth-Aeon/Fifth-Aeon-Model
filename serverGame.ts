@@ -211,6 +211,7 @@ export class ServerGame extends Game {
         const mark = this.events.length;
         if (
             action.type !== GameActionType.CardChoice &&
+            action.type !== GameActionType.Quit &&
             (this.currentChoices[0] !== null || this.currentChoices[1] !== null)
         ) {
             console.error(
