@@ -1,9 +1,9 @@
 import { Card } from '../card-types/card';
-import { CardType } from '../cardType';
 import { Enchantment } from '../card-types/enchantment';
 import { Item } from '../card-types/item';
-import { Resource } from '../resource';
 import { Unit, UnitType } from '../card-types/unit';
+import { CardType } from '../cardType';
+import { Resource } from '../resource';
 import { BuffTarget, GrantAbility } from './mechanics/buff';
 import { CannotAttack } from './mechanics/cantAttack';
 import { DamageSpawnOnKill, DealDamage } from './mechanics/dealDamage';

@@ -1,4 +1,4 @@
-import { ChoiceHeuristic } from '../../ai/defaultAi';
+import { ChoiceHeuristic } from '../../ai/heuristics';
 import { Card } from '../../card-types/card';
 import { CardType } from '../../cardType';
 import { Game } from '../../game';

@@ -1,4 +1,4 @@
-import { ChoiceHeuristic } from './ai/defaultAi';
+import { ChoiceHeuristic } from './ai/heuristics';
 import { knapsack } from './algorithms';
 import { Board } from './board';
 import { Card, CardType, GameZone } from './card-types/card';

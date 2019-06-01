@@ -5,7 +5,7 @@ import { DeckBuilder } from './deckBuilder';
 
 export interface AIConstructor {
     new (playerNumber: number, game: ClientGame, deck: DeckList): AI;
-    /** Returns a deck builder instance to builde the A.Is deck for a limited match */
+    /** Returns a deck builder instance to builder the A.Is deck for a limited match */
     getDeckbuilder(): DeckBuilder;
 }
 

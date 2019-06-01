@@ -1,5 +1,5 @@
 import { remove, sumBy, take } from 'lodash';
-import { ChoiceHeuristic } from '../../ai/defaultAi';
+import { ChoiceHeuristic } from '../../ai/heuristics';
 import { Card, CardType, GameZone } from '../../card-types/card';
 import { Game } from '../../game';
 import { Mechanic, TriggeredMechanic } from '../../mechanic';

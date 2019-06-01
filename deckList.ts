@@ -118,6 +118,7 @@ export class DeckList {
         this.customMetadata = saveData.customMetadata;
         for (const key of Array.from(this.records.keys())) {
             if (!cardList.exists(key)) {
+                console.log(cardList.getCards().length)
                 throw Error(
                     `Deck ${
                         this.name

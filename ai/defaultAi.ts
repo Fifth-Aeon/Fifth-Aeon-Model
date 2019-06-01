@@ -16,18 +16,8 @@ import { AI } from './ai';
 import { aiList } from './aiList';
 import { DeckBuilder } from './deckBuilder';
 import { RandomBuilder } from './randomBuilder';
+import { ChoiceHeuristic } from './heuristics';
 
-/**
- * Determines which heuristic to be used when the A.I makes a choice.
- * Choices are any time the game asks a user to select 1 or more cards,
- * such as when discarding or searching their deck.
- */
-export enum ChoiceHeuristic {
-    DrawHeuristic,
-    DiscardHeuristic,
-    ReplaceHeuristic,
-    HighestStatsHeuristic
-}
 
 /**
  * Represents an action (playing a card, an item or an enchantment)

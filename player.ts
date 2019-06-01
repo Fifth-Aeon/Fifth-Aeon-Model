@@ -1,5 +1,5 @@
 import { remove } from 'lodash';
-import { ChoiceHeuristic } from './ai/defaultAi';
+import { ChoiceHeuristic } from './ai/heuristics';
 import { Card, GameZone } from './card-types/card';
 import { PlayerEventSystem } from './events/eventSystems';
 import { SyncEventType } from './events/syncEvent';
