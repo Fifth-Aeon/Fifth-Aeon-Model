@@ -252,7 +252,6 @@ export class Unit extends Permanent {
 
     public toggleAttacking() {
         if (!this.attacking && !this.canAttack()) {
-            console.warn('Toggle attack fail');
             return;
         }
         this.attacking = !this.attacking;
