@@ -148,6 +148,11 @@ export class Collection {
         this.records.set(id, Math.max(currValue, 4));
     }
 
+    public removeCardPlayset(card: Card | string) {
+        const id = typeof card === 'string' ? card : card.getDataId();
+        this.records.delete(id)
+    }
+
     public removeCard(card: Card) {
         if (!this.records.has(card.getDataId())) {
             return;
