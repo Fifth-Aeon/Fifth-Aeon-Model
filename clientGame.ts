@@ -415,16 +415,24 @@ export class ClientGame extends Game {
                     });
                 }
                 const dmg = attacker.getDamage();
+                const player_dmg = defendingPlayer.getDamage();
                 await this.animator.getAnimationDelay(2);
+
+                attacker.fight(defendingPlayer, dmg, true, false);
+
                 if (this.shouldAnimate) {
                     this.animator.triggerDamageIndicatorEvent({
                         amount: dmg,
                         targetCard: defendingPlayer.getId()
                     });
+                    this.animator.triggerDamageIndicatorEvent({
+                        amount: player_dmg,
+                        targetCard: attacker.getId()
+                    });
                 }
-                attacker.dealAndApplyDamage(defendingPlayer, dmg);
+
                 attacker.toggleAttacking();
-                attacker.setExhausted(true);
+
                 await this.animator.getAnimationDelay(2);
             } else {
                 attacker.toggleAttacking();

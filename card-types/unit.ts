@@ -322,7 +322,12 @@ export class Unit extends Permanent {
         return `${this.name} (${this.cost}) - (${this.damage}/${this.life})`;
     }
 
-    public fight(target: Unit, damage: number | null = null) {
+    public fight(
+        target: Unit,
+        damage: number | null = null,
+        exhausts_self: boolean = true,
+        exhausts_target: boolean = true
+    ) {
         // Trigger an attack event
         const eventParams = {
             damage: this.damage,
@@ -342,8 +347,8 @@ export class Unit extends Permanent {
         this.afterDamage(target);
         target.afterDamage(this);
 
-        this.setExhausted(true);
-        target.setExhausted(true);
+        this.setExhausted(exhausts_self);
+        target.setExhausted(exhausts_target);
     }
 
     public takeDamage(amount: number, source: Card): number {
@@ -382,7 +387,11 @@ export class Unit extends Permanent {
     }
 
     public evaluate(game: Game, context: EvalContext, evaluated: EvalMap) {
-        return this.maxLife + this.damage + super.evaluate(game, context, evaluated);
+        return (
+            this.maxLife +
+            this.damage +
+            super.evaluate(game, context, evaluated)
+        );
     }
 
     public getMultiplier(game: Game, context: EvalContext, evaluated: EvalMap) {
