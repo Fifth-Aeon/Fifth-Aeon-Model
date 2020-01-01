@@ -1,49 +1,26 @@
 import { Card } from '../card-types/card';
 import { Enchantment } from '../card-types/enchantment';
 import { Item } from '../card-types/item';
-import { Resource } from '../resource';
 import { Unit, UnitType } from '../card-types/unit';
+import { Resource } from '../resource';
 import { BuffTarget, GrantAbility } from './mechanics/buff';
-import { CannotAttack, ImprisonTarget } from './mechanics/cantAttack';
+import { CannotAttack, ImprisonTarget, ImprisonTemporarily } from './mechanics/cantAttack';
 import { DrawCard } from './mechanics/draw';
-import {
-    CannotBeEmpowered,
-    ChangePower,
-    Discharge
-} from './mechanics/enchantmentCounters';
+import { CannotBeEmpowered, Discharge } from './mechanics/enchantmentCounters';
 import { RefreshTarget } from './mechanics/heal';
-import {
-    unitTypeLordshipExclusive,
-    unitTypeLordshipInclusive,
-    friendlyLordship
-} from './mechanics/lordship';
+import { friendlyLordship, unitTypeLordshipExclusive, unitTypeLordshipInclusive } from './mechanics/lordship';
 import { MindControl } from './mechanics/mindControl';
 import { GainLife } from './mechanics/playerAid';
 import { CurePoison } from './mechanics/poison';
 import { PreventAllDamage } from './mechanics/shieldEnchantments';
 import { ShuffleIntoDeck } from './mechanics/shuffleIntoDeck';
-import {
-    Aquatic,
-    Flying,
-    Immortal,
-    Ranged,
-    Relentless,
-    Rush
-} from './mechanics/skills';
+import { Aquatic, Deathless, Flying, Ranged, Relentless, Rush } from './mechanics/skills';
 import { SummonUnits } from './mechanics/summonUnits';
 import { WinIfHighLife } from './mechanics/win';
-import {
-    AllUnits,
-    FriendlyUnit,
-    FriendlyUnits,
-    SingleUnit,
-    TriggeringUnit,
-    Untargeted
-} from './targeters/basicTargeter';
+import { AllUnits, FriendlyUnit, FriendlyUnits, SingleUnit, TriggeringUnit, Untargeted } from './targeters/basicTargeter';
 import { RenewalMCTargeter } from './targeters/mindControlTargeter';
 import { CurePoisonTargeter } from './targeters/poisonTargeter';
 import { FriendlyUnitEntersPlay } from './triggers/basic';
-import { OwnerAttacked } from './triggers/owner';
 import { Dawn } from './triggers/periodic';
 import { Serenity } from './triggers/serenity';
 
@@ -250,7 +227,7 @@ export function ancientSage() {
         0,
         4,
         [
-            new Immortal(),
+            new Deathless(),
             new CannotAttack(),
             new GainLife(2).setTrigger(new Serenity()),
             new DrawCard(1).setTrigger(new Serenity())
@@ -323,19 +300,19 @@ export function kingUnit() {
 }
 
 export function imprison() {
-    return new Card(
+    return new Enchantment(
         'Imprison',
         'Imprison',
         'dungeon-light.png',
-        new Resource(4, 0, {
+        new Resource(3, 0, {
             Growth: 0,
             Decay: 0,
             Renewal: 3,
             Synthesis: 0
         }),
         new SingleUnit(),
-        [new ImprisonTarget()],
-        'Target unit becomes unable to attack or block.'
+        4, 4,
+        [new Discharge, new ImprisonTemporarily()]
     );
 }
 
@@ -430,7 +407,7 @@ export function unicorn() {
     );
 }
 
-export function monestary() {
+export function monastery() {
     return new Unit(
         'Monastery',
         'Monastery',
@@ -471,7 +448,7 @@ export function castle() {
     );
 }
 
-export function plaugeDoctor() {
+export function plagueDoctor() {
     return new Unit(
         'PlagueDoctor',
         'Plague Doctor',
@@ -595,7 +572,7 @@ export function pontiff() {
     );
 }
 
-export function overwelmingRadiance() {
+export function overwhelmingRadiance() {
     return new Card(
         'OverwhelmingRadiance',
         'Overwhelming Radiance',

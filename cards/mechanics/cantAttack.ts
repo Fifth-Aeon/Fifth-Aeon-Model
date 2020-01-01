@@ -64,3 +64,36 @@ export class ImprisonTarget extends TargetedMechanic {
         );
     }
 }
+
+export class ImprisonTemporarily extends TargetedMechanic {
+    protected static id = 'ImprisonTemporarily';
+    protected static validCardTypes = new Set([CardType.Unit, CardType.Item, CardType.Enchantment]);
+    private targets: Unit[] = [] ;
+
+    public onTrigger(card: Card, game: Game) {
+        this.targeter.getTargets(card, game, this).forEach(target => {
+            target.addMechanic(new CannotAttack(), game);
+            target.addMechanic(new CannotBlock(), game);
+            this.targets.push(target);
+        });
+    }
+
+    public remove(card: Card, game: Game) {
+        for (const target of this.targets) {
+            target.removeMechanic(CannotAttack.getId(), game);
+            target.removeMechanic(CannotBlock.getId(), game);
+        }
+    }
+
+    public getText(card: Card) {
+        return `${this.targeter.getTextOrPronoun()} is unable to attack or block until this dies.`;
+    }
+
+    public evaluateTarget(source: Card, unit: Unit, game: Game, evaluated: EvalMap) {
+        return (
+            maybeEvaluate(game, EvalContext.NonlethalRemoval, unit, evaluated) *
+            0.9 *
+            (unit.getOwner() === source.getOwner() ? -1 : 1)
+        );
+    }
+}
