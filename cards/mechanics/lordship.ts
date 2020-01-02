@@ -4,20 +4,20 @@ import { Mechanic } from '../../mechanic';
 import { Permanent } from '../../card-types/permanent';
 import { formatBuff } from '../../strings';
 import { Unit, UnitType } from '../../card-types/unit';
+import { ParameterType } from '../parameters';
 
-export class Lordship extends Mechanic {
+abstract class Lordship extends Mechanic {
     protected static id = 'Lordship';
     protected static validCardTypes = Permanent.cardTypes;
 
-    constructor(
-        private text: string,
-        private valuePerUnit: number,
-        private addEffect: (unit: Unit, game: Game) => void,
-        private removeEffect: (target: Unit, game: Game) => void,
-        private filter: (source: Unit, target: Unit) => boolean
-    ) {
+    constructor(private valuePerUnit: number) {
         super();
     }
+
+    protected text = '';
+    protected abstract addEffect(unit: Unit, game: Game): void;
+    protected abstract removeEffect(target: Unit, game: Game): void;
+    protected abstract filter(source: Unit, target: Unit): boolean;
 
     public enter(card: Card, game: Game) {
         const source = card as Unit;
@@ -68,69 +68,97 @@ export class Lordship extends Mechanic {
     }
 }
 
-export function friendlyLordship(attack: number, life: number) {
-    return new Lordship(
-        `Other friendly units have ${formatBuff(attack, life)}.`,
-        attack + life,
-        (unit: Unit) => unit.buff(attack, life),
-        (unit: Unit) => unit.buff(-attack, -life),
-        (source: Unit, target: Unit) =>
-            source !== target && source.getOwner() === target.getOwner()
-    );
+export class FriendlyLordship extends Lordship {
+    protected static id = 'FriendlyLordship';
+    protected static ParameterTypes = [
+        { name: 'attack', type: ParameterType.Integer },
+        { name: 'life', type: ParameterType.Integer }
+    ];
+
+    constructor(protected attack: number, protected life: number) {
+        super(attack + life);
+        this.text = `Other friendly units have ${formatBuff(attack, life)}.`;
+    }
+
+    protected addEffect(unit: Unit) {
+        unit.buff(this.attack, this.life);
+    }
+
+    protected removeEffect(unit: Unit, game: Game) {
+        unit.buff(-this.attack, -this.life);
+    }
+
+    protected filter(source: Unit, target: Unit) {
+        return source !== target && source.getOwner() === target.getOwner();
+    }
 }
 
-export function unitTypeLordshipExclusive(
-    type: UnitType,
-    attack: number,
-    life: number
-) {
-    return new Lordship(
-        `Other friendly ${UnitType[type]} have ${formatBuff(attack, life)}.`,
-        attack + life,
-        (unit: Unit) => unit.buff(attack, life),
-        (unit: Unit) => unit.buff(-attack, -life),
-        (source: Unit, target: Unit) =>
+export class UnitTypeLordshipAll extends FriendlyLordship {
+    protected static id = 'UnitTypeLordshipAll';
+    protected static ParameterTypes = [
+        { name: 'unitType', type: ParameterType.UnitType },
+        { name: 'attack', type: ParameterType.Integer },
+        { name: 'life', type: ParameterType.Integer }
+    ];
+
+    constructor(protected unitType: UnitType, attack: number, life: number) {
+        super(attack, life);
+        this.text = `${UnitType[unitType]} have ${formatBuff(attack, life)}.`;
+        this.unitType = unitType;
+    }
+
+    protected filter(source: Unit, target: Unit) {
+        return (
+            this.unitType === target.getUnitType()
+        );
+    }
+}
+
+export class UnitTypeLordshipExclusive extends UnitTypeLordshipAll {
+    protected static id = 'UnitTypeLordshipExclusive';
+
+    constructor(type: UnitType, attack: number, life: number) {
+        super(type, attack, life);
+        this.text = `Other friendly ${UnitType[type]} have ${formatBuff(attack, life)}.`;
+    }
+
+    protected filter(source: Unit, target: Unit) {
+        return (
             source.getOwner() === target.getOwner() &&
             source !== target &&
-            type === target.getUnitType()
-    );
+            this.unitType === target.getUnitType()
+        );
+    }
 }
 
-export function unitTypeLordshipInclusive(
-    type: UnitType,
-    attack: number,
-    life: number
-) {
-    return new Lordship(
-        `Friendly ${UnitType[type]} have ${formatBuff(attack, life)}.`,
-        attack + life,
-        (unit: Unit) => unit.buff(attack, life),
-        (unit: Unit) => unit.buff(-attack, -life),
-        (source: Unit, target: Unit) =>
+export class UnitTypeLordshipInclusive extends UnitTypeLordshipAll {
+    protected static id = 'UnitTypeLordshipInclusive';
+
+    constructor(type: UnitType, attack: number, life: number) {
+        super(type, attack, life);
+        this.text = `Friendly ${UnitType[type]} have ${formatBuff(attack, life)}.`;
+    }
+
+    protected filter(source: Unit, target: Unit) {
+        return (
             source.getOwner() === target.getOwner() &&
-            type === target.getUnitType()
-    );
-}
-export function unitTypeLordshipAll(
-    type: UnitType,
-    attack: number,
-    life: number
-) {
-    return new Lordship(
-        `${UnitType[type]} have ${formatBuff(attack, life)}.`,
-        attack + life,
-        (unit: Unit) => unit.buff(attack, life),
-        (unit: Unit) => unit.buff(-attack, -life),
-        (source: Unit, target: Unit) => type === target.getUnitType()
-    );
+            this.unitType === target.getUnitType()
+        );
+    }
 }
 
-export function notUnitLordship(type: UnitType, attack: number, life: number) {
-    return new Lordship(
-        `Non-${UnitType[type]} have ${formatBuff(attack, life)}.`,
-        attack + life,
-        (unit: Unit) => unit.buff(attack, life),
-        (unit: Unit) => unit.buff(-attack, -life),
-        (source: Unit, target: Unit) => type !== target.getUnitType()
-    );
+export class NotUnitTypeLordship extends UnitTypeLordshipAll {
+    protected static id = 'NotUnitTypeLordship';
+
+    constructor(type: UnitType, attack: number, life: number) {
+        super(type, attack, life);
+        this.text = `Non-${UnitType[type]} have ${formatBuff(attack, life)}.`;
+    }
+
+    protected filter(source: Unit, target: Unit) {
+        return (
+            this.unitType !== target.getUnitType()
+        );
+    }
 }
+

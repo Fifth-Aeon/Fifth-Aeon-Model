@@ -12,7 +12,8 @@ export enum ParameterType {
     Unit,
     Item,
     Enchantment,
-    CardType
+    CardType,
+    UnitType
 }
 
 export type ParameterData = number | string | ResourcePrototype;
@@ -101,6 +102,8 @@ const buildParameter = (
             return loadCard(data, cards, CardType.Enchantment);
         case ParameterType.CardType:
             return parseInteger(data, 0, 3);
+        case ParameterType.UnitType:
+            return parseInteger(data, 0, Infinity);
     }
 };
 

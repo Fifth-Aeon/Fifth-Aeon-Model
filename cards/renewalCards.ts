@@ -4,11 +4,11 @@ import { Item } from '../card-types/item';
 import { Unit, UnitType } from '../card-types/unit';
 import { Resource } from '../resource';
 import { BuffTarget, GrantAbility } from './mechanics/buff';
-import { CannotAttack, ImprisonTarget, ImprisonTemporarily } from './mechanics/cantAttack';
+import { CannotAttack, ImprisonTemporarily } from './mechanics/cantAttack';
 import { DrawCard } from './mechanics/draw';
 import { CannotBeEmpowered, Discharge } from './mechanics/enchantmentCounters';
 import { RefreshTarget } from './mechanics/heal';
-import { friendlyLordship, unitTypeLordshipExclusive, unitTypeLordshipInclusive } from './mechanics/lordship';
+import { FriendlyLordship, UnitTypeLordshipInclusive, UnitTypeLordshipExclusive } from './mechanics/lordship';
 import { MindControl } from './mechanics/mindControl';
 import { GainLife } from './mechanics/playerAid';
 import { CurePoison } from './mechanics/poison';
@@ -76,7 +76,7 @@ export function valiantDefenses() {
         new Untargeted(),
         3,
         3,
-        [friendlyLordship(0, 2)]
+        [ new FriendlyLordship(0, 2)]
     );
 }
 
@@ -132,7 +132,7 @@ export function general() {
         new Untargeted(),
         2,
         2,
-        [unitTypeLordshipInclusive(UnitType.Soldier, 1, 1)]
+        [new UnitTypeLordshipInclusive(UnitType.Soldier, 1, 1)]
     );
 }
 
@@ -293,7 +293,7 @@ export function kingUnit() {
         3,
         5,
         [
-            unitTypeLordshipInclusive(UnitType.Soldier, 1, 1),
+            new UnitTypeLordshipInclusive(UnitType.Soldier, 1, 1),
             new SummonUnits(pikeman).setTrigger(new Dawn())
         ]
     );
@@ -568,7 +568,7 @@ export function pontiff() {
         new Untargeted(),
         3,
         3,
-        [unitTypeLordshipExclusive(UnitType.Cleric, 1, 1)]
+        [new UnitTypeLordshipExclusive(UnitType.Cleric, 1, 1)]
     );
 }
 

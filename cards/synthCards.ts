@@ -12,7 +12,7 @@ import {
 } from './mechanics/dealDamage';
 import { AugarCard, DrawCard, Peek } from './mechanics/draw';
 import { RefreshTarget } from './mechanics/heal';
-import { friendlyLordship } from './mechanics/lordship';
+import { FriendlyLordship } from './mechanics/lordship';
 import { Poisoned, PoisonImmune, PoisonTarget } from './mechanics/poison';
 import { Annihilate } from './mechanics/removal';
 import { ForceField } from './mechanics/shieldEnchantments';
@@ -522,7 +522,7 @@ export function comsTower() {
         new Untargeted(),
         0,
         5,
-        [new CannotAttack(), friendlyLordship(1, 1)]
+        [new CannotAttack(), new FriendlyLordship(1, 1)]
     );
 }
 

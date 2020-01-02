@@ -13,7 +13,7 @@ import {
 } from './mechanics/decaySpecials';
 import { Discard, DiscardOnDamage } from './mechanics/draw';
 import { Discharge } from './mechanics/enchantmentCounters';
-import { notUnitLordship, unitTypeLordshipAll } from './mechanics/lordship';
+import { NotUnitTypeLordship, UnitTypeLordshipAll } from './mechanics/lordship';
 import { PoisonImmune, PoisonTarget } from './mechanics/poison';
 import { KillTarget } from './mechanics/removal';
 import { ReturnFromCrypt } from './mechanics/returnFromCrypt';
@@ -144,8 +144,8 @@ export function deathAscendancy() {
         4,
         [
             new Discharge(1),
-            unitTypeLordshipAll(UnitType.Undead, 1, 1),
-            notUnitLordship(UnitType.Undead, -1, -1)
+            new UnitTypeLordshipAll(UnitType.Undead, 1, 1),
+            new NotUnitTypeLordship(UnitType.Undead, -1, -1)
         ]
     );
 }
