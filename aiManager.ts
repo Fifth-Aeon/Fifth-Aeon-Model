@@ -1,13 +1,27 @@
 import { DefaultAI } from './ai/defaultAi';
 import { AIConstructor } from './ai/aiList';
 import { DeckList } from './deckList';
-import { allDecks, decksByLevel, DifficultyLevel } from './scenarios/decks';
+import { decksByLevel, DifficultyLevel } from './scenarios/decks';
 import { sample } from 'lodash';
 
 export type ConcreteDifficulty = Exclude<
     DifficultyLevel,
     DifficultyLevel.Dynamic
 >;
+
+export interface AiData {
+    selectedDifficulty: DifficultyLevel;
+
+    playerRecord: {
+        easy: { wins: number, losses: number },
+        medium: { wins: number, losses: number },
+        hard: { wins: number, losses: number },
+        expert: { wins: number, losses: number }
+    };
+
+    autoDifficulty: ConcreteDifficulty;
+
+}
 
 /**
  * Used to get A.I. opponents and decks for
@@ -22,6 +36,8 @@ class AIManager {
         expert: { wins: 0, losses: 0 }
     };
 
+    public save: (data: AiData) => void = () => null;
+
     public recordGameResult(playerWon: boolean) {
         const record = this.getCurrentRecord();
         if (playerWon) {
@@ -29,15 +45,39 @@ class AIManager {
         } else {
             record.losses++;
         }
-        const winRate = record.wins / (record.wins + record.losses);
-        if (this.selectedDifficulty !== DifficultyLevel.Dynamic) {
-            return;
+        if (this.selectedDifficulty === DifficultyLevel.Dynamic) {
+            const winRate = record.wins / (record.wins + record.losses);
+            if (this.autoDifficulty < DifficultyLevel.Expert && winRate > 0.65) {
+                this.autoDifficulty++;
+            } else if (this.autoDifficulty > DifficultyLevel.Easy && winRate < 0.45) {
+                this.autoDifficulty--;
+            }
         }
-        if (this.autoDifficulty < DifficultyLevel.Expert && winRate > 0.65) {
-            this.autoDifficulty++;
-        } else if (this.autoDifficulty > DifficultyLevel.Easy && winRate < 0.45) {
-            this.autoDifficulty--;
-        }
+        this.saveState();
+    }
+
+    public load(data: AiData) {
+        this.playerRecord = data.playerRecord;
+        this.selectedDifficulty = data.selectedDifficulty;
+        this.autoDifficulty = data.autoDifficulty;
+    }
+
+    public getSelectedDifficulty() {
+        return this.selectedDifficulty;
+    }
+
+    private saveState() {
+        console.log('save', this);
+        this.save({
+            playerRecord: this.playerRecord,
+            selectedDifficulty: this.selectedDifficulty,
+            autoDifficulty: this.autoDifficulty
+        });
+    }
+
+    public setDifficulty(difficulty: DifficultyLevel) {
+        this.selectedDifficulty = difficulty;
+        this.saveState();
     }
 
     private getCurrentRecord() {
@@ -82,7 +122,6 @@ class AIManager {
             case DifficultyLevel.Expert:
                 return sample(decksByLevel.expert) as DeckList;
         }
-        return sample(allDecks) as DeckList;
     }
 }
 

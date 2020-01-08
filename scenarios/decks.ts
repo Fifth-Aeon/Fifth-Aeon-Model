@@ -32,6 +32,7 @@ function addDeck(deck: SavedDeck, difficulty: DifficultyLevel) {
             break;
         case DifficultyLevel.Hard:
             decksByLevel.hard.push(list);
+            decksByLevel.expert.push(list);
             break;
         case DifficultyLevel.Expert:
             decksByLevel.expert.push(list);
