@@ -125,4 +125,4 @@ class AIManager {
     }
 }
 
-export const aiManger = new AIManager();
+export const aiManager = new AIManager();
