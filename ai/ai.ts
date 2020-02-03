@@ -6,7 +6,7 @@ import { GameSyncEvent, SyncEventType } from '../events/syncEvent';
 /**
  * An Artificial Intelligence that can play the game.
  *
- * This class contains logic for timing A.I actions but no implemenetaiton of gameplay logic.
+ * This class contains logic for timing A.I actions but no implementation of gameplay logic.
  */
 export abstract class AI {
     private timer: any;
@@ -58,7 +58,7 @@ export abstract class AI {
         }
     }
 
-    /** Gets the number of the player this A.I controlls */
+    /** Gets the number of the player this A.I controls */
     getPlayerNumber(): number {
         return this.playerNumber;
     }
@@ -114,7 +114,7 @@ export abstract class AI {
     }
 
     /**
-     * Tells the A.I to start acting and to immediatly take any action it likes.
+     * Tells the A.I to start acting and to immediately take any action it likes.
      * This is to make the A.I faster for A.I vs A.I battles
      */
     public startActingImmediateMode() {

@@ -67,7 +67,6 @@ class AIManager {
     }
 
     private saveState() {
-        console.log('save', this);
         this.save({
             playerRecord: this.playerRecord,
             selectedDifficulty: this.selectedDifficulty,
