@@ -17,7 +17,7 @@ import { aiList } from './aiList';
 import { DeckBuilder } from './deckBuilder';
 import { RandomBuilder } from './randomBuilder';
 import { ChoiceHeuristic } from './heuristics';
-
+import { BlockOutcome, CombatAnalyzer } from './combatAnalyer';
 
 /**
  * Represents an action (playing a card, an item or an enchantment)
@@ -30,14 +30,6 @@ interface EvaluatedAction {
     enchantmentTarget?: Enchantment;
     target?: Unit;
     host?: Unit;
-}
-
-/** Represents the outcome of a 1v1 fight based on which of the two units die */
-enum BlockOutcome {
-    AttackerDies,
-    NeitherDies,
-    BothDie,
-    BlockerDies
 }
 
 /**
@@ -112,8 +104,15 @@ export class DefaultAI extends AI {
     }
 
     /** Decides which cards of a set of choices to choose to draw. */
-    protected evaluateToDraw(choices: Card[], min: number, max: number): Card[] {
-        return take(sortBy(choices, card => this.cardDrawHeuristic(card)), max);
+    protected evaluateToDraw(
+        choices: Card[],
+        min: number,
+        max: number
+    ): Card[] {
+        return take(
+            sortBy(choices, card => this.cardDrawHeuristic(card)),
+            max
+        );
     }
 
     /** Decides which cards of a set of choices to discard
@@ -158,7 +157,10 @@ export class DefaultAI extends AI {
         min: number,
         max: number
     ): Card[] {
-        return take(sortBy(choices as Unit[], unit => -unit.getStats()), max);
+        return take(
+            sortBy(choices as Unit[], unit => -unit.getStats()),
+            max
+        );
     }
 
     /** Get the appropriate heuristic for making a choice */
@@ -213,16 +215,17 @@ export class DefaultAI extends AI {
             return;
         }
 
-        const choicecards = this.getCardToChoose(
+        const choiceCards = this.getCardToChoose(
             options,
             min,
             max,
             heuristicType
         );
-        setTimeout(() => this.game.makeChoice(this.playerNumber, choicecards), 0);
-
+        setTimeout(
+            () => this.game.makeChoice(this.playerNumber, choiceCards),
+            0
+        );
     }
-
 
     /** Gets the best target for a card with a targeter.
      * The best target is considered to be the one with the highest evaluateTarget value.
@@ -377,7 +380,9 @@ export class DefaultAI extends AI {
      * @param item The item to find a host for
      */
     protected getBestHost(item: Item): Unit {
-        const validHosts = item.getHostTargeter().getValidTargets(item, this.game);
+        const validHosts = item
+            .getHostTargeter()
+            .getValidTargets(item, this.game);
         const best = maxBy(validHosts, host =>
             host.getMultiplier(
                 this.game,
@@ -533,7 +538,7 @@ export class DefaultAI extends AI {
         if (!blocker.canBlockTarget(attacker, true)) {
             return false;
         }
-        const type = this.categorizeBlock(attacker, blocker);
+        const type = CombatAnalyzer.categorizeBlock(attacker, blocker);
         return (
             type === BlockOutcome.AttackerDies ||
             type === BlockOutcome.NeitherDies ||
@@ -549,38 +554,6 @@ export class DefaultAI extends AI {
                         new Map()
                     ))
         );
-    }
-
-    /** Categorizes a block by what its outcome will be (if the attacker, blocker or both will die) */
-    protected categorizeBlock(attacker: Unit, blocker: Unit): BlockOutcome {
-        const isAttackerLethal =
-            attacker.hasMechanicWithId(Lethal.getId()) ||
-            attacker.hasMechanicWithId(TransformDamaged.getId());
-        const isBlockerLethal =
-            blocker.hasMechanicWithId(Lethal.getId()) ||
-            blocker.hasMechanicWithId(TransformDamaged.getId());
-
-        let shield = attacker.hasMechanicWithId(Shielded.getId()) as Shielded;
-        const isAttackerShielded = shield && !shield.isDepleted();
-        shield = blocker.hasMechanicWithId(Shielded.getId()) as Shielded;
-        const isBlockerShielded = shield && !shield.isDepleted();
-
-        const attackerDies =
-            !isAttackerShielded &&
-            (isBlockerLethal || blocker.getDamage() >= attacker.getLife());
-        const blockerDies =
-            !isBlockerShielded &&
-            (isAttackerLethal || attacker.getDamage() >= blocker.getLife());
-
-        if (attackerDies && blockerDies) {
-            return BlockOutcome.BothDie;
-        } else if (attackerDies) {
-            return BlockOutcome.AttackerDies;
-        } else if (blockerDies) {
-            return BlockOutcome.BlockerDies;
-        } else {
-            return BlockOutcome.NeitherDies;
-        }
     }
 
     /** Declares a blocker as blocking a particular attacker */
@@ -617,7 +590,7 @@ export class DefaultAI extends AI {
         const potentialBlockers = this.game
             .getBoard()
             .getPlayerUnits(this.playerNumber)
-            .filter(unit => !unit.isExhausted());
+            .filter(unit => !unit.canBlock());
 
         let totalDamage = sumBy(attackers, attacker => attacker.getDamage());
         const life = this.aiPlayer.getLife();
@@ -634,7 +607,7 @@ export class DefaultAI extends AI {
                     options.push({
                         blocker: blocker,
                         attacker: attacker,
-                        type: this.categorizeBlock(attacker, blocker),
+                        type: CombatAnalyzer.categorizeBlock(attacker, blocker),
                         tradeScore:
                             blocker.evaluate(
                                 this.game,
