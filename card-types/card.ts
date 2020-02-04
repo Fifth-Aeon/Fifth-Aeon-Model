@@ -1,10 +1,15 @@
 import { CardEventSystem } from '../events/eventSystems';
 import { Game } from '../game';
-import { EvalContext, Mechanic, TriggeredMechanic, EvalMap } from '../mechanic';
+import {
+    EvalContext,
+    Mechanic,
+    TriggeredMechanic,
+    EvalMap,
+    TargetedMechanic
+} from '../mechanic';
 import { Resource } from '../resource';
 import { Targeter } from '../targeter';
 import { Unit } from './unit';
-
 
 export enum GameZone {
     Deck,
@@ -37,7 +42,7 @@ export class Card {
     protected dataId: string;
     protected imageUrl: string;
     protected location: GameZone;
-    protected text?: string ;
+    protected text?: string;
     protected events = new CardEventSystem();
 
     protected targeter: Targeter;
@@ -227,7 +232,11 @@ export class Card {
 
     public evaluateTarget(target: Unit, game: Game, evaluated: EvalMap) {
         return this.mechanics
-            .map(mechanic => mechanic.evaluateTarget(this, target, game, evaluated))
+            .map(mechanic =>
+                mechanic instanceof TargetedMechanic
+                    ? mechanic.evaluateTarget(this, target, game, evaluated)
+                    : 0
+            )
             .reduce((a, b) => a + b, 0);
     }
 }

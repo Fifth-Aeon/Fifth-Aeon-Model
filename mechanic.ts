@@ -49,7 +49,6 @@ export abstract class Mechanic {
         type: ParameterType;
     }[] = [];
     protected static id: string;
-    private triggeringUnit?: Unit;
 
     static getMultiplier(vals: Array<number | EvalOperator>) {
         const multipliers = (vals.filter(
@@ -100,9 +99,7 @@ export abstract class Mechanic {
     ): number | EvalOperator;
 
     public remove(card: Card, game: Game) {}
-    public evaluateTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
-        return 0;
-    }
+
     public stack() {}
     public clone(): Mechanic {
         return this;
@@ -114,18 +111,14 @@ export abstract class Mechanic {
         return (this.constructor as any).id;
     }
 
-    public setTriggeringUnit(unit: Unit) {
-        this.triggeringUnit = unit;
-    }
 
-    public getTriggeringUnit() {
-        return this.triggeringUnit;
-    }
 }
 
 export abstract class TriggeredMechanic extends Mechanic {
     protected triggerType: Trigger = new Play();
-    public onTrigger(parent: Card, game: Game) {}
+    protected triggeringUnit?: Unit;
+
+    abstract onTrigger(parent: Card, game: Game): any;
 
     public evaluate(
         card: Card,
@@ -173,8 +166,12 @@ export abstract class TriggeredMechanic extends Mechanic {
         this.triggerType.unregister(card, game);
     }
 
-    public setTargeter(targeter: Targeter) {
-        return this;
+    public setTriggeringUnit(unit: Unit) {
+        this.triggeringUnit = unit;
+    }
+
+    public getTriggeringUnit() {
+        return this.triggeringUnit;
     }
 }
 
@@ -204,4 +201,6 @@ export abstract class TargetedMechanic extends TriggeredMechanic {
             this.evaluateTarget(card, target, game, new Map())
         );
     }
+
+    abstract evaluateTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap): number;
 }

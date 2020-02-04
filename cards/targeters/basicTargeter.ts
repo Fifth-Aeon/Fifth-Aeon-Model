@@ -1,7 +1,7 @@
 import { Card, CardType } from '../../card-types/card';
 import { Game } from '../../game';
 import { Item } from '../../card-types/item';
-import { Mechanic } from '../../mechanic';
+import { Mechanic, TriggeredMechanic } from '../../mechanic';
 import { Targeter } from '../../targeter';
 import { Unit } from '../../card-types/unit';
 
@@ -13,9 +13,11 @@ export class TriggeringUnit extends Targeter {
     }
 
     public getTargets(card: Card, game: Game, mechanic: Mechanic) {
-        const triggering = mechanic.getTriggeringUnit();
-        if (triggering) {
-            return [triggering];
+        if (mechanic instanceof TriggeredMechanic) {
+            const triggering = mechanic.getTriggeringUnit();
+            if (triggering) {
+                return [triggering];
+            }
         }
         return [];
     }

@@ -4,23 +4,6 @@ import { EvalContext, Mechanic, TargetedMechanic, EvalMap, maybeEvaluate } from 
 import { Permanent } from '../../card-types/permanent';
 import { Unit, UnitType } from '../../card-types/unit';
 
-export class CurePoison extends TargetedMechanic {
-    protected static id = 'CurePoison';
-    public onTrigger(card: Card, game: Game) {
-        this.targeter.getTargets(card, game, this).forEach(target => {
-            target.removeMechanic('poisoned', game);
-        });
-    }
-
-    public remove(card: Card, game: Game) {
-        game.gameEvents.removeEvents(this);
-    }
-
-    public getText(card: Card) {
-        return `Cure ${this.targeter.getTextOrPronoun()}.`;
-    }
-}
-
 export class Poisoned extends Mechanic {
     protected static id = 'Poisoned';
     protected static validCardTypes = Permanent.cardTypes;
@@ -78,6 +61,29 @@ export class PoisonTarget extends TargetedMechanic {
             0.5 *
             (target.getOwner() === source.getOwner() ? -1 : 1)
         );
+    }
+}
+
+export class CurePoison extends TargetedMechanic {
+    protected static id = 'CurePoison';
+    public onTrigger(card: Card, game: Game) {
+        this.targeter.getTargets(card, game, this).forEach(target => {
+            target.removeMechanic(Poisoned.getId(), game);
+        });
+    }
+
+    public remove(card: Card, game: Game) {
+        game.gameEvents.removeEvents(this);
+    }
+
+    public getText(card: Card) {
+        return `Cure ${this.targeter.getTextOrPronoun()}.`;
+    }
+
+    public evaluateTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
+        const allyFactor = target.getOwner() === source.getOwner() ? 1 : -1;
+        const cureFactor = target.hasMechanicWithId(Poisoned.getId()) ? 0 : .7;
+        return allyFactor * cureFactor * maybeEvaluate(game, EvalContext.NonlethalRemoval, target, evaluated);
     }
 }
 
