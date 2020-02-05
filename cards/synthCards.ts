@@ -51,6 +51,7 @@ import {
 } from './triggers/bio';
 import { OwnerDrawsUnit } from './triggers/draw';
 import { Dawn, Dusk } from './triggers/periodic';
+import { Spell } from '../card-types/spell';
 
 export function assemblyLine() {
     return new Enchantment(
@@ -350,7 +351,7 @@ export function rifle() {
 }
 
 export function atomicStrike() {
-    return new Card(
+    return new Spell(
         'AtomicStrike',
         'Atomic Strike',
         'mushroom-cloud.png',
@@ -404,7 +405,7 @@ export function spy() {
 }
 
 export function carpetBombing() {
-    return new Card(
+    return new Spell(
         'BombingRun',
         'Bombing Run',
         'carpet-bombing.png',
@@ -420,7 +421,7 @@ export function carpetBombing() {
 }
 
 export function energyBeam() {
-    return new Card(
+    return new Spell(
         'EnergyBeam',
         'Energy Beam',
         'sinusoidal-beam.png',
@@ -436,7 +437,7 @@ export function energyBeam() {
 }
 
 export function archivesSearch() {
-    return new Card(
+    return new Spell(
         'ArchivesSearch',
         'Search the Archives',
         'enlightenment.png',
@@ -452,7 +453,7 @@ export function archivesSearch() {
 }
 
 export function alloyTransmute() {
-    return new Card(
+    return new Spell(
         'AlloyTransmute',
         'Alloy Transmutation',
         'materials-science.png',
@@ -468,7 +469,7 @@ export function alloyTransmute() {
 }
 
 export function dangerousInjection() {
-    return new Card(
+    return new Spell(
         'DangerousInjection',
         'Dangerous Injection',
         'hypodermic-test.png',
@@ -669,7 +670,7 @@ export function airship() {
 }
 
 export function insight() {
-    return new Card(
+    return new Spell(
         'Insight',
         'Insight',
         'third-eye.png',
@@ -685,7 +686,7 @@ export function insight() {
 }
 
 export function riftBlast() {
-    return new Card(
+    return new Spell(
         'RiftBlast',
         'Rift Pulse',
         'lightning-dissipation.png',

@@ -23,6 +23,7 @@ import { CurePoisonTargeter } from './targeters/poisonTargeter';
 import { FriendlyUnitEntersPlay } from './triggers/basic';
 import { Dawn } from './triggers/periodic';
 import { Serenity } from './triggers/serenity';
+import { Spell } from '../card-types/spell';
 
 export function pegasus() {
     return new Unit(
@@ -317,7 +318,7 @@ export function imprison() {
 }
 
 export function heal() {
-    return new Card(
+    return new Spell(
         'Heal',
         'Heal',
         'caduceus.png',
@@ -353,7 +354,7 @@ export function gryphon() {
 }
 
 export function Dawnbreak() {
-    return new Card(
+    return new Spell(
         'Dawnbreak',
         'Dawnbreak',
         'sunbeams.png',
@@ -487,7 +488,7 @@ export function knight() {
 }
 
 export function recruitment() {
-    return new Card(
+    return new Spell(
         'Recruitment',
         'Rapid Recruitment',
         'rally-the-troops.png',
@@ -503,7 +504,7 @@ export function recruitment() {
 }
 
 export function armistice() {
-    return new Card(
+    return new Spell(
         'Armstice',
         'Armistice',
         'tied-scroll.png',
@@ -519,7 +520,7 @@ export function armistice() {
 }
 
 export function callOfJustice() {
-    return new Card(
+    return new Spell(
         'CallOfJustice',
         'Call of Justice',
         'scales.png',
@@ -573,7 +574,7 @@ export function pontiff() {
 }
 
 export function overwhelmingRadiance() {
-    return new Card(
+    return new Spell(
         'OverwhelmingRadiance',
         'Overwhelming Radiance',
         'sun.png',

@@ -52,6 +52,7 @@ import { DamagedUnit } from './targeters/weakenedUnits';
 import { DeathTrigger, SoulReap } from './triggers/death';
 import { LethalStrike } from './triggers/lethalStrike';
 import { Dusk } from './triggers/periodic';
+import { Spell } from '../card-types/spell';
 
 export function imp() {
     return new Unit(
@@ -442,7 +443,7 @@ export function lichring() {
 }
 
 export function Hemmorage() {
-    return new Card(
+    return new Spell(
         'Hemorrhage',
         'Neural Hemorrhage',
         'bleeding-eye.png',
@@ -458,7 +459,7 @@ export function Hemmorage() {
 }
 
 export function VampireBite() {
-    return new Card(
+    return new Spell(
         'VampireBite',
         'Vampire Bite',
         'neck-bite.png',
@@ -474,7 +475,7 @@ export function VampireBite() {
 }
 
 export function backstab() {
-    return new Card(
+    return new Spell(
         'Backstab',
         'Backstab',
         'backstab.png',
@@ -490,7 +491,7 @@ export function backstab() {
 }
 
 export function raiseSkeletons() {
-    return new Card(
+    return new Spell(
         'RaiseSkeletons',
         'Raise Skeletons',
         'raise-skeleton.png',
@@ -506,7 +507,7 @@ export function raiseSkeletons() {
 }
 
 export function toxin() {
-    return new Card(
+    return new Spell(
         'Toxin',
         'Toxin',
         'death-juice.png',
@@ -560,7 +561,7 @@ export function rottingZombie() {
 }
 
 export function decapitate() {
-    return new Card(
+    return new Spell(
         'Decapitate',
         'Decapitate',
         'decapitation.png',
@@ -732,7 +733,7 @@ export function gorgon() {
 }
 
 export function unbury() {
-    return new Card(
+    return new Spell(
         'Unbury',
         'Unearth',
         'coffin.png',

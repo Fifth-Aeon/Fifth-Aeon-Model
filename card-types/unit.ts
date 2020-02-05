@@ -1,5 +1,5 @@
 import { remove } from 'lodash';
-import { Card, CardType, GameZone } from './card';
+import { Card, CardType, GameZone, Damagable } from './card';
 import { AttackEvent, DealDamageEvent } from '../events/cardEventTypes';
 import { EventList } from '../events/eventSystems';
 import { Game } from '../game';
@@ -67,7 +67,7 @@ class Damager {
 }
 
 
-export class Unit extends Permanent {
+export class Unit extends Permanent implements Damagable {
     // Stats
     protected life: number;
     protected maxLife: number;
@@ -106,7 +106,6 @@ export class Unit extends Permanent {
         this.attackDisabled = false;
         this.blockDisabled = false;
         this.blockedUnitId = null;
-        this.unit = true;
         this.damage = damage;
         this.maxLife = maxLife;
         this.life = this.maxLife;
@@ -440,3 +439,5 @@ export class Unit extends Permanent {
         this.events.annihilate.trigger(new Map());
     }
 }
+
+export const isUnit = (item: Card): item is Unit => item.getCardType() === CardType.Unit;

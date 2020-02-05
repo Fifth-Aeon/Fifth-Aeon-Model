@@ -1,18 +1,8 @@
+import { EvalContext, EvalMap } from '../mechanic';
 import { CardEventSystem } from '../events/eventSystems';
-import { Game } from '../game';
-import {
-    EvalContext,
-    Mechanic,
-    TriggeredMechanic,
-    EvalMap,
-    TargetedMechanic
-} from '../mechanic';
 import { Resource } from '../resource';
+import { Game } from '../game';
 import { Targeter } from '../targeter';
-import { Unit } from './unit';
-// import { Permanent } from './permanent';
-
-
 
 export enum GameZone {
     Deck,
@@ -29,221 +19,70 @@ export enum CardType {
 }
 
 
-export const isUnit = (item: Card): item is Unit => item.getCardType() === CardType.Unit;
-
-
 export interface CardPrototype {
     id: string;
     data: string;
     owner: number;
 }
 
-export class Card {
-    protected name: string;
-    protected id: string;
-    protected mechanics: Mechanic[] = [];
+export interface Damagable {
+    takeDamage(amount: number, source: Card): number;
+}
 
-    protected cost: Resource;
-    protected unit = false;
-    protected owner = -1;
-    protected dataId: string;
-    protected imageUrl: string;
-    protected location: GameZone;
-    protected text?: string;
-    protected events = new CardEventSystem();
+export interface Card {
+    getEvents(): CardEventSystem;
 
-    protected targeter: Targeter;
+    getCardType(): CardType;
 
-    constructor(
-        dataId: string,
-        name: string,
-        imageUrl: string,
-        cost: Resource,
-        targeter: Targeter,
-        mechanics: Array<Mechanic>,
-        text?: string
-    ) {
-        this.dataId = dataId;
-        this.name = name;
-        this.imageUrl = imageUrl;
-        this.cost = cost;
-        this.targeter = targeter;
-        this.mechanics = mechanics;
-        this.mechanics.forEach(mechanic => mechanic.attach(this));
-        this.location = GameZone.Deck;
-        this.id = this.generateId();
-        this.text = text;
-    }
+    setText(text: string): void;
 
-    /**
-     * Returns the cards event system.
-     * This is used to add or remove events
-     */
-    public getEvents() {
-        return this.events;
-    }
+    setLocation(location: GameZone): void;
 
-    private generateId(): string {
-        return Math.random()
-            .toString(16)
-            .substring(2);
-    }
+    getLocation(): GameZone;
 
-    public getCardType(): CardType {
-        return CardType.Spell;
-    }
+    draw(): void;
 
-    public setText(text: string) {
-        this.text = text;
-    }
+    dealDamageInstant(target: Damagable, amount: number): void;
 
-    public setLocation(location: GameZone) {
-        this.location = location;
-    }
+    getCost(): Resource;
 
-    public getLocation() {
-        return this.location;
-    }
+    getImage(): string;
 
-    public draw() {
-        this.location = GameZone.Hand;
-    }
+    isPlayable(game: Game): boolean;
 
-    public dealDamageInstant(target: Unit, amount: number) {
-        const result = target.takeDamage(amount, this);
-        if (result > 0) {
-            this.events.dealDamage.trigger({
-                source: this,
-                target: target,
-                amount: amount
-            });
-        }
-    }
+    getPrototype(): CardPrototype;
 
-    public getCost() {
-        return this.cost;
-    }
+    isAttacking(): boolean;
 
-    public getImage() {
-        return this.imageUrl;
-    }
+    isBlocking(): boolean;
 
-    public isPlayable(game: Game): boolean {
-        if (this.owner === -1) {
-            throw new Error('Card owner unassigned');
-        }
-        const owner = game.getPlayer(this.owner);
-        return (
-            game.isPlayerTurn(this.owner) &&
-            game.canTakeAction() &&
-            game.isPlayPhase() &&
-            owner.getPool().meetsReq(this.cost) &&
-            (!this.targeter.needsInput() ||
-                this.targeter.isOptional() ||
-                this.targeter.getValidTargets(this, game).length > 0)
-        );
-    }
+    getDataId(): string;
 
-    public getPrototype(): CardPrototype {
-        return {
-            id: this.getId(),
-            data: this.getDataId(),
-            owner: this.owner
-        };
-    }
+    getId(): string;
 
-    public isAttacking() {
-        return false;
-    }
+    enterTheBattlefield(game: Game): void;
 
-    public isBlocking() {
-        return false;
-    }
+    play(game: Game): void;
 
-    public getDataId() {
-        return this.dataId;
-    }
+    getText(game?: Game): string;
 
-    public getId() {
-        return this.id;
-    }
+    getTargeter(): Targeter;
 
-    public enterTheBattlefield(game: Game) {
-        this.mechanics.forEach(mechanic => {
-            if (mechanic instanceof TriggeredMechanic) {
-                mechanic.getTrigger().register(this, game);
-            }
-            mechanic.enter(this, game);
-        });
-    }
+    getTargeters(): Targeter[];
 
-    public play(game: Game) {
-        this.enterTheBattlefield(game);
-        this.events.play.trigger({});
-        if (!this.isUnit()) {
-            game.addToCrypt(this);
-        }
-    }
+    setOwner(owner: number): void;
 
-    public getText(game?: Game): string {
-        if (this.text) {
-            return this.text;
-        }
-        return this.mechanics
-            .map(mechanic => mechanic.getText(this, game))
-            .join(' ');
-    }
+    setId(id: string): void;
 
-    public getTargeter() {
-        return this.targeter;
-    }
+    getOwner(): number;
 
-    public getTargeters(): Targeter[] {
-        return [this.targeter];
-    }
+    getName(): string;
 
-    public setOwner(owner: number) {
-        this.owner = owner;
-    }
+    isUnit(): boolean;
 
-    public setId(id: string) {
-        this.id = id;
-    }
+    toString(): string;
 
-    public getOwner(): number {
-        if (this.owner === -1) {
-            // throw new Error('Card has no owner');
-        }
-        return this.owner;
-    }
+    evaluate(game: Game, context: EvalContext, evaluated: EvalMap): number;
 
-    public getName() {
-        return this.name;
-    }
-
-    public isUnit(): boolean {
-        return this.unit;
-    }
-
-    public toString(): string {
-        return `${this.name}: (${this.cost})`;
-    }
-
-    public evaluate(game: Game, context: EvalContext, evaluated: EvalMap) {
-        return Mechanic.sumValues(
-            this.mechanics.map(mechanic =>
-                mechanic.evaluate(this, game, context, evaluated)
-            )
-        );
-    }
-
-    public evaluateTarget(target: any, game: Game, evaluated: EvalMap) {
-        return this.mechanics
-            .map(mechanic =>
-                mechanic instanceof TargetedMechanic
-                    ? mechanic.evaluateTarget(this, target, game, evaluated)
-                    : 0
-            )
-            .reduce((a, b) => a + b, 0);
-    }
+    evaluateTarget(target: any, game: Game, evaluated: EvalMap): number;
 }

@@ -1,9 +1,9 @@
 import { maxBy, meanBy, minBy, remove, sortBy, sumBy, take } from 'lodash';
 import { knapsack, KnapsackItem } from '../algorithms';
-import { Card, CardType, isUnit } from '../card-types/card';
+import { Card, CardType } from '../card-types/card';
 import { Enchantment } from '../card-types/enchantment';
 import { Item } from '../card-types/item';
-import { Unit } from '../card-types/unit';
+import { Unit, isUnit } from '../card-types/unit';
 import { TransformDamaged } from '../cards/mechanics/decaySpecials';
 import { Flying, Lethal, Shielded } from '../cards/mechanics/skills';
 import { ClientGame } from '../clientGame';

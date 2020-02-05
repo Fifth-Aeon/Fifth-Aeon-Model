@@ -1,10 +1,12 @@
 import { groupBy, sortBy, values } from 'lodash';
-import { Card, CardType, GameZone } from './card';
 import { Game } from '../game';
 import { Mechanic, UnitTargetedMechanic, TriggeredMechanic } from '../mechanic';
 import { properList } from '../strings';
+import { Spell } from './spell';
+import { CardType } from '../cardType';
+import { GameZone } from './card';
 
-export class Permanent extends Card {
+export class Permanent extends Spell {
     static cardTypes = new Set([CardType.Unit, CardType.Item]);
 
     public getText(game?: Game): string {

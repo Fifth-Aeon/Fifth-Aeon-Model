@@ -1,9 +1,9 @@
 import { every } from 'lodash';
-import { Card, isUnit  } from './card-types/card';
+import { Card  } from './card-types/card';
 import { Game } from './game';
 import { Mechanic } from './mechanic';
 import { Permanent } from './card-types/permanent';
-import { Unit} from './card-types/unit';
+import { Unit, isUnit} from './card-types/unit';
 
 export abstract class Targeter {
     protected static id: string;

@@ -11,6 +11,7 @@ import * as renewal from './renewalCards';
 import * as synthesis from './synthCards';
 import { TargeterData, targeterList } from './targeterList';
 import { Untargeted } from './targeters/basicTargeter';
+import { Spell } from '../card-types/spell';
 
 interface CardDataBase {
     id: string;
@@ -60,7 +61,7 @@ export type CardData = SpellData | UnitData | ItemData | EnchantmentData;
 
 export type CardFactory = () => Card;
 
-const defaultCard = new Card(
+const defaultCard = new Spell(
     'default',
     'default',
     '',
@@ -135,7 +136,7 @@ export class CardList {
 
     private buildSpellFactory(data: SpellData) {
         return () => {
-            return new Card(
+            return new Spell(
                 data.id,
                 data.name,
                 data.imageUrl,

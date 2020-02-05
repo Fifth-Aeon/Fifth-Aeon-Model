@@ -41,6 +41,7 @@ import { Affinity } from './triggers/affinity';
 import { DeathTrigger } from './triggers/death';
 import { LethalStrike } from './triggers/lethalStrike';
 import { Cycle, Dawn } from './triggers/periodic';
+import { Spell } from '../card-types/spell';
 
 export function flourishing() {
     return new Enchantment(
@@ -193,7 +194,7 @@ export function plauge() {
 }
 
 export function sleepDart() {
-    return new Card(
+    return new Spell(
         'SleepDart',
         'Sleep Dart',
         'dart.png',
@@ -209,7 +210,7 @@ export function sleepDart() {
 }
 
 export function CreepingCorrosion() {
-    return new Card(
+    return new Spell(
         'CreepingCorrosion',
         'Creeping Corrosion',
         'poison-gas.png',
@@ -225,7 +226,7 @@ export function CreepingCorrosion() {
 }
 
 export function evolutionaryLeap() {
-    return new Card(
+    return new Spell(
         'EvolutionaryLeap',
         'Evolutionary Leap',
         'parmecia.png',
@@ -386,7 +387,7 @@ export function hydra() {
 }
 
 export function neuralResonance() {
-    return new Card(
+    return new Spell(
         'NeuralResonance',
         'Synaptic Resonance',
         'brain.png',
@@ -402,7 +403,7 @@ export function neuralResonance() {
 }
 
 export function bounty() {
-    return new Card(
+    return new Spell(
         'NaturesBounty',
         'Nature’s Bounty',
         'fruiting.png',
@@ -429,7 +430,7 @@ export function bounty() {
 }
 
 export function webspit() {
-    return new Card(
+    return new Spell(
         'Webspit',
         'Spit Web',
         'web-spit.png',
@@ -445,7 +446,7 @@ export function webspit() {
 }
 
 export function bite() {
-    return new Card(
+    return new Spell(
         'Bite',
         'Bite',
         'fangs.png',
@@ -461,7 +462,7 @@ export function bite() {
 }
 
 export function SweetFragrance() {
-    return new Card(
+    return new Spell(
         'SweetFragrance',
         'Soporific Pollen',
         'fragrance.png',
@@ -614,7 +615,7 @@ export function bear() {
 }
 
 export function wolfHowl() {
-    return new Card(
+    return new Spell(
         'WolfHowl',
         'Wolf Howl',
         'wolf-howl.png',
@@ -630,7 +631,7 @@ export function wolfHowl() {
 }
 
 export function mutation() {
-    return new Card(
+    return new Spell(
         'mutation',
         'Metabolic Mutation',
         'dna1.png',
@@ -703,7 +704,7 @@ export function dragon() {
 }
 
 export function eruption() {
-    return new Card(
+    return new Spell(
         'Eruption',
         'Eruption',
         'volcano.png',
