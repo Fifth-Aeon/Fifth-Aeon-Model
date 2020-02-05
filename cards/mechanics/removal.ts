@@ -1,12 +1,12 @@
 import { Card } from '../../card-types/card';
 import { Game } from '../../game';
-import { EvalContext, TargetedMechanic, EvalMap, maybeEvaluate } from '../../mechanic';
+import { EvalContext, UnitTargetedMechanic, EvalMap, maybeEvaluate } from '../../mechanic';
 import { Unit } from '../../card-types/unit';
 
-export class Annihilate extends TargetedMechanic {
+export class Annihilate extends UnitTargetedMechanic {
     protected static id = 'Annihilate';
     public onTrigger(card: Card, game: Game) {
-        this.targeter.getTargets(card, game, this).forEach(target => {
+        this.targeter.getUnitTargets(card, game, this).forEach(target => {
             target.annihilate();
         });
     }
@@ -15,7 +15,7 @@ export class Annihilate extends TargetedMechanic {
         return `Annihilate ${this.targeter.getTextOrPronoun()}.`;
     }
 
-    public evaluateTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
+    public evaluateUnitTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
         return (
             maybeEvaluate(game, EvalContext.NonlethalRemoval, target, evaluated) *
             1.25 *
@@ -24,10 +24,10 @@ export class Annihilate extends TargetedMechanic {
     }
 }
 
-export class KillTarget extends TargetedMechanic {
+export class KillTarget extends UnitTargetedMechanic {
     protected static id = 'KillTarget';
     public onTrigger(card: Card, game: Game) {
-        this.targeter.getTargets(card, game, this).forEach(target => {
+        this.targeter.getUnitTargets(card, game, this).forEach(target => {
             target.kill(true);
         });
     }
@@ -36,7 +36,7 @@ export class KillTarget extends TargetedMechanic {
         return `Kill ${this.targeter.getTextOrPronoun()}.`;
     }
 
-    public evaluateTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
+    public evaluateUnitTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
         return (
             maybeEvaluate(game, EvalContext.LethalRemoval, target, evaluated) *
             1.0 *

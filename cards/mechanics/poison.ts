@@ -1,6 +1,6 @@
 import { Card } from '../../card-types/card';
 import { Game } from '../../game';
-import { EvalContext, Mechanic, TargetedMechanic, EvalMap, maybeEvaluate } from '../../mechanic';
+import { EvalContext, Mechanic, UnitTargetedMechanic, EvalMap, maybeEvaluate } from '../../mechanic';
 import { Permanent } from '../../card-types/permanent';
 import { Unit, UnitType } from '../../card-types/unit';
 
@@ -39,11 +39,11 @@ export class Poisoned extends Mechanic {
     }
 }
 
-export class PoisonTarget extends TargetedMechanic {
+export class PoisonTarget extends UnitTargetedMechanic {
     protected static id = 'PoisonTarget';
 
     public onTrigger(card: Card, game: Game) {
-        for (const target of this.targeter.getTargets(card, game, this)) {
+        for (const target of this.targeter.getUnitTargets(card, game, this)) {
             target.addMechanic(new Poisoned(), game);
         }
     }
@@ -52,7 +52,7 @@ export class PoisonTarget extends TargetedMechanic {
         return `Poison ${this.targeter.getTextOrPronoun()}.`;
     }
 
-    public evaluateTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
+    public evaluateUnitTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
         if (target.isImmune(Poisoned.getId())) {
             return 0;
         }
@@ -64,10 +64,10 @@ export class PoisonTarget extends TargetedMechanic {
     }
 }
 
-export class CurePoison extends TargetedMechanic {
+export class CurePoison extends UnitTargetedMechanic {
     protected static id = 'CurePoison';
     public onTrigger(card: Card, game: Game) {
-        this.targeter.getTargets(card, game, this).forEach(target => {
+        this.targeter.getUnitTargets(card, game, this).forEach(target => {
             target.removeMechanic(Poisoned.getId(), game);
         });
     }
@@ -80,7 +80,7 @@ export class CurePoison extends TargetedMechanic {
         return `Cure ${this.targeter.getTextOrPronoun()}.`;
     }
 
-    public evaluateTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
+    public evaluateUnitTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
         const allyFactor = target.getOwner() === source.getOwner() ? 1 : -1;
         const cureFactor = target.hasMechanicWithId(Poisoned.getId()) ? 0 : .7;
         return allyFactor * cureFactor * maybeEvaluate(game, EvalContext.NonlethalRemoval, target, evaluated);

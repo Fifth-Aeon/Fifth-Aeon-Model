@@ -8,6 +8,7 @@ import { Targeter } from './targeter';
 import { Trigger } from './trigger';
 import { Unit } from './card-types/unit';
 import { Untargeted } from './cards/targeters/basicTargeter';
+import { Permanent } from './card-types/permanent';
 
 export enum EvalContext {
     LethalRemoval,
@@ -197,10 +198,22 @@ export abstract class TargetedMechanic extends TriggeredMechanic {
     }
 
     public evaluateEffect(card: Card, game: Game) {
-        return sumBy(this.targeter.getTargets(card, game, this), target =>
+        return sumBy(this.targeter.getUnitTargets(card, game, this), target =>
             this.evaluateTarget(card, target, game, new Map())
         );
     }
 
-    abstract evaluateTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap): number;
+    abstract evaluateTarget(source: Card, target: Permanent, game: Game, evaluated: EvalMap): number;
+}
+
+
+export abstract class UnitTargetedMechanic extends TargetedMechanic {
+    public evaluateTarget(source: Card, target: Permanent, game: Game, evaluated: EvalMap) {
+        if (target instanceof Unit) {
+            return this.evaluateUnitTarget(source, target, game, evaluated);
+        }
+        return 0;
+    }
+
+    abstract evaluateUnitTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap): number;
 }

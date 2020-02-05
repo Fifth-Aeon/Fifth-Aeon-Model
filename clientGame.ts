@@ -28,6 +28,7 @@ import { Log } from './log';
 import { Player } from './player';
 import { ServerGame } from './serverGame';
 import { Unit } from './card-types/unit';
+import { Permanent } from './card-types/permanent';
 
 export class ClientGame extends Game {
     private syncSystem = new SyncEventSystem(this);
@@ -89,7 +90,7 @@ export class ClientGame extends Game {
     /** Checks if the player controlling this game can play a given card with given targets */
     public canPlayCard(
         card: Card,
-        targets: Unit[] = [],
+        targets: Permanent[] = [],
         host: Unit | null = null
     ): boolean {
         if (!this.isPlayerTurn(this.owningPlayer)) {
@@ -129,7 +130,7 @@ export class ClientGame extends Game {
      */
     public playCardExtern(
         card: Card,
-        targets: Unit[] = [],
+        targets: Permanent[] = [],
         host: Unit | null = null
     ): boolean {
         if (!this.canPlayCard(card, targets, host)) {

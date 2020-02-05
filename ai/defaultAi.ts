@@ -1,6 +1,6 @@
 import { maxBy, meanBy, minBy, remove, sortBy, sumBy, take } from 'lodash';
 import { knapsack, KnapsackItem } from '../algorithms';
-import { Card, CardType } from '../card-types/card';
+import { Card, CardType, isUnit } from '../card-types/card';
 import { Enchantment } from '../card-types/enchantment';
 import { Item } from '../card-types/item';
 import { Unit } from '../card-types/unit';
@@ -18,6 +18,7 @@ import { DeckBuilder } from './deckBuilder';
 import { RandomBuilder } from './randomBuilder';
 import { ChoiceHeuristic } from './heuristics';
 import { BlockOutcome, CombatAnalyzer } from './combatAnalyer';
+import { Permanent } from '../card-types/permanent';
 
 /**
  * Represents an action (playing a card, an item or an enchantment)
@@ -28,7 +29,7 @@ interface EvaluatedAction {
     cost: number;
     card?: Card;
     enchantmentTarget?: Enchantment;
-    target?: Unit;
+    target?: Permanent;
     host?: Unit;
 }
 
@@ -340,7 +341,7 @@ export class DefaultAI extends AI {
 
     /** Plays a card based on an action */
     protected runCardPlayAction(action: EvaluatedAction) {
-        const targets: Unit[] = [];
+        const targets: Permanent[] = [];
         const host = action.host;
         const toPlay = action.card;
         if (!toPlay) {
@@ -382,7 +383,8 @@ export class DefaultAI extends AI {
     protected getBestHost(item: Item): Unit {
         const validHosts = item
             .getHostTargeter()
-            .getValidTargets(item, this.game);
+            .getValidTargets(item, this.game)
+            .filter(isUnit);
         const best = maxBy(validHosts, host =>
             host.getMultiplier(
                 this.game,

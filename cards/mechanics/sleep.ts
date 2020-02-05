@@ -1,6 +1,6 @@
 import { Card, CardType } from '../../card-types/card';
 import { Game } from '../../game';
-import { EvalContext, Mechanic, TargetedMechanic, maybeEvaluate, EvalMap } from '../../mechanic';
+import { EvalContext, Mechanic, UnitTargetedMechanic, maybeEvaluate, EvalMap } from '../../mechanic';
 import { Unit } from '../../card-types/unit';
 
 export class Sleeping extends Mechanic {
@@ -46,14 +46,14 @@ export class Sleeping extends Mechanic {
     }
 }
 
-export class SleepTarget extends TargetedMechanic {
+export class SleepTarget extends UnitTargetedMechanic {
     protected static id = 'SleepTarget';
     constructor(private turns: number = 1) {
         super();
     }
 
     public onTrigger(card: Card, game: Game) {
-        for (const target of this.targeter.getTargets(card, game, this)) {
+        for (const target of this.targeter.getUnitTargets(card, game, this)) {
             target.addMechanic(new Sleeping(this.turns), game);
         }
     }
@@ -64,7 +64,7 @@ export class SleepTarget extends TargetedMechanic {
         }.`;
     }
 
-    public evaluateTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
+    public evaluateUnitTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
         return (
             maybeEvaluate(game, EvalContext.NonlethalRemoval, target, evaluated) *
             0.5 *

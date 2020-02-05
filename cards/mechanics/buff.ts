@@ -4,7 +4,7 @@ import {
     EvalContext,
     EvalOperator,
     Mechanic,
-    TargetedMechanic,
+    UnitTargetedMechanic,
     EvalMap,
     maybeEvaluate
 } from '../../mechanic';
@@ -13,7 +13,7 @@ import { Unit } from '../../card-types/unit';
 import { MechanicConstructor } from '../mechanicConstructor';
 import { ParameterType } from '../parameters';
 
-export class BuffTarget extends TargetedMechanic {
+export class BuffTarget extends UnitTargetedMechanic {
     protected static id = 'BuffTarget';
     protected static ParameterTypes = [
         { name: 'damage', type: ParameterType.Integer },
@@ -25,7 +25,7 @@ export class BuffTarget extends TargetedMechanic {
     }
 
     public onTrigger(card: Card, game: Game) {
-        for (const target of this.targeter.getTargets(card, game, this)) {
+        for (const target of this.targeter.getUnitTargets(card, game, this)) {
             target.buff(this.damage, this.life);
         }
     }
@@ -41,7 +41,7 @@ export class BuffTarget extends TargetedMechanic {
         return `Give ${this.targeter.getTextOrPronoun()} ${buffText}.`;
     }
 
-    public evaluateTarget(source: Card, target: Unit) {
+    public evaluateUnitTarget(source: Card, target: Unit) {
         return (
             (this.life + this.damage) *
             1.1 *
@@ -50,7 +50,7 @@ export class BuffTarget extends TargetedMechanic {
     }
 }
 
-export class GrantAbility extends TargetedMechanic {
+export class GrantAbility extends UnitTargetedMechanic {
     protected static id = 'GrantAbility';
     protected instance: Mechanic;
     constructor(private ability: MechanicConstructor) {
@@ -59,7 +59,7 @@ export class GrantAbility extends TargetedMechanic {
     }
 
     public onTrigger(card: Card, game: Game) {
-        for (const target of this.targeter.getTargets(card, game, this)) {
+        for (const target of this.targeter.getUnitTargets(card, game, this)) {
             target.addMechanic(new this.ability(), game);
         }
     }
@@ -70,7 +70,7 @@ export class GrantAbility extends TargetedMechanic {
         )}.`;
     }
 
-    public evaluateTarget(
+    public evaluateUnitTarget(
         source: Card,
         target: Unit,
         game: Game,

@@ -10,6 +10,9 @@ import {
 import { Resource } from '../resource';
 import { Targeter } from '../targeter';
 import { Unit } from './unit';
+// import { Permanent } from './permanent';
+
+
 
 export enum GameZone {
     Deck,
@@ -24,6 +27,10 @@ export enum CardType {
     Item,
     Enchantment
 }
+
+
+export const isUnit = (item: Card): item is Unit => item.getCardType() === CardType.Unit;
+
 
 export interface CardPrototype {
     id: string;
@@ -123,7 +130,7 @@ export class Card {
 
     public isPlayable(game: Game): boolean {
         if (this.owner === -1) {
-            throw new Error('Card owner unassinged');
+            throw new Error('Card owner unassigned');
         }
         const owner = game.getPlayer(this.owner);
         return (
@@ -230,7 +237,7 @@ export class Card {
         );
     }
 
-    public evaluateTarget(target: Unit, game: Game, evaluated: EvalMap) {
+    public evaluateTarget(target: any, game: Game, evaluated: EvalMap) {
         return this.mechanics
             .map(mechanic =>
                 mechanic instanceof TargetedMechanic

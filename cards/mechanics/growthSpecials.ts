@@ -1,11 +1,11 @@
 import { Card } from '../../card-types/card';
 import { Game } from '../../game';
-import { TargetedMechanic, maybeEvaluate, EvalContext, EvalMap } from '../../mechanic';
+import { UnitTargetedMechanic, maybeEvaluate, EvalContext, EvalMap } from '../../mechanic';
 import { Unit } from '../../card-types/unit';
 import { ParameterType } from '../parameters';
 import { Flying } from './skills';
 
-export class DrawCardsFromUnit extends TargetedMechanic {
+export class DrawCardsFromUnit extends UnitTargetedMechanic {
     protected static id = 'DrawCardsFromUnit';
     protected static ParameterTypes = [
         { name: 'Factor', type: ParameterType.NaturalNumber }
@@ -19,12 +19,12 @@ export class DrawCardsFromUnit extends TargetedMechanic {
     }
 
     public onTrigger(card: Card, game: Game) {
-        for (const target of this.targeter.getTargets(card, game, this)) {
+        for (const target of this.targeter.getUnitTargets(card, game, this)) {
             game.getPlayer(card.getOwner()).drawCards(this.getCards(target));
         }
     }
 
-    public evaluateTarget(source: Card, target: Unit, game: Game) {
+    public evaluateUnitTarget(source: Card, target: Unit, game: Game) {
         return this.getCards(target) * 3;
     }
 
@@ -35,17 +35,17 @@ export class DrawCardsFromUnit extends TargetedMechanic {
     }
 }
 
-export class WebTarget extends TargetedMechanic {
+export class WebTarget extends UnitTargetedMechanic {
     protected static id = 'WebTarget';
 
     public onTrigger(card: Card, game: Game) {
-        for (const target of this.targeter.getTargets(card, game, this)) {
+        for (const target of this.targeter.getUnitTargets(card, game, this)) {
             target.removeMechanic(Flying.getId(), game);
             target.setExhausted(true);
         }
     }
 
-    public evaluateTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
+    public evaluateUnitTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
         const isEnemy = target.getOwner() === source.getOwner() ? -1 : 1;
         const removesFlying = target.hasMechanicWithId(Flying.getId()) ? 0.05 : .6;
         return isEnemy * removesFlying * maybeEvaluate(game, EvalContext.NonlethalRemoval, target, evaluated);

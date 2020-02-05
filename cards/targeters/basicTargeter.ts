@@ -34,7 +34,7 @@ export class OwningPlayer extends Targeter {
         return false;
     }
 
-    public getTargets(card: Card, game: Game) {
+    public getUnitTargets(card: Card, game: Game) {
         return [game.getPlayer(card.getOwner())];
     }
 
@@ -49,7 +49,7 @@ export class EnemyPlayer extends Targeter {
         return false;
     }
 
-    public getTargets(card: Card, game: Game) {
+    public getUnitTargets(card: Card, game: Game) {
         return [game.getPlayer(game.getOtherPlayerNumber(card.getOwner()))];
     }
 
@@ -71,7 +71,7 @@ export class Untargeted extends Targeter {
 export class SelfTarget extends Targeter {
     protected static id = 'SelfTarget';
 
-    public getTargets(card: Card, game: Game): Array<Unit> {
+    public getUnitTargets(card: Card, game: Game): Array<Unit> {
         const unit =
             card.getCardType() === CardType.Item
                 ? (card as Item).getHost()
@@ -148,7 +148,7 @@ export class AllUnits extends Targeter {
     public needsInput() {
         return false;
     }
-    public getTargets(card: Card, game: Game): Array<Unit> {
+    public getUnitTargets(card: Card, game: Game): Array<Unit> {
         this.lastTargets = game.getBoard().getAllUnits();
         return this.lastTargets;
     }
@@ -162,7 +162,7 @@ export class AllOtherUnits extends AllUnits {
     public getText() {
         return 'all other units';
     }
-    public getTargets(card: Card, game: Game): Array<Unit> {
+    public getUnitTargets(card: Card, game: Game): Array<Unit> {
         this.lastTargets = game
             .getBoard()
             .getAllUnits()
@@ -176,7 +176,7 @@ export class FriendlyUnits extends AllUnits {
     public getText() {
         return 'friendly units';
     }
-    public getTargets(card: Card, game: Game): Array<Unit> {
+    public getUnitTargets(card: Card, game: Game): Array<Unit> {
         this.lastTargets = game
             .getBoard()
             .getAllUnits()
@@ -190,7 +190,7 @@ export class EnemyUnits extends AllUnits {
     public getText() {
         return 'all enemy units';
     }
-    public getTargets(card: Card, game: Game): Array<Unit> {
+    public getUnitTargets(card: Card, game: Game): Array<Unit> {
         this.lastTargets = game
             .getBoard()
             .getAllUnits()
@@ -204,7 +204,7 @@ export class AllPlayers extends AllUnits {
     public getText() {
         return 'all players';
     }
-    public getTargets(card: Card, game: Game): Array<Unit> {
+    public getUnitTargets(card: Card, game: Game): Array<Unit> {
         this.lastTargets = [
             game.getPlayer(card.getOwner()),
             game.getPlayer(game.getOtherPlayerNumber(card.getOwner()))
@@ -218,7 +218,7 @@ export class Everyone extends AllUnits {
     public getText() {
         return 'all units and players';
     }
-    public getTargets(card: Card, game: Game): Array<Unit> {
+    public getUnitTargets(card: Card, game: Game): Array<Unit> {
         this.lastTargets = game
             .getBoard()
             .getAllUnits()
@@ -233,7 +233,7 @@ export class Friends extends AllUnits {
     public getText() {
         return 'all friendly units and players';
     }
-    public getTargets(card: Card, game: Game): Array<Unit> {
+    public getUnitTargets(card: Card, game: Game): Array<Unit> {
         this.lastTargets = game
             .getBoard()
             .getAllUnits()
@@ -248,7 +248,7 @@ export class Enemies extends AllUnits {
     public getText() {
         return 'all enemy units and players';
     }
-    public getTargets(card: Card, game: Game): Array<Unit> {
+    public getUnitTargets(card: Card, game: Game): Array<Unit> {
         this.lastTargets = game
             .getBoard()
             .getAllUnits()

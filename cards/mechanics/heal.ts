@@ -1,12 +1,12 @@
 import { Card } from '../../card-types/card';
 import { Game } from '../../game';
-import { TargetedMechanic } from '../../mechanic';
+import { UnitTargetedMechanic } from '../../mechanic';
 import { Unit } from '../../card-types/unit';
 
-export class RefreshTarget extends TargetedMechanic {
+export class RefreshTarget extends UnitTargetedMechanic {
     protected static id = 'RefreshTarget';
     public onTrigger(card: Card, game: Game) {
-        for (const target of this.targeter.getTargets(card, game, this)) {
+        for (const target of this.targeter.getUnitTargets(card, game, this)) {
             target.refresh();
         }
     }
@@ -15,7 +15,7 @@ export class RefreshTarget extends TargetedMechanic {
         return `Refresh ${this.targeter.getTextOrPronoun()}.`;
     }
 
-    public evaluateTarget(source: Card, target: Unit) {
+    public evaluateUnitTarget(source: Card, target: Unit) {
         return (
             0.1 *
             (target.isExhausted() ? 1 : 0) *

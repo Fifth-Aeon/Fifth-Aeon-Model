@@ -1,7 +1,7 @@
 import { groupBy, sortBy, values } from 'lodash';
 import { Card, CardType, GameZone } from './card';
 import { Game } from '../game';
-import { Mechanic, TargetedMechanic, TriggeredMechanic } from '../mechanic';
+import { Mechanic, UnitTargetedMechanic, TriggeredMechanic } from '../mechanic';
 import { properList } from '../strings';
 
 export class Permanent extends Card {
@@ -46,7 +46,7 @@ export class Permanent extends Card {
                 mechanics.map(mechanic => {
                     const id = this.getTargeterId(mechanic);
                     if (id !== '') {
-                        (mechanic as TargetedMechanic)
+                        (mechanic as UnitTargetedMechanic)
                             .getTargeter()
                             .shouldUsePronoun(id === lastId);
                     }
@@ -75,10 +75,10 @@ export class Permanent extends Card {
     }
 
     private getTargeterId(mechanic: Mechanic) {
-        if (!(mechanic instanceof TargetedMechanic)) {
+        if (!(mechanic instanceof UnitTargetedMechanic)) {
             return '';
         }
-        return (mechanic as TargetedMechanic).getTargeter().getId();
+        return (mechanic as UnitTargetedMechanic).getTargeter().getId();
     }
 
     private getSimpleMechanicGroupText(mechanics: Mechanic[], game?: Game) {

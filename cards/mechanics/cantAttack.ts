@@ -1,6 +1,6 @@
 import { Card, CardType } from '../../card-types/card';
 import { Game } from '../../game';
-import { EvalContext, Mechanic, TargetedMechanic, maybeEvaluate, EvalMap } from '../../mechanic';
+import { EvalContext, Mechanic, UnitTargetedMechanic, maybeEvaluate, EvalMap } from '../../mechanic';
 import { Unit } from '../../card-types/unit';
 
 export class CannotAttack extends Mechanic {
@@ -43,10 +43,10 @@ export class CannotBlock extends Mechanic {
     }
 }
 
-export class ImprisonTarget extends TargetedMechanic {
+export class ImprisonTarget extends UnitTargetedMechanic {
     protected static id = 'ImprisonTarget';
     public onTrigger(card: Card, game: Game) {
-        this.targeter.getTargets(card, game, this).forEach(target => {
+        this.targeter.getUnitTargets(card, game, this).forEach(target => {
             target.addMechanic(new CannotAttack(), game);
             target.addMechanic(new CannotBlock(), game);
         });
@@ -56,7 +56,7 @@ export class ImprisonTarget extends TargetedMechanic {
         return `Cause ${this.targeter.getTextOrPronoun()} to become unable to attack or block.`;
     }
 
-    public evaluateTarget(source: Card, unit: Unit, game: Game, evaluated: EvalMap) {
+    public evaluateUnitTarget(source: Card, unit: Unit, game: Game, evaluated: EvalMap) {
         return (
             maybeEvaluate(game, EvalContext.NonlethalRemoval, unit, evaluated) *
             0.9 *
@@ -65,13 +65,13 @@ export class ImprisonTarget extends TargetedMechanic {
     }
 }
 
-export class ImprisonTemporarily extends TargetedMechanic {
+export class ImprisonTemporarily extends UnitTargetedMechanic {
     protected static id = 'ImprisonTemporarily';
     protected static validCardTypes = new Set([CardType.Unit, CardType.Item, CardType.Enchantment]);
     private targets: Unit[] = [] ;
 
     public onTrigger(card: Card, game: Game) {
-        this.targeter.getTargets(card, game, this).forEach(target => {
+        this.targeter.getUnitTargets(card, game, this).forEach(target => {
             target.addMechanic(new CannotAttack(), game);
             target.addMechanic(new CannotBlock(), game);
             this.targets.push(target);
@@ -89,7 +89,7 @@ export class ImprisonTemporarily extends TargetedMechanic {
         return `${this.targeter.getTextOrPronoun()} is unable to attack or block until this dies.`;
     }
 
-    public evaluateTarget(source: Card, unit: Unit, game: Game, evaluated: EvalMap) {
+    public evaluateUnitTarget(source: Card, unit: Unit, game: Game, evaluated: EvalMap) {
         return (
             maybeEvaluate(game, EvalContext.NonlethalRemoval, unit, evaluated) *
             0.9 *

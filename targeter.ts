@@ -1,12 +1,13 @@
 import { every } from 'lodash';
-import { Card } from './card-types/card';
+import { Card, isUnit  } from './card-types/card';
 import { Game } from './game';
 import { Mechanic } from './mechanic';
-import { Unit } from './card-types/unit';
+import { Permanent } from './card-types/permanent';
+import { Unit} from './card-types/unit';
 
 export abstract class Targeter {
     protected static id: string;
-    protected targets: Array<Unit> = [];
+    protected targets: Array<Permanent> = [];
     protected optional = false;
     protected usePronoun = false;
 
@@ -22,12 +23,17 @@ export abstract class Targeter {
         return true;
     }
 
-    public setTargets(target: Array<Unit>) {
+    public setTargets(target: Array<Permanent>) {
         this.targets = target;
     }
 
-    public getTargets(card: Card, game: Game, mechanic?: Mechanic): Array<Unit> {
+    public getTargets(card: Card, game: Game, mechanic?: Mechanic): Array<Permanent> {
         return this.targets;
+    }
+
+    public getUnitTargets(card: Card, game: Game, mechanic?: Mechanic): Array<Unit> {
+        return this.getTargets(card, game, mechanic)
+            .filter(isUnit);
     }
 
     public getLastTargets() {
@@ -45,7 +51,7 @@ export abstract class Targeter {
     }
 
     public getValidTargets(card: Card, game: Game) {
-        return new Array<Unit>();
+        return new Array<Permanent>();
     }
 
     public shouldUsePronoun(usePronoun: boolean) {

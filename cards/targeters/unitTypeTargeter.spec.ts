@@ -32,20 +32,20 @@ describe('Unit Type Targeters', () => {
     it('FriendlyUnitsOfType should return friendly units of the given type', async(() => {
         const targeter = new FriendlyUnitsOfType(UnitType.Soldier);
 
-        targeter.getTargets(host, game);
-        expect(targeter.getTargets(host, game).length).toBe(0);
+        targeter.getUnitTargets(host, game);
+        expect(targeter.getUnitTargets(host, game).length).toBe(0);
 
         game.playGeneratedUnit(1, pikeman());
-        targeter.getTargets(host, game);
-        expect(targeter.getTargets(host, game).length).toBe(0);
+        targeter.getUnitTargets(host, game);
+        expect(targeter.getUnitTargets(host, game).length).toBe(0);
 
         game.playGeneratedUnit(0, lich());
-        targeter.getTargets(host, game);
-        expect(targeter.getTargets(host, game).length).toBe(0);
+        targeter.getUnitTargets(host, game);
+        expect(targeter.getUnitTargets(host, game).length).toBe(0);
 
         game.playGeneratedUnit(0, pikeman());
-        targeter.getTargets(host, game);
-        expect(targeter.getTargets(host, game).length).toBe(1);
+        targeter.getUnitTargets(host, game);
+        expect(targeter.getUnitTargets(host, game).length).toBe(1);
     }));
 
     it('UnitsOfTypeAsTarget should return units of the same type as the target', async(() => {
@@ -57,13 +57,13 @@ describe('Unit Type Targeters', () => {
         }
 
         targeter.setTargets([units[0][0]]);
-        expect(targeter.getTargets(host, game).length).toBe(3);
-        expect(targeter.getTargets(host, game)).toContain(units[0][1]);
-        expect(targeter.getTargets(host, game)).toContain(units[1][2]);
+        expect(targeter.getUnitTargets(host, game).length).toBe(3);
+        expect(targeter.getUnitTargets(host, game)).toContain(units[0][1]);
+        expect(targeter.getUnitTargets(host, game)).toContain(units[1][2]);
 
         targeter.setTargets([units[1][0]]);
-        expect(targeter.getTargets(host, game).length).toBe(4);
-        expect(targeter.getTargets(host, game)).toContain(units[1][1]);
+        expect(targeter.getUnitTargets(host, game).length).toBe(4);
+        expect(targeter.getUnitTargets(host, game)).toContain(units[1][1]);
     }));
 
     it('UnitsOfType should return units of the same type as given', async(() => {
@@ -73,10 +73,10 @@ describe('Unit Type Targeters', () => {
             }
         }
 
-        expect(new UnitsOfType(UnitType.Soldier).getTargets(host, game).length).toBe(3);
-        expect(new UnitsOfType(UnitType.Undead).getTargets(host, game).length).toBe(4);
-        expect(new UnitsOfType(UnitType.Automaton).getTargets(host, game).length).toBe(1);
-        expect(new UnitsOfType(UnitType.Agent).getTargets(host, game).length).toBe(0);
+        expect(new UnitsOfType(UnitType.Soldier).getUnitTargets(host, game).length).toBe(3);
+        expect(new UnitsOfType(UnitType.Undead).getUnitTargets(host, game).length).toBe(4);
+        expect(new UnitsOfType(UnitType.Automaton).getUnitTargets(host, game).length).toBe(1);
+        expect(new UnitsOfType(UnitType.Agent).getUnitTargets(host, game).length).toBe(0);
     }));
 
     it('UnitsNotOfType should return units not of the same type as given', async(() => {
@@ -86,10 +86,10 @@ describe('Unit Type Targeters', () => {
             }
         }
 
-        expect(new UnitsNotOfType(UnitType.Soldier).getTargets(host, game).length).toBe(8 - 3);
-        expect(new UnitsNotOfType(UnitType.Undead).getTargets(host, game).length).toBe(8 - 4);
-        expect(new UnitsNotOfType(UnitType.Automaton).getTargets(host, game).length).toBe(8 - 1);
-        expect(new UnitsNotOfType(UnitType.Agent).getTargets(host, game).length).toBe(8 - 0);
+        expect(new UnitsNotOfType(UnitType.Soldier).getUnitTargets(host, game).length).toBe(8 - 3);
+        expect(new UnitsNotOfType(UnitType.Undead).getUnitTargets(host, game).length).toBe(8 - 4);
+        expect(new UnitsNotOfType(UnitType.Automaton).getUnitTargets(host, game).length).toBe(8 - 1);
+        expect(new UnitsNotOfType(UnitType.Agent).getUnitTargets(host, game).length).toBe(8 - 0);
     }));
 
     it('UnitOfType should be able to target units of the same type as given', async(() => {

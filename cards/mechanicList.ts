@@ -1,6 +1,6 @@
 import { values } from 'lodash';
 import { CardType } from '../card-types/card';
-import { TargetedMechanic, TriggeredMechanic } from '../mechanic';
+import { UnitTargetedMechanic, TriggeredMechanic } from '../mechanic';
 import { CardData, CardList } from './cardList';
 import { MechanicConstructor } from './mechanicConstructor';
 import * as buff from './mechanics/buff';
@@ -64,16 +64,16 @@ class MechanicList {
             constructor.prototype instanceof TriggeredMechanic &&
             data.trigger
         ) {
-            (instance as TargetedMechanic).setTrigger(
+            (instance as UnitTargetedMechanic).setTrigger(
                 triggerList.buildInstance(data.trigger)
             );
         }
         if (
-            constructor.prototype instanceof TargetedMechanic &&
+            constructor.prototype instanceof UnitTargetedMechanic &&
             data.targeter &&
             data.targeter.id !== 'Host'
         ) {
-            (instance as TargetedMechanic).setTargeter(
+            (instance as UnitTargetedMechanic).setTargeter(
                 targeterList.buildInstance(data.targeter)
             );
         }
@@ -99,7 +99,7 @@ class MechanicList {
         if (!constructor) {
             return false;
         }
-        return constructor.prototype instanceof TargetedMechanic;
+        return constructor.prototype instanceof UnitTargetedMechanic;
     }
 
     public isValid(cardData: CardData, mechanic: MechanicData) {

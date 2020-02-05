@@ -69,7 +69,7 @@ export class Item extends Permanent {
     }
 
     public play(game: Game) {
-        const host = this.hostTargeter.getTargets(this, game)[0];
+        const host = this.hostTargeter.getUnitTargets(this, game)[0];
         this.attach(host, game);
     }
 

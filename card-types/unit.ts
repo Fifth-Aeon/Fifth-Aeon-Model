@@ -66,6 +66,7 @@ class Damager {
     }
 }
 
+
 export class Unit extends Permanent {
     // Stats
     protected life: number;

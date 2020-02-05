@@ -1,6 +1,6 @@
 import { Card, CardType, GameZone } from '../../card-types/card';
 import { Game } from '../../game';
-import { EvalContext, Mechanic, TargetedMechanic, EvalMap, maybeEvaluate } from '../../mechanic';
+import { EvalContext, Mechanic, UnitTargetedMechanic, EvalMap, maybeEvaluate } from '../../mechanic';
 import { ResourceType } from '../../resource';
 import { Unit } from '../../card-types/unit';
 import { ParameterType } from '../parameters';
@@ -39,7 +39,7 @@ export class DamageOnBlock extends Mechanic {
     }
 }
 
-export class DealDamage extends TargetedMechanic {
+export class DealDamage extends UnitTargetedMechanic {
     protected static id = 'DealDamage';
     protected static ParameterTypes = [
         { name: 'damage', type: ParameterType.Integer }
@@ -51,7 +51,7 @@ export class DealDamage extends TargetedMechanic {
 
     public onTrigger(card: Card, game: Game) {
         const dmg = this.getDamage(card, game);
-        for (const target of this.targeter.getTargets(card, game, this)) {
+        for (const target of this.targeter.getUnitTargets(card, game, this)) {
             card.dealDamageInstant(target, dmg);
             target.checkDeath();
         }
@@ -67,7 +67,7 @@ export class DealDamage extends TargetedMechanic {
         } damage to ${this.targeter.getTextOrPronoun()}.`;
     }
 
-    public evaluateTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
+    public evaluateUnitTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap) {
         const isEnemy = target.getOwner() === source.getOwner() ? -1 : 1;
         return target.getLife() < this.getDamage(source, game)
             ? maybeEvaluate(game, EvalContext.LethalRemoval, target, evaluated) * isEnemy
@@ -120,7 +120,7 @@ export class DamageSpawnOnKill extends DealDamage {
     }
 
     public onTrigger(card: Card, game: Game) {
-        for (const target of this.targeter.getTargets(card, game, this)) {
+        for (const target of this.targeter.getUnitTargets(card, game, this)) {
             target.takeDamage(this.amount, card);
             target.checkDeath();
             if (target.getLocation() === GameZone.Crypt) {

@@ -15,7 +15,7 @@ export class UnitsOfTypeAsTarget extends AllUnits {
         return game.getBoard().getAllUnits();
     }
     public getTargets(card: Card, game: Game): Array<Unit> {
-        const target = this.targets[0];
+        const target = this.targets[0] as Unit;
         if (!target) {
             return [];
         }
