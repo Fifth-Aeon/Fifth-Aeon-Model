@@ -15,7 +15,7 @@ import { Discard, DiscardOnDamage } from './mechanics/draw';
 import { Discharge } from './mechanics/enchantmentCounters';
 import { NotUnitTypeLordship, UnitTypeLordshipAll } from './mechanics/lordship';
 import { PoisonImmune, PoisonTarget } from './mechanics/poison';
-import { KillTarget } from './mechanics/removal';
+import { KillTarget, Annihilate } from './mechanics/removal';
 import { ReturnFromCrypt } from './mechanics/returnFromCrypt';
 import { DeathCounter } from './mechanics/shieldEnchantments';
 import {
@@ -53,6 +53,7 @@ import { DeathTrigger, SoulReap } from './triggers/death';
 import { LethalStrike } from './triggers/lethalStrike';
 import { Dusk } from './triggers/periodic';
 import { Spell } from '../card-types/spell';
+import { AllPermanents } from './targeters/permanentTargeters';
 
 export function imp() {
     return new Unit(
@@ -745,5 +746,22 @@ export function unbury() {
         }),
         new Untargeted(),
         [new ReturnFromCrypt(CardType.Unit)]
+    );
+}
+
+
+export function ruination() {
+    return new Spell(
+        'Ruination',
+        'Ruination',
+        'meteor-impact.png',
+        new Resource(8, 0, {
+            Growth: 0,
+            Decay: 6,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new AllPermanents(),
+        [new Annihilate()]
     );
 }
