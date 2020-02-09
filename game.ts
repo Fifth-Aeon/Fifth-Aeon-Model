@@ -518,14 +518,21 @@ export abstract class Game {
             this.enchantmentDeathEffects(enchantment);
             return;
         }
-        enchantment
+        this.addDeathWatchers(enchantment, enc => this.enchantmentDeathEffects(enc));
+        this.board.addPermanent(enchantment);
+    }
+
+    private addDeathWatchers<T extends Permanent>(permanent: T, deathEffects: (perm: T) => void) {
+        permanent
             .getEvents()
             .death.addEvent(
                 undefined,
-                params => this.enchantmentDeathEffects(enchantment),
+                params => deathEffects(permanent),
                 Infinity
             );
-        this.board.addPermanent(enchantment);
+        permanent.getEvents().annihilate.addEvent(undefined, () =>
+            this.removePermanent(permanent)
+        );
     }
 
     private unitDeathEffects(unit: Unit) {
@@ -540,14 +547,7 @@ export abstract class Game {
             this.unitDeathEffects(unit);
             return;
         }
-        unit.getEvents().death.addEvent(
-            undefined,
-            () => this.unitDeathEffects(unit),
-            Infinity
-        );
-        unit.getEvents().annihilate.addEvent(undefined, () =>
-            this.removePermanent(unit)
-        );
+        this.addDeathWatchers(unit, u => this.unitDeathEffects(u));
         this.board.addPermanent(unit);
 
         this.gameEvents.unitEntersPlay.trigger({ enteringUnit: unit });

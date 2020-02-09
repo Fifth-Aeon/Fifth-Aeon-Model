@@ -103,4 +103,8 @@ export class Permanent extends Spell {
         this.events.death.trigger({});
         this.location = GameZone.Crypt;
     }
+
+    public annihilate() {
+        this.events.annihilate.trigger(new Map());
+    }
 }

@@ -39,6 +39,16 @@ export class Board {
         }
     }
 
+    public getAllPermanents(): Array<Permanent> {
+        const res: Permanent[] = [];
+        for (let i = 0; i < this.spaces.length; i++) {
+            for (let j = 0; j < this.spaces[i].length; j++) {
+                res.push(this.spaces[i][j]);
+            }
+        }
+        return res;
+    }
+
     public getAllUnits(): Array<Unit> {
         const res: Unit[] = [];
         for (let i = 0; i < this.spaces.length; i++) {
