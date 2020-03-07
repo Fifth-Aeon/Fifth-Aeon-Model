@@ -9,6 +9,7 @@ import { Trigger } from './trigger';
 import { Unit } from './card-types/unit';
 import { Untargeted } from './cards/targeters/basicTargeter';
 import { Permanent } from './card-types/permanent';
+import { Enchantment } from './card-types/enchantment';
 
 export enum EvalContext {
     LethalRemoval,
@@ -217,3 +218,15 @@ export abstract class UnitTargetedMechanic extends TargetedMechanic {
 
     abstract evaluateUnitTarget(source: Card, target: Unit, game: Game, evaluated: EvalMap): number;
 }
+
+export abstract class EnchantmentTargetedMechanic extends TargetedMechanic {
+    public evaluateTarget(source: Card, target: Permanent, game: Game, evaluated: EvalMap) {
+        if (target instanceof Enchantment) {
+            return this.evaluateEnchantmentTarget(source, target, game, evaluated);
+        }
+        return 0;
+    }
+
+    abstract evaluateEnchantmentTarget(source: Card, target: Enchantment, game: Game, evaluated: EvalMap): number;
+}
+

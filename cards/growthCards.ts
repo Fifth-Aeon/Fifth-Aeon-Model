@@ -42,6 +42,9 @@ import { DeathTrigger } from './triggers/death';
 import { LethalStrike } from './triggers/lethalStrike';
 import { Cycle, Dawn } from './triggers/periodic';
 import { Spell } from '../card-types/spell';
+import { CannotAttack } from './mechanics/cantAttack';
+import { DrainPowerIntoStats } from './mechanics/enchantmentTargeting';
+import { AllEnchantments } from './targeters/enchantmentTargeters';
 
 export function flourishing() {
     return new Enchantment(
@@ -150,6 +153,27 @@ export function mermaid() {
         [new Aquatic()]
     );
 }
+
+export function drainingTree() {
+    return new Unit(
+        'DrainingTree',
+        'Draining Tree',
+        'eviltree.png',
+        UnitType.Elemental,
+        new Resource(4, 0, {
+            Growth: 3,
+            Decay: 0,
+            Renewal: 0,
+            Synthesis: 0
+        }),
+        new Untargeted(),
+        0,
+        4,
+        [new CannotAttack(),
+            new DrainPowerIntoStats().setTargeter(new AllEnchantments()).setTrigger(new Dawn())]
+    );
+}
+
 
 export function elvenBow() {
     return new Item(

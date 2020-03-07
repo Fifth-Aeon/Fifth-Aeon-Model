@@ -4,6 +4,7 @@ import { Game } from './game';
 import { Mechanic } from './mechanic';
 import { Permanent } from './card-types/permanent';
 import { Unit, isUnit} from './card-types/unit';
+import { Enchantment, isEnchantment } from './card-types/enchantment';
 
 export abstract class Targeter {
     protected static id: string;
@@ -34,6 +35,11 @@ export abstract class Targeter {
     public getUnitTargets(card: Card, game: Game, mechanic?: Mechanic): Array<Unit> {
         return this.getTargets(card, game, mechanic)
             .filter(isUnit);
+    }
+
+    public getEnchantmentTargets(card: Card, game: Game, mechanic?: Mechanic): Array<Enchantment> {
+        return this.getTargets(card, game, mechanic)
+            .filter(isEnchantment);
     }
 
     public getLastTargets() {

@@ -1,4 +1,4 @@
-import { CardType, GameZone } from './card';
+import { CardType, GameZone, Card } from './card';
 import { Game } from '../game';
 import { EvalContext, Mechanic, EvalMap } from '../mechanic';
 import { Permanent } from './permanent';
@@ -59,10 +59,12 @@ export class Enchantment extends Permanent {
     }
 
     public changePower(diff: number) {
+        const prevPower = this.power;
         this.power += diff;
         if (this.power <= 0) {
             this.die();
         }
+        return prevPower - Math.max(this.power, 0);
     }
 
     public die() {
@@ -96,3 +98,5 @@ export class Enchantment extends Permanent {
         game.playPermanent(this);
     }
 }
+
+export const isEnchantment = (item: Card): item is Enchantment => item.getCardType() === CardType.Enchantment;
