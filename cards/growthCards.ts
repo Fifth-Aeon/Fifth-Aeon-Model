@@ -158,7 +158,7 @@ export function drainingTree() {
     return new Unit(
         'DrainingTree',
         'Draining Tree',
-        'eviltree.png',
+        'evil-tree.png',
         UnitType.Elemental,
         new Resource(4, 0, {
             Growth: 3,
