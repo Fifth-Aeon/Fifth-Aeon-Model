@@ -3,6 +3,7 @@ import { ParameterType } from './parameters';
 import { Mechanic } from '../mechanic';
 
 export interface MechanicConstructor {
+    grantable?: true;
     getId(): string;
     isValidParent(CardType: CardType): boolean;
     getParameterTypes(): { name: string; type: ParameterType }[];

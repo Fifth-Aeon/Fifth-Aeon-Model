@@ -4,6 +4,7 @@ import { EvalContext, Mechanic } from '../../mechanic';
 import { Unit, UnitType } from '../../card-types/unit';
 
 abstract class Skill extends Mechanic {
+    public static readonly grantable = true;
     protected static validCardTypes = new Set([CardType.Unit, CardType.Item]);
 }
 

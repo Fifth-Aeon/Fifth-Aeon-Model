@@ -8,7 +8,7 @@ import {
     EvalMap,
     maybeEvaluate
 } from '../../mechanic';
-import { properCase, properList } from '../../strings';
+import { properCase } from '../../strings';
 import { Unit } from '../../card-types/unit';
 import { MechanicConstructor } from '../mechanicConstructor';
 import { ParameterType } from '../parameters';
@@ -52,10 +52,13 @@ export class BuffTarget extends UnitTargetedMechanic {
 
 export class GrantAbility extends UnitTargetedMechanic {
     protected static id = 'GrantAbility';
-    protected instance: Mechanic;
+    protected static ParameterTypes = [
+        { name: 'Ability', type: ParameterType.Ability },
+    ];
+
+
     constructor(private ability: MechanicConstructor) {
         super();
-        this.instance = new ability();
     }
 
     public onTrigger(card: Card, game: Game) {

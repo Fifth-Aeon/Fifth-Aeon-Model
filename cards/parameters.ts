@@ -1,6 +1,7 @@
 import { ResourcePrototype, Resource, ResourceType } from '../resource';
 import { CardList } from './cardList';
 import { CardType, Card } from '../card-types/card';
+import { MechanicConstructor } from './mechanicConstructor';
 
 export enum ParameterType {
     Integer,
@@ -13,7 +14,8 @@ export enum ParameterType {
     Item,
     Enchantment,
     CardType,
-    UnitType
+    UnitType,
+    Ability
 }
 
 export type ParameterData = number | string | ResourcePrototype;
@@ -52,6 +54,16 @@ const loadCard = (
     return () => cards.getCard(id);
 };
 
+const loadAbility = (
+    data: ParameterData,
+    constructors: Map<string, MechanicConstructor>
+) => {
+    if (typeof data !== 'string' || !constructors.has(data)) {
+        return Array.from(constructors.values()).find(con => con.getParameterTypes().length === 0);
+    }
+    return constructors.get(data);
+}
+
 const parseResourceType = (data: ParameterData): string => {
     if (typeof data !== 'string') {
         return ResourceType.Synthesis;
@@ -79,7 +91,8 @@ const loadResource = (data: ParameterData) => {
 const buildParameter = (
     type: ParameterType,
     data: ParameterData,
-    cards: CardList
+    cards: CardList,
+    constructors: Map<string, MechanicConstructor>
 ) => {
     switch (type) {
         case ParameterType.Integer:
@@ -104,17 +117,20 @@ const buildParameter = (
             return parseInteger(data, 0, 3);
         case ParameterType.UnitType:
             return parseInteger(data, 0, Infinity);
+        case ParameterType.Ability:
+            return loadAbility(data, constructors);
     }
 };
 
 export const buildParameters = (
     types: ParameterType[],
     data: ParameterData[],
-    cards: CardList
+    cards: CardList,
+    constructors: Map<string, MechanicConstructor>
 ) => {
     const results = new Array(types.length);
     for (let i = 0; i < types.length; i++) {
-        results[i] = buildParameter(types[i], data[i], cards);
+        results[i] = buildParameter(types[i], data[i], cards, constructors);
     }
     return results;
 };

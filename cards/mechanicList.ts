@@ -1,6 +1,6 @@
 import { values } from 'lodash';
 import { CardType } from '../card-types/card';
-import { UnitTargetedMechanic, TriggeredMechanic } from '../mechanic';
+import { UnitTargetedMechanic, TriggeredMechanic, TargetedMechanic } from '../mechanic';
 import { CardData, CardList } from './cardList';
 import { MechanicConstructor } from './mechanicConstructor';
 import * as buff from './mechanics/buff';
@@ -57,23 +57,24 @@ class MechanicList {
         const paramterValues = buildParameters(
             paramTypes,
             data.parameters,
-            cards
+            cards,
+            this.constructors
         );
         const instance = new constructor(...paramterValues);
         if (
             constructor.prototype instanceof TriggeredMechanic &&
             data.trigger
         ) {
-            (instance as UnitTargetedMechanic).setTrigger(
+            (instance as TriggeredMechanic).setTrigger(
                 triggerList.buildInstance(data.trigger)
             );
         }
         if (
-            constructor.prototype instanceof UnitTargetedMechanic &&
+            constructor.prototype instanceof TargetedMechanic &&
             data.targeter &&
             data.targeter.id !== 'Host'
         ) {
-            (instance as UnitTargetedMechanic).setTargeter(
+            (instance as TargetedMechanic).setTargeter(
                 targeterList.buildInstance(data.targeter)
             );
         }
@@ -84,6 +85,12 @@ class MechanicList {
         return this.constructorList.filter(constructor =>
             constructor.isValidParent(cardType)
         );
+    }
+
+    public getAbilityIds() {
+        return this.constructorList
+            .filter(constructor => constructor.grantable)
+            .map(con => con.getId());
     }
 
     public isTriggered(mechanic: MechanicData) {
