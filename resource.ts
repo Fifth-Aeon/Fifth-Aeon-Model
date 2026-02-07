@@ -122,10 +122,10 @@ export class Resource {
     }
 
     public getColors(): Set<ResourceType> {
-        const set = new Set();
+        const set = new Set<ResourceType>();
         for (const prop in this.types) {
             if (this.types[prop] > 0) {
-                set.add(prop);
+                set.add(prop as ResourceType);
             }
         }
         return set;

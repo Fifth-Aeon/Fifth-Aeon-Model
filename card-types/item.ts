@@ -73,7 +73,7 @@ export class Item extends Permanent {
         this.attach(host, game);
     }
 
-    public getText(game: Game, hasPrefix: boolean = true): string {
+    public getText(game: Game | undefined = undefined, hasPrefix: boolean = true): string {
         const prefix = hasPrefix
             ? `Attaches to ${this.hostTargeter.getTextOrPronoun()}. `
             : '';
@@ -89,12 +89,12 @@ export class Item extends Permanent {
             const clone = mechanic.clone();
             this.host.addMechanic(clone);
             clone.enter(host, game);
-            if ((<TriggeredMechanic>clone).getTrigger) {
-                (<TriggeredMechanic>clone).getTrigger().register(this, game);
+            if (clone instanceof TriggeredMechanic) {
+                clone.getTrigger().register(this, game);
                 if (
-                    (<TriggeredMechanic>clone).getTrigger().getId() === 'Play'
+                    clone.getTrigger().getId() === 'Play'
                 ) {
-                    (<TriggeredMechanic>clone).onTrigger(host, game);
+                    clone.onTrigger(host, game);
                 }
             }
         }

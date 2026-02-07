@@ -1,4 +1,3 @@
-import { isArray } from 'util';
 import { CardType, Card } from './card-types/card';
 import { DeckList, SavedDeck } from './deckList';
 import { Enchantment } from './card-types/enchantment';
@@ -273,7 +272,7 @@ export class ServerGame extends Game {
         ) {
             return false;
         }
-        if (!isArray(act.order)) {
+        if (!Array.isArray(act.order)) {
             return false;
         }
         if (!this.attackDamageOrder.has(act.attackerID)) {
@@ -338,8 +337,7 @@ export class ServerGame extends Game {
         if (cards.length > max || cards.length < min) {
             console.error(
                 this.name,
-                `Reject choice. Wanted between ${min} and ${max} cards but got ${
-                    cards.length
+                `Reject choice. Wanted between ${min} and ${max} cards but got ${cards.length
                 }.`
             );
             return false;
@@ -497,8 +495,7 @@ export class ServerGame extends Game {
     protected passAction(act: PassAction): boolean {
         if (!this.isActivePlayer(act.player)) {
             console.error(
-                `Player ${
-                    act.player
+                `Player ${act.player
                 } Can't pass, they are not the active player ${this.getActivePlayer()} is`,
                 GamePhase[this.phase],
                 this.turn

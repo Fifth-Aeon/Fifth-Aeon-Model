@@ -12,7 +12,7 @@ export class Animator {
     private animating = false;
     private onAnimationEnd: () => any = () => null;
 
-    constructor(private multiplier = 1) {}
+    constructor(private multiplier = 1) { }
 
     private getAnimationTime() {
         return this.nextAnimationTime * this.multiplier;
@@ -28,7 +28,7 @@ export class Animator {
     }
 
     public async awaitAnimationEnd() {
-        return new Promise(resolve => {
+        return new Promise<void>(resolve => {
             if (this.animating) {
                 this.onAnimationEnd = () => {
                     resolve();
